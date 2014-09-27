@@ -31,7 +31,7 @@ import javax.swing.event.ListSelectionListener;
 
 /**
  * 
- * @author Niklas 28.06.2014
+ * @author Niklas 27.09.2014
  * 
  */
 public class Main_GUI extends JFrame {
