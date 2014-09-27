@@ -17,5 +17,5 @@ If you find any errors or have (reasonable) suggestions, please let me know
 Preview Image:<br>
 <img src="https://github.com/westerwave/livestreamer_twitch_gui/blob/master/preview.jpg"></img>
 <br>
-Planned Features:
+Planned Features:<br>
 -Remove button for stream list
