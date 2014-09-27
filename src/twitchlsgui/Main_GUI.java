@@ -44,7 +44,7 @@ public class Main_GUI extends JFrame {
 
     private static ConfigUtil cfgUtil;
 
-    public JList<String> qualityList;
+    private JList<String> qualityList;
     public JList<String> stream_list;
     public static DefaultListModel<String> streamListModel;
     private JTextField customStreamTF;
