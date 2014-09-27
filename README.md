@@ -14,3 +14,4 @@ If you find any errors or have (reasonable) suggestions, please let me know
 
 
 Preview Image:
+https://github.com/westerwave/livestreamer_twitch_gui/blob/master/preview.jpg
