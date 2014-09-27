@@ -45,14 +45,12 @@ public class Main_GUI extends JFrame {
     private static ConfigUtil cfgUtil;
 
     private JList<String> qualityList;
-    public JList<String> stream_list;
+    private JList<String> stream_list;
     public static DefaultListModel<String> streamListModel;
     private JTextField customStreamTF;
     public static JLabel onlineStatus;
     private JLabel previewLabel;
     private JPanel previewPanel;
-
-    // private JLabel previewImage;
 
     /**
      * Launch the application.
@@ -102,8 +100,10 @@ public class Main_GUI extends JFrame {
 	});
     }
 
+    /**
+     * Updates the streamListModel of the JList
+     */
     public static void updateList() {
-	// streamListModel = new DefaultListModel<String>();
 	streamListModel.clear();
 
 	for (int i = 0; i < Functions.streamList.size(); i++) {
@@ -259,7 +259,6 @@ public class Main_GUI extends JFrame {
 	startStreambutton.addActionListener(new ActionListener() {
 
 	    public void actionPerformed(ActionEvent arg0) {
-		System.out.println(currentStreamName);
 		Functions.OpenStream(currentStreamName, currentQuality);
 
 	    }
@@ -333,7 +332,7 @@ public class Main_GUI extends JFrame {
      * 
      * @param prev
      */
-    public void setPreviewImage(BufferedImage prev) {
+    private void setPreviewImage(BufferedImage prev) {
 	int newWidth = 176;
 	int newHeight = 99;
 	BufferedImage small = new BufferedImage(newWidth, newHeight,
@@ -348,7 +347,7 @@ public class Main_GUI extends JFrame {
      * 
      * @param event
      */
-    public void setQuality(ListSelectionEvent event) {
+    private void setQuality(ListSelectionEvent event) {
 	if (currentQuality.equals(qualityList.getModel().getElementAt(
 		event.getLastIndex()))) {
 	    if (event.getValueIsAdjusting() == false) {
@@ -367,7 +366,7 @@ public class Main_GUI extends JFrame {
      * 
      * @param event
      */
-    public void setStream(ListSelectionEvent event) {
+    private void setStream(ListSelectionEvent event) {
 	if (stream_list.getModel().getSize() > 0) {
 	    if (currentStreamName.equals(stream_list.getModel().getElementAt(
 		    event.getLastIndex()))) {

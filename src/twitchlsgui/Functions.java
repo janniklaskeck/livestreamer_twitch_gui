@@ -24,7 +24,6 @@ public class Functions {
 	String cmd = "livestreamer twitch.tv/" + name + " " + quality;
 	try {
 	    if (Functions.checkStream(name)) {
-		System.out.println(cmd);
 		@SuppressWarnings("unused")
 		Process prc = Runtime.getRuntime().exec(cmd);
 	    }
