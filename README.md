@@ -14,5 +14,8 @@ but i had to rewrite it, after justin.tv was closed.
 If you find any errors or have (reasonable) suggestions, please let me know
 
 
-Preview Image:
+Preview Image:<br>
 <img src="https://github.com/westerwave/livestreamer_twitch_gui/blob/master/preview.jpg"></img>
+<br>
+Planned Features:
+-Remove button for stream list
