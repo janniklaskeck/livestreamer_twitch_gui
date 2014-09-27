@@ -1,6 +1,6 @@
 livestreamer_twitch_gui
 =======================
-GUI for the livestreamer application (http://livestreamer.readthedocs.org)
+GUI for the livestreamer application (http://livestreamer.tanuki.se/)
 Uses Gson from https://code.google.com/p/google-gson/
 
 Currently only works under Windows
