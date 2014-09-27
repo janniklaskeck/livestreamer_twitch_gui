@@ -11,3 +11,6 @@ I originally got the contents of Twitch_API.java from some forum i can't remembe
 but i had to rewrite it, after justin.tv was closed.
 
 If you find any errors or have (reasonable) suggestions, please let me know
+
+
+Preview Image:
