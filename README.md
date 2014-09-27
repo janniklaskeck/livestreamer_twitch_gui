@@ -9,3 +9,5 @@ I wrote this, because all of the GUI for livestreamer did not do what i wanted, 
 Many parts of this are poorly written and probably not commented.
 I originally got the contents of Twitch_API.java from some forum i can't remember, 
 but i had to rewrite it, after justin.tv was closed.
+
+If you find any errors or have (reasonable) suggestions, please let me know
