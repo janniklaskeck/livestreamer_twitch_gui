@@ -1,17 +1,15 @@
 package twitchlsgui;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 /**
+ * Config class
  * 
  * @author Niklas 28.06.2014
  * 
  */
 public class ConfigUtil {
-
-    File f = new File("./config.ini");
     Preferences myPrefs;
 
     private final String QUALITY = "quality";
@@ -19,13 +17,18 @@ public class ConfigUtil {
     private final String STREAMLIST = "streamlist";
 
     /**
-     * 
+     * Constructor
      */
     public ConfigUtil() {
 	myPrefs = Preferences.userNodeForPackage(twitchlsgui.Main_GUI.class);
 	readConfig();
     }
 
+    /**
+     * Adds stream to streamList
+     * 
+     * @param stream
+     */
     public void saveStream(String stream) {
 	Functions.streamList.add(new TwitchStream(stream));
 	writeConfig();
@@ -34,11 +37,27 @@ public class ConfigUtil {
     }
 
     /**
+     * Removes stream from streamList
      * 
+     * @param stream
+     */
+    public void removeStream(String stream) {
+	for (int i = 0; i < Functions.streamList.size(); i++) {
+	    if (Functions.streamList.get(i).channel.equals(stream)) {
+		Functions.streamList.remove(i);
+	    }
+	}
+	writeConfig();
+	readConfig();
+	Main_GUI.updateList();
+    }
+
+    /**
+     * Reads config from registry
      */
     public void readConfig() {
 	Functions.checkTimer = myPrefs.getInt(TIMER, 30);
-	Main_GUI.currentQuality = myPrefs.get(QUALITY, "high");
+	Main_GUI.currentQuality = myPrefs.get(QUALITY, "High");
 	String buffer = myPrefs.get(STREAMLIST, "");
 
 	String[] buffer2 = buffer.split(" ");
@@ -47,11 +66,11 @@ public class ConfigUtil {
 	    if (s.length() > 1)
 		Functions.streamList.add(new TwitchStream(s));
 	}
-	
+
     }
 
     /**
-     * 
+     * Writes config to registry
      */
     public void writeConfig() {
 	myPrefs.put(QUALITY, Main_GUI.currentQuality);
