@@ -15,7 +15,7 @@ If you find any errors or have (reasonable) suggestions, please let me know
 
 
 Preview Image:<br>
-<img width=587 height=410 src="https://github.com/westerwave/livestreamer_twitch_gui/blob/master/preview.png"></img>
+<img width="100%" height="100%" src="https://github.com/westerwave/livestreamer_twitch_gui/blob/master/preview.png"></img>
 <br>
 Planned Features:<br>
 -
