@@ -35,7 +35,7 @@ public class TwitchStream {
 		}
 	    }
 	}
-
+	
     }
 
     public boolean isOnline() {
