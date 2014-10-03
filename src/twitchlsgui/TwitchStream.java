@@ -26,10 +26,13 @@ public class TwitchStream {
 	title = ts.getTitle();
 	online = ts.isOnline();
 	if (ts.getScreen_cap_url_medium() != null) {
-	    try {
-		preview = ImageIO.read(new URL(ts.getScreen_cap_url_medium()));
-	    } catch (IOException e) {
-		e.printStackTrace();
+	    for (int i = 0; i < 5; i++) {
+		try {
+		    preview = ImageIO.read(new URL(ts
+			    .getScreen_cap_url_medium()));
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
 	    }
 	}
 
