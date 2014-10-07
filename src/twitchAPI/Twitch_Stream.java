@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 
 /**
  * Sets Variables from Twitch.tv JsonObject
- * @author Niklas
- * 27.09.2014
- *
+ * 
+ * @author Niklas 27.09.2014
+ * 
  */
 public class Twitch_Stream {
     private boolean online;
@@ -39,6 +39,7 @@ public class Twitch_Stream {
 		.get("small").getAsString());
 	setScreen_cap_url_medium(job.get("preview").getAsJsonObject()
 		.get("medium").getAsString());
+	setUp_time(job.get("created_at").getAsString());
     }
 
     public boolean isOnline() {

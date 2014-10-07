@@ -3,6 +3,12 @@ package twitchlsgui;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.imageio.ImageIO;
 
@@ -14,6 +20,10 @@ public class TwitchStream {
     public String game;
     public String title;
     public BufferedImage preview;
+    public String upTimeString;
+    public long upTimeLong;
+    public int upTimeHour;
+    public int upTimeMinute;
     private boolean online = false;
 
     public TwitchStream(String channel) {
@@ -25,6 +35,15 @@ public class TwitchStream {
 	game = ts.getMeta_game();
 	title = ts.getTitle();
 	online = ts.isOnline();
+	upTimeString = ts.getUp_time();
+	if (upTimeString != null) {
+	    upTimeLong = convertDate(upTimeString);
+	    GregorianCalendar c = new GregorianCalendar();
+	    c.setTimeInMillis(System.currentTimeMillis() - upTimeLong);
+	    upTimeHour = c.get(Calendar.HOUR_OF_DAY);
+	    upTimeMinute = c.get(Calendar.MINUTE);
+	}
+
 	if (ts.getScreen_cap_url_medium() != null) {
 	    for (int i = 0; i < 5; i++) {
 		try {
@@ -35,7 +54,7 @@ public class TwitchStream {
 		}
 	    }
 	}
-	
+
     }
 
     public boolean isOnline() {
@@ -56,4 +75,47 @@ public class TwitchStream {
 	return title;
     }
 
+    /**
+     * Converts Twitch date to long
+     * 
+     * @param date
+     * @return long value of date
+     */
+    private long convertDate(String date) {
+	DateFormat fm = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+	String a = date;
+	String[] b = a.split("T");
+	a = "";
+	for (String s : b) {
+	    if (a != "") {
+		a = a + " " + s;
+	    } else {
+		a = a + s;
+	    }
+	}
+	b = a.split("Z");
+	a = "";
+	for (String s : b) {
+	    a = a + s;
+	}
+	Date d = null;
+	try {
+	    d = fm.parse(a);
+	} catch (ParseException e) {
+	    e.printStackTrace();
+	}
+	return d.getTime();
+    }
+
+    public int getUpTimeHours() {
+	return upTimeHour;
+    }
+
+    public String getUpTimeMinutes() {
+	if (upTimeMinute < 10) {
+	    return 0 + "" + upTimeMinute;
+	} else {
+	    return "" + upTimeMinute;
+	}
+    }
 }

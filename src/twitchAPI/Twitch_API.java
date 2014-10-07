@@ -32,8 +32,6 @@ public class Twitch_API {
 	} catch (Exception error) {
 	    error.printStackTrace();
 	}
-
 	return null;
-
     }
 }
