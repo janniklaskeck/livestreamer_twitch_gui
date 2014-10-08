@@ -426,13 +426,8 @@ public class Main_GUI extends JFrame {
 		    for (TwitchStream ts : Functions.streamList) {
 			if (ts.channel.equals(currentStreamName)) {
 			    if (ts.isOnline()) {
-				onlineStatus.setText("<html>Playing "
-					+ ts.getGame() + " (Online for "
-					+ ts.getUpTimeHours() + ":"
-					+ ts.getUpTimeMinutes() + " hours)"
-					+ "<br>" + ts.getTitle() + "</html>");
+				onlineStatus.setText(ts.getOnlineString());
 				setPreviewImage(ts.preview);
-
 			    } else {
 				onlineStatus.setText("Stream is Offline");
 				setPreviewImage(null);
@@ -447,11 +442,7 @@ public class Main_GUI extends JFrame {
 		    for (TwitchStream ts : Functions.streamList) {
 			if (ts.channel.equals(currentStreamName)) {
 			    if (ts.isOnline()) {
-				onlineStatus.setText("<html>Playing "
-					+ ts.getGame() + " (Online for "
-					+ ts.getUpTimeHours() + ":"
-					+ ts.getUpTimeMinutes() + " hours)"
-					+ "<br>" + ts.getTitle() + "</html>");
+				onlineStatus.setText(ts.getOnlineString());
 				setPreviewImage(ts.preview);
 			    } else {
 				onlineStatus.setText("Stream is Offline");

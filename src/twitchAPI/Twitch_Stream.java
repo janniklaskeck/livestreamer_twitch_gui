@@ -13,7 +13,8 @@ public class Twitch_Stream {
     private String id;
     private String category;
     private String title;
-    private String up_time;
+    private String created_at;
+    private String updated_at;
     private String meta_game;
     private String stream_type;
     private String name;
@@ -39,7 +40,8 @@ public class Twitch_Stream {
 		.get("small").getAsString());
 	setScreen_cap_url_medium(job.get("preview").getAsJsonObject()
 		.get("medium").getAsString());
-	setUp_time(job.get("created_at").getAsString());
+	setCreated_At(job.get("created_at").getAsString());
+	setUpdated_At(job.get("channel").getAsJsonObject().get("updated_at").getAsString());
     }
 
     public boolean isOnline() {
@@ -74,12 +76,20 @@ public class Twitch_Stream {
 	this.title = title;
     }
 
-    public String getUp_time() {
-	return this.up_time;
+    public String getCreated_At() {
+	return this.created_at;
     }
 
-    public void setUp_time(String up_time) {
-	this.up_time = up_time;
+    public void setCreated_At(String created_at) {
+	this.created_at = created_at;
+    }
+
+    public String getUpdated_At() {
+	return this.updated_at;
+    }
+
+    public void setUpdated_At(String updated_at) {
+	this.updated_at = updated_at;
     }
 
     public String getMeta_game() {
