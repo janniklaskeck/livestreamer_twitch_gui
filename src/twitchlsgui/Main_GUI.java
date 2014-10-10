@@ -47,8 +47,8 @@ public class Main_GUI extends JFrame {
     private static ConfigUtil cfgUtil;
 
     private JList<String> qualityList;
-    private JList<String> stream_list;
-    public static DefaultListModel<String> streamListModel;
+    private JList<JLabel> stream_list;
+    public static DefaultListModel<JLabel> streamListModel;
     private JTextField customStreamTF;
     public static JLabel onlineStatus;
     private JLabel previewLabel;
@@ -110,7 +110,8 @@ public class Main_GUI extends JFrame {
     public static void updateList() {
 	streamListModel.clear();
 	for (int i = 0; i < Functions.streamList.size(); i++) {
-	    streamListModel.addElement(Functions.streamList.get(i).channel);
+	    streamListModel.addElement(new JLabel(
+		    Functions.streamList.get(i).channel));
 	}
 
     }
@@ -133,7 +134,7 @@ public class Main_GUI extends JFrame {
 	JPanel stream_panel = new JPanel();
 	contentPane.add(stream_panel, BorderLayout.CENTER);
 
-	streamListModel = new DefaultListModel<String>();
+	streamListModel = new DefaultListModel<JLabel>();
 
 	updateList();
 
@@ -143,9 +144,9 @@ public class Main_GUI extends JFrame {
 	scrollPane.setBounds(10, 0, 307, 185);
 	stream_panel.add(scrollPane);
 
-	stream_list = new JList<String>();
+	stream_list = new JList<JLabel>();
 	stream_list.setVisibleRowCount(10);
-	stream_list.setCellRenderer(new MyCellListRenderer());
+	stream_list.setCellRenderer(new MyListCellRenderer());
 
 	stream_list.setModel(streamListModel);
 
@@ -153,7 +154,7 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void valueChanged(ListSelectionEvent event) {
-		setStream(event);
+		setStream();
 	    }
 	});
 	stream_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -395,20 +396,7 @@ public class Main_GUI extends JFrame {
      * @param event
      */
     private void setQuality(ListSelectionEvent event) {
-	if (currentQuality.equals(qualityList.getModel().getElementAt(
-		event.getLastIndex()))) {
-	    if (event.getValueIsAdjusting() == false) {
-		currentQuality = qualityList.getModel().getElementAt(
-			event.getFirstIndex());
-	    }
-	} else {
-	    if (event.getValueIsAdjusting() == false) {
-		currentQuality = qualityList.getModel().getElementAt(
-			event.getLastIndex());
-	    }
-	}
-	System.out.println(event.getLastIndex() + " " + event.getFirstIndex());
-	System.out.println(currentQuality);
+	currentQuality = qualityList.getSelectedValue();
     }
 
     /**
@@ -416,40 +404,16 @@ public class Main_GUI extends JFrame {
      * 
      * @param event
      */
-    private void setStream(ListSelectionEvent event) {
-	if (stream_list.getModel().getSize() > 0) {
-	    if (currentStreamName.equals(stream_list.getModel().getElementAt(
-		    event.getLastIndex()))) {
-		if (event.getValueIsAdjusting() == false) {
-		    currentStreamName = stream_list.getModel().getElementAt(
-			    event.getFirstIndex());
-		    for (TwitchStream ts : Functions.streamList) {
-			if (ts.channel.equals(currentStreamName)) {
-			    if (ts.isOnline()) {
-				onlineStatus.setText(ts.getOnlineString());
-				setPreviewImage(ts.preview);
-			    } else {
-				onlineStatus.setText("Stream is Offline");
-				setPreviewImage(null);
-			    }
-			}
-		    }
-		}
-	    } else {
-		if (event.getValueIsAdjusting() == false) {
-		    currentStreamName = stream_list.getModel().getElementAt(
-			    event.getLastIndex());
-		    for (TwitchStream ts : Functions.streamList) {
-			if (ts.channel.equals(currentStreamName)) {
-			    if (ts.isOnline()) {
-				onlineStatus.setText(ts.getOnlineString());
-				setPreviewImage(ts.preview);
-			    } else {
-				onlineStatus.setText("Stream is Offline");
-				setPreviewImage(null);
-			    }
-			}
-		    }
+    private void setStream() {
+	currentStreamName = stream_list.getSelectedValue().getText();
+	for (TwitchStream ts : Functions.streamList) {
+	    if (ts.channel.equals(currentStreamName)) {
+		if (ts.isOnline()) {
+		    onlineStatus.setText(ts.getOnlineString());
+		    setPreviewImage(ts.preview);
+		} else {
+		    onlineStatus.setText("Stream is Offline");
+		    setPreviewImage(null);
 		}
 	    }
 	}
