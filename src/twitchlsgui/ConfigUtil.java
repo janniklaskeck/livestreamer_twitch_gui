@@ -43,7 +43,7 @@ public class ConfigUtil {
      */
     public void removeStream(String stream) {
 	for (int i = 0; i < Functions.streamList.size(); i++) {
-	    if (Functions.streamList.get(i).channel.equals(stream)) {
+	    if (Functions.streamList.get(i).getChannel().equals(stream)) {
 		Functions.streamList.remove(i);
 	    }
 	}
@@ -79,9 +79,9 @@ public class ConfigUtil {
 
 	for (TwitchStream s : Functions.streamList) {
 	    if (buffer == "") {
-		buffer = buffer + s.channel;
+		buffer = buffer + s.getChannel();
 	    } else {
-		buffer = buffer + " " + s.channel;
+		buffer = buffer + " " + s.getChannel();
 	    }
 	}
 	myPrefs.put(STREAMLIST, buffer);

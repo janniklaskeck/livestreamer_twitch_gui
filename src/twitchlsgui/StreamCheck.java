@@ -11,10 +11,6 @@ public class StreamCheck implements Runnable {
 
     ArrayList<Thread> threads = new ArrayList<Thread>();
     int count = 0;
-    public String upTimeString;
-    public long created_at_Long;
-    public long upTimeHour;
-    public long upTimeMinute;
 
     @Override
     public void run() {
@@ -45,7 +41,7 @@ public class StreamCheck implements Runnable {
 		Main_GUI.onlineStatus.setText("Finished updating");
 	    } else {
 		for (TwitchStream ts : Functions.streamList) {
-		    if (ts.channel.equals(Main_GUI.currentStreamName)) {
+		    if (ts.getChannel().equals(Main_GUI.currentStreamName)) {
 			if (ts.isOnline()) {
 			    Main_GUI.onlineStatus.setText(ts.getOnlineString());
 
@@ -75,7 +71,6 @@ public class StreamCheck implements Runnable {
 	@Override
 	public void run() {
 	    Functions.streamList.get(index).refresh();
-
 	}
     }
 }

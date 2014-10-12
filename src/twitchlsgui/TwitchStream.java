@@ -14,16 +14,17 @@ import twitchAPI.Twitch_API;
 import twitchAPI.Twitch_Stream;
 
 public class TwitchStream {
-    public String channel;
-    public String game;
-    public String title;
-    public BufferedImage preview;
-    public String created_at;
-    public String updated_at;
-    public long created_at_Long;
-    public long updated_at_Long;
-    public long upTimeHour;
-    public long upTimeMinute;
+    private String channel;
+    private String game;
+    private String title;
+    private BufferedImage preview;
+    private String created_at;
+
+    private String updated_at;
+    private long created_at_Long;
+    private long updated_at_Long;
+    private long upTimeHour;
+    private long upTimeMinute;
     private boolean online = false;
     private String onlineString;
 
@@ -37,7 +38,7 @@ public class TwitchStream {
 	title = ts.getTitle();
 	online = ts.isOnline();
 	created_at = ts.getCreated_At();
-	updated_at = ts.getUpdated_At();
+	setUpdated_at(ts.getUpdated_At());
 	upTimeHour = 0L;
 	upTimeMinute = 0L;
 
@@ -51,7 +52,7 @@ public class TwitchStream {
 		    + getUpTimeHours() + ":" + getUpTimeMinutes() + " hours)"
 		    + "<br>" + getTitle() + "</html>");
 	}
-
+	preview = null;
 	if (ts.getScreen_cap_url_medium() != null) {
 	    for (int i = 0; i < 5; i++) {
 		try {
@@ -60,17 +61,27 @@ public class TwitchStream {
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
+		if (preview != null) {
+		    break;
+		}
 	    }
 	}
 
     }
 
     /**
-     * 
-     * @return true if channel is online
+     * @return the channel
      */
-    public boolean isOnline() {
-	return online;
+    public String getChannel() {
+	return channel;
+    }
+
+    /**
+     * @param channel
+     *            the channel to set
+     */
+    public void setChannel(String channel) {
+	this.channel = channel;
     }
 
     /**
@@ -81,10 +92,56 @@ public class TwitchStream {
     }
 
     /**
+     * @param game
+     *            the game to set
+     */
+    public void setGame(String game) {
+	this.game = game;
+    }
+
+    /**
      * @return the title
      */
     public String getTitle() {
 	return title;
+    }
+
+    /**
+     * @param title
+     *            the title to set
+     */
+    public void setTitle(String title) {
+	this.title = title;
+    }
+
+    /**
+     * @return the preview
+     */
+    public BufferedImage getPreview() {
+	return preview;
+    }
+
+    /**
+     * @param preview
+     *            the preview to set
+     */
+    public void setPreview(BufferedImage preview) {
+	this.preview = preview;
+    }
+
+    /**
+     * @return the online
+     */
+    public boolean isOnline() {
+	return online;
+    }
+
+    /**
+     * @param online
+     *            the online to set
+     */
+    public void setOnline(boolean online) {
+	this.online = online;
     }
 
     /**
@@ -152,5 +209,35 @@ public class TwitchStream {
      */
     public void setOnlineString(String onlineString) {
 	this.onlineString = onlineString;
+    }
+
+    /**
+     * @return the updated_at
+     */
+    public String getUpdated_at() {
+	return updated_at;
+    }
+
+    /**
+     * @param updated_at
+     *            the updated_at to set
+     */
+    public void setUpdated_at(String updated_at) {
+	this.updated_at = updated_at;
+    }
+
+    /**
+     * @return the updated_at_Long
+     */
+    public long getUpdated_at_Long() {
+	return updated_at_Long;
+    }
+
+    /**
+     * @param updated_at_Long
+     *            the updated_at_Long to set
+     */
+    public void setUpdated_at_Long(long updated_at_Long) {
+	this.updated_at_Long = updated_at_Long;
     }
 }

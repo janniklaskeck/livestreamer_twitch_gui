@@ -39,7 +39,7 @@ public class Functions {
      */
     public static boolean checkStream(String name) {
 	for (TwitchStream ts : streamList) {
-	    if (ts.channel.equalsIgnoreCase(name)) {
+	    if (ts.getChannel().equalsIgnoreCase(name)) {
 		online = ts.isOnline();
 	    }
 	}

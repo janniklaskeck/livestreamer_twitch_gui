@@ -110,10 +110,9 @@ public class Main_GUI extends JFrame {
     public static void updateList() {
 	streamListModel.clear();
 	for (int i = 0; i < Functions.streamList.size(); i++) {
-	    streamListModel.addElement(new JLabel(
-		    Functions.streamList.get(i).channel));
+	    streamListModel.addElement(new JLabel(Functions.streamList.get(i)
+		    .getChannel()));
 	}
-
     }
 
     /**
@@ -220,13 +219,6 @@ public class Main_GUI extends JFrame {
 	gbl_middle_panel.rowWeights = new double[] { 1.0, 1.0, 1.0, 1.0 };
 	middle_panel.setLayout(gbl_middle_panel);
 
-	DefaultListModel<String> qualityListModel = new DefaultListModel<String>();
-	qualityListModel.addElement("Worst");
-	qualityListModel.addElement("Low");
-	qualityListModel.addElement("Medium");
-	qualityListModel.addElement("High");
-	qualityListModel.addElement("Best");
-
 	JButton startStreambutton = new JButton("Start VLC Stream");
 	GridBagConstraints gbc_startStreambutton = new GridBagConstraints();
 	gbc_startStreambutton.insets = new Insets(0, 0, 5, 0);
@@ -237,7 +229,6 @@ public class Main_GUI extends JFrame {
 
 	    public void actionPerformed(ActionEvent arg0) {
 		Functions.OpenStream(currentStreamName, currentQuality);
-
 	    }
 	});
 
@@ -279,7 +270,6 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		cfgUtil.removeStream(currentStreamName);
-
 	    }
 	});
 	GridBagConstraints gbc_removeButton = new GridBagConstraints();
@@ -302,7 +292,6 @@ public class Main_GUI extends JFrame {
 		    Functions.OpenStream(customStreamTF.getText(),
 			    currentQuality);
 		}
-
 	    }
 	});
 
@@ -365,7 +354,7 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		System.exit(0);
-
+		cfgUtil.writeConfig();
 	    }
 	});
 	middle_panel.add(exitBtn, gbc_exitBtn);
@@ -407,10 +396,10 @@ public class Main_GUI extends JFrame {
     private void setStream() {
 	currentStreamName = stream_list.getSelectedValue().getText();
 	for (TwitchStream ts : Functions.streamList) {
-	    if (ts.channel.equals(currentStreamName)) {
+	    if (ts.getChannel().equals(currentStreamName)) {
 		if (ts.isOnline()) {
 		    onlineStatus.setText(ts.getOnlineString());
-		    setPreviewImage(ts.preview);
+		    setPreviewImage(ts.getPreview());
 		} else {
 		    onlineStatus.setText("Stream is Offline");
 		    setPreviewImage(null);

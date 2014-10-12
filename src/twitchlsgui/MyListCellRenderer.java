@@ -19,7 +19,7 @@ public class MyListCellRenderer implements ListCellRenderer<JLabel> {
 	    JLabel value, int index, boolean isSelected, boolean cellHasFocus) {
 	value.setOpaque(true);
 	for (TwitchStream ts : Functions.streamList) {
-	    if (ts.channel.equals(value.getText())) {
+	    if (ts.getChannel().equals(value.getText())) {
 		if (ts.isOnline()) {
 		    if (isSelected) {
 			value.setBorder(lineBorder);
@@ -35,5 +35,4 @@ public class MyListCellRenderer implements ListCellRenderer<JLabel> {
 	}
 	return value;
     }
-
 }
