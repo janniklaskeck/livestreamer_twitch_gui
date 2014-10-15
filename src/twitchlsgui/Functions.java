@@ -13,7 +13,7 @@ public class Functions {
     public static ArrayList<TwitchStream> streamList;
     //public static TwitchStream stream;
     public static boolean online = false;
-    public static int checkTimer = 20;
+    public static int checkTimer = 30;
 
     /**
      * 

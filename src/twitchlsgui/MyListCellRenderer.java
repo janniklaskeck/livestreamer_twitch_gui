@@ -2,6 +2,7 @@ package twitchlsgui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -18,6 +19,7 @@ public class MyListCellRenderer implements ListCellRenderer<JLabel> {
     public Component getListCellRendererComponent(JList<? extends JLabel> list,
 	    JLabel value, int index, boolean isSelected, boolean cellHasFocus) {
 	value.setOpaque(true);
+	value.setFont(new Font("Dialog", Font.BOLD, 12));
 	for (TwitchStream ts : Functions.streamList) {
 	    if (ts.getChannel().equals(value.getText())) {
 		if (ts.isOnline()) {

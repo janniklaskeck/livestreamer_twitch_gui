@@ -22,6 +22,7 @@ public class ConfigUtil {
     public ConfigUtil() {
 	myPrefs = Preferences.userNodeForPackage(twitchlsgui.Main_GUI.class);
 	readConfig();
+	
     }
 
     /**
@@ -58,6 +59,7 @@ public class ConfigUtil {
     public void readConfig() {
 	Functions.checkTimer = myPrefs.getInt(TIMER, 30);
 	Main_GUI.currentQuality = myPrefs.get(QUALITY, "High");
+	
 	String buffer = myPrefs.get(STREAMLIST, "");
 
 	String[] buffer2 = buffer.split(" ");

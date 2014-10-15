@@ -42,7 +42,7 @@ public class Main_GUI extends JFrame {
     private JPanel contentPane;
 
     public static String currentStreamName = "";
-    public static String currentQuality = "high";
+    public static String currentQuality = "High";
 
     private static ConfigUtil cfgUtil;
 
@@ -86,11 +86,11 @@ public class Main_GUI extends JFrame {
 
 			@Override
 			public void windowClosing(WindowEvent arg0) {
+			    cfgUtil.writeConfig();
 			}
 
 			@Override
 			public void windowClosed(WindowEvent arg0) {
-			    cfgUtil.writeConfig();
 			}
 
 			@Override
@@ -123,6 +123,7 @@ public class Main_GUI extends JFrame {
 		Main_GUI.class.getResource("/twitchlsgui/icon.jpg")));
 	setResizable(false);
 	cfgUtil = new ConfigUtil();
+
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	setBounds(100, 100, 577, 400);
 	contentPane = new JPanel();
@@ -310,7 +311,12 @@ public class Main_GUI extends JFrame {
 		return values[index];
 	    }
 	});
-	qualityList.setSelectedIndex(3);
+	for (int i = 0; i < qualityList.getModel().getSize(); i++) {
+	    if (currentQuality.equals(qualityList.getModel().getElementAt(i))) {
+		qualityList.setSelectedIndex(i);
+	    }
+	}
+
 	qualityList.addListSelectionListener(new ListSelectionListener() {
 
 	    @Override
@@ -353,8 +359,9 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		System.exit(0);
 		cfgUtil.writeConfig();
+		System.exit(0);
+
 	    }
 	});
 	middle_panel.add(exitBtn, gbc_exitBtn);
@@ -394,17 +401,21 @@ public class Main_GUI extends JFrame {
      * @param event
      */
     private void setStream() {
-	currentStreamName = stream_list.getSelectedValue().getText();
-	for (TwitchStream ts : Functions.streamList) {
-	    if (ts.getChannel().equals(currentStreamName)) {
-		if (ts.isOnline()) {
-		    onlineStatus.setText(ts.getOnlineString());
-		    setPreviewImage(ts.getPreview());
-		} else {
-		    onlineStatus.setText("Stream is Offline");
-		    setPreviewImage(null);
+	if (stream_list.getSelectedValue() != null) {
+	    currentStreamName = stream_list.getSelectedValue().getText();
+	    for (TwitchStream ts : Functions.streamList) {
+		if (ts.getChannel().equals(currentStreamName)) {
+		    if (ts.isOnline()) {
+			onlineStatus.setText(ts.getOnlineString());
+			setPreviewImage(ts.getPreview());
+		    } else {
+			onlineStatus.setText("Stream is Offline");
+			setPreviewImage(null);
+		    }
 		}
 	    }
+	} else {
+	    currentStreamName = "";
 	}
     }
 }
