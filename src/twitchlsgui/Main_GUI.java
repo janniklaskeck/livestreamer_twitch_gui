@@ -18,6 +18,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -28,6 +29,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -43,6 +46,7 @@ public class Main_GUI extends JFrame {
 
     public static String currentStreamName = "";
     public static String currentQuality = "High";
+    public static String customStreamName = "";
 
     private static ConfigUtil cfgUtil;
 
@@ -51,8 +55,13 @@ public class Main_GUI extends JFrame {
     public static DefaultListModel<JLabel> streamListModel;
     private JTextField customStreamTF;
     public static JLabel onlineStatus;
-    private JLabel previewLabel;
+    public static boolean showPreview = true;
+    private static JLabel previewLabel;
     private JPanel previewPanel;
+    private static Main_GUI frame;
+    private JCheckBox previewCheckBox;
+
+    private Thread checkThread;
 
     /**
      * Launch the application.
@@ -61,7 +70,7 @@ public class Main_GUI extends JFrame {
 	EventQueue.invokeLater(new Runnable() {
 	    public void run() {
 		try {
-		    Main_GUI frame = new Main_GUI();
+		    frame = new Main_GUI();
 		    frame.setVisible(true);
 		    frame.setTitle("Twitch.tv Livestreamer GUI");
 		    UIManager.setLookAndFeel(UIManager
@@ -100,6 +109,7 @@ public class Main_GUI extends JFrame {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
+		setPreviewImage(null);
 	    }
 	});
     }
@@ -194,6 +204,27 @@ public class Main_GUI extends JFrame {
 
 	custom_StreamPanel.add(customStreamTF, gbc_textField);
 	customStreamTF.setColumns(10);
+	customStreamTF.getDocument().addDocumentListener(
+		new DocumentListener() {
+
+		    @Override
+		    public void removeUpdate(DocumentEvent e) {
+			customStreamName = customStreamTF.getText();
+
+		    }
+
+		    @Override
+		    public void insertUpdate(DocumentEvent e) {
+			customStreamName = customStreamTF.getText();
+
+		    }
+
+		    @Override
+		    public void changedUpdate(DocumentEvent e) {
+			customStreamName = customStreamTF.getText();
+
+		    }
+		});
 
 	onlineStatus = new JLabel("No Stream selected");
 	onlineStatus.setHorizontalAlignment(SwingConstants.CENTER);
@@ -216,7 +247,7 @@ public class Main_GUI extends JFrame {
 	gbl_middle_panel.setConstraints(middle_panel, gbc_middle_panel);
 	gbl_middle_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
 	gbl_middle_panel.rowHeights = new int[] { 0, 0, 0, 0, 0 };
-	gbl_middle_panel.columnWeights = new double[] { 1.0, 1.0, 1.0, 0.0, 1.0 };
+	gbl_middle_panel.columnWeights = new double[] { 1.0, 1.0, 1.0, 1.0, 1.0 };
 	gbl_middle_panel.rowWeights = new double[] { 1.0, 1.0, 1.0, 1.0 };
 	middle_panel.setLayout(gbl_middle_panel);
 
@@ -254,6 +285,7 @@ public class Main_GUI extends JFrame {
 	addButton.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent arg0) {
 		cfgUtil.saveStream(customStreamTF.getText());
+		checkThread.interrupt();
 	    }
 	});
 	GridBagConstraints gbc_addButton = new GridBagConstraints();
@@ -271,6 +303,7 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		cfgUtil.removeStream(currentStreamName);
+		checkThread.interrupt();
 	    }
 	});
 	GridBagConstraints gbc_removeButton = new GridBagConstraints();
@@ -288,8 +321,7 @@ public class Main_GUI extends JFrame {
 	startCustomStreamBtn.addActionListener(new ActionListener() {
 
 	    public void actionPerformed(ActionEvent arg0) {
-		if (customStreamTF.getText() != null
-			|| customStreamTF.getText() != "") {
+		if (customStreamName != "") {
 		    Functions.OpenStream(customStreamTF.getText(),
 			    currentQuality);
 		}
@@ -346,15 +378,12 @@ public class Main_GUI extends JFrame {
 	gbc_preview_label.fill = GridBagConstraints.NONE;
 	middle_panel.add(previewPanel, gbc_preview_panel);
 	previewPanel.add(previewLabel, gbc_preview_label);
-	previewLabel.setIcon(new ImageIcon(new BufferedImage(176, 99,
-		BufferedImage.TYPE_INT_RGB)));
 
 	JButton exitBtn = new JButton("Exit");
 	GridBagConstraints gbc_exitBtn = new GridBagConstraints();
-	gbc_exitBtn.insets = new Insets(0, 0, 5, 0);
 	gbc_exitBtn.anchor = GridBagConstraints.SOUTH;
 	gbc_exitBtn.gridx = 5;
-	gbc_exitBtn.gridy = 3;
+	gbc_exitBtn.gridy = 4;
 	exitBtn.addActionListener(new ActionListener() {
 
 	    @Override
@@ -364,10 +393,30 @@ public class Main_GUI extends JFrame {
 
 	    }
 	});
+
+	previewCheckBox = new JCheckBox("Show preview");
+	GridBagConstraints gbc_previewCheckBox = new GridBagConstraints();
+	gbc_previewCheckBox.gridx = 5;
+	gbc_previewCheckBox.gridy = 3;
+	middle_panel.add(previewCheckBox, gbc_previewCheckBox);
 	middle_panel.add(exitBtn, gbc_exitBtn);
+	previewCheckBox.setSelected(showPreview);
+	previewCheckBox.setToolTipText("Also disables loading images");
+	previewCheckBox.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		setPreviewLoading();
+	    }
+	});
+	showPreview = previewCheckBox.isSelected();
 	// start checker thread
-	Thread t = new Thread(new StreamCheck());
-	t.start();
+	checkThread = new Thread(new StreamCheck());
+	checkThread.start();
+    }
+
+    private void setPreviewLoading() {
+	showPreview = previewCheckBox.isSelected();
     }
 
     /**
@@ -375,13 +424,18 @@ public class Main_GUI extends JFrame {
      * 
      * @param prev
      */
-    private void setPreviewImage(BufferedImage prev) {
+    public static void setPreviewImage(BufferedImage prev) {
 	int newWidth = 176;
 	int newHeight = 99;
 	BufferedImage small = new BufferedImage(newWidth, newHeight,
 		BufferedImage.TYPE_INT_RGB);
 	Graphics g = small.createGraphics();
-	g.drawImage(prev, 0, 0, newWidth, newHeight, null);
+	if (prev != null && showPreview) {
+	    g.drawImage(prev, 0, 0, newWidth, newHeight, null);
+	} else {
+	    g.setColor(frame.getBackground());
+	    g.fillRect(0, 0, newWidth, newHeight);
+	}
 	g.dispose();
 	previewLabel.setIcon(new ImageIcon(small));
     }

@@ -53,7 +53,7 @@ public class TwitchStream {
 		    + "<br>" + getTitle() + "</html>");
 	}
 	preview = null;
-	if (ts.getScreen_cap_url_medium() != null) {
+	if (ts.getScreen_cap_url_medium() != null && Main_GUI.showPreview) {
 	    for (int i = 0; i < 5; i++) {
 		try {
 		    preview = ImageIO.read(new URL(ts

@@ -15,6 +15,7 @@ public class ConfigUtil {
     private final String QUALITY = "quality";
     private final String TIMER = "timer";
     private final String STREAMLIST = "streamlist";
+    private final String SHOWPREVIEW = "showpreview";
 
     /**
      * Constructor
@@ -22,7 +23,7 @@ public class ConfigUtil {
     public ConfigUtil() {
 	myPrefs = Preferences.userNodeForPackage(twitchlsgui.Main_GUI.class);
 	readConfig();
-	
+
     }
 
     /**
@@ -59,7 +60,8 @@ public class ConfigUtil {
     public void readConfig() {
 	Functions.checkTimer = myPrefs.getInt(TIMER, 30);
 	Main_GUI.currentQuality = myPrefs.get(QUALITY, "High");
-	
+	Main_GUI.showPreview = myPrefs.getBoolean(SHOWPREVIEW, true);
+
 	String buffer = myPrefs.get(STREAMLIST, "");
 
 	String[] buffer2 = buffer.split(" ");
@@ -77,6 +79,7 @@ public class ConfigUtil {
     public void writeConfig() {
 	myPrefs.put(QUALITY, Main_GUI.currentQuality);
 	myPrefs.putInt(TIMER, Functions.checkTimer);
+	myPrefs.putBoolean(SHOWPREVIEW, Main_GUI.showPreview);
 	String buffer = "";
 
 	for (TwitchStream s : Functions.streamList) {

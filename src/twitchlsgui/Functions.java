@@ -11,9 +11,7 @@ import java.util.ArrayList;
 public class Functions {
 
     public static ArrayList<TwitchStream> streamList;
-    //public static TwitchStream stream;
-    public static boolean online = false;
-    public static int checkTimer = 30;
+    public static int checkTimer = 10;
 
     /**
      * 
@@ -23,42 +21,11 @@ public class Functions {
     public static void OpenStream(String name, String quality) {
 	String cmd = "livestreamer twitch.tv/" + name + " " + quality;
 	try {
-	    if (Functions.checkStream(name)) {
-		@SuppressWarnings("unused")
-		Process prc = Runtime.getRuntime().exec(cmd);
-	    }
+	    Process prc = Runtime.getRuntime().exec(cmd);
+	    Thread reader = new Thread(new PromptReader(prc.getInputStream()));
+	    reader.start();
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
     }
-
-    /**
-     * 
-     * @param name
-     * @return
-     */
-    public static boolean checkStream(String name) {
-	for (TwitchStream ts : streamList) {
-	    if (ts.getChannel().equalsIgnoreCase(name)) {
-		online = ts.isOnline();
-	    }
-	}
-	return online;
-    }
-
-    /**
-     * 
-     * @param so
-     */
-    public static void addStream(TwitchStream so) {
-	streamList.add(so);
-    }
-
-    /**
-     * 
-     */
-    public void removeStream() {
-
-    }
-
 }

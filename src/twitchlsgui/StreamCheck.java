@@ -36,7 +36,7 @@ public class StreamCheck implements Runnable {
 			    Main_GUI.streamListModel.getElementAt(i), i);
 		}
 	    }
-	    // System.out.println(count);
+
 	    if (Main_GUI.currentStreamName == "") {
 		Main_GUI.onlineStatus.setText("Finished updating");
 	    } else {
@@ -44,7 +44,7 @@ public class StreamCheck implements Runnable {
 		    if (ts.getChannel().equals(Main_GUI.currentStreamName)) {
 			if (ts.isOnline()) {
 			    Main_GUI.onlineStatus.setText(ts.getOnlineString());
-
+			    Main_GUI.setPreviewImage(ts.getPreview());
 			} else {
 			    Main_GUI.onlineStatus.setText("Stream is Offline");
 			}
