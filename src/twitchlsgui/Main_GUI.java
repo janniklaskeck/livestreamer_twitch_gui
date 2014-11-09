@@ -407,6 +407,10 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 		setPreviewLoading();
+		if (showPreview) {
+		    checkThread.interrupt();
+		}
+		
 	    }
 	});
 	showPreview = previewCheckBox.isSelected();

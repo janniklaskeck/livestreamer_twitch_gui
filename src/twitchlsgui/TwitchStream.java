@@ -34,39 +34,40 @@ public class TwitchStream {
 
     public void refresh() {
 	Twitch_Stream ts = Twitch_API.getStream(channel);
-	game = ts.getMeta_game();
-	title = ts.getTitle();
-	online = ts.isOnline();
-	created_at = ts.getCreated_At();
-	setUpdated_at(ts.getUpdated_At());
-	upTimeHour = 0L;
-	upTimeMinute = 0L;
+	if (ts != null) {
+	    game = ts.getMeta_game();
+	    title = ts.getTitle();
+	    online = ts.isOnline();
+	    created_at = ts.getCreated_At();
+	    setUpdated_at(ts.getUpdated_At());
+	    upTimeHour = 0L;
+	    upTimeMinute = 0L;
 
-	if (online) {
-	    created_at_Long = convertDate(created_at);
-	    // updated_at_Long = convertDate(updated_at);
+	    if (online) {
+		created_at_Long = convertDate(created_at);
+		// updated_at_Long = convertDate(updated_at);
 
-	    upTimeHour = ((System.currentTimeMillis() - created_at_Long) / (1000 * 60 * 60)) % 24;
-	    upTimeMinute = ((System.currentTimeMillis() - created_at_Long) / (1000 * 60)) % 60;
-	    setOnlineString("<html>Playing " + getGame() + " (Online for "
-		    + getUpTimeHours() + ":" + getUpTimeMinutes() + " hours)"
-		    + "<br>" + getTitle() + "</html>");
-	}
-	preview = null;
-	if (ts.getScreen_cap_url_medium() != null && Main_GUI.showPreview) {
-	    for (int i = 0; i < 5; i++) {
-		try {
-		    preview = ImageIO.read(new URL(ts
-			    .getScreen_cap_url_medium()));
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-		if (preview != null) {
-		    break;
+		upTimeHour = (((System.currentTimeMillis() - created_at_Long) / (1000 * 60 * 60)) % 24) - 1;
+		upTimeMinute = ((System.currentTimeMillis() - created_at_Long) / (1000 * 60)) % 60;
+		setOnlineString("<html>Playing " + getGame() + " (Online for "
+			+ getUpTimeHours() + ":" + getUpTimeMinutes()
+			+ " hours)" + "<br>" + getTitle() + "</html>");
+	    }
+	    preview = null;
+	    if (ts.getScreen_cap_url_medium() != null && Main_GUI.showPreview) {
+		for (int i = 0; i < 5; i++) {
+		    try {
+			preview = ImageIO.read(new URL(ts
+				.getScreen_cap_url_medium()));
+		    } catch (IOException e) {
+			e.printStackTrace();
+		    }
+		    if (preview != null) {
+			break;
+		    }
 		}
 	    }
 	}
-
     }
 
     /**

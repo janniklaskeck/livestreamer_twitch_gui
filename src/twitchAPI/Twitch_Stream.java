@@ -41,7 +41,8 @@ public class Twitch_Stream {
 	setScreen_cap_url_medium(job.get("preview").getAsJsonObject()
 		.get("medium").getAsString());
 	setCreated_At(job.get("created_at").getAsString());
-	setUpdated_At(job.get("channel").getAsJsonObject().get("updated_at").getAsString());
+	setUpdated_At(job.get("channel").getAsJsonObject().get("updated_at")
+		.getAsString());
     }
 
     public boolean isOnline() {
