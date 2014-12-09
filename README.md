@@ -18,7 +18,9 @@ To add another streaming service other than twitch.tv, you have to enter the url
 This should add another option in the dropdown menu. If it does not, try clicking into the current list and then shift+"plus"button. Removing works the same way.
 
 Note however, the resolution options might not work with other streaming sites other than twitch. Worst and Best Quality should work on most. Also when adding another site, take a close look how the final stream urls look like.
-E.g. on twitch.tv it is twitch.tv/channelname (only add "channelname"), on livestream.com however it is new.livestream.com/channelname/live (here you have to add "channelname/live")
+E.g. on twitch.tv it is twitch.tv/channelname (only add "channelname"), on livestream.com however it is new.livestream.com/channelname/live (here you have to add new.livestream.com as a site and "channelname/live" as a channel).
+
+Things like online status and preview image are currently twitch.tv only, as i'm using their API to get the information.
 
 This feature isn't fully fleshed out, so please report bugs if you find them.
 
