@@ -10,6 +10,8 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -19,6 +21,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -47,6 +50,7 @@ public class Main_GUI extends JFrame {
     public static String currentStreamName = "";
     public static String currentQuality = "High";
     public static String customStreamName = "";
+    public static String currentStreamService = "twitch.tv";
 
     private static ConfigUtil cfgUtil;
 
@@ -60,8 +64,11 @@ public class Main_GUI extends JFrame {
     private JPanel previewPanel;
     private static Main_GUI frame;
     private JCheckBox previewCheckBox;
+    public static JComboBox<String> streamServicesBox;
 
     private Thread checkThread;
+
+    private boolean shiftPressed = false;
 
     /**
      * Launch the application.
@@ -125,6 +132,17 @@ public class Main_GUI extends JFrame {
 	}
     }
 
+    public static void updateServiceList() {
+	streamServicesBox.removeAllItems();
+	if (Functions.streamServicesList.size() == 0) {
+	    streamServicesBox.addItem("twitch.tv");
+	} else {
+	    for (int i = 0; i < Functions.streamServicesList.size(); i++) {
+		streamServicesBox.addItem(Functions.streamServicesList.get(i));
+	    }
+	}
+    }
+
     /**
      * Create the frame.
      */
@@ -145,8 +163,6 @@ public class Main_GUI extends JFrame {
 	contentPane.add(stream_panel, BorderLayout.CENTER);
 
 	streamListModel = new DefaultListModel<JLabel>();
-
-	updateList();
 
 	stream_panel.setLayout(null);
 
@@ -171,6 +187,22 @@ public class Main_GUI extends JFrame {
 
 	scrollPane.setViewportView(stream_list);
 
+	streamServicesBox = new JComboBox<String>();
+	scrollPane.setColumnHeaderView(streamServicesBox);
+	streamServicesBox.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		currentStreamService = (String) streamServicesBox
+			.getSelectedItem();
+		cfgUtil.readStreamList(currentStreamService);
+		Main_GUI.updateList();
+	    }
+	});
+
+	updateServiceList();
+	cfgUtil.readStreamList((String) streamServicesBox.getItemAt(0));
+	updateList();
 	JPanel custom_StreamPanel = new JPanel();
 	custom_StreamPanel.setBounds(10, 196, 307, 154);
 	stream_panel.add(custom_StreamPanel);
@@ -284,8 +316,37 @@ public class Main_GUI extends JFrame {
 	addButton.setToolTipText("Add custom Stream to List");
 	addButton.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent arg0) {
-		cfgUtil.saveStream(customStreamTF.getText());
-		checkThread.interrupt();
+		if (shiftPressed) {
+		    streamServicesBox.addItem(customStreamTF.getText());
+		    cfgUtil.writeConfig();
+		} else {
+		    cfgUtil.saveStream(customStreamTF.getText());
+		    checkThread.interrupt();
+		}
+	    }
+	});
+	addButton.addKeyListener(new KeyListener() {
+
+	    @Override
+	    public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+
+	    }
+
+	    @Override
+	    public void keyReleased(KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
+		    shiftPressed = false;
+		}
+
+	    }
+
+	    @Override
+	    public void keyPressed(KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
+		    shiftPressed = true;
+		}
+
 	    }
 	});
 	GridBagConstraints gbc_addButton = new GridBagConstraints();
@@ -302,8 +363,39 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		cfgUtil.removeStream(currentStreamName);
-		checkThread.interrupt();
+		if (shiftPressed && streamServicesBox.getItemCount() > 1) {
+		    int index = streamServicesBox.getSelectedIndex();
+		    streamServicesBox.setSelectedIndex(0);
+		    streamServicesBox.removeItemAt(index);
+		    cfgUtil.writeConfig();
+		} else {
+		    cfgUtil.removeStream(currentStreamName);
+		    checkThread.interrupt();
+		}
+	    }
+	});
+	removeButton.addKeyListener(new KeyListener() {
+
+	    @Override
+	    public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+
+	    }
+
+	    @Override
+	    public void keyReleased(KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
+		    shiftPressed = false;
+		}
+
+	    }
+
+	    @Override
+	    public void keyPressed(KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
+		    shiftPressed = true;
+		}
+
 	    }
 	});
 	GridBagConstraints gbc_removeButton = new GridBagConstraints();
@@ -410,7 +502,7 @@ public class Main_GUI extends JFrame {
 		if (showPreview) {
 		    checkThread.interrupt();
 		}
-		
+
 	    }
 	});
 	showPreview = previewCheckBox.isSelected();

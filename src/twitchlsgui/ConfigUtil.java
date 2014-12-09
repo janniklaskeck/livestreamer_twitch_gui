@@ -14,8 +14,9 @@ public class ConfigUtil {
 
     private final String QUALITY = "quality";
     private final String TIMER = "timer";
-    private final String STREAMLIST = "streamlist";
+    // private final String STREAMLIST = "streamlist";
     private final String SHOWPREVIEW = "showpreview";
+    private final String STREAMSERVICES = "streamservices";
 
     /**
      * Constructor
@@ -33,8 +34,8 @@ public class ConfigUtil {
      */
     public void saveStream(String stream) {
 	Functions.streamList.add(new TwitchStream(stream));
-	writeConfig();
-	readConfig();
+	writeStreams(Main_GUI.currentStreamService);
+	readStreamList(Main_GUI.currentStreamService);
 	Main_GUI.updateList();
     }
 
@@ -49,8 +50,8 @@ public class ConfigUtil {
 		Functions.streamList.remove(i);
 	    }
 	}
-	writeConfig();
-	readConfig();
+	writeStreams(Main_GUI.currentStreamService);
+	readStreamList(Main_GUI.currentStreamService);
 	Main_GUI.updateList();
     }
 
@@ -62,15 +63,23 @@ public class ConfigUtil {
 	Main_GUI.currentQuality = myPrefs.get(QUALITY, "High");
 	Main_GUI.showPreview = myPrefs.getBoolean(SHOWPREVIEW, true);
 
-	String buffer = myPrefs.get(STREAMLIST, "");
+	String buffer = myPrefs.get(STREAMSERVICES, "twitch.tv");
+	String[] buffer2 = buffer.split(" ");
+	Functions.streamServicesList = new ArrayList<String>();
+	for (String s : buffer2) {
+	    if (s.length() > 1)
+		Functions.streamServicesList.add(s);
+	}
+    }
 
+    public void readStreamList(String streamService) {
+	String buffer = myPrefs.get(streamService, "");
 	String[] buffer2 = buffer.split(" ");
 	Functions.streamList = new ArrayList<TwitchStream>();
 	for (String s : buffer2) {
-	    if (s.length() > 1)
+	    if (s.length() >= 1)
 		Functions.streamList.add(new TwitchStream(s));
 	}
-
     }
 
     /**
@@ -81,14 +90,29 @@ public class ConfigUtil {
 	myPrefs.putInt(TIMER, Functions.checkTimer);
 	myPrefs.putBoolean(SHOWPREVIEW, Main_GUI.showPreview);
 	String buffer = "";
-
-	for (TwitchStream s : Functions.streamList) {
+	for (int i = 0; i < Main_GUI.streamServicesBox.getItemCount(); i++) {
 	    if (buffer == "") {
-		buffer = buffer + s.getChannel();
+		buffer = buffer + Main_GUI.streamServicesBox.getItemAt(i);
 	    } else {
-		buffer = buffer + " " + s.getChannel();
+		buffer = buffer + " " + Main_GUI.streamServicesBox.getItemAt(i);
 	    }
 	}
-	myPrefs.put(STREAMLIST, buffer);
+	myPrefs.put(STREAMSERVICES, buffer);
+    }
+
+    /**
+     * Writes config to registry
+     */
+    public void writeStreams(String service) {
+	String buffer = "";
+	for (TwitchStream ts : Functions.streamList) {
+	    if (buffer == "") {
+		buffer = ts.getChannel();
+	    } else {
+		buffer += " " + ts.getChannel();
+	    }
+	}
+	myPrefs.put(service, buffer);
+
     }
 }

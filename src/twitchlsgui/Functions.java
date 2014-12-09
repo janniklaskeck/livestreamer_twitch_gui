@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class Functions {
 
     public static ArrayList<TwitchStream> streamList;
+    public static ArrayList<String> streamServicesList;
     public static int checkTimer = 10;
 
     /**
@@ -19,7 +20,8 @@ public class Functions {
      * @param quality
      */
     public static void OpenStream(String name, String quality) {
-	String cmd = "livestreamer twitch.tv/" + name + " " + quality;
+	String cmd = "livestreamer " + Main_GUI.currentStreamService + "/"
+		+ name + " " + quality;
 	try {
 	    Process prc = Runtime.getRuntime().exec(cmd);
 	    Thread reader = new Thread(new PromptReader(prc.getInputStream()));
