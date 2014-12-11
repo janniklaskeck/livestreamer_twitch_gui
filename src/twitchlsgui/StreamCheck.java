@@ -9,22 +9,30 @@ import java.util.ArrayList;
  */
 public class StreamCheck implements Runnable {
 
-    ArrayList<Thread> threads = new ArrayList<Thread>();
-    int count = 0;
+    private ArrayList<Thread> threads = new ArrayList<Thread>();
+    private ArrayList<GenericStream> streamList;
 
     @Override
     public void run() {
 	while (true) {
-	    if (Functions.streamList.size() > 0) {
-		Main_GUI.onlineStatus.setText("Updating");
-		for (int i = 0; i < Functions.streamList.size(); i++) {
+	    streamList = Main_GUI.selectStreamService("twitch.tv")
+		    .getStreamList();
+
+	    if (streamList.size() > 0) {
+		if (Main_GUI.currentStreamService.equals(Main_GUI
+			.selectStreamService("twitch.tv").getUrl())) {
+		    Main_GUI.onlineStatus.setText("Updating");
+		} else {
+		    Main_GUI.onlineStatus.setText("");
+		}
+
+		for (int i = 0; i < streamList.size(); i++) {
 		    threads.add(new Thread(new CheckThread(i)));
 		}
-		for (int i = 0; i < Functions.streamList.size(); i++) {
+		for (int i = 0; i < streamList.size(); i++) {
 		    threads.get(i).start();
-		    count++;
 		}
-		for (int i = 0; i < Functions.streamList.size(); i++) {
+		for (int i = 0; i < streamList.size(); i++) {
 		    try {
 			threads.get(i).join();
 		    } catch (InterruptedException e) {
@@ -38,23 +46,37 @@ public class StreamCheck implements Runnable {
 	    }
 
 	    if (Main_GUI.currentStreamName == "") {
-		Main_GUI.onlineStatus.setText("Finished updating");
+		if (Main_GUI.currentStreamService.equals(Main_GUI
+			.selectStreamService("twitch.tv").getUrl())) {
+		    Main_GUI.onlineStatus.setText("Finished updating");
+		} else {
+		    Main_GUI.onlineStatus.setText("");
+		}
 	    } else {
-		for (TwitchStream ts : Functions.streamList) {
-		    if (ts.getChannel().equals(Main_GUI.currentStreamName)) {
-			if (ts.isOnline()) {
-			    Main_GUI.onlineStatus.setText(ts.getOnlineString());
-			    Main_GUI.setPreviewImage(ts.getPreview());
-			} else {
-			    Main_GUI.onlineStatus.setText("Stream is Offline");
+		if (Main_GUI.currentStreamService.equals(Main_GUI
+			.selectStreamService("twitch.tv").getUrl())) {
+		    for (int i = 0; i < streamList.size(); i++) {
+			TwitchStream ts = (TwitchStream) streamList.get(i);
+			if (ts.getChannel().equals(Main_GUI.currentStreamName)) {
+			    if (ts.isOnline()) {
+				Main_GUI.onlineStatus.setText(ts
+					.getOnlineString());
+				Main_GUI.setPreviewImage(ts.getPreview());
+			    } else {
+				Main_GUI.onlineStatus
+					.setText("Stream is Offline");
+			    }
 			}
 		    }
+		} else {
+		    Main_GUI.onlineStatus.setText("");
 		}
+
 	    }
 	    threads = new ArrayList<Thread>();
 
 	    try {
-		Thread.sleep(Functions.checkTimer * 1000);
+		Thread.sleep(Main_GUI.checkTimer * 1000);
 	    } catch (InterruptedException e) {
 		e.printStackTrace();
 	    }
@@ -70,7 +92,7 @@ public class StreamCheck implements Runnable {
 
 	@Override
 	public void run() {
-	    Functions.streamList.get(index).refresh();
+	    ((TwitchStream) streamList.get(index)).refresh();
 	}
     }
 }

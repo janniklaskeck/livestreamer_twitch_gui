@@ -10,11 +10,15 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
@@ -45,29 +49,29 @@ import javax.swing.event.ListSelectionListener;
 public class Main_GUI extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
+    private static ConfigUtil cfgUtil;
 
     public static String currentStreamName = "";
     public static String currentQuality = "High";
     public static String customStreamName = "";
     public static String currentStreamService = "twitch.tv";
-
-    private static ConfigUtil cfgUtil;
-
-    private JList<String> qualityList;
-    private JList<JLabel> stream_list;
     public static DefaultListModel<JLabel> streamListModel;
-    private JTextField customStreamTF;
     public static JLabel onlineStatus;
     public static boolean showPreview = true;
+    public static JComboBox<String> streamServicesBox;
+
+    public static ArrayList<StreamList> streamServicesList;
+    public static int checkTimer = 10;
+
+    private JPanel contentPane;
+    private JList<String> qualityList;
+    private JList<JLabel> stream_list;
+    private JTextField customStreamTF;
     private static JLabel previewLabel;
     private JPanel previewPanel;
     private static Main_GUI frame;
     private JCheckBox previewCheckBox;
-    public static JComboBox<String> streamServicesBox;
-
     private Thread checkThread;
-
     private boolean shiftPressed = false;
 
     /**
@@ -124,23 +128,29 @@ public class Main_GUI extends JFrame {
     /**
      * Updates the streamListModel of the JList
      */
-    public static void updateList() {
+    public void updateList() {
 	streamListModel.clear();
-	for (int i = 0; i < Functions.streamList.size(); i++) {
-	    streamListModel.addElement(new JLabel(Functions.streamList.get(i)
-		    .getChannel()));
+	for (int i = 0; i < selectStreamService(currentStreamService)
+		.getStreamList().size(); i++) {
+
+	    streamListModel.addElement(new JLabel(selectStreamService(
+		    currentStreamService).getStreamList().get(i).getChannel()));
 	}
     }
 
-    public static void updateServiceList() {
+    public void updateServiceList() {
 	streamServicesBox.removeAllItems();
-	if (Functions.streamServicesList.size() == 0) {
-	    streamServicesBox.addItem("twitch.tv");
-	} else {
-	    for (int i = 0; i < Functions.streamServicesList.size(); i++) {
-		streamServicesBox.addItem(Functions.streamServicesList.get(i));
-	    }
+	if (streamServicesList.size() == 0) {
+	    System.out.println("service list is empty");
+	    streamServicesList.add(new StreamList("twitch.tv", "Twitch"));
 	}
+
+	for (int i = 0; i < streamServicesList.size(); i++) {
+	    streamServicesBox.addItem(streamServicesList.get(i)
+		    .getDisplayName());
+	}
+	streamServicesBox
+		.setSelectedIndex(streamServicesBox.getItemCount() - 1);
     }
 
     /**
@@ -189,20 +199,26 @@ public class Main_GUI extends JFrame {
 
 	streamServicesBox = new JComboBox<String>();
 	scrollPane.setColumnHeaderView(streamServicesBox);
-	streamServicesBox.addActionListener(new ActionListener() {
-
+	streamServicesBox.addItemListener(new ItemListener() {
 	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-		currentStreamService = (String) streamServicesBox
-			.getSelectedItem();
-		cfgUtil.readStreamList(currentStreamService);
-		Main_GUI.updateList();
+	    public void itemStateChanged(ItemEvent arg0) {
+		if (streamServicesBox.getSelectedItem() != null) {
+
+		    currentStreamService = selectStreamServiceD(
+			    (String) streamServicesBox.getSelectedItem())
+			    .getUrl();
+		    if (currentStreamService == null) {
+			currentStreamService = "twitch.tv";
+		    }
+		    cfgUtil.readStreamList(currentStreamService);
+		    updateList();
+		}
 	    }
 	});
 
 	updateServiceList();
-	cfgUtil.readStreamList((String) streamServicesBox.getItemAt(0));
 	updateList();
+
 	JPanel custom_StreamPanel = new JPanel();
 	custom_StreamPanel.setBounds(10, 196, 307, 154);
 	stream_panel.add(custom_StreamPanel);
@@ -292,7 +308,7 @@ public class Main_GUI extends JFrame {
 	startStreambutton.addActionListener(new ActionListener() {
 
 	    public void actionPerformed(ActionEvent arg0) {
-		Functions.OpenStream(currentStreamName, currentQuality);
+		OpenStream(currentStreamName, currentQuality);
 	    }
 	});
 
@@ -317,11 +333,18 @@ public class Main_GUI extends JFrame {
 	addButton.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent arg0) {
 		if (shiftPressed) {
-		    streamServicesBox.addItem(customStreamTF.getText());
+		    streamServicesList.add(new StreamList(customStreamTF
+			    .getText(), customStreamTF.getText()));
+		    updateServiceList();
+		    updateList();
 		    cfgUtil.writeConfig();
 		} else {
-		    cfgUtil.saveStream(customStreamTF.getText());
-		    checkThread.interrupt();
+		    cfgUtil.saveStream(customStreamTF.getText(),
+			    currentStreamService);
+		    updateList();
+		    if (currentStreamService.equals("twitch.tv")) {
+			checkThread.interrupt();
+		    }
 		}
 	    }
 	});
@@ -329,7 +352,6 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
 
 	    }
 
@@ -364,13 +386,26 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		if (shiftPressed && streamServicesBox.getItemCount() > 1) {
-		    int index = streamServicesBox.getSelectedIndex();
-		    streamServicesBox.setSelectedIndex(0);
-		    streamServicesBox.removeItemAt(index);
+		    for (int i = 0; i < streamServicesList.size(); i++) {
+			if (streamServicesList.get(i).getDisplayName()
+				.equals(currentStreamService)) {
+			    streamServicesList.remove(i);
+			    break;
+			}
+		    }
+
+		    updateServiceList();
 		    cfgUtil.writeConfig();
+		    if (streamServicesList.size() == 1) {
+			checkThread.interrupt();
+		    }
 		} else {
-		    cfgUtil.removeStream(currentStreamName);
-		    checkThread.interrupt();
+		    cfgUtil.removeStream(currentStreamName,
+			    currentStreamService);
+		    updateList();
+		    if (currentStreamService.equals("twitch.tv")) {
+			checkThread.interrupt();
+		    }
 		}
 	    }
 	});
@@ -378,7 +413,6 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
 
 	    }
 
@@ -414,8 +448,7 @@ public class Main_GUI extends JFrame {
 
 	    public void actionPerformed(ActionEvent arg0) {
 		if (customStreamName != "") {
-		    Functions.OpenStream(customStreamTF.getText(),
-			    currentQuality);
+		    OpenStream(customStreamTF.getText(), currentQuality);
 		}
 	    }
 	});
@@ -553,19 +586,69 @@ public class Main_GUI extends JFrame {
     private void setStream() {
 	if (stream_list.getSelectedValue() != null) {
 	    currentStreamName = stream_list.getSelectedValue().getText();
-	    for (TwitchStream ts : Functions.streamList) {
-		if (ts.getChannel().equals(currentStreamName)) {
-		    if (ts.isOnline()) {
-			onlineStatus.setText(ts.getOnlineString());
-			setPreviewImage(ts.getPreview());
-		    } else {
-			onlineStatus.setText("Stream is Offline");
+	    if (currentStreamService.equals("twitch.tv")) {
+		for (int i = 0; i < selectStreamService(currentStreamService)
+			.getStreamList().size(); i++) {
+		    TwitchStream ts = (TwitchStream) selectStreamService(
+			    currentStreamService).getStreamList().get(i);
+		    if (ts.getChannel().equals(currentStreamName)) {
+			if (ts.isOnline()) {
+			    onlineStatus.setText(ts.getOnlineString());
+			    setPreviewImage(ts.getPreview());
+			} else {
+			    onlineStatus.setText("Stream is Offline");
+			    setPreviewImage(null);
+			}
+		    }
+		}
+	    } else {
+		for (int i = 0; i < selectStreamService(currentStreamService)
+			.getStreamList().size(); i++) {
+		    GenericStream ts = selectStreamService(currentStreamService)
+			    .getStreamList().get(i);
+		    if (ts.getChannel().equals(currentStreamName)) {
+			onlineStatus.setText("No Stream Information");
 			setPreviewImage(null);
 		    }
 		}
 	    }
 	} else {
 	    currentStreamName = "";
+	}
+    }
+
+    public static StreamList selectStreamService(String streamService) {
+	for (StreamList sl : streamServicesList) {
+	    if (sl.getUrl().equals(streamService)) {
+		return sl;
+	    }
+	}
+	return null;
+    }
+
+    public StreamList selectStreamServiceD(String streamService) {
+	for (StreamList sl : streamServicesList) {
+	    if (sl.getDisplayName().equals(streamService)) {
+		return sl;
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * 
+     * @param name
+     * @param quality
+     */
+    public void OpenStream(String name, String quality) {
+	String cmd = "livestreamer " + Main_GUI.currentStreamService + "/"
+		+ name + " " + quality;
+	try {
+	    Process prc = Runtime.getRuntime().exec(cmd);
+	    Thread reader = new Thread(new PromptReader(prc.getInputStream()));
+	    reader.start();
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
     }
 }

@@ -13,7 +13,8 @@ import javax.imageio.ImageIO;
 import twitchAPI.Twitch_API;
 import twitchAPI.Twitch_Stream;
 
-public class TwitchStream {
+public class TwitchStream implements GenericStream {
+
     private String channel;
     private String game;
     private String title;
@@ -29,11 +30,11 @@ public class TwitchStream {
     private String onlineString;
 
     public TwitchStream(String channel) {
-	this.channel = channel;
+	this.setChannel(channel);
     }
 
     public void refresh() {
-	Twitch_Stream ts = Twitch_API.getStream(channel);
+	Twitch_Stream ts = Twitch_API.getStream(this.getChannel());
 	if (ts != null) {
 	    game = ts.getMeta_game();
 	    title = ts.getTitle();
@@ -68,21 +69,6 @@ public class TwitchStream {
 		}
 	    }
 	}
-    }
-
-    /**
-     * @return the channel
-     */
-    public String getChannel() {
-	return channel;
-    }
-
-    /**
-     * @param channel
-     *            the channel to set
-     */
-    public void setChannel(String channel) {
-	this.channel = channel;
     }
 
     /**
@@ -240,5 +226,15 @@ public class TwitchStream {
      */
     public void setUpdated_at_Long(long updated_at_Long) {
 	this.updated_at_Long = updated_at_Long;
+    }
+
+    @Override
+    public String getChannel() {
+	return channel;
+    }
+
+    @Override
+    public void setChannel(String channel) {
+	this.channel = channel;
     }
 }

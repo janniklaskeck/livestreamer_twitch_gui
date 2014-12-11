@@ -24,21 +24,34 @@ public class MyListCellRenderer implements ListCellRenderer<JLabel> {
 	if (bg == null) {
 	    bg = value.getBackground();
 	}
-	for (TwitchStream ts : Functions.streamList) {
-	    if (ts.getChannel().equals(value.getText())) {
-		if (ts.isOnline()) {
+	if (Main_GUI.currentStreamService.equals("twitch.tv")) {
+	    for (int i = 0; i < Main_GUI
+		    .selectStreamService(Main_GUI.currentStreamService)
+		    .getStreamList().size(); i++) {
+		TwitchStream ts = (TwitchStream) Main_GUI
+			.selectStreamService(Main_GUI.currentStreamService)
+			.getStreamList().get(i);
+		if (ts.getChannel().equals(value.getText())) {
 		    if (isSelected) {
 			value.setBorder(lineBorder);
 		    } else {
 			value.setBorder(emptyBorder);
 		    }
-		    value.setBackground(Color.GREEN);
-		} else {
-		    value.setBorder(emptyBorder);
-		    value.setBackground(bg);
+		    if (ts.isOnline()) {
+			value.setBackground(Color.GREEN);
+		    } else {
+			value.setBackground(bg);
+		    }
 		}
 	    }
+	} else {
+	    if (isSelected) {
+		value.setBorder(lineBorder);
+	    } else {
+		value.setBorder(emptyBorder);
+	    }
 	}
+
 	return value;
     }
 }
