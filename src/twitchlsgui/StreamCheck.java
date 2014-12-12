@@ -45,14 +45,13 @@ public class StreamCheck implements Runnable {
 		}
 	    }
 
-	    if (Main_GUI.currentStreamName == "") {
-		if (Main_GUI.currentStreamService.equals(Main_GUI
-			.selectStreamService("twitch.tv").getUrl())) {
-		    Main_GUI.updateStatus.setText("Finished updating");
-		} else {
-		    Main_GUI.updateStatus.setText("");
-		}
+	    if (Main_GUI.currentStreamService.equals(Main_GUI
+		    .selectStreamService("twitch.tv").getUrl())) {
+		Main_GUI.updateStatus.setText("Finished updating");
 	    } else {
+		Main_GUI.updateStatus.setText("");
+	    }
+	    if (Main_GUI.currentStreamName != "") {
 		if (Main_GUI.currentStreamService.equals(Main_GUI
 			.selectStreamService("twitch.tv").getUrl())) {
 		    for (int i = 0; i < streamList.size(); i++) {
