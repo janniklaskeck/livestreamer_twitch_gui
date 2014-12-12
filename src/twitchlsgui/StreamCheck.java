@@ -21,9 +21,9 @@ public class StreamCheck implements Runnable {
 	    if (streamList.size() > 0) {
 		if (Main_GUI.currentStreamService.equals(Main_GUI
 			.selectStreamService("twitch.tv").getUrl())) {
-		    Main_GUI.onlineStatus.setText("Updating");
+		    Main_GUI.updateStatus.setText("Updating");
 		} else {
-		    Main_GUI.onlineStatus.setText("");
+		    Main_GUI.updateStatus.setText("");
 		}
 
 		for (int i = 0; i < streamList.size(); i++) {
@@ -48,9 +48,9 @@ public class StreamCheck implements Runnable {
 	    if (Main_GUI.currentStreamName == "") {
 		if (Main_GUI.currentStreamService.equals(Main_GUI
 			.selectStreamService("twitch.tv").getUrl())) {
-		    Main_GUI.onlineStatus.setText("Finished updating");
+		    Main_GUI.updateStatus.setText("Finished updating");
 		} else {
-		    Main_GUI.onlineStatus.setText("");
+		    Main_GUI.updateStatus.setText("");
 		}
 	    } else {
 		if (Main_GUI.currentStreamService.equals(Main_GUI

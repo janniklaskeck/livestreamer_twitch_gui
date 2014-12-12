@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.AbstractListModel;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -29,9 +31,11 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -59,7 +63,7 @@ public class Main_GUI extends JFrame {
     public static JLabel onlineStatus;
     public static boolean showPreview = true;
     public static JComboBox<String> streamServicesBox;
-
+    public static JLabel updateStatus;
     public static ArrayList<StreamList> streamServicesList;
     public static int checkTimer = 10;
 
@@ -285,6 +289,13 @@ public class Main_GUI extends JFrame {
 	gbc_onlineStatus.gridy = 3;
 	custom_StreamPanel.add(onlineStatus, gbc_onlineStatus);
 
+	JToolBar statusBar = new JToolBar();
+	contentPane.add(statusBar, BorderLayout.SOUTH);
+	statusBar.setFloatable(false);
+
+	updateStatus = new JLabel("1");
+	statusBar.add(updateStatus);
+
 	JPanel middle_panel = new JPanel();
 	middle_panel.setMaximumSize(new Dimension(200, 200));
 	contentPane.add(middle_panel, BorderLayout.EAST);
@@ -332,20 +343,7 @@ public class Main_GUI extends JFrame {
 	addButton.setToolTipText("Add custom Stream to List");
 	addButton.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent arg0) {
-		if (shiftPressed) {
-		    streamServicesList.add(new StreamList(customStreamTF
-			    .getText(), customStreamTF.getText()));
-		    updateServiceList();
-		    updateList();
-		    cfgUtil.writeConfig();
-		} else {
-		    cfgUtil.saveStream(customStreamTF.getText(),
-			    currentStreamService);
-		    updateList();
-		    if (currentStreamService.equals("twitch.tv")) {
-			checkThread.interrupt();
-		    }
-		}
+		addButton();
 	    }
 	});
 	addButton.addKeyListener(new KeyListener() {
@@ -385,28 +383,7 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		if (shiftPressed && streamServicesBox.getItemCount() > 1) {
-		    for (int i = 0; i < streamServicesList.size(); i++) {
-			if (streamServicesList.get(i).getDisplayName()
-				.equals(currentStreamService)) {
-			    streamServicesList.remove(i);
-			    break;
-			}
-		    }
-
-		    updateServiceList();
-		    cfgUtil.writeConfig();
-		    if (streamServicesList.size() == 1) {
-			checkThread.interrupt();
-		    }
-		} else {
-		    cfgUtil.removeStream(currentStreamName,
-			    currentStreamService);
-		    updateList();
-		    if (currentStreamService.equals("twitch.tv")) {
-			checkThread.interrupt();
-		    }
-		}
+		removeButton();
 	    }
 	});
 	removeButton.addKeyListener(new KeyListener() {
@@ -617,6 +594,11 @@ public class Main_GUI extends JFrame {
 	}
     }
 
+    /**
+     * 
+     * @param streamService
+     * @return
+     */
     public static StreamList selectStreamService(String streamService) {
 	for (StreamList sl : streamServicesList) {
 	    if (sl.getUrl().equals(streamService)) {
@@ -626,6 +608,11 @@ public class Main_GUI extends JFrame {
 	return null;
     }
 
+    /**
+     * 
+     * @param streamService
+     * @return
+     */
     public StreamList selectStreamServiceD(String streamService) {
 	for (StreamList sl : streamServicesList) {
 	    if (sl.getDisplayName().equals(streamService)) {
@@ -633,6 +620,72 @@ public class Main_GUI extends JFrame {
 	    }
 	}
 	return null;
+    }
+
+    private void addButton() {
+	if (shiftPressed) {
+	    JTextField urlField = new JTextField(20);
+	    JTextField displayNameField = new JTextField(20);
+
+	    JPanel myPanel = new JPanel();
+	    myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+	    myPanel.add(new JLabel("Stream Service URL:"));
+	    myPanel.add(urlField);
+	    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+	    myPanel.add(new JLabel("Stream Service Display Name:"));
+	    myPanel.add(displayNameField);
+
+	    int result = JOptionPane.showConfirmDialog(null, myPanel,
+		    "Please Enter URL and display Name",
+		    JOptionPane.OK_CANCEL_OPTION);
+	    if (result == JOptionPane.OK_OPTION) {
+		streamServicesList.add(new StreamList(urlField.getText(),
+			displayNameField.getText()));
+		updateServiceList();
+		updateList();
+		cfgUtil.writeConfig();
+	    }
+	} else {
+	    JTextField channelField = new JTextField(20);
+	    JPanel myPanel = new JPanel();
+	    myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+	    myPanel.add(new JLabel("Channel Name:"));
+	    myPanel.add(channelField);
+
+	    int result = JOptionPane.showConfirmDialog(null, myPanel,
+		    "Please Enter Channel Name", JOptionPane.OK_CANCEL_OPTION);
+	    if (result == JOptionPane.OK_OPTION) {
+		cfgUtil.saveStream(channelField.getText(), currentStreamService);
+		updateList();
+		if (currentStreamService.equals("twitch.tv")) {
+		    checkThread.interrupt();
+		}
+	    }
+	}
+    }
+
+    public void removeButton() {
+	if (shiftPressed && streamServicesBox.getItemCount() > 1) {
+	    for (int i = 0; i < streamServicesList.size(); i++) {
+		if (streamServicesList.get(i).getUrl()
+			.equals(currentStreamService)) {
+		    streamServicesList.remove(i);
+		    break;
+		}
+	    }
+
+	    updateServiceList();
+	    cfgUtil.writeConfig();
+	    if (streamServicesList.size() == 1) {
+		checkThread.interrupt();
+	    }
+	} else {
+	    cfgUtil.removeStream(currentStreamName, currentStreamService);
+	    updateList();
+	    if (currentStreamService.equals("twitch.tv")) {
+		checkThread.interrupt();
+	    }
+	}
     }
 
     /**
