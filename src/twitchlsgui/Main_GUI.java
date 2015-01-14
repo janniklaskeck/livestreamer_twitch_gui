@@ -592,6 +592,7 @@ public class Main_GUI extends JFrame {
 	} else {
 	    currentStreamName = "";
 	}
+	// showLivePopup(currentStreamName);
     }
 
     /**
@@ -687,6 +688,50 @@ public class Main_GUI extends JFrame {
 	    }
 	}
     }
+
+    /*
+     * private void showLivePopup(String name) { String message = ""; String
+     * header = "The Streamer:<br> " + name + " is now online!"; final JFrame
+     * frame = new JFrame(); frame.setMaximumSize(new Dimension(900, 100));
+     * frame.setMinimumSize(new Dimension(300, 100));
+     * frame.setUndecorated(true); frame.setLayout(new GridBagLayout());
+     * frame.setResizable(false); GridBagConstraints constraints = new
+     * GridBagConstraints(); constraints.gridx = 0; constraints.gridy = 0;
+     * constraints.weightx = 1.0f; constraints.weighty = 1.0f;
+     * constraints.insets = new Insets(5, 5, 5, 5); constraints.fill =
+     * GridBagConstraints.BOTH; JLabel headingLabel = new JLabel("<HtMl>" +
+     * header); headingLabel.setSize(headingLabel.getPreferredSize()); //
+     * ImageIcon imgThisImg = new ImageIcon(getClass().getResource( //
+     * Variables.warningPopupImage)); // headingLabel.setIcon(imgThisImg); //
+     * --- use image icon you want to // be // as heading image.
+     * headingLabel.setOpaque(false); frame.add(headingLabel, constraints);
+     * constraints.gridx++; constraints.weightx = 0f; constraints.weighty = 0f;
+     * constraints.fill = GridBagConstraints.NONE; constraints.anchor =
+     * GridBagConstraints.NORTH; JButton closeButton = new JButton(new
+     * AbstractAction("x") { private static final long serialVersionUID = 1L;
+     * 
+     * @Override public void actionPerformed(final ActionEvent e) {
+     * frame.dispose(); } }); closeButton.setMargin(new Insets(1, 4, 1, 4));
+     * closeButton.setFocusable(false); frame.add(closeButton, constraints);
+     * constraints.gridx = 0; constraints.gridy++; constraints.weightx = 1.0f;
+     * constraints.weighty = 1.0f; constraints.insets = new Insets(5, 5, 5, 5);
+     * constraints.fill = GridBagConstraints.BOTH; JLabel messageLabel = new
+     * JLabel("<HtMl>" + message);
+     * messageLabel.setSize(messageLabel.getPreferredSize());
+     * frame.add(messageLabel, constraints);
+     * frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); Dimension
+     * scrSize = Toolkit.getDefaultToolkit().getScreenSize();// size // of //
+     * the // screen Insets toolHeight =
+     * Toolkit.getDefaultToolkit().getScreenInsets(
+     * frame.getGraphicsConfiguration());// height of the task bar frame.pack();
+     * frame.setLocation(scrSize.width - frame.getWidth(), scrSize.height -
+     * toolHeight.bottom - frame.getHeight()); frame.setAlwaysOnTop(true);
+     * frame.setVisible(true); new Thread() {
+     * 
+     * @Override public void run() { try { Thread.sleep(5000); // time after
+     * which pop up will be // disappeared. frame.dispose(); } catch
+     * (InterruptedException e) { e.printStackTrace(); } }; }.start(); }
+     */
 
     /**
      * 
