@@ -14,8 +14,8 @@ but i had to rewrite it, after justin.tv was closed.
 If you find any errors or have (reasonable) suggestions, please let me know
 
 !!IMPORTANT!!
-To add another streaming service other than twitch.tv, you have to enter the url of the service into the custom stream bar and press shift while pressing the plus button.
-This should add another option in the dropdown menu. If it does not, try clicking into the current list and then shift+"plus"button. Removing works the same way.
+To add another streaming service other than twitch.tv, press shift while pressing the plus button.
+This should open a popup window where you can type in the data. If it does not, try clicking into the current list and then press shift and the plus button. Removing works the same way.
 
 Note however, the resolution options might not work with other streaming sites other than twitch. Worst and Best Quality should work on most. Also when adding another site, take a close look how the final stream urls look like.
 E.g. on twitch.tv it is twitch.tv/channelname (only add "channelname"), on livestream.com however it is new.livestream.com/channelname/live (here you have to add new.livestream.com as a site and "channelname/live" as a channel).
@@ -30,4 +30,4 @@ Preview Image:<br>
 <img width="auto" height="auto" src="https://github.com/westerwave/livestreamer_twitch_gui/blob/master/preview.png"></img>
 <br>
 Planned Features:<br>
-- extra options menu
+- none
