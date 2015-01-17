@@ -17,6 +17,7 @@ public class ConfigUtil {
     // private final String STREAMLIST = "streamlist";
     private final String SHOWPREVIEW = "showpreview";
     private final String STREAMSERVICES = "streamservices";
+    private final String AUTOUPDATE = "autoupdate";
 
     /**
      * Constructor
@@ -57,6 +58,7 @@ public class ConfigUtil {
 	Main_GUI.currentQuality = myPrefs.get(QUALITY, "High");
 	Main_GUI.showPreview = myPrefs.getBoolean(SHOWPREVIEW, true);
 	Main_GUI.checkTimer = myPrefs.getInt(TIMER, 30);
+	Main_GUI.autoUpdate = myPrefs.getBoolean(AUTOUPDATE, true);
 
 	String buffer = myPrefs.get(STREAMSERVICES, "twitch.tv");
 	String[] buffer2 = buffer.split(" ");
@@ -95,6 +97,7 @@ public class ConfigUtil {
 	myPrefs.put(QUALITY, Main_GUI.currentQuality);
 	myPrefs.putBoolean(SHOWPREVIEW, Main_GUI.showPreview);
 	myPrefs.putInt(TIMER, Main_GUI.checkTimer);
+	myPrefs.putBoolean(AUTOUPDATE, Main_GUI.autoUpdate);
 
 	String buffer = "";
 	for (int i = 0; i < Main_GUI.streamServicesList.size(); i++) {

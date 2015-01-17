@@ -1,6 +1,7 @@
 package twitchlsgui;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -28,6 +29,7 @@ public class TwitchStream implements GenericStream {
     private long upTimeMinute;
     private boolean online = false;
     private String onlineString;
+    private static ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
     public TwitchStream(String channel) {
 	this.setChannel(channel);
@@ -60,6 +62,9 @@ public class TwitchStream implements GenericStream {
 		    try {
 			preview = ImageIO.read(new URL(ts
 				.getScreen_cap_url_medium()));
+			@SuppressWarnings("unused")
+			boolean rw = ImageIO.write(preview, "PNG", bos);
+			Main_GUI.downloadedBytes += bos.toByteArray().length;
 		    } catch (IOException e) {
 			e.printStackTrace();
 		    }

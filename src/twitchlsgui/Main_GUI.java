@@ -26,7 +26,6 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -45,6 +44,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import twitchUpdate.StreamCheck;
+
 /**
  * 
  * @author Niklas 27.09.2014
@@ -53,7 +54,7 @@ import javax.swing.event.ListSelectionListener;
 public class Main_GUI extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    private static ConfigUtil cfgUtil;
+    public static ConfigUtil cfgUtil;
 
     public static String currentStreamName = "";
     public static String currentQuality = "High";
@@ -62,21 +63,26 @@ public class Main_GUI extends JFrame {
     public static DefaultListModel<JLabel> streamListModel;
     public static JLabel onlineStatus;
     public static boolean showPreview = true;
+    public static boolean autoUpdate = true;
     public static JComboBox<String> streamServicesBox;
     public static JLabel updateStatus;
     public static ArrayList<StreamList> streamServicesList;
-    public static int checkTimer = 10;
+    public static int checkTimer = 30;
 
     private JPanel contentPane;
+    private JPanel optionsPane;
+    private JPanel innerContentPane;
     private JList<String> qualityList;
     private JList<JLabel> stream_list;
     private JTextField customStreamTF;
     private static JLabel previewLabel;
     private JPanel previewPanel;
     private static Main_GUI frame;
-    private JCheckBox previewCheckBox;
     private Thread checkThread;
     private boolean shiftPressed = false;
+    public static boolean streamPaneActive = true;
+
+    public static int downloadedBytes = 0;
 
     /**
      * Launch the application.
@@ -143,18 +149,20 @@ public class Main_GUI extends JFrame {
     }
 
     public void updateServiceList() {
-	streamServicesBox.removeAllItems();
-	if (streamServicesList.size() == 0) {
-	    System.out.println("service list is empty");
-	    streamServicesList.add(new StreamList("twitch.tv", "Twitch"));
-	}
+	if (streamServicesBox != null) {
+	    streamServicesBox.removeAllItems();
+	    if (streamServicesList.size() == 0) {
+		System.out.println("service list is empty");
+		streamServicesList.add(new StreamList("twitch.tv", "Twitch"));
+	    }
 
-	for (int i = 0; i < streamServicesList.size(); i++) {
-	    streamServicesBox.addItem(streamServicesList.get(i)
-		    .getDisplayName());
+	    for (int i = 0; i < streamServicesList.size(); i++) {
+		streamServicesBox.addItem(streamServicesList.get(i)
+			.getDisplayName());
+	    }
+	    streamServicesBox
+		    .setSelectedIndex(streamServicesBox.getItemCount() - 1);
 	}
-	streamServicesBox
-		.setSelectedIndex(streamServicesBox.getItemCount() - 1);
     }
 
     /**
@@ -168,15 +176,24 @@ public class Main_GUI extends JFrame {
 
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	setBounds(100, 100, 577, 400);
+
+	optionsPane = new OptionsPanel();
 	contentPane = new JPanel();
 	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	setContentPane(contentPane);
 	contentPane.setLayout(new BorderLayout(0, 0));
 
-	JPanel stream_panel = new JPanel();
-	contentPane.add(stream_panel, BorderLayout.CENTER);
-
 	streamListModel = new DefaultListModel<JLabel>();
+
+	GridBagConstraints gbc_middle_panel = new GridBagConstraints();
+	gbc_middle_panel.fill = GridBagConstraints.NONE;
+
+	innerContentPane = new JPanel();
+	contentPane.add(innerContentPane, BorderLayout.CENTER);
+	innerContentPane.setLayout(new BorderLayout(0, 0));
+
+	JPanel stream_panel = new JPanel();
+	innerContentPane.add(stream_panel, BorderLayout.CENTER);
 
 	stream_panel.setLayout(null);
 
@@ -219,43 +236,37 @@ public class Main_GUI extends JFrame {
 		}
 	    }
 	});
-
 	updateServiceList();
 	updateList();
-
 	JPanel custom_StreamPanel = new JPanel();
-	custom_StreamPanel.setBounds(10, 196, 307, 154);
+	custom_StreamPanel.setBounds(10, 196, 307, 126);
 	stream_panel.add(custom_StreamPanel);
 	GridBagLayout gbl_custom_StreamPanel = new GridBagLayout();
-	gbl_custom_StreamPanel.columnWidths = new int[] { 30, 30, 30, 30, 30,
-		30, 30, 0, 0, 0 };
-	gbl_custom_StreamPanel.rowHeights = new int[] { 0, 30, 0, 0, 30, 0, 0 };
-	gbl_custom_StreamPanel.columnWeights = new double[] { 0.0, 0.0, 0.0,
-		0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
-	gbl_custom_StreamPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0,
-		0.0, Double.MIN_VALUE };
+	gbl_custom_StreamPanel.columnWidths = new int[] { 307 };
+	gbl_custom_StreamPanel.rowHeights = new int[] { 20, 20, 80 };
+	gbl_custom_StreamPanel.columnWeights = new double[] { 0.0 };
+	gbl_custom_StreamPanel.rowWeights = new double[] { 0.0, 0.0, 0.0 };
 	custom_StreamPanel.setLayout(gbl_custom_StreamPanel);
 
 	JLabel lblCustomStream = new JLabel("Custom Stream");
 	lblCustomStream.setHorizontalAlignment(SwingConstants.CENTER);
 	GridBagConstraints gbc_lblCustomStream = new GridBagConstraints();
-	gbc_lblCustomStream.gridwidth = 6;
+	gbc_lblCustomStream.fill = GridBagConstraints.BOTH;
 	gbc_lblCustomStream.insets = new Insets(0, 0, 5, 0);
-	gbc_lblCustomStream.gridx = 2;
+	gbc_lblCustomStream.gridx = 0;
 	gbc_lblCustomStream.gridy = 0;
 	custom_StreamPanel.add(lblCustomStream, gbc_lblCustomStream);
 
 	customStreamTF = new JTextField();
 	customStreamTF.setHorizontalAlignment(SwingConstants.CENTER);
-	GridBagConstraints gbc_textField = new GridBagConstraints();
-	gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-	gbc_textField.gridwidth = 7;
-	gbc_textField.insets = new Insets(0, 0, 5, 0);
-	gbc_textField.gridx = 1;
-	gbc_textField.gridy = 2;
 
-	custom_StreamPanel.add(customStreamTF, gbc_textField);
-	customStreamTF.setColumns(10);
+	GridBagConstraints gbc_customStreamTF = new GridBagConstraints();
+	gbc_customStreamTF.fill = GridBagConstraints.BOTH;
+	gbc_customStreamTF.insets = new Insets(0, 0, 5, 0);
+	gbc_customStreamTF.gridx = 0;
+	gbc_customStreamTF.gridy = 1;
+	custom_StreamPanel.add(customStreamTF, gbc_customStreamTF);
+	customStreamTF.setColumns(1);
 	customStreamTF.getDocument().addDocumentListener(
 		new DocumentListener() {
 
@@ -280,28 +291,15 @@ public class Main_GUI extends JFrame {
 
 	onlineStatus = new JLabel("No Stream selected");
 	onlineStatus.setHorizontalAlignment(SwingConstants.CENTER);
-
 	GridBagConstraints gbc_onlineStatus = new GridBagConstraints();
-	gbc_onlineStatus.gridwidth = 8;
-	gbc_onlineStatus.fill = GridBagConstraints.HORIZONTAL;
-	gbc_onlineStatus.insets = new Insets(0, 0, 5, 0);
+	gbc_onlineStatus.fill = GridBagConstraints.BOTH;
 	gbc_onlineStatus.gridx = 0;
-	gbc_onlineStatus.gridy = 3;
+	gbc_onlineStatus.gridy = 2;
 	custom_StreamPanel.add(onlineStatus, gbc_onlineStatus);
 
-	JToolBar statusBar = new JToolBar();
-	contentPane.add(statusBar, BorderLayout.SOUTH);
-	statusBar.setFloatable(false);
-
-	updateStatus = new JLabel("1");
-	statusBar.add(updateStatus);
-
 	JPanel middle_panel = new JPanel();
+	innerContentPane.add(middle_panel, BorderLayout.EAST);
 	middle_panel.setMaximumSize(new Dimension(200, 200));
-	contentPane.add(middle_panel, BorderLayout.EAST);
-
-	GridBagConstraints gbc_middle_panel = new GridBagConstraints();
-	gbc_middle_panel.fill = GridBagConstraints.NONE;
 	GridBagLayout gbl_middle_panel = new GridBagLayout();
 	gbl_middle_panel.setConstraints(middle_panel, gbc_middle_panel);
 	gbl_middle_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
@@ -312,10 +310,10 @@ public class Main_GUI extends JFrame {
 
 	JButton startStreambutton = new JButton("Start VLC Stream");
 	GridBagConstraints gbc_startStreambutton = new GridBagConstraints();
+	gbc_startStreambutton.fill = GridBagConstraints.BOTH;
 	gbc_startStreambutton.insets = new Insets(0, 0, 5, 0);
 	gbc_startStreambutton.gridx = 5;
 	gbc_startStreambutton.gridy = 0;
-	gbc_startStreambutton.fill = GridBagConstraints.BOTH;
 	startStreambutton.addActionListener(new ActionListener() {
 
 	    public void actionPerformed(ActionEvent arg0) {
@@ -417,10 +415,10 @@ public class Main_GUI extends JFrame {
 
 	JButton startCustomStreamBtn = new JButton("Start Custom VLC Stream");
 	GridBagConstraints gbc_startCustomStreamBtn = new GridBagConstraints();
+	gbc_startCustomStreamBtn.fill = GridBagConstraints.BOTH;
 	gbc_startCustomStreamBtn.insets = new Insets(0, 0, 5, 0);
 	gbc_startCustomStreamBtn.gridx = 5;
 	gbc_startCustomStreamBtn.gridy = 1;
-	gbc_startCustomStreamBtn.fill = GridBagConstraints.BOTH;
 	startCustomStreamBtn.addActionListener(new ActionListener() {
 
 	    public void actionPerformed(ActionEvent arg0) {
@@ -445,11 +443,6 @@ public class Main_GUI extends JFrame {
 		return values[index];
 	    }
 	});
-	for (int i = 0; i < qualityList.getModel().getSize(); i++) {
-	    if (currentQuality.equals(qualityList.getModel().getElementAt(i))) {
-		qualityList.setSelectedIndex(i);
-	    }
-	}
 
 	qualityList.addListSelectionListener(new ListSelectionListener() {
 
@@ -466,8 +459,31 @@ public class Main_GUI extends JFrame {
 	gbc_qualityList.gridx = 3;
 	gbc_qualityList.gridy = 1;
 	middle_panel.add(qualityList, gbc_qualityList);
-
+	for (int i = 0; i < qualityList.getModel().getSize(); i++) {
+	    if (currentQuality.equals(qualityList.getModel().getElementAt(i))) {
+		qualityList.setSelectedIndex(i);
+	    }
+	}
 	middle_panel.add(startCustomStreamBtn, gbc_startCustomStreamBtn);
+
+	JButton refreshButton = new JButton("");
+	refreshButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		StreamCheck.update();
+
+	    }
+	});
+	refreshButton
+		.setToolTipText("Runs an update on the Twitch.tv stream list");
+	refreshButton.setIcon(new ImageIcon(Main_GUI.class
+		.getResource("/twitchlsgui/refresh.png")));
+	GridBagConstraints gbc_refreshButton = new GridBagConstraints();
+	gbc_refreshButton.insets = new Insets(0, 0, 5, 5);
+	gbc_refreshButton.gridx = 3;
+	gbc_refreshButton.gridy = 2;
+	middle_panel.add(refreshButton, gbc_refreshButton);
 
 	previewPanel = new JPanel();
 	previewLabel = new JLabel();
@@ -483,6 +499,7 @@ public class Main_GUI extends JFrame {
 
 	JButton exitBtn = new JButton("Exit");
 	GridBagConstraints gbc_exitBtn = new GridBagConstraints();
+	gbc_exitBtn.fill = GridBagConstraints.HORIZONTAL;
 	gbc_exitBtn.anchor = GridBagConstraints.SOUTH;
 	gbc_exitBtn.gridx = 5;
 	gbc_exitBtn.gridy = 4;
@@ -495,34 +512,52 @@ public class Main_GUI extends JFrame {
 
 	    }
 	});
-
-	previewCheckBox = new JCheckBox("Show preview");
-	GridBagConstraints gbc_previewCheckBox = new GridBagConstraints();
-	gbc_previewCheckBox.gridx = 5;
-	gbc_previewCheckBox.gridy = 3;
-	middle_panel.add(previewCheckBox, gbc_previewCheckBox);
 	middle_panel.add(exitBtn, gbc_exitBtn);
-	previewCheckBox.setSelected(showPreview);
-	previewCheckBox.setToolTipText("Also disables loading images");
-	previewCheckBox.addActionListener(new ActionListener() {
+
+	JToolBar statusBar = new JToolBar();
+	innerContentPane.add(statusBar, BorderLayout.SOUTH);
+	statusBar.setFloatable(false);
+
+	updateStatus = new JLabel("1");
+	statusBar.add(updateStatus);
+
+	JToolBar toolBar = new JToolBar();
+	contentPane.add(toolBar, BorderLayout.NORTH);
+	toolBar.setFloatable(false);
+
+	JButton streamPaneButton = new JButton("Streams");
+	streamPaneButton.addActionListener(new ActionListener() {
 
 	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		setPreviewLoading();
-		if (showPreview) {
-		    checkThread.interrupt();
+	    public void actionPerformed(ActionEvent arg0) {
+		if (!streamPaneActive) {
+		    contentPane.remove(optionsPane);
+		    contentPane.add(innerContentPane);
+		    streamPaneActive = true;
+		    revalidate();
+		    repaint();
 		}
-
 	    }
 	});
-	showPreview = previewCheckBox.isSelected();
+	toolBar.add(streamPaneButton);
+
+	JButton optionsPaneButton = new JButton("Options");
+	optionsPaneButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		contentPane.remove(innerContentPane);
+		contentPane.add(optionsPane);
+		streamPaneActive = false;
+		revalidate();
+		repaint();
+	    }
+	});
+	toolBar.add(optionsPaneButton);
+
 	// start checker thread
 	checkThread = new Thread(new StreamCheck());
 	checkThread.start();
-    }
-
-    private void setPreviewLoading() {
-	showPreview = previewCheckBox.isSelected();
     }
 
     /**
@@ -688,50 +723,6 @@ public class Main_GUI extends JFrame {
 	    }
 	}
     }
-
-    /*
-     * private void showLivePopup(String name) { String message = ""; String
-     * header = "The Streamer:<br> " + name + " is now online!"; final JFrame
-     * frame = new JFrame(); frame.setMaximumSize(new Dimension(900, 100));
-     * frame.setMinimumSize(new Dimension(300, 100));
-     * frame.setUndecorated(true); frame.setLayout(new GridBagLayout());
-     * frame.setResizable(false); GridBagConstraints constraints = new
-     * GridBagConstraints(); constraints.gridx = 0; constraints.gridy = 0;
-     * constraints.weightx = 1.0f; constraints.weighty = 1.0f;
-     * constraints.insets = new Insets(5, 5, 5, 5); constraints.fill =
-     * GridBagConstraints.BOTH; JLabel headingLabel = new JLabel("<HtMl>" +
-     * header); headingLabel.setSize(headingLabel.getPreferredSize()); //
-     * ImageIcon imgThisImg = new ImageIcon(getClass().getResource( //
-     * Variables.warningPopupImage)); // headingLabel.setIcon(imgThisImg); //
-     * --- use image icon you want to // be // as heading image.
-     * headingLabel.setOpaque(false); frame.add(headingLabel, constraints);
-     * constraints.gridx++; constraints.weightx = 0f; constraints.weighty = 0f;
-     * constraints.fill = GridBagConstraints.NONE; constraints.anchor =
-     * GridBagConstraints.NORTH; JButton closeButton = new JButton(new
-     * AbstractAction("x") { private static final long serialVersionUID = 1L;
-     * 
-     * @Override public void actionPerformed(final ActionEvent e) {
-     * frame.dispose(); } }); closeButton.setMargin(new Insets(1, 4, 1, 4));
-     * closeButton.setFocusable(false); frame.add(closeButton, constraints);
-     * constraints.gridx = 0; constraints.gridy++; constraints.weightx = 1.0f;
-     * constraints.weighty = 1.0f; constraints.insets = new Insets(5, 5, 5, 5);
-     * constraints.fill = GridBagConstraints.BOTH; JLabel messageLabel = new
-     * JLabel("<HtMl>" + message);
-     * messageLabel.setSize(messageLabel.getPreferredSize());
-     * frame.add(messageLabel, constraints);
-     * frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); Dimension
-     * scrSize = Toolkit.getDefaultToolkit().getScreenSize();// size // of //
-     * the // screen Insets toolHeight =
-     * Toolkit.getDefaultToolkit().getScreenInsets(
-     * frame.getGraphicsConfiguration());// height of the task bar frame.pack();
-     * frame.setLocation(scrSize.width - frame.getWidth(), scrSize.height -
-     * toolHeight.bottom - frame.getHeight()); frame.setAlwaysOnTop(true);
-     * frame.setVisible(true); new Thread() {
-     * 
-     * @Override public void run() { try { Thread.sleep(5000); // time after
-     * which pop up will be // disappeared. frame.dispose(); } catch
-     * (InterruptedException e) { e.printStackTrace(); } }; }.start(); }
-     */
 
     /**
      * 
