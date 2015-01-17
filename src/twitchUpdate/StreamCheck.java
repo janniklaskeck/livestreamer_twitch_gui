@@ -89,6 +89,7 @@ public class StreamCheck implements Runnable {
 	}
 	threads = new ArrayList<Thread>();
 	OptionsPanel.KBLabel.setText(Main_GUI.downloadedBytes / 1000 + "");
+	Main_GUI.downloadedBytes = 0;
     }
 
 }

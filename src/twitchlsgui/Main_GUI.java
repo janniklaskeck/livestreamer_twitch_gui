@@ -80,6 +80,8 @@ public class Main_GUI extends JFrame {
     private static Main_GUI frame;
     private Thread checkThread;
     private boolean shiftPressed = false;
+    public static boolean canUpdate = true; 
+    
     public static boolean streamPaneActive = true;
 
     public static int downloadedBytes = 0;
@@ -471,8 +473,9 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		StreamCheck.update();
-
+		if (canUpdate) {
+		    StreamCheck.update(); // TODO
+		}
 	    }
 	});
 	refreshButton

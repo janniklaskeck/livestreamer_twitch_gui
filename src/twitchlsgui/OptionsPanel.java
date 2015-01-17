@@ -96,6 +96,9 @@ public class OptionsPanel extends JPanel {
 			    } catch (NumberFormatException e) {
 				e.printStackTrace();
 			    }
+			    if (Main_GUI.checkTimer < 20) {
+				Main_GUI.checkTimer = 20;
+			    }
 			}
 		    }
 
@@ -109,6 +112,9 @@ public class OptionsPanel extends JPanel {
 			    } catch (NumberFormatException e) {
 				e.printStackTrace();
 			    }
+			    if (Main_GUI.checkTimer < 20) {
+				Main_GUI.checkTimer = 20;
+			    }
 			}
 		    }
 
@@ -121,6 +127,9 @@ public class OptionsPanel extends JPanel {
 						.getText());
 			    } catch (NumberFormatException e) {
 				e.printStackTrace();
+			    }
+			    if (Main_GUI.checkTimer < 20) {
+				Main_GUI.checkTimer = 20;
 			    }
 			}
 		    }
