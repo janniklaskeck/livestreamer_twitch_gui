@@ -33,6 +33,7 @@ public class StreamCheck implements Runnable {
     }
 
     public static void update() {
+	Main_GUI.canUpdate = false;
 	streamList = Main_GUI.selectStreamService("twitch.tv").getStreamList();
 
 	if (streamList.size() > 0) {
@@ -89,7 +90,10 @@ public class StreamCheck implements Runnable {
 	}
 	threads = new ArrayList<Thread>();
 	OptionsPanel.KBLabel.setText(Main_GUI.downloadedBytes / 1000 + "");
+	System.out.println(Main_GUI.downloadedBytes);
 	Main_GUI.downloadedBytes = 0;
+	System.out.println(Main_GUI.downloadedBytes);
+	Main_GUI.canUpdate = true;
     }
 
 }
