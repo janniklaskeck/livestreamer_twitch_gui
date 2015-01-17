@@ -24,6 +24,8 @@ Things like online status and preview image are currently twitch.tv only, as i'm
 
 This feature isn't fully fleshed out, so please report bugs if you find them.
 
+For the update interval a minimum of 20 to 30 seconds is recommended(depeding on number of streams in your list and how many of them are online at the same time). Lower numbers might lead to errors.
+
 !!IMPORTANT!!
 
 Preview Image:<br>
