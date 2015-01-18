@@ -24,7 +24,10 @@ Things like online status and preview image are currently twitch.tv only, as i'm
 
 This feature isn't fully fleshed out, so please report bugs if you find them.
 
-For the update interval a minimum of 20 to 30 seconds is recommended(depeding on number of streams in your list and how many of them are online at the same time). Lower numbers might lead to errors.
+For the update interval a 30 seconds is recommended depeding on number of streams in your list and how many of them are online at the same time). 20 Seconds is the minimum.
+
+The Export feature should work fine, it is only tested on windows.
+You may have to restart the application after importing to see your streams. I didn't test this feature a lot, there are probably some bugs.
 
 !!IMPORTANT!!
 
@@ -32,4 +35,4 @@ Preview Image:<br>
 <img width="auto" height="auto" src="https://github.com/westerwave/livestreamer_twitch_gui/blob/master/preview.png"></img>
 <br>
 Planned Features:<br>
-- none
+- Window resizing
