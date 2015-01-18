@@ -21,9 +21,11 @@ public class Twitch_API {
 
 	    JsonObject a = gson.fromJson(json, JsonObject.class);
 	    JsonObject b = null;
-
-	    if (!a.get("stream").toString().equals("null")) {
-		b = gson.fromJson(a.get("stream").toString(), JsonObject.class);
+	    if (a.get("stream") != null) {
+		if (!a.get("stream").toString().equals("null")) {
+		    b = gson.fromJson(a.get("stream").toString(),
+			    JsonObject.class);
+		}
 	    }
 
 	    if (b != null) {

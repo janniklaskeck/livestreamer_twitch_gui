@@ -14,6 +14,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -36,6 +38,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -80,8 +83,8 @@ public class Main_GUI extends JFrame {
     private static Main_GUI frame;
     private Thread checkThread;
     private boolean shiftPressed = false;
-    public static boolean canUpdate = true; 
-    
+    public static boolean canUpdate = true;
+
     public static boolean streamPaneActive = true;
 
     public static int downloadedBytes = 0;
@@ -174,11 +177,13 @@ public class Main_GUI extends JFrame {
 	setIconImage(Toolkit.getDefaultToolkit().getImage(
 		Main_GUI.class.getResource("/twitchlsgui/icon.jpg")));
 	setResizable(false);
-	cfgUtil = new ConfigUtil();
+	setMinimumSize(new Dimension(590, 430));
+	setPreferredSize(new Dimension(590, 430));
+
+	cfgUtil = new ConfigUtil(this);
 
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	setBounds(100, 100, 577, 400);
-
+	setBounds(100, 100, 590, 430);
 	optionsPane = new OptionsPanel();
 	contentPane = new JPanel();
 	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -196,27 +201,48 @@ public class Main_GUI extends JFrame {
 
 	JPanel stream_panel = new JPanel();
 	innerContentPane.add(stream_panel, BorderLayout.CENTER);
-
-	stream_panel.setLayout(null);
+	stream_panel.setLayout(new BorderLayout(0, 0));
 
 	JScrollPane scrollPane = new JScrollPane();
-	scrollPane.setBounds(10, 0, 307, 185);
-	stream_panel.add(scrollPane);
+	scrollPane
+		.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+	stream_panel.add(scrollPane, BorderLayout.NORTH);
 
 	stream_list = new JList<JLabel>();
 	stream_list.setVisibleRowCount(10);
 	stream_list.setCellRenderer(new MyListCellRenderer());
-
 	stream_list.setModel(streamListModel);
-
 	stream_list.addListSelectionListener(new ListSelectionListener() {
-
 	    @Override
 	    public void valueChanged(ListSelectionEvent event) {
 		setStream();
 	    }
 	});
 	stream_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	stream_list.addMouseListener(new MouseListener() {
+	    @Override
+	    public void mouseReleased(MouseEvent arg0) {
+	    }
+
+	    @Override
+	    public void mousePressed(MouseEvent arg0) {
+	    }
+
+	    @Override
+	    public void mouseExited(MouseEvent arg0) {
+	    }
+
+	    @Override
+	    public void mouseEntered(MouseEvent arg0) {
+	    }
+
+	    @Override
+	    public void mouseClicked(MouseEvent e) {
+		if (e.getClickCount() == 2) {
+		    OpenStream(currentStreamName, currentQuality);
+		}
+	    }
+	});
 
 	scrollPane.setViewportView(stream_list);
 
@@ -241,8 +267,7 @@ public class Main_GUI extends JFrame {
 	updateServiceList();
 	updateList();
 	JPanel custom_StreamPanel = new JPanel();
-	custom_StreamPanel.setBounds(10, 196, 307, 126);
-	stream_panel.add(custom_StreamPanel);
+	stream_panel.add(custom_StreamPanel, BorderLayout.SOUTH);
 	GridBagLayout gbl_custom_StreamPanel = new GridBagLayout();
 	gbl_custom_StreamPanel.columnWidths = new int[] { 307 };
 	gbl_custom_StreamPanel.rowHeights = new int[] { 20, 20, 80 };
@@ -474,7 +499,7 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		if (canUpdate) {
-		    StreamCheck.update(); // TODO
+		    StreamCheck.update();
 		}
 	    }
 	});
@@ -652,7 +677,7 @@ public class Main_GUI extends JFrame {
      * @param streamService
      * @return
      */
-    public StreamList selectStreamServiceD(String streamService) {
+    public static StreamList selectStreamServiceD(String streamService) {
 	for (StreamList sl : streamServicesList) {
 	    if (sl.getDisplayName().equals(streamService)) {
 		return sl;
@@ -679,7 +704,7 @@ public class Main_GUI extends JFrame {
 		    JOptionPane.OK_CANCEL_OPTION);
 	    if (result == JOptionPane.OK_OPTION) {
 		streamServicesList.add(new StreamList(urlField.getText(),
-			displayNameField.getText()));
+			displayNameField.getText().trim()));
 		updateServiceList();
 		updateList();
 		cfgUtil.writeConfig();
@@ -694,7 +719,8 @@ public class Main_GUI extends JFrame {
 	    int result = JOptionPane.showConfirmDialog(null, myPanel,
 		    "Please Enter Channel Name", JOptionPane.OK_CANCEL_OPTION);
 	    if (result == JOptionPane.OK_OPTION) {
-		cfgUtil.saveStream(channelField.getText(), currentStreamService);
+		cfgUtil.saveStream(channelField.getText().trim(),
+			currentStreamService);
 		updateList();
 		if (currentStreamService.equals("twitch.tv")) {
 		    checkThread.interrupt();

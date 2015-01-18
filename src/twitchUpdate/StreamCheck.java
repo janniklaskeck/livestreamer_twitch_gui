@@ -69,7 +69,7 @@ public class StreamCheck implements Runnable {
 	} else {
 	    Main_GUI.updateStatus.setText("");
 	}
-	if (Main_GUI.currentStreamName != "") {
+	if (!Main_GUI.currentStreamName.equals("")) {
 	    if (Main_GUI.currentStreamService.equals(Main_GUI
 		    .selectStreamService("twitch.tv").getUrl())) {
 		for (int i = 0; i < streamList.size(); i++) {
@@ -90,9 +90,7 @@ public class StreamCheck implements Runnable {
 	}
 	threads = new ArrayList<Thread>();
 	OptionsPanel.KBLabel.setText(Main_GUI.downloadedBytes / 1000 + "");
-	System.out.println(Main_GUI.downloadedBytes);
 	Main_GUI.downloadedBytes = 0;
-	System.out.println(Main_GUI.downloadedBytes);
 	Main_GUI.canUpdate = true;
     }
 

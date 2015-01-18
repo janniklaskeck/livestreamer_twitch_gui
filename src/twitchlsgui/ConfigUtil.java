@@ -1,7 +1,17 @@
 package twitchlsgui;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Config class
@@ -19,16 +29,20 @@ public class ConfigUtil {
     private final String STREAMSERVICES = "streamservices";
     private final String AUTOUPDATE = "autoupdate";
 
+    private JFrame parent;
+
     /**
      * Constructor
      */
-    public ConfigUtil() {
+    public ConfigUtil(JFrame parent) {
 	myPrefs = Preferences.userNodeForPackage(twitchlsgui.Main_GUI.class);
 	readConfig();
+	this.parent = parent;
     }
 
     public void saveStream(String stream, String streamService) {
-	if (!streamService.equals("twitch.tv")) {
+	if (!streamService.equals("twitch.tv")
+		&& !streamService.equals("Twitch")) {
 	    Main_GUI.selectStreamService(streamService).getStreamList()
 		    .add(new OtherStream(stream));
 	} else {
@@ -128,6 +142,100 @@ public class ConfigUtil {
 	    }
 	}
 	myPrefs.put(streamService, buffer);
+    }
 
+    public void importStreams() {
+	String path = "";
+	JFileChooser jfc = new JFileChooser(path);
+	jfc.setDialogType(JFileChooser.OPEN_DIALOG);
+	FileNameExtensionFilter txtFilter = new FileNameExtensionFilter(".txt",
+		"txt");
+
+	jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
+	jfc.setFileFilter(txtFilter);
+	jfc.setDialogTitle("Open File...");
+	jfc.setVisible(true);
+	int result = jfc.showOpenDialog(parent);
+
+	if (result == JFileChooser.APPROVE_OPTION) {
+	    path = jfc.getSelectedFile().toString();
+
+	    try {
+		BufferedReader br = new BufferedReader(new FileReader(path));
+		String line = "";
+		String[] lineSplit;
+		String lastService = "";
+		int lineNumber = 0;
+		while ((line = br.readLine()) != null) {
+
+		    lineSplit = line.split(" ");
+		    
+		    if (lineNumber == 0 || lineNumber % 2 == 0) {
+			System.out.println(lineSplit[0] + " " + lineSplit[1]);
+			if (Main_GUI.selectStreamServiceD(lineSplit[0]) == null || Main_GUI.selectStreamService(lineSplit[1]) == null) {
+			    Main_GUI.streamServicesList.add(new StreamList(
+				    lineSplit[1], lineSplit[0]));
+			}
+			lastService = lineSplit[1];
+		    } else {
+			for (String stream : lineSplit) {
+			    System.out.println(stream + "1");
+			    saveStream(stream, lastService);
+			}
+		    }
+		    lineNumber++;
+		}
+		br.close();
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+	}
+	jfc.setVisible(false);
+    }
+
+    public void exportStreams() {
+	File file;
+	String path = "";
+	JFileChooser jfc = new JFileChooser(path);
+	jfc.setDialogType(JFileChooser.SAVE_DIALOG);
+	FileNameExtensionFilter txtFilter = new FileNameExtensionFilter(".txt",
+		"txt");
+
+	jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
+	jfc.setFileFilter(txtFilter);
+	jfc.setDialogTitle("Save as...");
+	jfc.setVisible(true);
+	int result = jfc.showSaveDialog(parent);
+
+	if (result == JFileChooser.APPROVE_OPTION) {
+	    path = jfc.getSelectedFile().toString();
+	    String[] pathSplit = path.split(".");
+	    if (pathSplit.length > 0 && pathSplit[pathSplit.length] != "txt") {
+		path = path + ".txt";
+	    } else if (pathSplit.length == 0) {
+		path = path + ".txt";
+	    }
+	    file = new File(path);
+	    try {
+		BufferedWriter output = new BufferedWriter(new FileWriter(file));
+		for (StreamList service : Main_GUI.streamServicesList) {
+		    output.write(service.getDisplayName() + " "
+			    + service.getUrl());
+		    output.newLine();
+		    for (int i = 0; i < service.getStreamList().size(); i++) {
+			output.write(service.getStreamList().get(i)
+				.getChannel());
+			if (i < service.getStreamList().size() - 1) {
+			    output.write(" ");
+			}
+		    }
+		    output.newLine();
+		}
+		output.close();
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
+	}
+	jfc.setVisible(false);
     }
 }
