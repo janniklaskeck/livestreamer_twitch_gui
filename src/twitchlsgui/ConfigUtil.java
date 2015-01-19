@@ -169,18 +169,36 @@ public class ConfigUtil {
 		while ((line = br.readLine()) != null) {
 
 		    lineSplit = line.split(" ");
-		    
+
 		    if (lineNumber == 0 || lineNumber % 2 == 0) {
-			System.out.println(lineSplit[0] + " " + lineSplit[1]);
-			if (Main_GUI.selectStreamServiceD(lineSplit[0]) == null || Main_GUI.selectStreamService(lineSplit[1]) == null) {
+			if (Main_GUI.selectStreamServiceD(lineSplit[0]) == null
+				&& Main_GUI.selectStreamService(lineSplit[1]) == null) {
 			    Main_GUI.streamServicesList.add(new StreamList(
 				    lineSplit[1], lineSplit[0]));
 			}
 			lastService = lineSplit[1];
 		    } else {
+			boolean exists = false;
 			for (String stream : lineSplit) {
-			    System.out.println(stream + "1");
-			    saveStream(stream, lastService);
+			    if (!stream.equals(" ") || !stream.equals("")) {
+				if (Main_GUI.selectStreamService(lastService)
+					.getStreamList().size() > 0) {
+				    for (GenericStream gs : Main_GUI
+					    .selectStreamService(lastService)
+					    .getStreamList()) {
+					if (gs.getChannel().toLowerCase()
+						.equals(stream.toLowerCase())) {
+					    exists = true;
+					}
+				    }
+				    if (!exists) {
+					saveStream(stream, lastService);
+				    }
+				} else {
+				    saveStream(stream, lastService);
+				}
+
+			    }
 			}
 		    }
 		    lineNumber++;
@@ -223,10 +241,13 @@ public class ConfigUtil {
 			    + service.getUrl());
 		    output.newLine();
 		    for (int i = 0; i < service.getStreamList().size(); i++) {
-			output.write(service.getStreamList().get(i)
-				.getChannel());
-			if (i < service.getStreamList().size() - 1) {
-			    output.write(" ");
+			if (!service.getStreamList().get(i).getChannel()
+				.equals(" ")) {
+			    output.write(service.getStreamList().get(i)
+				    .getChannel());
+			    if (i < service.getStreamList().size() - 1) {
+				output.write(" ");
+			    }
 			}
 		    }
 		    output.newLine();
