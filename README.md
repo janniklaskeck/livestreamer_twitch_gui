@@ -36,3 +36,4 @@ Preview Image:<br>
 <br>
 Planned Features:<br>
 - Window resizing
+- Error output window
