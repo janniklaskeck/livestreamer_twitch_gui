@@ -20,11 +20,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * 
  */
 public class ConfigUtil {
-    Preferences myPrefs;
+    private Preferences myPrefs;
 
+    // final strings for saving the different options
     private final String QUALITY = "quality";
     private final String TIMER = "timer";
-    // private final String STREAMLIST = "streamlist";
     private final String SHOWPREVIEW = "showpreview";
     private final String STREAMSERVICES = "streamservices";
     private final String AUTOUPDATE = "autoupdate";
@@ -32,14 +32,27 @@ public class ConfigUtil {
     private JFrame parent;
 
     /**
-     * Constructor
+     * Constructor Responsible for loading and saving the settings and streams
      */
     public ConfigUtil(JFrame parent) {
+	// set registry path for saving
 	myPrefs = Preferences.userNodeForPackage(twitchlsgui.Main_GUI.class);
+	// read config on creation
 	readConfig();
+	// reference need for import/export
 	this.parent = parent;
     }
 
+    /**
+     * Checks if the stream is a Twitchstream or not and adds it to the
+     * Streamlist of the matching Streamservice. After that it saves it to the
+     * registry
+     * 
+     * @param streamname
+     *            to add
+     * @param streamService
+     *            to add the stream to
+     */
     public void saveStream(String stream, String streamService) {
 	if (!streamService.equals("twitch.tv")
 		&& !streamService.equals("Twitch")) {
@@ -52,6 +65,15 @@ public class ConfigUtil {
 	writeStreams(streamService);
     }
 
+    /**
+     * Selects the streamservice and removes the stream from its streamlist
+     * After that it saves to the registry
+     * 
+     * @param stream
+     *            to remove
+     * @param streamService
+     *            to remove the stream from
+     */
     public void removeStream(String stream, String streamService) {
 	for (int i = 0; i < Main_GUI.selectStreamService(streamService)
 		.getStreamList().size(); i++) {
@@ -66,7 +88,7 @@ public class ConfigUtil {
     }
 
     /**
-     * Reads config from registry
+     * Reads general settings and streamservice List from the registry
      */
     public void readConfig() {
 	Main_GUI.currentQuality = myPrefs.get(QUALITY, "High");
@@ -85,9 +107,15 @@ public class ConfigUtil {
 
     }
 
+    /**
+     * Reads the streamlist for the streamservice from the registry, corrects it
+     * if neccessary and creates the streamlist for the streamservice
+     * 
+     * @param streamService
+     */
     public void readStreamList(String streamService) {
 	String streams = myPrefs.get(streamService, "");
-
+	streams = correctStreamList(streams);
 	String[] streams_split = streams.split(" ");
 	Main_GUI.selectStreamService(streamService).setStreamList(
 		new ArrayList<GenericStream>());
@@ -105,7 +133,24 @@ public class ConfigUtil {
     }
 
     /**
-     * Writes config to registry
+     * Removes spaces in front and at the end of streamList
+     * 
+     * @param streamList
+     * @return a string without spaces in front and at the end
+     */
+    private String correctStreamList(String streamList) {
+	String corrected = streamList;
+	if (streamList.startsWith(" ")) {
+	    corrected = corrected.substring(1);
+	}
+	if (streamList.endsWith(" ")) {
+	    corrected = corrected.substring(0, corrected.length() - 1);
+	}
+	return corrected;
+    }
+
+    /**
+     * Writes general settings and streamservices to the registry
      */
     public void writeConfig() {
 	myPrefs.put(QUALITY, Main_GUI.currentQuality);
@@ -129,7 +174,7 @@ public class ConfigUtil {
     }
 
     /**
-     * Writes config to registry
+     * Writes the streams from a streamservice streamlist to the registry
      */
     public void writeStreams(String streamService) {
 	String buffer = "";
@@ -144,6 +189,9 @@ public class ConfigUtil {
 	myPrefs.put(streamService, buffer);
     }
 
+    /**
+     * Opens a file dialog to select a file containing streamservice and streams
+     */
     public void importStreams() {
 	String path = "";
 	JFileChooser jfc = new JFileChooser(path);
@@ -211,6 +259,10 @@ public class ConfigUtil {
 	jfc.setVisible(false);
     }
 
+    /**
+     * Opens a file dialog to save a .txt file containing all streamservices and
+     * their streamlists
+     */
     public void exportStreams() {
 	File file;
 	String path = "";

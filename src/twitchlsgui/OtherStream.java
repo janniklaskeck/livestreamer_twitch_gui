@@ -1,5 +1,11 @@
 package twitchlsgui;
 
+/**
+ * Class for handling all streams other than Twitch.tv streams
+ * 
+ * @author Niklas 21.01.2015
+ * 
+ */
 public class OtherStream implements GenericStream {
 
     private String channel;

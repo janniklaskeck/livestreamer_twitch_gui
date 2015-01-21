@@ -1,5 +1,10 @@
 package twitchlsgui;
 
+/**
+ * 
+ * @author Niklas 21.01.2015
+ * 
+ */
 public interface GenericStream {
 
     /**

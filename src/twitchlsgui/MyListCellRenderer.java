@@ -10,6 +10,12 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.Border;
 
+/**
+ * Custom CellRenderer to color and frame streams
+ * 
+ * @author Niklas 21.01.2015
+ * 
+ */
 public class MyListCellRenderer implements ListCellRenderer<JLabel> {
 
     private Border lineBorder = BorderFactory.createLineBorder(Color.BLACK, 1);

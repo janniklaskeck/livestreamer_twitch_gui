@@ -2,6 +2,11 @@ package twitchlsgui;
 
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author Niklas 21.01.2015
+ * 
+ */
 public class StreamList {
 
     private ArrayList<GenericStream> streamList;

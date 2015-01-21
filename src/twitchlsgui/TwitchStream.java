@@ -30,13 +30,18 @@ public class TwitchStream implements GenericStream {
     private boolean online = false;
     private String onlineString;
     private static ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    private Twitch_Stream ts;
 
     public TwitchStream(String channel) {
 	this.setChannel(channel);
     }
 
+    /**
+     * Refreshes all Information for the stream and downloads a preview image if
+     * the stream is online
+     */
     public void refresh() {
-	Twitch_Stream ts = Twitch_API.getStream(this.getChannel());
+	ts = Twitch_API.getStream(this.getChannel());
 	if (ts != null) {
 	    game = ts.getMeta_game();
 	    title = ts.getTitle();

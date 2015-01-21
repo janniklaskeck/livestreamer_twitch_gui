@@ -16,6 +16,11 @@ import javax.swing.event.DocumentListener;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
 
+/**
+ * 
+ * @author Niklas 21.01.2015
+ * 
+ */
 public class OptionsPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
@@ -166,48 +171,48 @@ public class OptionsPanel extends JPanel {
 	gbc_KBLabel.gridx = 1;
 	gbc_KBLabel.gridy = 5;
 	add(KBLabel, gbc_KBLabel);
-	
-		saveSettingsButton = new JButton("Save Settings");
-		saveSettingsButton.addActionListener(new ActionListener() {
 
-		    @Override
-		    public void actionPerformed(ActionEvent arg0) {
-			Main_GUI.cfgUtil.writeConfig();
+	saveSettingsButton = new JButton("Save Settings");
+	saveSettingsButton.addActionListener(new ActionListener() {
 
-		    }
-		});
-		
-		importButton = new JButton("Import Streams");
-		importButton.addActionListener(new ActionListener() {
-		    
-		    @Override
-		    public void actionPerformed(ActionEvent e) {
-			Main_GUI.cfgUtil.importStreams();
-		    }
-		});
-		GridBagConstraints gbc_importButton = new GridBagConstraints();
-		gbc_importButton.insets = new Insets(0, 0, 5, 0);
-		gbc_importButton.gridx = 1;
-		gbc_importButton.gridy = 6;
-		add(importButton, gbc_importButton);
-		GridBagConstraints gbc_saveSettingsButton = new GridBagConstraints();
-		gbc_saveSettingsButton.insets = new Insets(0, 0, 0, 5);
-		gbc_saveSettingsButton.gridx = 0;
-		gbc_saveSettingsButton.gridy = 7;
-		add(saveSettingsButton, gbc_saveSettingsButton);
-		
-		exportButton = new JButton("Export Streams");
-		exportButton.addActionListener(new ActionListener() {
-		    
-		    @Override
-		    public void actionPerformed(ActionEvent e) {
-			Main_GUI.cfgUtil.exportStreams();
-		    }
-		});
-		GridBagConstraints gbc_exportButton = new GridBagConstraints();
-		gbc_exportButton.gridx = 1;
-		gbc_exportButton.gridy = 7;
-		add(exportButton, gbc_exportButton);
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		Main_GUI.cfgUtil.writeConfig();
+
+	    }
+	});
+
+	importButton = new JButton("Import Streams");
+	importButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		Main_GUI.cfgUtil.importStreams();
+	    }
+	});
+	GridBagConstraints gbc_importButton = new GridBagConstraints();
+	gbc_importButton.insets = new Insets(0, 0, 5, 0);
+	gbc_importButton.gridx = 1;
+	gbc_importButton.gridy = 6;
+	add(importButton, gbc_importButton);
+	GridBagConstraints gbc_saveSettingsButton = new GridBagConstraints();
+	gbc_saveSettingsButton.insets = new Insets(0, 0, 0, 5);
+	gbc_saveSettingsButton.gridx = 0;
+	gbc_saveSettingsButton.gridy = 7;
+	add(saveSettingsButton, gbc_saveSettingsButton);
+
+	exportButton = new JButton("Export Streams");
+	exportButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		Main_GUI.cfgUtil.exportStreams();
+	    }
+	});
+	GridBagConstraints gbc_exportButton = new GridBagConstraints();
+	gbc_exportButton.gridx = 1;
+	gbc_exportButton.gridy = 7;
+	add(exportButton, gbc_exportButton);
     }
 
 }

@@ -5,6 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+/**
+ * Class the output from livestreamer to the console
+ * 
+ * @author Niklas 21.01.2015
+ * 
+ */
 public class PromptReader implements Runnable {
 
     private InputStream inputStream;

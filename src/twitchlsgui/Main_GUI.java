@@ -57,8 +57,8 @@ import twitchUpdate.StreamCheck;
 public class Main_GUI extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    public static ConfigUtil cfgUtil;
 
+    public static ConfigUtil cfgUtil;
     public static String currentStreamName = "";
     public static String currentQuality = "High";
     public static String customStreamName = "";
@@ -71,6 +71,14 @@ public class Main_GUI extends JFrame {
     public static JLabel updateStatus;
     public static ArrayList<StreamList> streamServicesList;
     public static int checkTimer = 30;
+    public static boolean canUpdate = true;
+    public static boolean streamPaneActive = true;
+    public static int downloadedBytes = 0;
+
+    private static BufferedImage small;
+    private static Graphics g;
+    private static Main_GUI frame;
+    private static JLabel previewLabel;
 
     private JPanel contentPane;
     private JPanel optionsPane;
@@ -78,16 +86,12 @@ public class Main_GUI extends JFrame {
     private JList<String> qualityList;
     private JList<JLabel> stream_list;
     private JTextField customStreamTF;
-    private static JLabel previewLabel;
     private JPanel previewPanel;
-    private static Main_GUI frame;
     private Thread checkThread;
     private boolean shiftPressed = false;
-    public static boolean canUpdate = true;
-
-    public static boolean streamPaneActive = true;
-
-    public static int downloadedBytes = 0;
+    private TwitchStream ts;
+    private GenericStream gs;
+    private String cmd;
 
     /**
      * Launch the application.
@@ -147,17 +151,18 @@ public class Main_GUI extends JFrame {
 	streamListModel.clear();
 	for (int i = 0; i < selectStreamService(currentStreamService)
 		.getStreamList().size(); i++) {
-
 	    streamListModel.addElement(new JLabel(selectStreamService(
 		    currentStreamService).getStreamList().get(i).getChannel()));
 	}
     }
 
+    /**
+     * Updates the streamservicelist
+     */
     public void updateServiceList() {
 	if (streamServicesBox != null) {
 	    streamServicesBox.removeAllItems();
 	    if (streamServicesList.size() == 0) {
-		System.out.println("service list is empty");
 		streamServicesList.add(new StreamList("twitch.tv", "Twitch"));
 	    }
 
@@ -596,9 +601,9 @@ public class Main_GUI extends JFrame {
     public static void setPreviewImage(BufferedImage prev) {
 	int newWidth = 176;
 	int newHeight = 99;
-	BufferedImage small = new BufferedImage(newWidth, newHeight,
+	small = new BufferedImage(newWidth, newHeight,
 		BufferedImage.TYPE_INT_RGB);
-	Graphics g = small.createGraphics();
+	g = small.createGraphics();
 	if (prev != null && showPreview) {
 	    g.drawImage(prev, 0, 0, newWidth, newHeight, null);
 	} else {
@@ -629,7 +634,7 @@ public class Main_GUI extends JFrame {
 	    if (currentStreamService.equals("twitch.tv")) {
 		for (int i = 0; i < selectStreamService(currentStreamService)
 			.getStreamList().size(); i++) {
-		    TwitchStream ts = (TwitchStream) selectStreamService(
+		    ts = (TwitchStream) selectStreamService(
 			    currentStreamService).getStreamList().get(i);
 		    if (ts.getChannel().equals(currentStreamName)) {
 			if (ts.isOnline()) {
@@ -644,9 +649,9 @@ public class Main_GUI extends JFrame {
 	    } else {
 		for (int i = 0; i < selectStreamService(currentStreamService)
 			.getStreamList().size(); i++) {
-		    GenericStream ts = selectStreamService(currentStreamService)
+		    gs = selectStreamService(currentStreamService)
 			    .getStreamList().get(i);
-		    if (ts.getChannel().equals(currentStreamName)) {
+		    if (gs.getChannel().equals(currentStreamName)) {
 			onlineStatus.setText("No Stream Information");
 			setPreviewImage(null);
 		    }
@@ -655,7 +660,6 @@ public class Main_GUI extends JFrame {
 	} else {
 	    currentStreamName = "";
 	}
-	// showLivePopup(currentStreamName);
     }
 
     /**
@@ -686,6 +690,9 @@ public class Main_GUI extends JFrame {
 	return null;
     }
 
+    /**
+     * Opens a Dialog to add a stream/streamService when pressed
+     */
     private void addButton() {
 	if (shiftPressed) {
 	    JTextField urlField = new JTextField(20);
@@ -729,6 +736,9 @@ public class Main_GUI extends JFrame {
 	}
     }
 
+    /**
+     * Removes the currently selected stream/streamService when pressed
+     */
     public void removeButton() {
 	if (shiftPressed && streamServicesBox.getItemCount() > 1) {
 	    for (int i = 0; i < streamServicesList.size(); i++) {
@@ -754,13 +764,14 @@ public class Main_GUI extends JFrame {
     }
 
     /**
+     * Creates a process and starts livestreamer with the parameters
      * 
      * @param name
      * @param quality
      */
     public void OpenStream(String name, String quality) {
-	String cmd = "livestreamer " + Main_GUI.currentStreamService + "/"
-		+ name + " " + quality;
+	cmd = "livestreamer " + Main_GUI.currentStreamService + "/" + name
+		+ " " + quality;
 	try {
 	    Process prc = Runtime.getRuntime().exec(cmd);
 	    Thread reader = new Thread(new PromptReader(prc.getInputStream()));

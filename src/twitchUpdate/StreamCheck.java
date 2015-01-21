@@ -8,6 +8,7 @@ import twitchlsgui.OptionsPanel;
 import twitchlsgui.TwitchStream;
 
 /**
+ * Constant running thread which checks regulary for stream updates
  * 
  * @author Niklas 28.06.2014
  * 
@@ -32,6 +33,9 @@ public class StreamCheck implements Runnable {
 
     }
 
+    /**
+     * Starts a thread for every Twitch.tv stream to update it
+     */
     public static void update() {
 	Main_GUI.canUpdate = false;
 	streamList = Main_GUI.selectStreamService("twitch.tv").getStreamList();

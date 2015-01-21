@@ -12,6 +12,13 @@ import com.google.gson.JsonObject;
 public class Twitch_API {
     public static Gson gson = new Gson();
 
+    /**
+     * Downloads the content from the Twitch.tv API to be processed as JSON into
+     * a Twitch_Stream
+     * 
+     * @param channelname
+     * @return
+     */
     public static Twitch_Stream getStream(String channelname) {
 	try {
 	    String json = readJsonFromUrl("https://api.twitch.tv/kraken/streams/"
@@ -42,6 +49,14 @@ public class Twitch_API {
 	return null;
     }
 
+    /**
+     * Responsible for downloading the source from an URL and returning it as a
+     * String
+     * 
+     * @param urlString
+     * @return
+     * @throws Exception
+     */
     public static String readJsonFromUrl(String urlString) throws Exception {
 	BufferedReader reader = null;
 	try {
