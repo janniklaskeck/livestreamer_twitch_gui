@@ -13,8 +13,6 @@ import com.google.gson.JsonObject;
 public class Twitch_API {
     private static Gson gson = new Gson();
     private static String jsonString;
-    private static JsonObject a;
-    private static JsonObject b;
 
     /**
      * Downloads the content from the Twitch.tv API to be processed as JSON into
@@ -24,7 +22,10 @@ public class Twitch_API {
      * @return
      */
     public static Twitch_Stream getStream(String channelname) {
+	JsonObject a = null;
+	JsonObject b = null;
 	try {
+
 	    jsonString = readJsonFromUrl("https://api.twitch.tv/kraken/streams/"
 		    + channelname);
 	    if (jsonString != null) {
