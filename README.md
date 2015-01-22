@@ -37,3 +37,4 @@ Preview Image:<br>
 Planned Features:<br>
 - Window resizing
 - Error output window
+- New Version checker

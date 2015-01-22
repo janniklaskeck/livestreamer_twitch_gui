@@ -10,6 +10,8 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.Border;
 
+import stream.TwitchStream;
+
 /**
  * Custom CellRenderer to color and frame streams
  * 

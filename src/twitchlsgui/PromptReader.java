@@ -28,7 +28,8 @@ public class PromptReader implements Runnable {
 	    while ((s = stdInput.readLine()) != null)
 		System.out.println(s);
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    if (Main_GUI._DEBUG)
+		e.printStackTrace();
 	}
     }
 }

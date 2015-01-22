@@ -47,6 +47,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import stream.GenericStream;
+import stream.StreamList;
+import stream.TwitchStream;
 import twitchUpdate.StreamCheck;
 
 /**
@@ -55,6 +58,8 @@ import twitchUpdate.StreamCheck;
  * 
  */
 public class Main_GUI extends JFrame {
+
+    public static boolean _DEBUG = false;
 
     private static final long serialVersionUID = 1L;
 
@@ -137,7 +142,8 @@ public class Main_GUI extends JFrame {
 			}
 		    });
 		} catch (Exception e) {
-		    e.printStackTrace();
+		    if (Main_GUI._DEBUG)
+			e.printStackTrace();
 		}
 		setPreviewImage(null);
 	    }
@@ -777,7 +783,19 @@ public class Main_GUI extends JFrame {
 	    Thread reader = new Thread(new PromptReader(prc.getInputStream()));
 	    reader.start();
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    if (Main_GUI._DEBUG)
+		e.printStackTrace();
 	}
+    }
+
+    /**
+     * Display a Message box containing message
+     * 
+     * @param message
+     */
+    public void displayMessage(String message) {
+	JPanel msgPanel = new JPanel();
+	msgPanel.add(new JLabel(message));
+	JOptionPane.showMessageDialog(this, msgPanel);
     }
 }

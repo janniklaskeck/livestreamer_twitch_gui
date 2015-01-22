@@ -32,6 +32,7 @@ public class OptionsPanel extends JPanel {
     private JButton saveSettingsButton;
     private JButton exportButton;
     private JButton importButton;
+    private JCheckBox debugCheckBox;
 
     public OptionsPanel() {
 	setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -149,13 +150,19 @@ public class OptionsPanel extends JPanel {
 	add(timeIntervalTextField, gbc_timeIntervalTextField);
 	timeIntervalTextField.setColumns(1);
 
-	JCheckBox unusedCheckBox = new JCheckBox("Unused");
-	GridBagConstraints gbc_unusedCheckBox = new GridBagConstraints();
-	gbc_unusedCheckBox.fill = GridBagConstraints.BOTH;
-	gbc_unusedCheckBox.insets = new Insets(0, 0, 5, 5);
-	gbc_unusedCheckBox.gridx = 0;
-	gbc_unusedCheckBox.gridy = 4;
-	add(unusedCheckBox, gbc_unusedCheckBox);
+	debugCheckBox = new JCheckBox("Enable Debug Output");
+	debugCheckBox.addActionListener(new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		Main_GUI._DEBUG = debugCheckBox.isSelected();
+	    }
+	});
+	GridBagConstraints gbc_debugCheckBox = new GridBagConstraints();
+	gbc_debugCheckBox.fill = GridBagConstraints.BOTH;
+	gbc_debugCheckBox.insets = new Insets(0, 0, 5, 5);
+	gbc_debugCheckBox.gridx = 0;
+	gbc_debugCheckBox.gridy = 4;
+	add(debugCheckBox, gbc_debugCheckBox);
 
 	JLabel estKBDownloadedLabel = new JLabel(
 		"Estimated kB downloaded per Twitch.tv List update: ");

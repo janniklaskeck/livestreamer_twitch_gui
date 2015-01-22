@@ -10,8 +10,13 @@ import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import stream.GenericStream;
+import stream.OtherStream;
+import stream.StreamList;
+import stream.TwitchStream;
+import twitchAPI.Twitch_API;
 
 /**
  * Config class
@@ -29,18 +34,31 @@ public class ConfigUtil {
     private final String STREAMSERVICES = "streamservices";
     private final String AUTOUPDATE = "autoupdate";
 
-    private JFrame parent;
+    private Main_GUI parent;
 
     /**
      * Constructor Responsible for loading and saving the settings and streams
      */
-    public ConfigUtil(JFrame parent) {
+    public ConfigUtil(Main_GUI parent) {
 	// set registry path for saving
 	myPrefs = Preferences.userNodeForPackage(twitchlsgui.Main_GUI.class);
 	// read config on creation
 	readConfig();
 	// reference need for import/export
 	this.parent = parent;
+    }
+
+    /**
+     * Checks for errors while retrieving information for the Twitch.tv stream
+     * 
+     * @param stream
+     * @return true if there is no error, false otherwise
+     */
+    private boolean streamExists(String stream) {
+	if (Twitch_API.checkTwitch(stream) != null) {
+	    return true;
+	}
+	return false;
     }
 
     /**
@@ -59,8 +77,14 @@ public class ConfigUtil {
 	    Main_GUI.selectStreamService(streamService).getStreamList()
 		    .add(new OtherStream(stream));
 	} else {
-	    Main_GUI.selectStreamService(streamService).getStreamList()
-		    .add(new TwitchStream(stream));
+	    if (streamExists(stream)) {
+		Main_GUI.selectStreamService(streamService).getStreamList()
+			.add(new TwitchStream(stream));
+	    } else {
+		parent.displayMessage("This stream doesn't seem to exist."
+			+ System.lineSeparator()
+			+ "Check if you spelled it correct.");
+	    }
 	}
 	writeStreams(streamService);
     }
@@ -104,7 +128,6 @@ public class ConfigUtil {
 		Main_GUI.streamServicesList.add(new StreamList(s, myPrefs.get(s
 			+ "_displayname", s)));
 	}
-
     }
 
     /**
@@ -129,7 +152,6 @@ public class ConfigUtil {
 			new OtherStream(streams_split[i]));
 	    }
 	}
-
     }
 
     /**
@@ -245,7 +267,6 @@ public class ConfigUtil {
 				} else {
 				    saveStream(stream, lastService);
 				}
-
 			    }
 			}
 		    }
@@ -253,7 +274,8 @@ public class ConfigUtil {
 		}
 		br.close();
 	    } catch (Exception e) {
-		e.printStackTrace();
+		if (Main_GUI._DEBUG)
+		    e.printStackTrace();
 	    }
 	}
 	jfc.setVisible(false);
@@ -306,7 +328,8 @@ public class ConfigUtil {
 		}
 		output.close();
 	    } catch (IOException e) {
-		e.printStackTrace();
+		if (Main_GUI._DEBUG)
+		    e.printStackTrace();
 	    }
 	}
 	jfc.setVisible(false);

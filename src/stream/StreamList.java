@@ -1,4 +1,4 @@
-package twitchlsgui;
+package stream;
 
 import java.util.ArrayList;
 

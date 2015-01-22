@@ -1,4 +1,4 @@
-package twitchlsgui;
+package stream;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import twitchAPI.Twitch_API;
 import twitchAPI.Twitch_Stream;
+import twitchlsgui.Main_GUI;
 
 public class TwitchStream implements GenericStream {
 
@@ -71,7 +72,8 @@ public class TwitchStream implements GenericStream {
 			boolean rw = ImageIO.write(preview, "PNG", bos);
 			Main_GUI.downloadedBytes += bos.toByteArray().length;
 		    } catch (IOException e) {
-			e.printStackTrace();
+			if (Main_GUI._DEBUG)
+			    e.printStackTrace();
 		    }
 		    if (preview != null) {
 			break;
@@ -168,7 +170,8 @@ public class TwitchStream implements GenericStream {
 	try {
 	    d = fm.parse(dateS);
 	} catch (ParseException e) {
-	    e.printStackTrace();
+	    if (Main_GUI._DEBUG)
+		e.printStackTrace();
 	}
 	return d.getTime();
     }

@@ -1,4 +1,4 @@
-package twitchlsgui;
+package stream;
 
 /**
  * Class for handling all streams other than Twitch.tv streams

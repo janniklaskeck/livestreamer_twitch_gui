@@ -1,6 +1,7 @@
 package twitchAPI;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
@@ -10,7 +11,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 public class Twitch_API {
-    public static Gson gson = new Gson();
+    private static Gson gson = new Gson();
+    private static String jsonString;
+    private static JsonObject a;
+    private static JsonObject b;
 
     /**
      * Downloads the content from the Twitch.tv API to be processed as JSON into
@@ -21,30 +25,29 @@ public class Twitch_API {
      */
     public static Twitch_Stream getStream(String channelname) {
 	try {
-	    String json = readJsonFromUrl("https://api.twitch.tv/kraken/streams/"
+	    jsonString = readJsonFromUrl("https://api.twitch.tv/kraken/streams/"
 		    + channelname);
-
-	    Twitch_Stream stream = new Twitch_Stream();
-
-	    JsonObject a = gson.fromJson(json, JsonObject.class);
-	    JsonObject b = null;
-	    if (a.get("stream") != null) {
-		if (!a.get("stream").toString().equals("null")) {
-		    b = gson.fromJson(a.get("stream").toString(),
-			    JsonObject.class);
+	    if (jsonString != null) {
+		Twitch_Stream stream = new Twitch_Stream();
+		a = gson.fromJson(jsonString, JsonObject.class);
+		if (a.get("stream") != null) {
+		    if (!a.get("stream").toString().equals("null")) {
+			b = gson.fromJson(a.get("stream").toString(),
+				JsonObject.class);
+		    }
 		}
-	    }
-
-	    if (b != null) {
-		stream.setOnline(true);
-		stream.load(b);
-	    } else {
-		stream.setOnline(false);
+		if (b != null) {
+		    stream.setOnline(true);
+		    stream.load(b);
+		} else {
+		    stream.setOnline(false);
+		    return stream;
+		}
 		return stream;
 	    }
-	    return stream;
-	} catch (Exception error) {
-	    error.printStackTrace();
+	} catch (Exception e) {
+	    if (Main_GUI._DEBUG)
+		e.printStackTrace();
 	}
 	return null;
     }
@@ -55,9 +58,8 @@ public class Twitch_API {
      * 
      * @param urlString
      * @return
-     * @throws Exception
      */
-    public static String readJsonFromUrl(String urlString) throws Exception {
+    public static String readJsonFromUrl(String urlString) {
 	BufferedReader reader = null;
 	try {
 	    URL url = new URL(urlString);
@@ -65,14 +67,23 @@ public class Twitch_API {
 	    StringBuffer buffer = new StringBuffer();
 	    int read;
 	    char[] chars = new char[1024];
-	    while ((read = reader.read(chars)) != -1)
+	    while ((read = reader.read(chars)) != -1) {
 		buffer.append(chars, 0, read);
+	    }
 	    Main_GUI.downloadedBytes += buffer.toString().getBytes("UTF-8").length;
-	    return buffer.toString();
-
-	} finally {
-	    if (reader != null)
+	    if (reader != null) {
 		reader.close();
+	    }
+	    return buffer.toString();
+	} catch (IOException e) {
+	    if (Main_GUI._DEBUG)
+		e.printStackTrace();
+	    return null;
 	}
+    }
+
+    public static String checkTwitch(String channelname) {
+	return readJsonFromUrl("https://api.twitch.tv/kraken/streams/"
+		+ channelname);
     }
 }

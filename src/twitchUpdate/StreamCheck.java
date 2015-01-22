@@ -2,10 +2,10 @@ package twitchUpdate;
 
 import java.util.ArrayList;
 
-import twitchlsgui.GenericStream;
+import stream.GenericStream;
+import stream.TwitchStream;
 import twitchlsgui.Main_GUI;
 import twitchlsgui.OptionsPanel;
-import twitchlsgui.TwitchStream;
 
 /**
  * Constant running thread which checks regulary for stream updates
@@ -27,7 +27,8 @@ public class StreamCheck implements Runnable {
 	    try {
 		Thread.sleep(Main_GUI.checkTimer * 1000);
 	    } catch (InterruptedException e) {
-		e.printStackTrace();
+		if (Main_GUI._DEBUG)
+		    e.printStackTrace();
 	    }
 	}
 

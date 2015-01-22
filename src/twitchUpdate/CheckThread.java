@@ -2,8 +2,8 @@ package twitchUpdate;
 
 import java.util.ArrayList;
 
-import twitchlsgui.GenericStream;
-import twitchlsgui.TwitchStream;
+import stream.GenericStream;
+import stream.TwitchStream;
 
 /**
  * Simple runnable to refresh all streams from a streamList
