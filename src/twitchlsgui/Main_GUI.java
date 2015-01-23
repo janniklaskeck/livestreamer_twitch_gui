@@ -108,7 +108,7 @@ public class Main_GUI extends JFrame {
 		try {
 		    frame = new Main_GUI();
 		    frame.setVisible(true);
-		    frame.setTitle("Twitch.tv Livestreamer GUI");
+		    frame.setTitle("Livestreamer GUI");
 		    UIManager.setLookAndFeel(UIManager
 			    .getSystemLookAndFeelClassName());
 		    frame.addWindowListener(new WindowListener() {
