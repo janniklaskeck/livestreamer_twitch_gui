@@ -1,6 +1,7 @@
 package twitchlsgui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
@@ -22,9 +23,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.AbstractListModel;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -59,7 +60,7 @@ import twitchUpdate.StreamCheck;
  */
 public class Main_GUI extends JFrame {
 
-    public static final Version VERSION = new Version(1, 4, 4, 0);
+    public static final Version VERSION = new Version(1, 5, 0, 0);
     public static boolean _DEBUG = false;
 
     private static final long serialVersionUID = 1L;
@@ -89,7 +90,6 @@ public class Main_GUI extends JFrame {
     private JPanel contentPane;
     private JPanel optionsPane;
     private JPanel innerContentPane;
-    private JList<String> qualityList;
     private JList<JLabel> stream_list;
     private JTextField customStreamTF;
     private JPanel previewPanel;
@@ -98,6 +98,7 @@ public class Main_GUI extends JFrame {
     private TwitchStream ts;
     private GenericStream gs;
     private String cmd;
+    private JComboBox<String> qualityComboBox;
 
     /**
      * Launch the application.
@@ -112,7 +113,6 @@ public class Main_GUI extends JFrame {
 		    UIManager.setLookAndFeel(UIManager
 			    .getSystemLookAndFeelClassName());
 		    frame.addWindowListener(new WindowListener() {
-
 			@Override
 			public void windowOpened(WindowEvent arg0) {
 			}
@@ -221,7 +221,7 @@ public class Main_GUI extends JFrame {
 	stream_panel.add(scrollPane, BorderLayout.NORTH);
 
 	stream_list = new JList<JLabel>();
-	stream_list.setVisibleRowCount(10);
+	stream_list.setVisibleRowCount(9);
 	stream_list.setCellRenderer(new MyListCellRenderer());
 	stream_list.setModel(streamListModel);
 	stream_list.addListSelectionListener(new ListSelectionListener() {
@@ -281,7 +281,7 @@ public class Main_GUI extends JFrame {
 	JPanel custom_StreamPanel = new JPanel();
 	stream_panel.add(custom_StreamPanel, BorderLayout.SOUTH);
 	GridBagLayout gbl_custom_StreamPanel = new GridBagLayout();
-	gbl_custom_StreamPanel.columnWidths = new int[] { 307 };
+	gbl_custom_StreamPanel.columnWidths = new int[] {280};
 	gbl_custom_StreamPanel.rowHeights = new int[] { 20, 20, 80 };
 	gbl_custom_StreamPanel.columnWeights = new double[] { 0.0 };
 	gbl_custom_StreamPanel.rowWeights = new double[] { 0.0, 0.0, 0.0 };
@@ -291,7 +291,7 @@ public class Main_GUI extends JFrame {
 	lblCustomStream.setHorizontalAlignment(SwingConstants.CENTER);
 	GridBagConstraints gbc_lblCustomStream = new GridBagConstraints();
 	gbc_lblCustomStream.fill = GridBagConstraints.BOTH;
-	gbc_lblCustomStream.insets = new Insets(0, 0, 5, 0);
+	gbc_lblCustomStream.insets = new Insets(0, 0, 5, 5);
 	gbc_lblCustomStream.gridx = 0;
 	gbc_lblCustomStream.gridy = 0;
 	custom_StreamPanel.add(lblCustomStream, gbc_lblCustomStream);
@@ -336,13 +336,16 @@ public class Main_GUI extends JFrame {
 	gbc_onlineStatus.gridy = 2;
 	custom_StreamPanel.add(onlineStatus, gbc_onlineStatus);
 
+	Component verticalStrut = Box.createVerticalStrut(5);
+	stream_panel.add(verticalStrut, BorderLayout.CENTER);
+
 	JPanel middle_panel = new JPanel();
 	innerContentPane.add(middle_panel, BorderLayout.EAST);
 	middle_panel.setMaximumSize(new Dimension(200, 200));
 	GridBagLayout gbl_middle_panel = new GridBagLayout();
 	gbl_middle_panel.setConstraints(middle_panel, gbc_middle_panel);
-	gbl_middle_panel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
-	gbl_middle_panel.rowHeights = new int[] { 0, 0, 0, 0, 0 };
+	gbl_middle_panel.columnWidths = new int[] {0};
+	gbl_middle_panel.rowHeights = new int[] {40, 40, 99, 0, 20};
 	gbl_middle_panel.columnWeights = new double[] { 1.0, 1.0, 1.0, 1.0, 1.0 };
 	gbl_middle_panel.rowWeights = new double[] { 1.0, 1.0, 1.0, 1.0 };
 	middle_panel.setLayout(gbl_middle_panel);
@@ -359,97 +362,6 @@ public class Main_GUI extends JFrame {
 		OpenStream(currentStreamName, currentQuality);
 	    }
 	});
-
-	JPanel panel = new JPanel();
-	GridBagConstraints gbc_panel = new GridBagConstraints();
-	gbc_panel.fill = GridBagConstraints.VERTICAL;
-	gbc_panel.insets = new Insets(0, 0, 5, 5);
-	gbc_panel.gridx = 3;
-	gbc_panel.gridy = 0;
-	middle_panel.add(panel, gbc_panel);
-	GridBagLayout gbl_panel = new GridBagLayout();
-	gbl_panel.columnWidths = new int[] { 0, 0 };
-	gbl_panel.rowHeights = new int[] { 0, 0, 0 };
-	gbl_panel.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
-	gbl_panel.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-	panel.setLayout(gbl_panel);
-
-	JButton addButton = new JButton("");
-	addButton.setIcon(new ImageIcon(Main_GUI.class
-		.getResource("/twitchlsgui/plus.png")));
-	addButton.setToolTipText("Add custom Stream to List");
-	addButton.addActionListener(new ActionListener() {
-	    public void actionPerformed(ActionEvent arg0) {
-		addButton();
-	    }
-	});
-	addButton.addKeyListener(new KeyListener() {
-
-	    @Override
-	    public void keyTyped(KeyEvent arg0) {
-
-	    }
-
-	    @Override
-	    public void keyReleased(KeyEvent event) {
-		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
-		    shiftPressed = false;
-		}
-
-	    }
-
-	    @Override
-	    public void keyPressed(KeyEvent event) {
-		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
-		    shiftPressed = true;
-		}
-
-	    }
-	});
-	GridBagConstraints gbc_addButton = new GridBagConstraints();
-	gbc_addButton.insets = new Insets(0, 0, 5, 0);
-	gbc_addButton.gridx = 0;
-	gbc_addButton.gridy = 0;
-	panel.add(addButton, gbc_addButton);
-
-	JButton removeButton = new JButton("");
-	removeButton.setIcon(new ImageIcon(Main_GUI.class
-		.getResource("/twitchlsgui/minus.png")));
-	removeButton.setToolTipText("Remove selected Stream");
-	removeButton.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-		removeButton();
-	    }
-	});
-	removeButton.addKeyListener(new KeyListener() {
-
-	    @Override
-	    public void keyTyped(KeyEvent arg0) {
-
-	    }
-
-	    @Override
-	    public void keyReleased(KeyEvent event) {
-		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
-		    shiftPressed = false;
-		}
-
-	    }
-
-	    @Override
-	    public void keyPressed(KeyEvent event) {
-		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
-		    shiftPressed = true;
-		}
-
-	    }
-	});
-	GridBagConstraints gbc_removeButton = new GridBagConstraints();
-	gbc_removeButton.gridx = 0;
-	gbc_removeButton.gridy = 1;
-	panel.add(removeButton, gbc_removeButton);
 	middle_panel.add(startStreambutton, gbc_startStreambutton);
 
 	JButton startCustomStreamBtn = new JButton("Start Custom VLC Stream");
@@ -466,64 +378,7 @@ public class Main_GUI extends JFrame {
 		}
 	    }
 	});
-
-	qualityList = new JList<String>();
-	qualityList.setModel(new AbstractListModel<String>() {
-
-	    private static final long serialVersionUID = 1L;
-	    String[] values = new String[] { "Worst", "Low", "Medium", "High",
-		    "Best" };
-
-	    public int getSize() {
-		return values.length;
-	    }
-
-	    public String getElementAt(int index) {
-		return values[index];
-	    }
-	});
-
-	qualityList.addListSelectionListener(new ListSelectionListener() {
-
-	    @Override
-	    public void valueChanged(ListSelectionEvent event) {
-		setQuality(event);
-	    }
-	});
-
-	qualityList.setVisibleRowCount(5);
-	qualityList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	GridBagConstraints gbc_qualityList = new GridBagConstraints();
-	gbc_qualityList.insets = new Insets(0, 0, 5, 5);
-	gbc_qualityList.gridx = 3;
-	gbc_qualityList.gridy = 1;
-	middle_panel.add(qualityList, gbc_qualityList);
-	for (int i = 0; i < qualityList.getModel().getSize(); i++) {
-	    if (currentQuality.equals(qualityList.getModel().getElementAt(i))) {
-		qualityList.setSelectedIndex(i);
-	    }
-	}
 	middle_panel.add(startCustomStreamBtn, gbc_startCustomStreamBtn);
-
-	JButton refreshButton = new JButton("");
-	refreshButton.addActionListener(new ActionListener() {
-
-	    @Override
-	    public void actionPerformed(ActionEvent arg0) {
-		if (canUpdate) {
-		    StreamCheck.update();
-		}
-	    }
-	});
-	refreshButton
-		.setToolTipText("Runs an update on the Twitch.tv stream list");
-	refreshButton.setIcon(new ImageIcon(Main_GUI.class
-		.getResource("/twitchlsgui/refresh.png")));
-	GridBagConstraints gbc_refreshButton = new GridBagConstraints();
-	gbc_refreshButton.insets = new Insets(0, 0, 5, 5);
-	gbc_refreshButton.gridx = 3;
-	gbc_refreshButton.gridy = 2;
-	middle_panel.add(refreshButton, gbc_refreshButton);
 
 	previewPanel = new JPanel();
 	previewLabel = new JLabel();
@@ -595,6 +450,120 @@ public class Main_GUI extends JFrame {
 	});
 	toolBar.add(optionsPaneButton);
 
+	qualityComboBox = new JComboBox<String>();
+	qualityComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {
+		"Worst", "Low", "Medium", "High", "Best" }));
+
+	for (int i = 0; i < qualityComboBox.getModel().getSize(); i++) {
+	    if (currentQuality.equals(qualityComboBox.getModel()
+		    .getElementAt(i))) {
+		qualityComboBox.setSelectedIndex(i);
+	    }
+	}
+	qualityComboBox.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		setQuality();
+	    }
+	});
+	Component horizontalStrut_1 = Box.createHorizontalStrut(20);
+	toolBar.add(horizontalStrut_1);
+
+	JLabel lblQuality = new JLabel("Quality: ");
+	toolBar.add(lblQuality);
+	qualityComboBox.setMaximumRowCount(5);
+	toolBar.add(qualityComboBox);
+
+	JButton addButton = new JButton("");
+	toolBar.add(addButton);
+	addButton.setIcon(new ImageIcon(Main_GUI.class
+		.getResource("/twitchlsgui/plus.png")));
+	addButton.setToolTipText("Add custom Stream to List");
+	addButton.addActionListener(new ActionListener() {
+	    public void actionPerformed(ActionEvent arg0) {
+		addButton();
+	    }
+	});
+	addButton.addKeyListener(new KeyListener() {
+
+	    @Override
+	    public void keyTyped(KeyEvent arg0) {
+
+	    }
+
+	    @Override
+	    public void keyReleased(KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
+		    shiftPressed = false;
+		}
+
+	    }
+
+	    @Override
+	    public void keyPressed(KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
+		    shiftPressed = true;
+		}
+
+	    }
+	});
+
+	JButton removeButton = new JButton("");
+	toolBar.add(removeButton);
+	removeButton.setIcon(new ImageIcon(Main_GUI.class
+		.getResource("/twitchlsgui/minus.png")));
+	removeButton.setToolTipText("Remove selected Stream");
+	removeButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		removeButton();
+	    }
+	});
+	removeButton.addKeyListener(new KeyListener() {
+
+	    @Override
+	    public void keyTyped(KeyEvent arg0) {
+
+	    }
+
+	    @Override
+	    public void keyReleased(KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
+		    shiftPressed = false;
+		}
+
+	    }
+
+	    @Override
+	    public void keyPressed(KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
+		    shiftPressed = true;
+		}
+
+	    }
+	});
+
+	JButton refreshButton = new JButton("");
+	toolBar.add(refreshButton);
+	refreshButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		if (canUpdate) {
+		    StreamCheck.update();
+		}
+	    }
+	});
+	refreshButton
+		.setToolTipText("Runs an update on the Twitch.tv stream list");
+	refreshButton.setIcon(new ImageIcon(Main_GUI.class
+		.getResource("/twitchlsgui/refresh.png")));
+
+	Component horizontalStrut = Box.createHorizontalStrut(350);
+	toolBar.add(horizontalStrut);
+
 	// start checker thread
 	checkThread = new Thread(new StreamCheck());
 	checkThread.start();
@@ -606,8 +575,8 @@ public class Main_GUI extends JFrame {
      * @param prev
      */
     public static void setPreviewImage(BufferedImage prev) {
-	int newWidth = 176;
-	int newHeight = 99;
+	int newWidth = 267;
+	int newHeight = 150;
 	small = new BufferedImage(newWidth, newHeight,
 		BufferedImage.TYPE_INT_RGB);
 	g = small.createGraphics();
@@ -626,8 +595,9 @@ public class Main_GUI extends JFrame {
      * 
      * @param event
      */
-    private void setQuality(ListSelectionEvent event) {
-	currentQuality = qualityList.getSelectedValue();
+    private void setQuality() {
+	currentQuality = qualityComboBox.getModel().getSelectedItem()
+		.toString();
     }
 
     /**
