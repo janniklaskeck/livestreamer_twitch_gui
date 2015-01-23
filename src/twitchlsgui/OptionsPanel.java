@@ -1,20 +1,29 @@
 package twitchlsgui;
 
+import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.SwingConstants;
-import javax.swing.JButton;
 
 /**
  * 
@@ -23,6 +32,8 @@ import javax.swing.JButton;
  */
 public class OptionsPanel extends JPanel {
 
+    private static final String versionURL = "https://raw.githubusercontent.com/westerwave/livestreamer_twitch_gui/master/VERSION";
+    private static final String downloadURL = "https://github.com/westerwave/livestreamer_twitch_gui/releases/tag/v1.x";
     private static final long serialVersionUID = 1L;
     private JTextField timeIntervalTextField;
     private JCheckBox showPreviewCheckBox;
@@ -33,15 +44,18 @@ public class OptionsPanel extends JPanel {
     private JButton exportButton;
     private JButton importButton;
     private JCheckBox debugCheckBox;
+    private JLabel lblCurrentVersion;
+    private JLabel lblNewVersion;
 
     public OptionsPanel() {
 	setBorder(new EmptyBorder(5, 5, 5, 5));
 	GridBagLayout gridBagLayout = new GridBagLayout();
 	gridBagLayout.columnWidths = new int[] { 290, 150 };
-	gridBagLayout.rowHeights = new int[] { 20, 20, 20, 20, 20, 0, 0, 0 };
+	gridBagLayout.rowHeights = new int[] { 20, 20, 20, 20, 20, 0, 0, 0, 0,
+		0 };
 	gridBagLayout.columnWeights = new double[] { 0.0, 0.0 };
 	gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-		0.0, 0.0 };
+		0.0, 0.0, 0.0, 0.0 };
 	setLayout(gridBagLayout);
 
 	showPreviewCheckBox = new JCheckBox("Download Preview Image");
@@ -203,7 +217,7 @@ public class OptionsPanel extends JPanel {
 	gbc_importButton.gridy = 6;
 	add(importButton, gbc_importButton);
 	GridBagConstraints gbc_saveSettingsButton = new GridBagConstraints();
-	gbc_saveSettingsButton.insets = new Insets(0, 0, 0, 5);
+	gbc_saveSettingsButton.insets = new Insets(0, 0, 5, 5);
 	gbc_saveSettingsButton.gridx = 0;
 	gbc_saveSettingsButton.gridy = 7;
 	add(saveSettingsButton, gbc_saveSettingsButton);
@@ -217,9 +231,65 @@ public class OptionsPanel extends JPanel {
 	    }
 	});
 	GridBagConstraints gbc_exportButton = new GridBagConstraints();
+	gbc_exportButton.insets = new Insets(0, 0, 5, 0);
 	gbc_exportButton.gridx = 1;
 	gbc_exportButton.gridy = 7;
 	add(exportButton, gbc_exportButton);
+
+	lblCurrentVersion = new JLabel("Current Version: "
+		+ Main_GUI.VERSION.asString());
+	GridBagConstraints gbc_lblCurrentVersion = new GridBagConstraints();
+	gbc_lblCurrentVersion.insets = new Insets(0, 0, 5, 5);
+	gbc_lblCurrentVersion.gridx = 0;
+	gbc_lblCurrentVersion.gridy = 8;
+	add(lblCurrentVersion, gbc_lblCurrentVersion);
+
+	lblNewVersion = new JLabel("No new Version available");
+	GridBagConstraints gbc_lblNewVersion = new GridBagConstraints();
+	gbc_lblNewVersion.insets = new Insets(0, 0, 0, 5);
+	gbc_lblNewVersion.gridx = 0;
+	gbc_lblNewVersion.gridy = 9;
+	add(lblNewVersion, gbc_lblNewVersion);
+	if (checkForNewVersion()) {
+	    lblNewVersion
+		    .setText("<html>New Version available!<br>Click here to open the Download Website</html>");
+	    lblNewVersion.addMouseListener(new MouseAdapter() {
+		@Override
+		public void mouseClicked(MouseEvent event) {
+		    try {
+			Desktop.getDesktop().browse(new URI(downloadURL));
+		    } catch (URISyntaxException | IOException e) {
+			if (Main_GUI._DEBUG)
+			    e.printStackTrace();
+		    }
+		}
+	    });
+	}
     }
 
+    private boolean checkForNewVersion() {
+	BufferedReader reader = null;
+	Version version = new Version();
+	try {
+	    URL url = new URL(versionURL);
+	    reader = new BufferedReader(new InputStreamReader(url.openStream()));
+	    StringBuffer buffer = new StringBuffer();
+	    int read;
+	    char[] chars = new char[1024];
+	    while ((read = reader.read(chars)) != -1) {
+		buffer.append(chars, 0, read);
+	    }
+	    if (reader != null) {
+		reader.close();
+	    }
+	    version = new Version(buffer.toString());
+	    if (Main_GUI.VERSION.isNewerVersion(version)) {
+		return true;
+	    }
+	} catch (IOException e) {
+	    if (Main_GUI._DEBUG)
+		e.printStackTrace();
+	}
+	return false;
+    }
 }
