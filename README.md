@@ -1,7 +1,8 @@
 livestreamer_twitch_gui
 =======================
-GUI for the livestreamer application (http://livestreamer.tanuki.se/)
-Uses Gson from https://code.google.com/p/google-gson/
+GUI for the livestreamer application (http://livestreamer.tanuki.se/)<br>
+Uses Gson from https://code.google.com/p/google-gson/ and
+PIrcBot from http://www.jibble.org/pircbot.php
 
 Currently only works under Windows
 
