@@ -1,5 +1,7 @@
 package twitchlsgui;
 
+import ircClient.IRCClientFrame;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -60,11 +62,12 @@ import twitchUpdate.StreamCheck;
  */
 public class Main_GUI extends JFrame {
 
-    public static final Version VERSION = new Version(1, 5, 0, 0);
+    public static final Version VERSION = new Version(1, 6, 0, 0);
     public static boolean _DEBUG = false;
 
     private static final long serialVersionUID = 1L;
 
+    public static IRCClientFrame ircFrame = null;
     public static ConfigUtil cfgUtil;
     public static String currentStreamName = "";
     public static String currentQuality = "High";
@@ -81,6 +84,8 @@ public class Main_GUI extends JFrame {
     public static boolean canUpdate = true;
     public static boolean streamPaneActive = true;
     public static int downloadedBytes = 0;
+    public static String twitchUser = "";
+    public static String twitchOAuth = "";
 
     private static BufferedImage small;
     private static Graphics g;
@@ -99,6 +104,7 @@ public class Main_GUI extends JFrame {
     private GenericStream gs;
     private String cmd;
     private JComboBox<String> qualityComboBox;
+    private JButton openChatButton;
 
     /**
      * Launch the application.
@@ -131,6 +137,10 @@ public class Main_GUI extends JFrame {
 
 			@Override
 			public void windowClosing(WindowEvent arg0) {
+			    if (Main_GUI.ircFrame != null) {
+				Main_GUI.ircFrame.dispose();
+				Main_GUI.ircFrame = null;
+			    }
 			    cfgUtil.writeConfig();
 			}
 
@@ -281,7 +291,7 @@ public class Main_GUI extends JFrame {
 	JPanel custom_StreamPanel = new JPanel();
 	stream_panel.add(custom_StreamPanel, BorderLayout.SOUTH);
 	GridBagLayout gbl_custom_StreamPanel = new GridBagLayout();
-	gbl_custom_StreamPanel.columnWidths = new int[] {280};
+	gbl_custom_StreamPanel.columnWidths = new int[] { 280 };
 	gbl_custom_StreamPanel.rowHeights = new int[] { 20, 20, 80 };
 	gbl_custom_StreamPanel.columnWeights = new double[] { 0.0 };
 	gbl_custom_StreamPanel.rowWeights = new double[] { 0.0, 0.0, 0.0 };
@@ -344,8 +354,8 @@ public class Main_GUI extends JFrame {
 	middle_panel.setMaximumSize(new Dimension(200, 200));
 	GridBagLayout gbl_middle_panel = new GridBagLayout();
 	gbl_middle_panel.setConstraints(middle_panel, gbc_middle_panel);
-	gbl_middle_panel.columnWidths = new int[] {0};
-	gbl_middle_panel.rowHeights = new int[] {40, 40, 99, 0, 20};
+	gbl_middle_panel.columnWidths = new int[] { 0 };
+	gbl_middle_panel.rowHeights = new int[] { 40, 40, 99, 0, 20 };
 	gbl_middle_panel.columnWeights = new double[] { 1.0, 1.0, 1.0, 1.0, 1.0 };
 	gbl_middle_panel.rowWeights = new double[] { 1.0, 1.0, 1.0, 1.0 };
 	middle_panel.setLayout(gbl_middle_panel);
@@ -467,8 +477,8 @@ public class Main_GUI extends JFrame {
 		setQuality();
 	    }
 	});
-	Component horizontalStrut_1 = Box.createHorizontalStrut(20);
-	toolBar.add(horizontalStrut_1);
+	Component topToolbarStrutLeft = Box.createHorizontalStrut(20);
+	toolBar.add(topToolbarStrutLeft);
 
 	JLabel lblQuality = new JLabel("Quality: ");
 	toolBar.add(lblQuality);
@@ -561,12 +571,25 @@ public class Main_GUI extends JFrame {
 	refreshButton.setIcon(new ImageIcon(Main_GUI.class
 		.getResource("/twitchlsgui/refresh.png")));
 
-	Component horizontalStrut = Box.createHorizontalStrut(350);
-	toolBar.add(horizontalStrut);
+	Component topToolbarStrutRight = Box.createHorizontalStrut(150);
+	toolBar.add(topToolbarStrutRight);
+
+	openChatButton = new JButton("Open Chat");
+	openChatButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		ircFrame = new IRCClientFrame();
+		ircFrame.setVisible(true);
+	    }
+	});
+	openChatButton.setToolTipText("Only available for Twitch.tv Streams");
+	toolBar.add(openChatButton);
 
 	// start checker thread
 	checkThread = new Thread(new StreamCheck());
 	checkThread.start();
+
     }
 
     /**

@@ -33,6 +33,8 @@ public class ConfigUtil {
     private final String SHOWPREVIEW = "showpreview";
     private final String STREAMSERVICES = "streamservices";
     private final String AUTOUPDATE = "autoupdate";
+    private final String TWITCHUSER = "twitchusername";
+    private final String TWITCHOAuth = "twitchoauth";
 
     private Main_GUI parent;
 
@@ -119,6 +121,8 @@ public class ConfigUtil {
 	Main_GUI.showPreview = myPrefs.getBoolean(SHOWPREVIEW, true);
 	Main_GUI.checkTimer = myPrefs.getInt(TIMER, 30);
 	Main_GUI.autoUpdate = myPrefs.getBoolean(AUTOUPDATE, true);
+	Main_GUI.twitchOAuth = myPrefs.get(TWITCHOAuth, "");
+	Main_GUI.twitchUser = myPrefs.get(TWITCHUSER, "");
 
 	String buffer = myPrefs.get(STREAMSERVICES, "twitch.tv");
 	String[] buffer2 = buffer.split(" ");
@@ -179,6 +183,8 @@ public class ConfigUtil {
 	myPrefs.putBoolean(SHOWPREVIEW, Main_GUI.showPreview);
 	myPrefs.putInt(TIMER, Main_GUI.checkTimer);
 	myPrefs.putBoolean(AUTOUPDATE, Main_GUI.autoUpdate);
+	myPrefs.put(TWITCHUSER, Main_GUI.twitchUser);
+	myPrefs.put(TWITCHOAuth, Main_GUI.twitchOAuth);
 
 	String buffer = "";
 	for (int i = 0; i < Main_GUI.streamServicesList.size(); i++) {

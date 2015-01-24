@@ -15,9 +15,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -46,6 +49,7 @@ public class OptionsPanel extends JPanel {
     private JCheckBox debugCheckBox;
     private JLabel lblCurrentVersion;
     private JLabel lblNewVersion;
+    private JButton twitchCredentialsButton;
 
     public OptionsPanel() {
 	setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -211,6 +215,37 @@ public class OptionsPanel extends JPanel {
 		Main_GUI.cfgUtil.importStreams();
 	    }
 	});
+
+	twitchCredentialsButton = new JButton(
+		"Enter Twitch.tv Username and OAuth Token");
+	twitchCredentialsButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		JTextField twitchUser = new JTextField(20);
+		JTextField twitchOAuth = new JTextField(20);
+		JPanel myPanel = new JPanel();
+		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+		myPanel.add(new JLabel("Twitch.tv Username:"));
+		myPanel.add(twitchUser);
+		myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+		myPanel.add(new JLabel("Twitch.tv OAuth Token:"));
+		myPanel.add(twitchOAuth);
+		int result = JOptionPane.showConfirmDialog(null, myPanel,
+			"Please enter your Twitch.tv username and OAuth Token",
+			JOptionPane.OK_CANCEL_OPTION);
+		if (result == JOptionPane.OK_OPTION) {
+		    Main_GUI.twitchUser = twitchUser.getText().trim();
+		    Main_GUI.twitchOAuth = twitchOAuth.getText().trim();
+		}
+	    }
+
+	});
+	GridBagConstraints gbc_twitchCredentialsButton = new GridBagConstraints();
+	gbc_twitchCredentialsButton.insets = new Insets(0, 0, 5, 5);
+	gbc_twitchCredentialsButton.gridx = 0;
+	gbc_twitchCredentialsButton.gridy = 6;
+	add(twitchCredentialsButton, gbc_twitchCredentialsButton);
 	GridBagConstraints gbc_importButton = new GridBagConstraints();
 	gbc_importButton.insets = new Insets(0, 0, 5, 0);
 	gbc_importButton.gridx = 1;

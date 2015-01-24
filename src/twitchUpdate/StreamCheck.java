@@ -51,17 +51,27 @@ public class StreamCheck implements Runnable {
 
 	    for (int i = 0; i < streamList.size(); i++) {
 		threads.add(new Thread(new CheckThread(i, streamList)));
+
 	    }
+	    if (Main_GUI._DEBUG)
+		System.out.println("added " + streamList.size()
+			+ " new threads");
 	    for (int i = 0; i < streamList.size(); i++) {
 		threads.get(i).start();
+
 	    }
+	    if (Main_GUI._DEBUG)
+		System.out.println("started " + streamList.size() + " threads");
 	    for (int i = 0; i < streamList.size(); i++) {
 		try {
 		    threads.get(i).join();
 		} catch (InterruptedException e) {
-		    e.printStackTrace();
+		    if (Main_GUI._DEBUG)
+			e.printStackTrace();
 		}
 	    }
+	    if (Main_GUI._DEBUG)
+		System.out.println(streamList.size() + " threads were joined");
 	    for (int i = 0; i < Main_GUI.streamListModel.getSize(); i++) {
 		Main_GUI.streamListModel.setElementAt(
 			Main_GUI.streamListModel.getElementAt(i), i);
@@ -91,7 +101,6 @@ public class StreamCheck implements Runnable {
 	    } else {
 		Main_GUI.onlineStatus.setText("");
 	    }
-
 	}
 	threads = new ArrayList<Thread>();
 	OptionsPanel.KBLabel.setText(Main_GUI.downloadedBytes / 1000 + "");
