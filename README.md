@@ -36,5 +36,4 @@ Preview Image:<br>
 <img width="auto" height="auto" src="https://github.com/westerwave/livestreamer_twitch_gui/blob/master/preview.png"></img>
 <br>
 Planned Features:<br>
-- Window resizing
 - Error output window
