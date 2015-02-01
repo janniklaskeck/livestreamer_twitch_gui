@@ -15,6 +15,9 @@ import javax.swing.WindowConstants;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 import org.jibble.pircbot.IrcException;
 
@@ -26,9 +29,13 @@ public class IRCClientFrame extends JFrame {
     private JTextField messageTextField;
     private IRCClient ircClient;
     private JTextPane chatTextPane;
+    private HTMLEditorKit kit;
+    private HTMLDocument doc;
+    private String channel;
 
     public IRCClientFrame() {
-	setTitle("irc client test");
+	this.channel = Main_GUI.currentStreamName;
+	setTitle("Twitch Chat - " + Main_GUI.currentStreamName);
 	setBounds(50, 50, 500, 400);
 	setResizable(true);
 	setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -45,6 +52,16 @@ public class IRCClientFrame extends JFrame {
 	messageTextField.setColumns(10);
 
 	JButton sendButton = new JButton("Send Message");
+	sendButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		ircClient.sendMessage("#" + channel, messageTextField.getText());
+		addMessage(Main_GUI.twitchUser, messageTextField.getText());
+		messageTextField.setText("");
+
+	    }
+	});
 	inputPanel.add(sendButton, BorderLayout.EAST);
 
 	JButton connectButton = new JButton("Connect");
@@ -63,7 +80,8 @@ public class IRCClientFrame extends JFrame {
 			if (Main_GUI._DEBUG)
 			    e.printStackTrace();
 		    }
-		    ircClient.joinChannel("#" + Main_GUI.currentStreamName);
+		    ircClient.joinChannel("#" + channel);
+		    System.out.println("connected");
 		} else {
 		    // TODO display Error
 		    System.out
@@ -74,7 +92,12 @@ public class IRCClientFrame extends JFrame {
 
 	chatTextPane = new JTextPane();
 	chatTextPane.setSize(500, 400);
-
+	chatTextPane.setContentType("text/html");
+	chatTextPane.setText("");
+	kit = new HTMLEditorKit();
+	doc = new HTMLDocument();
+	chatTextPane.setEditorKit(kit);
+	chatTextPane.setDocument(doc);
 	JScrollPane scrollPane = new JScrollPane(chatTextPane);
 	getContentPane().add(scrollPane, BorderLayout.CENTER);
 	scrollPane.setBounds(0, 0, 500, 400);
@@ -88,23 +111,13 @@ public class IRCClientFrame extends JFrame {
 	SimpleAttributeSet sas = new SimpleAttributeSet();
 	StyleConstants.setBold(sas, true);
 	try {
-	    chatTextPane.getDocument().insertString(
-		    chatTextPane.getDocument().getLength(),
-		    "<" + sender + ">: ", null);
+	    kit.insertHTML(doc, doc.getLength(), "<b>[" + sender + "]:</b> "
+		    + message + "<br>", 0, 0, HTML.Tag.B);
 
-	    offset = chatTextPane.getDocument().getLength() - 3
-		    - sender.length();
-	    length = 3 + sender.length();
-
-	    chatTextPane.getStyledDocument().setCharacterAttributes(offset,
-		    length, sas, false);
-
-	    chatTextPane.getDocument().insertString(
-		    chatTextPane.getDocument().getLength(), message + "\n",
-		    null);
-	} catch (BadLocationException e) {
+	} catch (IOException | BadLocationException e) {
 	    e.printStackTrace();
 	}
 	chatTextPane.setCaretPosition(chatTextPane.getDocument().getLength());
     }
+
 }

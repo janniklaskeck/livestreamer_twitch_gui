@@ -35,6 +35,7 @@ public class ConfigUtil {
     private final String AUTOUPDATE = "autoupdate";
     private final String TWITCHUSER = "twitchusername";
     private final String TWITCHOAuth = "twitchoauth";
+    private final String DEBUG = "enabledebugoutput";
 
     private Main_GUI parent;
 
@@ -123,6 +124,7 @@ public class ConfigUtil {
 	Main_GUI.autoUpdate = myPrefs.getBoolean(AUTOUPDATE, true);
 	Main_GUI.twitchOAuth = myPrefs.get(TWITCHOAuth, "");
 	Main_GUI.twitchUser = myPrefs.get(TWITCHUSER, "");
+	Main_GUI._DEBUG = myPrefs.getBoolean(DEBUG, false);
 
 	String buffer = myPrefs.get(STREAMSERVICES, "twitch.tv");
 	String[] buffer2 = buffer.split(" ");
@@ -185,6 +187,7 @@ public class ConfigUtil {
 	myPrefs.putBoolean(AUTOUPDATE, Main_GUI.autoUpdate);
 	myPrefs.put(TWITCHUSER, Main_GUI.twitchUser);
 	myPrefs.put(TWITCHOAuth, Main_GUI.twitchOAuth);
+	myPrefs.putBoolean(DEBUG, Main_GUI._DEBUG);
 
 	String buffer = "";
 	for (int i = 0; i < Main_GUI.streamServicesList.size(); i++) {
@@ -313,6 +316,7 @@ public class ConfigUtil {
 	    } else if (pathSplit.length == 0) {
 		path = path + ".txt";
 	    }
+	    System.out.println(path);
 	    file = new File(path);
 	    try {
 		BufferedWriter output = new BufferedWriter(new FileWriter(file));

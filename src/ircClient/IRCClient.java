@@ -18,10 +18,10 @@ public class IRCClient extends PircBot {
 
     public void onMessage(String channel, String sender, String login,
 	    String hostname, String message) {
-	// System.out.println(sender + ": " + message);
+
 	parent.addMessage(sender, message);
     }
-    
+
     public void setUserName(String name) {
 	this.setName(name);
     }

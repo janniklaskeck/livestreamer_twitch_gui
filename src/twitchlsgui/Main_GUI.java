@@ -13,6 +13,8 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -105,6 +107,7 @@ public class Main_GUI extends JFrame {
     private String cmd;
     private JComboBox<String> qualityComboBox;
     private JButton openChatButton;
+    private Component verticalStrut;
 
     /**
      * Launch the application.
@@ -115,7 +118,8 @@ public class Main_GUI extends JFrame {
 		try {
 		    frame = new Main_GUI();
 		    frame.setVisible(true);
-		    frame.setTitle("Livestreamer GUI");
+		    frame.setTitle("Livestreamer GUI"
+			    + (_DEBUG ? " - Debug enabled" : ""));
 		    UIManager.setLookAndFeel(UIManager
 			    .getSystemLookAndFeelClassName());
 		    frame.addWindowListener(new WindowListener() {
@@ -198,14 +202,28 @@ public class Main_GUI extends JFrame {
     public Main_GUI() {
 	setIconImage(Toolkit.getDefaultToolkit().getImage(
 		Main_GUI.class.getResource("/twitchlsgui/icon.jpg")));
-	setResizable(false);
+	setResizable(true);
 	setMinimumSize(new Dimension(590, 430));
 	setPreferredSize(new Dimension(590, 430));
+	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	setBounds(100, 100, 590, 430);
+
+	addComponentListener(new ComponentAdapter() {
+	    public void componentResized(ComponentEvent e) {
+		float verticalSpace = verticalStrut.getHeight() - 13;
+		float amount = verticalSpace / 20f;
+		if (verticalStrut.getHeight() <= 13) {
+		    stream_list.setVisibleRowCount(9);
+		} else {
+		    stream_list.setVisibleRowCount(stream_list
+			    .getVisibleRowCount() + (int) amount);
+		}
+		stream_list.revalidate();
+	    }
+	});
 
 	cfgUtil = new ConfigUtil(this);
 
-	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	setBounds(100, 100, 590, 430);
 	optionsPane = new OptionsPanel();
 	contentPane = new JPanel();
 	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -297,14 +315,15 @@ public class Main_GUI extends JFrame {
 	gbl_custom_StreamPanel.rowWeights = new double[] { 0.0, 0.0, 0.0 };
 	custom_StreamPanel.setLayout(gbl_custom_StreamPanel);
 
-	JLabel lblCustomStream = new JLabel("Custom Stream");
-	lblCustomStream.setHorizontalAlignment(SwingConstants.CENTER);
-	GridBagConstraints gbc_lblCustomStream = new GridBagConstraints();
-	gbc_lblCustomStream.fill = GridBagConstraints.BOTH;
-	gbc_lblCustomStream.insets = new Insets(0, 0, 5, 5);
-	gbc_lblCustomStream.gridx = 0;
-	gbc_lblCustomStream.gridy = 0;
-	custom_StreamPanel.add(lblCustomStream, gbc_lblCustomStream);
+	JLabel customStreamLabel = new JLabel("Custom Stream");
+
+	customStreamLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	GridBagConstraints gbc_customStreamLabel = new GridBagConstraints();
+	gbc_customStreamLabel.fill = GridBagConstraints.BOTH;
+	gbc_customStreamLabel.insets = new Insets(0, 0, 5, 5);
+	gbc_customStreamLabel.gridx = 0;
+	gbc_customStreamLabel.gridy = 0;
+	custom_StreamPanel.add(customStreamLabel, gbc_customStreamLabel);
 
 	customStreamTF = new JTextField();
 	customStreamTF.setHorizontalAlignment(SwingConstants.CENTER);
@@ -322,19 +341,16 @@ public class Main_GUI extends JFrame {
 		    @Override
 		    public void removeUpdate(DocumentEvent e) {
 			customStreamName = customStreamTF.getText();
-
 		    }
 
 		    @Override
 		    public void insertUpdate(DocumentEvent e) {
 			customStreamName = customStreamTF.getText();
-
 		    }
 
 		    @Override
 		    public void changedUpdate(DocumentEvent e) {
 			customStreamName = customStreamTF.getText();
-
 		    }
 		});
 
@@ -346,7 +362,8 @@ public class Main_GUI extends JFrame {
 	gbc_onlineStatus.gridy = 2;
 	custom_StreamPanel.add(onlineStatus, gbc_onlineStatus);
 
-	Component verticalStrut = Box.createVerticalStrut(5);
+	verticalStrut = Box.createVerticalStrut(5);
+
 	stream_panel.add(verticalStrut, BorderLayout.CENTER);
 
 	JPanel middle_panel = new JPanel();
@@ -414,7 +431,6 @@ public class Main_GUI extends JFrame {
 	    public void actionPerformed(ActionEvent arg0) {
 		cfgUtil.writeConfig();
 		System.exit(0);
-
 	    }
 	});
 	middle_panel.add(exitBtn, gbc_exitBtn);
@@ -507,7 +523,6 @@ public class Main_GUI extends JFrame {
 		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
 		    shiftPressed = false;
 		}
-
 	    }
 
 	    @Override
@@ -543,7 +558,6 @@ public class Main_GUI extends JFrame {
 		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
 		    shiftPressed = false;
 		}
-
 	    }
 
 	    @Override
@@ -551,7 +565,6 @@ public class Main_GUI extends JFrame {
 		if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
 		    shiftPressed = true;
 		}
-
 	    }
 	});
 
@@ -739,7 +752,7 @@ public class Main_GUI extends JFrame {
     /**
      * Removes the currently selected stream/streamService when pressed
      */
-    public void removeButton() {
+    private void removeButton() {
 	if (shiftPressed && streamServicesBox.getItemCount() > 1) {
 	    for (int i = 0; i < streamServicesList.size(); i++) {
 		if (streamServicesList.get(i).getUrl()
@@ -748,7 +761,6 @@ public class Main_GUI extends JFrame {
 		    break;
 		}
 	    }
-
 	    updateServiceList();
 	    cfgUtil.writeConfig();
 	    if (streamServicesList.size() == 1) {
@@ -769,7 +781,7 @@ public class Main_GUI extends JFrame {
      * @param name
      * @param quality
      */
-    public void OpenStream(String name, String quality) {
+    private void OpenStream(String name, String quality) {
 	cmd = "livestreamer " + Main_GUI.currentStreamService + "/" + name
 		+ " " + quality;
 	try {

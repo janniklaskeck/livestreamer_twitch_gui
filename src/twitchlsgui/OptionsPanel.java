@@ -169,6 +169,7 @@ public class OptionsPanel extends JPanel {
 	timeIntervalTextField.setColumns(1);
 
 	debugCheckBox = new JCheckBox("Enable Debug Output");
+	debugCheckBox.setSelected(Main_GUI._DEBUG);
 	debugCheckBox.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
