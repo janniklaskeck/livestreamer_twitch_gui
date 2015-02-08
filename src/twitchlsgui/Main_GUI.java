@@ -64,7 +64,7 @@ import twitchUpdate.StreamCheck;
  */
 public class Main_GUI extends JFrame {
 
-    public static final Version VERSION = new Version(1, 7, 0, 0);
+    public static final Version VERSION = new Version(1, 7, 1, 0);
     public static boolean _DEBUG = false;
 
     private static final long serialVersionUID = 1L;
@@ -88,6 +88,8 @@ public class Main_GUI extends JFrame {
     public static int downloadedBytes = 0;
     public static String twitchUser = "";
     public static String twitchOAuth = "";
+    private final static int newWidth = 267;
+    private final static int newHeight = 150;
 
     private static BufferedImage small;
     private static Graphics g;
@@ -108,6 +110,10 @@ public class Main_GUI extends JFrame {
     private JComboBox<String> qualityComboBox;
     private JButton openChatButton;
     private Component verticalStrut;
+    private Process prc;
+    private JPanel msgPanel;
+    private Thread reader;
+    private JPanel addPanel;
 
     /**
      * Launch the application.
@@ -611,8 +617,6 @@ public class Main_GUI extends JFrame {
      * @param prev
      */
     public static void setPreviewImage(BufferedImage prev) {
-	int newWidth = 267;
-	int newHeight = 150;
 	small = new BufferedImage(newWidth, newHeight,
 		BufferedImage.TYPE_INT_RGB);
 	g = small.createGraphics();
@@ -711,15 +715,15 @@ public class Main_GUI extends JFrame {
 	    JTextField urlField = new JTextField(20);
 	    JTextField displayNameField = new JTextField(20);
 
-	    JPanel myPanel = new JPanel();
-	    myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
-	    myPanel.add(new JLabel("Stream Service URL:"));
-	    myPanel.add(urlField);
-	    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-	    myPanel.add(new JLabel("Stream Service Display Name:"));
-	    myPanel.add(displayNameField);
+	    addPanel = new JPanel();
+	    addPanel.setLayout(new BoxLayout(addPanel, BoxLayout.Y_AXIS));
+	    addPanel.add(new JLabel("Stream Service URL:"));
+	    addPanel.add(urlField);
+	    addPanel.add(Box.createHorizontalStrut(15)); // a spacer
+	    addPanel.add(new JLabel("Stream Service Display Name:"));
+	    addPanel.add(displayNameField);
 
-	    int result = JOptionPane.showConfirmDialog(null, myPanel,
+	    int result = JOptionPane.showConfirmDialog(null, addPanel,
 		    "Please Enter URL and display Name",
 		    JOptionPane.OK_CANCEL_OPTION);
 	    if (result == JOptionPane.OK_OPTION) {
@@ -731,12 +735,12 @@ public class Main_GUI extends JFrame {
 	    }
 	} else {
 	    JTextField channelField = new JTextField(20);
-	    JPanel myPanel = new JPanel();
-	    myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
-	    myPanel.add(new JLabel("Channel Name:"));
-	    myPanel.add(channelField);
+	    addPanel = new JPanel();
+	    addPanel.setLayout(new BoxLayout(addPanel, BoxLayout.Y_AXIS));
+	    addPanel.add(new JLabel("Channel Name:"));
+	    addPanel.add(channelField);
 
-	    int result = JOptionPane.showConfirmDialog(null, myPanel,
+	    int result = JOptionPane.showConfirmDialog(null, addPanel,
 		    "Please Enter Channel Name", JOptionPane.OK_CANCEL_OPTION);
 	    if (result == JOptionPane.OK_OPTION) {
 		cfgUtil.saveStream(channelField.getText().trim(),
@@ -785,8 +789,8 @@ public class Main_GUI extends JFrame {
 	cmd = "livestreamer " + Main_GUI.currentStreamService + "/" + name
 		+ " " + quality;
 	try {
-	    Process prc = Runtime.getRuntime().exec(cmd);
-	    Thread reader = new Thread(new PromptReader(prc.getInputStream()));
+	    prc = Runtime.getRuntime().exec(cmd);
+	    reader = new Thread(new PromptReader(prc.getInputStream()));
 	    reader.start();
 	} catch (IOException e) {
 	    if (Main_GUI._DEBUG)
@@ -800,7 +804,7 @@ public class Main_GUI extends JFrame {
      * @param message
      */
     public void displayMessage(String message) {
-	JPanel msgPanel = new JPanel();
+	msgPanel = new JPanel();
 	msgPanel.add(new JLabel(message));
 	JOptionPane.showMessageDialog(this, msgPanel);
     }

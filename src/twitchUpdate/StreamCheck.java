@@ -17,6 +17,7 @@ public class StreamCheck implements Runnable {
 
     private static ArrayList<Thread> threads = new ArrayList<Thread>();
     private static ArrayList<GenericStream> streamList;
+    public static int finishedUpdates = 0;
 
     @Override
     public void run() {
@@ -31,7 +32,6 @@ public class StreamCheck implements Runnable {
 		    e.printStackTrace();
 	    }
 	}
-
     }
 
     /**
@@ -44,27 +44,30 @@ public class StreamCheck implements Runnable {
 	if (streamList.size() > 0) {
 	    if (Main_GUI.currentStreamService.equals(Main_GUI
 		    .selectStreamService("twitch.tv").getUrl())) {
-		Main_GUI.updateStatus.setText("Updating");
+		Main_GUI.updateStatus.setText("Updating " + "("
+			+ finishedUpdates + "/"
+			+ Main_GUI.streamListModel.size() + ")");
 	    } else {
 		Main_GUI.updateStatus.setText("");
 	    }
 
 	    for (int i = 0; i < streamList.size(); i++) {
 		threads.add(new Thread(new CheckThread(i, streamList)));
-
 	    }
 	    if (Main_GUI._DEBUG)
 		System.out.println("added " + streamList.size()
 			+ " new threads");
 	    for (int i = 0; i < streamList.size(); i++) {
 		threads.get(i).start();
-
 	    }
 	    if (Main_GUI._DEBUG)
 		System.out.println("started " + streamList.size() + " threads");
 	    for (int i = 0; i < streamList.size(); i++) {
 		try {
 		    threads.get(i).join();
+		    Main_GUI.updateStatus.setText("Updating. " + "("
+			    + finishedUpdates + "/"
+			    + Main_GUI.streamListModel.size() + ")");
 		} catch (InterruptedException e) {
 		    if (Main_GUI._DEBUG)
 			e.printStackTrace();
@@ -72,15 +75,16 @@ public class StreamCheck implements Runnable {
 	    }
 	    if (Main_GUI._DEBUG)
 		System.out.println(streamList.size() + " threads were joined");
-	    for (int i = 0; i < Main_GUI.streamListModel.getSize(); i++) {
+	    for (int i = 0; i < Main_GUI.streamListModel.size(); i++) {
 		Main_GUI.streamListModel.setElementAt(
-			Main_GUI.streamListModel.getElementAt(i), i);
+			Main_GUI.streamListModel.get(i), i);
 	    }
 	}
 
 	if (Main_GUI.currentStreamService.equals(Main_GUI.selectStreamService(
 		"twitch.tv").getUrl())) {
 	    Main_GUI.updateStatus.setText("Finished updating");
+	    finishedUpdates = 0;
 	} else {
 	    Main_GUI.updateStatus.setText("");
 	}
@@ -102,10 +106,9 @@ public class StreamCheck implements Runnable {
 		Main_GUI.onlineStatus.setText("");
 	    }
 	}
-	threads = new ArrayList<Thread>();
+	threads.clear();
 	OptionsPanel.KBLabel.setText(Main_GUI.downloadedBytes / 1000 + "");
 	Main_GUI.downloadedBytes = 0;
 	Main_GUI.canUpdate = true;
     }
-
 }
