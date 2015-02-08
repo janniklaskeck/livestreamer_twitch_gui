@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="F:/Workspace/Twitch-LS-GUI/gson-2.2.4.jar" sourcepath="F:/Workspace/Twitch-LS-GUI/gson-2.2.4-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/F:/Workspace/Twitch-LS-GUI/gson-2.2.4-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="pircbot.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/Twitch-LS-GUI/pircbot-javadocs.zip!/javadocs"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="gson-2.3.1.jar" sourcepath="gson-2.3.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Twitch-LS-GUI/gson-2.3.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
