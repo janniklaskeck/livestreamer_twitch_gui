@@ -26,7 +26,7 @@ public class Version {
     }
 
     public String asString() {
-	return "" + major + "." + minor + "." + build + "." + revision;
+	return major + "." + minor + "." + build + "." + revision;
     }
 
     /**
