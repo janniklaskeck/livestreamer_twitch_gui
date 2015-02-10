@@ -23,6 +23,6 @@ class CheckThread implements Runnable {
     @Override
     public void run() {
 	((TwitchStream) streamList.get(index)).refresh();
-	StreamCheck.finishedUpdates++;
+	StreamCheck.finishedUpdates.getAndIncrement();
     }
 }

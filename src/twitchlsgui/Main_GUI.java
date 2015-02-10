@@ -64,7 +64,7 @@ import twitchUpdate.StreamCheck;
  */
 public class Main_GUI extends JFrame {
 
-    public static final Version VERSION = new Version(1, 7, 1, 0);
+    public static final Version VERSION = new Version(1, 7, 1, 1);
     public static boolean _DEBUG = false;
 
     private static final long serialVersionUID = 1L;

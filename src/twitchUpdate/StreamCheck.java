@@ -1,6 +1,7 @@
 package twitchUpdate;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import stream.GenericStream;
 import stream.TwitchStream;
@@ -17,7 +18,7 @@ public class StreamCheck implements Runnable {
 
     private static ArrayList<Thread> threads = new ArrayList<Thread>();
     private static ArrayList<GenericStream> streamList;
-    public static int finishedUpdates = 0;
+    public static AtomicInteger finishedUpdates = new AtomicInteger(0);
 
     @Override
     public void run() {
@@ -84,7 +85,7 @@ public class StreamCheck implements Runnable {
 	if (Main_GUI.currentStreamService.equals(Main_GUI.selectStreamService(
 		"twitch.tv").getUrl())) {
 	    Main_GUI.updateStatus.setText("Finished updating");
-	    finishedUpdates = 0;
+	    finishedUpdates.set(0);;
 	} else {
 	    Main_GUI.updateStatus.setText("");
 	}
