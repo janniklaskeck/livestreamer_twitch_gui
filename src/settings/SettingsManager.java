@@ -119,7 +119,7 @@ public class SettingsManager {
      * Reads general settings and streamservice List from the registry
      */
     public void readSettings() {
-	parent.currentQuality = myPrefs.get(QUALITY, "High");
+	Main_GUI.currentQuality = myPrefs.get(QUALITY, "High");
 	Main_GUI.showPreview = myPrefs.getBoolean(SHOWPREVIEW, true);
 	Main_GUI.checkTimer = myPrefs.getInt(TIMER, 30);
 	Main_GUI.autoUpdate = myPrefs.getBoolean(AUTOUPDATE, true);
@@ -129,10 +129,10 @@ public class SettingsManager {
 
 	String buffer = myPrefs.get(STREAMSERVICES, "twitch.tv");
 	String[] buffer2 = buffer.split(" ");
-	parent.streamServicesList = new ArrayList<StreamList>();
+	Main_GUI.streamServicesList = new ArrayList<StreamList>();
 	for (String s : buffer2) {
 	    if (s.length() > 1)
-		parent.streamServicesList.add(new StreamList(s, myPrefs.get(s
+		Main_GUI.streamServicesList.add(new StreamList(s, myPrefs.get(s
 			+ "_displayname", s)));
 	}
     }
@@ -182,7 +182,7 @@ public class SettingsManager {
      * Writes general settings and streamservices to the registry
      */
     public void writeSettings() {
-	myPrefs.put(QUALITY, parent.currentQuality);
+	myPrefs.put(QUALITY, Main_GUI.currentQuality);
 	myPrefs.putBoolean(SHOWPREVIEW, Main_GUI.showPreview);
 	myPrefs.putInt(TIMER, Main_GUI.checkTimer);
 	myPrefs.putBoolean(AUTOUPDATE, Main_GUI.autoUpdate);
@@ -191,15 +191,15 @@ public class SettingsManager {
 	myPrefs.putBoolean(DEBUG, Main_GUI._DEBUG);
 
 	String buffer = "";
-	for (int i = 0; i < parent.streamServicesList.size(); i++) {
-	    myPrefs.put(parent.streamServicesList.get(i).getUrl()
-		    + "_displayname", parent.streamServicesList.get(i)
+	for (int i = 0; i < Main_GUI.streamServicesList.size(); i++) {
+	    myPrefs.put(Main_GUI.streamServicesList.get(i).getUrl()
+		    + "_displayname", Main_GUI.streamServicesList.get(i)
 		    .getDisplayName());
 	    if (buffer == "") {
-		buffer = buffer + parent.streamServicesList.get(i).getUrl();
+		buffer = buffer + Main_GUI.streamServicesList.get(i).getUrl();
 	    } else {
 		buffer = buffer + " "
-			+ parent.streamServicesList.get(i).getUrl();
+			+ Main_GUI.streamServicesList.get(i).getUrl();
 	    }
 	}
 	myPrefs.put(STREAMSERVICES, buffer);
@@ -253,7 +253,7 @@ public class SettingsManager {
 		    if (lineNumber == 0 || lineNumber % 2 == 0) {
 			if (parent.selectStreamServiceD(lineSplit[0]) == null
 				&& parent.selectStreamService(lineSplit[1]) == null) {
-			    parent.streamServicesList.add(new StreamList(
+			    Main_GUI.streamServicesList.add(new StreamList(
 				    lineSplit[1], lineSplit[0]));
 			}
 			lastService = lineSplit[1];
@@ -321,7 +321,7 @@ public class SettingsManager {
 	    file = new File(path);
 	    try {
 		BufferedWriter output = new BufferedWriter(new FileWriter(file));
-		for (StreamList service : parent.streamServicesList) {
+		for (StreamList service : Main_GUI.streamServicesList) {
 		    output.write(service.getDisplayName() + " "
 			    + service.getUrl());
 		    output.newLine();

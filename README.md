@@ -15,6 +15,9 @@ Its intended use is for twitch.tv.
 	- download and display a preview image from the stream
 	- simple chat client for Twitch.tv chat(needs an OAuth Token instead of your password)
 	
+#Planned Features:<br>
+	- Error output window
+	
 If you have an idea for a new feature or you found a bug, i'm happy to assist if possible.
 
 #Download
@@ -30,8 +33,7 @@ Currently only works under Windows
 <br>
 <img width="auto" height="auto" src="https://github.com/westerwave/livestreamer_twitch_gui/blob/master/preview.png"></img>
 <br>
-Planned Features:<br>
-- Error output window
+
 
 #Misc
 Uses Gson from https://code.google.com/p/google-gson/ (licensed under Apache License 2.0) and

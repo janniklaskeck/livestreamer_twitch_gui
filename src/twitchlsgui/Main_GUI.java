@@ -5,7 +5,6 @@ import ircClient.IRCClientFrame;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -46,6 +45,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -68,7 +68,7 @@ import twitchUpdate.TwitchUpdateThread;
 public class Main_GUI extends JFrame {
     private static final long serialVersionUID = 1L;
 
-    public static final Version VERSION = new Version(1, 7, 2, 0);
+    public static final Version VERSION = new Version(1, 7, 2, 1);
     public static boolean _DEBUG = false;
     public static SettingsManager settingsManager;
     public static String currentStreamName = "";
@@ -80,10 +80,10 @@ public class Main_GUI extends JFrame {
     public static boolean autoUpdate = true;
 
     public DefaultListModel<JLabel> streamListModel;
-    public String currentQuality = "High";
+    public static String currentQuality = "High";
     public String currentStreamService = "twitch.tv";
     public JComboBox<String> streamServicesBox;
-    public ArrayList<StreamList> streamServicesList;
+    public static ArrayList<StreamList> streamServicesList;
     public IRCClientFrame ircFrame = null;
     public JLabel onlineStatus;
     public JLabel updateStatus;
@@ -121,56 +121,65 @@ public class Main_GUI extends JFrame {
      * Launch the application.
      */
     public static void main(String[] args) {
-	EventQueue.invokeLater(new Runnable() {
-	    public void run() {
-		try {
-		    frame = new Main_GUI();
-		    frame.setVisible(true);
-		    frame.setTitle("Livestreamer GUI"
-			    + (_DEBUG ? " - Debug enabled" : ""));
-		    UIManager.setLookAndFeel(UIManager
-			    .getSystemLookAndFeelClassName());
-		    frame.addWindowListener(new WindowListener() {
-			@Override
-			public void windowOpened(WindowEvent arg0) {
-			}
+	// EventQueue.invokeLater(new Runnable() {
+	// public void run() {
+	// try {
+	frame = new Main_GUI();
+	frame.setVisible(true);
+	frame.setTitle("Livestreamer GUI" + (_DEBUG ? " - Debug enabled" : ""));
 
-			@Override
-			public void windowIconified(WindowEvent arg0) {
-			}
+	try {
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	} catch (ClassNotFoundException | InstantiationException
+		| IllegalAccessException | UnsupportedLookAndFeelException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 
-			@Override
-			public void windowDeiconified(WindowEvent arg0) {
-			}
+	frame.addWindowListener(new WindowListener() {
+	    @Override
+	    public void windowOpened(WindowEvent arg0) {
+	    }
 
-			@Override
-			public void windowDeactivated(WindowEvent arg0) {
-			}
+	    @Override
+	    public void windowIconified(WindowEvent arg0) {
+	    }
 
-			@Override
-			public void windowClosing(WindowEvent arg0) {
-			    if (frame.ircFrame != null) {
-				frame.ircFrame.dispose();
-				frame.ircFrame = null;
-			    }
-			    settingsManager.writeSettings();
-			}
+	    @Override
+	    public void windowDeiconified(WindowEvent arg0) {
+	    }
 
-			@Override
-			public void windowClosed(WindowEvent arg0) {
-			}
+	    @Override
+	    public void windowDeactivated(WindowEvent arg0) {
+	    }
 
-			@Override
-			public void windowActivated(WindowEvent arg0) {
-			}
-		    });
-		} catch (Exception e) {
-		    if (Main_GUI._DEBUG)
-			e.printStackTrace();
+	    @Override
+	    public void windowClosing(WindowEvent arg0) {
+		if (frame.ircFrame != null) {
+		    frame.ircFrame.dispose();
+		    frame.ircFrame = null;
 		}
-		setPreviewImage(null);
+		if (settingsManager != null) {
+		    settingsManager.writeSettings();
+		}
+	    }
+
+	    @Override
+	    public void windowClosed(WindowEvent arg0) {
+	    }
+
+	    @Override
+	    public void windowActivated(WindowEvent arg0) {
 	    }
 	});
+	// } catch (Exception e) {
+	// if (Main_GUI._DEBUG)
+	// e.printStackTrace();
+	// }
+	if (frame != null)
+	    setPreviewImage(null);
+	// }
+	// });
     }
 
     /**
