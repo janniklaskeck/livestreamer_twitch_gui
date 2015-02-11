@@ -2,7 +2,7 @@ package twitchUpdate;
 
 import java.util.ArrayList;
 
-import stream.GenericStream;
+import stream.GenericStreamInterface;
 import stream.TwitchStream;
 
 /**
@@ -11,11 +11,11 @@ import stream.TwitchStream;
  * @author Niklas 21.01.2015
  * 
  */
-class CheckThread implements Runnable {
+class TwitchUpdateWorker implements Runnable {
     private int index = -1;
-    private ArrayList<GenericStream> streamList;
+    private ArrayList<GenericStreamInterface> streamList;
 
-    public CheckThread(int i, ArrayList<GenericStream> streamList) {
+    public TwitchUpdateWorker(int i, ArrayList<GenericStreamInterface> streamList) {
 	index = i;
 	this.streamList = streamList;
     }
@@ -23,6 +23,6 @@ class CheckThread implements Runnable {
     @Override
     public void run() {
 	((TwitchStream) streamList.get(index)).refresh();
-	StreamCheck.finishedUpdates.getAndIncrement();
+	TwitchUpdateThread.finishedUpdates.getAndIncrement();
     }
 }

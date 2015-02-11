@@ -1,4 +1,4 @@
-package twitchlsgui;
+package settings;
 
 import java.awt.Desktop;
 import java.awt.GridBagConstraints;
@@ -28,12 +28,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import twitchlsgui.Main_GUI;
+
 /**
  * 
  * @author Niklas 21.01.2015
  * 
  */
-public class OptionsPanel extends JPanel {
+public class SettingsPanel extends JPanel {
 
     private static final String versionURL = "https://raw.githubusercontent.com/westerwave/livestreamer_twitch_gui/master/VERSION";
     private static final String downloadURL = "https://github.com/westerwave/livestreamer_twitch_gui/releases/tag/v1.x";
@@ -42,7 +44,7 @@ public class OptionsPanel extends JPanel {
     private JCheckBox showPreviewCheckBox;
     private JCheckBox autoUpdateCheckBox;
     private JLabel timeIntervalLabel;
-    public static JLabel KBLabel;
+    private JLabel KBLabel;
     private JButton saveSettingsButton;
     private JButton exportButton;
     private JButton importButton;
@@ -51,7 +53,7 @@ public class OptionsPanel extends JPanel {
     private JLabel lblNewVersion;
     private JButton twitchCredentialsButton;
 
-    public OptionsPanel() {
+    public SettingsPanel(Main_GUI parent) {
 	setBorder(new EmptyBorder(5, 5, 5, 5));
 	GridBagLayout gridBagLayout = new GridBagLayout();
 	gridBagLayout.columnWidths = new int[] { 290, 150 };
@@ -65,11 +67,9 @@ public class OptionsPanel extends JPanel {
 	showPreviewCheckBox = new JCheckBox("Download Preview Image");
 	showPreviewCheckBox.setSelected(Main_GUI.showPreview);
 	showPreviewCheckBox.addActionListener(new ActionListener() {
-
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		Main_GUI.showPreview = showPreviewCheckBox.isSelected();
-
 	    }
 	});
 	GridBagConstraints gbc_showPreviewCheckBox = new GridBagConstraints();
@@ -83,11 +83,9 @@ public class OptionsPanel extends JPanel {
 		"Automatically update Streams from Twitch");
 	autoUpdateCheckBox.setSelected(Main_GUI.autoUpdate);
 	autoUpdateCheckBox.addActionListener(new ActionListener() {
-
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		Main_GUI.autoUpdate = autoUpdateCheckBox.isSelected();
-
 	    }
 	});
 	GridBagConstraints gbc_autoUpdateCheckBox = new GridBagConstraints();
@@ -203,8 +201,7 @@ public class OptionsPanel extends JPanel {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		Main_GUI.cfgUtil.writeConfig();
-
+		Main_GUI.settingsManager.writeSettings();
 	    }
 	});
 
@@ -213,7 +210,7 @@ public class OptionsPanel extends JPanel {
 
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		Main_GUI.cfgUtil.importStreams();
+		Main_GUI.settingsManager.importStreams();
 	    }
 	});
 
@@ -240,7 +237,6 @@ public class OptionsPanel extends JPanel {
 		    Main_GUI.twitchOAuth = twitchOAuth.getText().trim();
 		}
 	    }
-
 	});
 	GridBagConstraints gbc_twitchCredentialsButton = new GridBagConstraints();
 	gbc_twitchCredentialsButton.insets = new Insets(0, 0, 5, 5);
@@ -263,7 +259,7 @@ public class OptionsPanel extends JPanel {
 
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		Main_GUI.cfgUtil.exportStreams();
+		Main_GUI.settingsManager.exportStreams();
 	    }
 	});
 	GridBagConstraints gbc_exportButton = new GridBagConstraints();
@@ -327,5 +323,13 @@ public class OptionsPanel extends JPanel {
 		e.printStackTrace();
 	}
 	return false;
+    }
+
+    public JLabel getKBLabel() {
+	return KBLabel;
+    }
+
+    public void setKBLabel(String text) {
+	KBLabel.setText(text);
     }
 }

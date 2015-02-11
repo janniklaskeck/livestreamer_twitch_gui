@@ -9,12 +9,12 @@ import java.util.ArrayList;
  */
 public class StreamList {
 
-    private ArrayList<GenericStream> streamList;
+    private ArrayList<GenericStreamInterface> streamList;
     private String url;
     private String displayName;
 
     public StreamList(String url, String displayName) {
-	this.streamList = new ArrayList<GenericStream>();
+	this.streamList = new ArrayList<GenericStreamInterface>();
 	this.url = url;
 	this.displayName = displayName;
     }
@@ -22,7 +22,7 @@ public class StreamList {
     /**
      * @return the streamList
      */
-    public ArrayList<GenericStream> getStreamList() {
+    public ArrayList<GenericStreamInterface> getStreamList() {
 	return streamList;
     }
 
@@ -30,7 +30,7 @@ public class StreamList {
      * @param streamList
      *            the streamList to set
      */
-    public void setStreamList(ArrayList<GenericStream> streamList) {
+    public void setStreamList(ArrayList<GenericStreamInterface> streamList) {
 	this.streamList = streamList;
     }
 
@@ -64,7 +64,7 @@ public class StreamList {
 	this.displayName = displayName;
     }
 
-    public void addStream(GenericStream twitchStream) {
+    public void addStream(GenericStreamInterface twitchStream) {
 	streamList.add(twitchStream);
 
     }

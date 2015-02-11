@@ -18,11 +18,16 @@ import stream.TwitchStream;
  * @author Niklas 21.01.2015
  * 
  */
-public class MyListCellRenderer implements ListCellRenderer<JLabel> {
+public class CustomListCellRenderer implements ListCellRenderer<JLabel> {
 
     private Border lineBorder = BorderFactory.createLineBorder(Color.BLACK, 1);
     private Border emptyBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
     private Color bg = null;
+    private Main_GUI parent;
+
+    public CustomListCellRenderer(Main_GUI parent) {
+	this.parent = parent;
+    }
 
     @Override
     public Component getListCellRendererComponent(JList<? extends JLabel> list,
@@ -32,12 +37,12 @@ public class MyListCellRenderer implements ListCellRenderer<JLabel> {
 	if (bg == null) {
 	    bg = value.getBackground();
 	}
-	if (Main_GUI.currentStreamService.equals("twitch.tv")) {
-	    for (int i = 0; i < Main_GUI
-		    .selectStreamService(Main_GUI.currentStreamService)
+	if (parent.currentStreamService.equals("twitch.tv")) {
+	    for (int i = 0; i < parent
+		    .selectStreamService(parent.currentStreamService)
 		    .getStreamList().size(); i++) {
-		TwitchStream ts = (TwitchStream) Main_GUI
-			.selectStreamService(Main_GUI.currentStreamService)
+		TwitchStream ts = (TwitchStream) parent
+			.selectStreamService(parent.currentStreamService)
 			.getStreamList().get(i);
 		if (ts.getChannel().equals(value.getText())) {
 		    if (isSelected) {

@@ -6,7 +6,7 @@ package stream;
  * @author Niklas 21.01.2015
  * 
  */
-public class OtherStream implements GenericStream {
+public class OtherStream implements GenericStreamInterface {
 
     private String channel;
 

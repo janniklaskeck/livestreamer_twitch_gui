@@ -21,7 +21,7 @@ public class Twitch_API {
      * @param channelname
      * @return
      */
-    public static Twitch_Stream getStream(String channelname) {
+    public static Twitch_Json getStream(String channelname) {
 	JsonObject a = null;
 	JsonObject b = null;
 	try {
@@ -29,7 +29,7 @@ public class Twitch_API {
 	    jsonString = readJsonFromUrl("https://api.twitch.tv/kraken/streams/"
 		    + channelname);
 	    if (jsonString != null) {
-		Twitch_Stream stream = new Twitch_Stream();
+		Twitch_Json stream = new Twitch_Json();
 		a = gson.fromJson(jsonString, JsonObject.class);
 		if (a.get("stream") != null) {
 		    if (!a.get("stream").toString().equals("null")) {

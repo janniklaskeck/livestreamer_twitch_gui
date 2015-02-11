@@ -1,4 +1,4 @@
-package twitchlsgui;
+package settings;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,11 +12,12 @@ import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import stream.GenericStream;
+import stream.GenericStreamInterface;
 import stream.OtherStream;
 import stream.StreamList;
 import stream.TwitchStream;
 import twitchAPI.Twitch_API;
+import twitchlsgui.Main_GUI;
 
 /**
  * Config class
@@ -24,7 +25,7 @@ import twitchAPI.Twitch_API;
  * @author Niklas 28.06.2014
  * 
  */
-public class ConfigUtil {
+public class SettingsManager {
     private Preferences myPrefs;
 
     // final strings for saving the different options
@@ -42,11 +43,11 @@ public class ConfigUtil {
     /**
      * Constructor Responsible for loading and saving the settings and streams
      */
-    public ConfigUtil(Main_GUI parent) {
+    public SettingsManager(Main_GUI parent) {
 	// set registry path for saving
 	myPrefs = Preferences.userNodeForPackage(twitchlsgui.Main_GUI.class);
 	// read config on creation
-	readConfig();
+	readSettings();
 	// reference need for import/export
 	this.parent = parent;
     }
@@ -77,11 +78,11 @@ public class ConfigUtil {
     public void saveStream(String stream, String streamService) {
 	if (!streamService.equals("twitch.tv")
 		&& !streamService.equals("Twitch")) {
-	    Main_GUI.selectStreamService(streamService).getStreamList()
+	    parent.selectStreamService(streamService).getStreamList()
 		    .add(new OtherStream(stream));
 	} else {
 	    if (streamExists(stream)) {
-		Main_GUI.selectStreamService(streamService).getStreamList()
+		parent.selectStreamService(streamService).getStreamList()
 			.add(new TwitchStream(stream));
 	    } else {
 		parent.displayMessage("This stream doesn't seem to exist."
@@ -102,11 +103,11 @@ public class ConfigUtil {
      *            to remove the stream from
      */
     public void removeStream(String stream, String streamService) {
-	for (int i = 0; i < Main_GUI.selectStreamService(streamService)
+	for (int i = 0; i < parent.selectStreamService(streamService)
 		.getStreamList().size(); i++) {
-	    if (Main_GUI.selectStreamService(streamService).getStreamList()
+	    if (parent.selectStreamService(streamService).getStreamList()
 		    .get(i).getChannel().equals(stream)) {
-		Main_GUI.selectStreamService(streamService).getStreamList()
+		parent.selectStreamService(streamService).getStreamList()
 			.remove(i);
 		break;
 	    }
@@ -117,8 +118,8 @@ public class ConfigUtil {
     /**
      * Reads general settings and streamservice List from the registry
      */
-    public void readConfig() {
-	Main_GUI.currentQuality = myPrefs.get(QUALITY, "High");
+    public void readSettings() {
+	parent.currentQuality = myPrefs.get(QUALITY, "High");
 	Main_GUI.showPreview = myPrefs.getBoolean(SHOWPREVIEW, true);
 	Main_GUI.checkTimer = myPrefs.getInt(TIMER, 30);
 	Main_GUI.autoUpdate = myPrefs.getBoolean(AUTOUPDATE, true);
@@ -128,10 +129,10 @@ public class ConfigUtil {
 
 	String buffer = myPrefs.get(STREAMSERVICES, "twitch.tv");
 	String[] buffer2 = buffer.split(" ");
-	Main_GUI.streamServicesList = new ArrayList<StreamList>();
+	parent.streamServicesList = new ArrayList<StreamList>();
 	for (String s : buffer2) {
 	    if (s.length() > 1)
-		Main_GUI.streamServicesList.add(new StreamList(s, myPrefs.get(s
+		parent.streamServicesList.add(new StreamList(s, myPrefs.get(s
 			+ "_displayname", s)));
 	}
     }
@@ -146,15 +147,15 @@ public class ConfigUtil {
 	String streams = myPrefs.get(streamService, "");
 	streams = correctStreamList(streams);
 	String[] streams_split = streams.split(" ");
-	Main_GUI.selectStreamService(streamService).setStreamList(
-		new ArrayList<GenericStream>());
+	parent.selectStreamService(streamService).setStreamList(
+		new ArrayList<GenericStreamInterface>());
 	for (int i = 0; i < streams_split.length; i++) {
 
 	    if (streamService.equals("twitch.tv")) {
-		Main_GUI.selectStreamService(streamService).addStream(
+		parent.selectStreamService(streamService).addStream(
 			new TwitchStream(streams_split[i]));
 	    } else {
-		Main_GUI.selectStreamService(streamService).addStream(
+		parent.selectStreamService(streamService).addStream(
 			new OtherStream(streams_split[i]));
 	    }
 	}
@@ -180,8 +181,8 @@ public class ConfigUtil {
     /**
      * Writes general settings and streamservices to the registry
      */
-    public void writeConfig() {
-	myPrefs.put(QUALITY, Main_GUI.currentQuality);
+    public void writeSettings() {
+	myPrefs.put(QUALITY, parent.currentQuality);
 	myPrefs.putBoolean(SHOWPREVIEW, Main_GUI.showPreview);
 	myPrefs.putInt(TIMER, Main_GUI.checkTimer);
 	myPrefs.putBoolean(AUTOUPDATE, Main_GUI.autoUpdate);
@@ -190,15 +191,15 @@ public class ConfigUtil {
 	myPrefs.putBoolean(DEBUG, Main_GUI._DEBUG);
 
 	String buffer = "";
-	for (int i = 0; i < Main_GUI.streamServicesList.size(); i++) {
-	    myPrefs.put(Main_GUI.streamServicesList.get(i).getUrl()
-		    + "_displayname", Main_GUI.streamServicesList.get(i)
+	for (int i = 0; i < parent.streamServicesList.size(); i++) {
+	    myPrefs.put(parent.streamServicesList.get(i).getUrl()
+		    + "_displayname", parent.streamServicesList.get(i)
 		    .getDisplayName());
 	    if (buffer == "") {
-		buffer = buffer + Main_GUI.streamServicesList.get(i).getUrl();
+		buffer = buffer + parent.streamServicesList.get(i).getUrl();
 	    } else {
 		buffer = buffer + " "
-			+ Main_GUI.streamServicesList.get(i).getUrl();
+			+ parent.streamServicesList.get(i).getUrl();
 	    }
 	}
 	myPrefs.put(STREAMSERVICES, buffer);
@@ -209,8 +210,8 @@ public class ConfigUtil {
      */
     public void writeStreams(String streamService) {
 	String buffer = "";
-	for (GenericStream ts : Main_GUI.selectStreamService(streamService)
-		.getStreamList()) {
+	for (GenericStreamInterface ts : parent.selectStreamService(
+		streamService).getStreamList()) {
 	    if (buffer == "") {
 		buffer = ts.getChannel();
 	    } else {
@@ -250,9 +251,9 @@ public class ConfigUtil {
 		    lineSplit = line.split(" ");
 
 		    if (lineNumber == 0 || lineNumber % 2 == 0) {
-			if (Main_GUI.selectStreamServiceD(lineSplit[0]) == null
-				&& Main_GUI.selectStreamService(lineSplit[1]) == null) {
-			    Main_GUI.streamServicesList.add(new StreamList(
+			if (parent.selectStreamServiceD(lineSplit[0]) == null
+				&& parent.selectStreamService(lineSplit[1]) == null) {
+			    parent.streamServicesList.add(new StreamList(
 				    lineSplit[1], lineSplit[0]));
 			}
 			lastService = lineSplit[1];
@@ -260,9 +261,9 @@ public class ConfigUtil {
 			boolean exists = false;
 			for (String stream : lineSplit) {
 			    if (!stream.equals(" ") || !stream.equals("")) {
-				if (Main_GUI.selectStreamService(lastService)
+				if (parent.selectStreamService(lastService)
 					.getStreamList().size() > 0) {
-				    for (GenericStream gs : Main_GUI
+				    for (GenericStreamInterface gs : parent
 					    .selectStreamService(lastService)
 					    .getStreamList()) {
 					if (gs.getChannel().toLowerCase()
@@ -320,7 +321,7 @@ public class ConfigUtil {
 	    file = new File(path);
 	    try {
 		BufferedWriter output = new BufferedWriter(new FileWriter(file));
-		for (StreamList service : Main_GUI.streamServicesList) {
+		for (StreamList service : parent.streamServicesList) {
 		    output.write(service.getDisplayName() + " "
 			    + service.getUrl());
 		    output.newLine();

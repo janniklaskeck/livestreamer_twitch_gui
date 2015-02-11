@@ -5,7 +5,7 @@ package stream;
  * @author Niklas 21.01.2015
  * 
  */
-public interface GenericStream {
+public interface GenericStreamInterface {
 
     /**
      * @return the channel

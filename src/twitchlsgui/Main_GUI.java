@@ -52,10 +52,13 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import stream.GenericStream;
+import settings.SettingsManager;
+import settings.SettingsPanel;
+import settings.Version;
+import stream.GenericStreamInterface;
 import stream.StreamList;
 import stream.TwitchStream;
-import twitchUpdate.StreamCheck;
+import twitchUpdate.TwitchUpdateThread;
 
 /**
  * 
@@ -63,49 +66,47 @@ import twitchUpdate.StreamCheck;
  * 
  */
 public class Main_GUI extends JFrame {
-
-    public static final Version VERSION = new Version(1, 7, 1, 1);
-    public static boolean _DEBUG = false;
-
     private static final long serialVersionUID = 1L;
 
-    public static IRCClientFrame ircFrame = null;
-    public static ConfigUtil cfgUtil;
+    public static final Version VERSION = new Version(1, 7, 2, 0);
+    public static boolean _DEBUG = false;
+    public static SettingsManager settingsManager;
     public static String currentStreamName = "";
-    public static String currentQuality = "High";
-    public static String customStreamName = "";
-    public static String currentStreamService = "twitch.tv";
-    public static DefaultListModel<JLabel> streamListModel;
-    public static JLabel onlineStatus;
     public static boolean showPreview = true;
-    public static boolean autoUpdate = true;
-    public static JComboBox<String> streamServicesBox;
-    public static JLabel updateStatus;
-    public static ArrayList<StreamList> streamServicesList;
     public static int checkTimer = 30;
-    public static boolean canUpdate = true;
-    public static boolean streamPaneActive = true;
     public static int downloadedBytes = 0;
     public static String twitchUser = "";
     public static String twitchOAuth = "";
-    private final static int newWidth = 267;
-    private final static int newHeight = 150;
+    public static boolean autoUpdate = true;
+
+    public DefaultListModel<JLabel> streamListModel;
+    public String currentQuality = "High";
+    public String currentStreamService = "twitch.tv";
+    public JComboBox<String> streamServicesBox;
+    public ArrayList<StreamList> streamServicesList;
+    public IRCClientFrame ircFrame = null;
+    public JLabel onlineStatus;
+    public JLabel updateStatus;
+    public boolean streamPaneActive = true;
+    public boolean canUpdate = true;
 
     private static BufferedImage small;
     private static Graphics g;
     private static Main_GUI frame;
     private static JLabel previewLabel;
+    private final static int newWidth = 267;
+    private final static int newHeight = 150;
 
     private JPanel contentPane;
-    private JPanel optionsPane;
+    private SettingsPanel settingsPane;
     private JPanel innerContentPane;
     private JList<JLabel> stream_list;
     private JTextField customStreamTF;
     private JPanel previewPanel;
-    private Thread checkThread;
+    private TwitchUpdateThread twitchUpdateThread;
     private boolean shiftPressed = false;
     private TwitchStream ts;
-    private GenericStream gs;
+    private GenericStreamInterface gs;
     private String cmd;
     private JComboBox<String> qualityComboBox;
     private JButton openChatButton;
@@ -114,6 +115,7 @@ public class Main_GUI extends JFrame {
     private JPanel msgPanel;
     private Thread reader;
     private JPanel addPanel;
+    private String customStreamName = "";
 
     /**
      * Launch the application.
@@ -147,11 +149,11 @@ public class Main_GUI extends JFrame {
 
 			@Override
 			public void windowClosing(WindowEvent arg0) {
-			    if (Main_GUI.ircFrame != null) {
-				Main_GUI.ircFrame.dispose();
-				Main_GUI.ircFrame = null;
+			    if (frame.ircFrame != null) {
+				frame.ircFrame.dispose();
+				frame.ircFrame = null;
 			    }
-			    cfgUtil.writeConfig();
+			    settingsManager.writeSettings();
 			}
 
 			@Override
@@ -207,7 +209,7 @@ public class Main_GUI extends JFrame {
      */
     public Main_GUI() {
 	setIconImage(Toolkit.getDefaultToolkit().getImage(
-		Main_GUI.class.getResource("/twitchlsgui/icon.jpg")));
+		Main_GUI.class.getResource("/assets/icon.jpg")));
 	setResizable(true);
 	setMinimumSize(new Dimension(590, 430));
 	setPreferredSize(new Dimension(590, 430));
@@ -228,9 +230,9 @@ public class Main_GUI extends JFrame {
 	    }
 	});
 
-	cfgUtil = new ConfigUtil(this);
+	settingsManager = new SettingsManager(this);
 
-	optionsPane = new OptionsPanel();
+	settingsPane = new SettingsPanel(this);
 	contentPane = new JPanel();
 	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	setContentPane(contentPane);
@@ -256,7 +258,7 @@ public class Main_GUI extends JFrame {
 
 	stream_list = new JList<JLabel>();
 	stream_list.setVisibleRowCount(9);
-	stream_list.setCellRenderer(new MyListCellRenderer());
+	stream_list.setCellRenderer(new CustomListCellRenderer(this));
 	stream_list.setModel(streamListModel);
 	stream_list.addListSelectionListener(new ListSelectionListener() {
 	    @Override
@@ -305,7 +307,7 @@ public class Main_GUI extends JFrame {
 		    if (currentStreamService == null) {
 			currentStreamService = "twitch.tv";
 		    }
-		    cfgUtil.readStreamList(currentStreamService);
+		    settingsManager.readStreamList(currentStreamService);
 		    updateList();
 		}
 	    }
@@ -435,7 +437,7 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		cfgUtil.writeConfig();
+		settingsManager.writeSettings();
 		System.exit(0);
 	    }
 	});
@@ -458,7 +460,7 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		if (!streamPaneActive) {
-		    contentPane.remove(optionsPane);
+		    contentPane.remove(settingsPane);
 		    contentPane.add(innerContentPane);
 		    streamPaneActive = true;
 		    revalidate();
@@ -474,7 +476,7 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		contentPane.remove(innerContentPane);
-		contentPane.add(optionsPane);
+		contentPane.add(settingsPane);
 		streamPaneActive = false;
 		revalidate();
 		repaint();
@@ -510,7 +512,7 @@ public class Main_GUI extends JFrame {
 	JButton addButton = new JButton("");
 	toolBar.add(addButton);
 	addButton.setIcon(new ImageIcon(Main_GUI.class
-		.getResource("/twitchlsgui/plus.png")));
+		.getResource("/assets/plus.png")));
 	addButton.setToolTipText("Add custom Stream to List");
 	addButton.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent arg0) {
@@ -543,7 +545,7 @@ public class Main_GUI extends JFrame {
 	JButton removeButton = new JButton("");
 	toolBar.add(removeButton);
 	removeButton.setIcon(new ImageIcon(Main_GUI.class
-		.getResource("/twitchlsgui/minus.png")));
+		.getResource("/assets/minus.png")));
 	removeButton.setToolTipText("Remove selected Stream");
 	removeButton.addActionListener(new ActionListener() {
 
@@ -581,14 +583,14 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		if (canUpdate) {
-		    StreamCheck.update();
+		    twitchUpdateThread.update();
 		}
 	    }
 	});
 	refreshButton
 		.setToolTipText("Runs an update on the Twitch.tv stream list");
 	refreshButton.setIcon(new ImageIcon(Main_GUI.class
-		.getResource("/twitchlsgui/refresh.png")));
+		.getResource("/assets/refresh.png")));
 
 	Component topToolbarStrutRight = Box.createHorizontalStrut(150);
 	toolBar.add(topToolbarStrutRight);
@@ -606,8 +608,8 @@ public class Main_GUI extends JFrame {
 	toolBar.add(openChatButton);
 
 	// start checker thread
-	checkThread = new Thread(new StreamCheck());
-	checkThread.start();
+	twitchUpdateThread = new TwitchUpdateThread(settingsPane, this);
+	twitchUpdateThread.start();
 
     }
 
@@ -684,7 +686,7 @@ public class Main_GUI extends JFrame {
      * @param streamService
      * @return
      */
-    public static StreamList selectStreamService(String streamService) {
+    public StreamList selectStreamService(String streamService) {
 	for (StreamList sl : streamServicesList) {
 	    if (sl.getUrl().equals(streamService)) {
 		return sl;
@@ -698,7 +700,7 @@ public class Main_GUI extends JFrame {
      * @param streamService
      * @return
      */
-    public static StreamList selectStreamServiceD(String streamService) {
+    public StreamList selectStreamServiceD(String streamService) {
 	for (StreamList sl : streamServicesList) {
 	    if (sl.getDisplayName().equals(streamService)) {
 		return sl;
@@ -731,7 +733,7 @@ public class Main_GUI extends JFrame {
 			displayNameField.getText().trim()));
 		updateServiceList();
 		updateList();
-		cfgUtil.writeConfig();
+		settingsManager.writeSettings();
 	    }
 	} else {
 	    JTextField channelField = new JTextField(20);
@@ -743,11 +745,11 @@ public class Main_GUI extends JFrame {
 	    int result = JOptionPane.showConfirmDialog(null, addPanel,
 		    "Please Enter Channel Name", JOptionPane.OK_CANCEL_OPTION);
 	    if (result == JOptionPane.OK_OPTION) {
-		cfgUtil.saveStream(channelField.getText().trim(),
+		settingsManager.saveStream(channelField.getText().trim(),
 			currentStreamService);
 		updateList();
 		if (currentStreamService.equals("twitch.tv")) {
-		    checkThread.interrupt();
+		    twitchUpdateThread.interrupt();
 		}
 	    }
 	}
@@ -766,15 +768,16 @@ public class Main_GUI extends JFrame {
 		}
 	    }
 	    updateServiceList();
-	    cfgUtil.writeConfig();
+	    settingsManager.writeSettings();
 	    if (streamServicesList.size() == 1) {
-		checkThread.interrupt();
+		twitchUpdateThread.interrupt();
 	    }
 	} else {
-	    cfgUtil.removeStream(currentStreamName, currentStreamService);
+	    settingsManager.removeStream(currentStreamName,
+		    currentStreamService);
 	    updateList();
 	    if (currentStreamService.equals("twitch.tv")) {
-		checkThread.interrupt();
+		twitchUpdateThread.interrupt();
 	    }
 	}
     }
@@ -786,8 +789,8 @@ public class Main_GUI extends JFrame {
      * @param quality
      */
     private void OpenStream(String name, String quality) {
-	cmd = "livestreamer " + Main_GUI.currentStreamService + "/" + name
-		+ " " + quality;
+	cmd = "livestreamer " + currentStreamService + "/" + name + " "
+		+ quality;
 	try {
 	    prc = Runtime.getRuntime().exec(cmd);
 	    reader = new Thread(new PromptReader(prc.getInputStream()));

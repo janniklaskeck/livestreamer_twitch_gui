@@ -3,10 +3,10 @@ package twitchUpdate;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import stream.GenericStream;
+import settings.SettingsPanel;
+import stream.GenericStreamInterface;
 import stream.TwitchStream;
 import twitchlsgui.Main_GUI;
-import twitchlsgui.OptionsPanel;
 
 /**
  * Constant running thread which checks regulary for stream updates
@@ -14,11 +14,18 @@ import twitchlsgui.OptionsPanel;
  * @author Niklas 28.06.2014
  * 
  */
-public class StreamCheck implements Runnable {
+public class TwitchUpdateThread extends Thread {
 
     private static ArrayList<Thread> threads = new ArrayList<Thread>();
-    private static ArrayList<GenericStream> streamList;
+    private static ArrayList<GenericStreamInterface> streamList;
     public static AtomicInteger finishedUpdates = new AtomicInteger(0);
+    private SettingsPanel settingsPane;
+    private Main_GUI parent;
+
+    public TwitchUpdateThread(SettingsPanel settingsPane, Main_GUI parent) {
+	this.settingsPane = settingsPane;
+	this.parent = parent;
+    }
 
     @Override
     public void run() {
@@ -38,22 +45,21 @@ public class StreamCheck implements Runnable {
     /**
      * Starts a thread for every Twitch.tv stream to update it
      */
-    public static void update() {
-	Main_GUI.canUpdate = false;
-	streamList = Main_GUI.selectStreamService("twitch.tv").getStreamList();
+    public void update() {
+	parent.canUpdate = false;
+	streamList = parent.selectStreamService("twitch.tv").getStreamList();
 
 	if (streamList.size() > 0) {
-	    if (Main_GUI.currentStreamService.equals(Main_GUI
-		    .selectStreamService("twitch.tv").getUrl())) {
-		Main_GUI.updateStatus.setText("Updating " + "("
-			+ finishedUpdates + "/"
-			+ Main_GUI.streamListModel.size() + ")");
+	    if (parent.currentStreamService.equals(parent.selectStreamService(
+		    "twitch.tv").getUrl())) {
+		parent.updateStatus.setText("Updating " + "(" + finishedUpdates
+			+ "/" + parent.streamListModel.size() + ")");
 	    } else {
-		Main_GUI.updateStatus.setText("");
+		parent.updateStatus.setText("");
 	    }
 
 	    for (int i = 0; i < streamList.size(); i++) {
-		threads.add(new Thread(new CheckThread(i, streamList)));
+		threads.add(new Thread(new TwitchUpdateWorker(i, streamList)));
 	    }
 	    if (Main_GUI._DEBUG)
 		System.out.println("added " + streamList.size()
@@ -66,9 +72,9 @@ public class StreamCheck implements Runnable {
 	    for (int i = 0; i < streamList.size(); i++) {
 		try {
 		    threads.get(i).join();
-		    Main_GUI.updateStatus.setText("Updating. " + "("
+		    parent.updateStatus.setText("Updating. " + "("
 			    + finishedUpdates + "/"
-			    + Main_GUI.streamListModel.size() + ")");
+			    + parent.streamListModel.size() + ")");
 		} catch (InterruptedException e) {
 		    if (Main_GUI._DEBUG)
 			e.printStackTrace();
@@ -76,40 +82,41 @@ public class StreamCheck implements Runnable {
 	    }
 	    if (Main_GUI._DEBUG)
 		System.out.println(streamList.size() + " threads were joined");
-	    for (int i = 0; i < Main_GUI.streamListModel.size(); i++) {
-		Main_GUI.streamListModel.setElementAt(
-			Main_GUI.streamListModel.get(i), i);
+	    for (int i = 0; i < parent.streamListModel.size(); i++) {
+		parent.streamListModel.setElementAt(
+			parent.streamListModel.get(i), i);
 	    }
 	}
 
-	if (Main_GUI.currentStreamService.equals(Main_GUI.selectStreamService(
+	if (parent.currentStreamService.equals(parent.selectStreamService(
 		"twitch.tv").getUrl())) {
-	    Main_GUI.updateStatus.setText("Finished updating");
-	    finishedUpdates.set(0);;
+	    parent.updateStatus.setText("Finished updating");
+	    finishedUpdates.set(0);
+	    ;
 	} else {
-	    Main_GUI.updateStatus.setText("");
+	    parent.updateStatus.setText("");
 	}
 	if (!Main_GUI.currentStreamName.equals("")) {
-	    if (Main_GUI.currentStreamService.equals(Main_GUI
-		    .selectStreamService("twitch.tv").getUrl())) {
+	    if (parent.currentStreamService.equals(parent.selectStreamService(
+		    "twitch.tv").getUrl())) {
 		for (int i = 0; i < streamList.size(); i++) {
 		    TwitchStream ts = (TwitchStream) streamList.get(i);
 		    if (ts.getChannel().equals(Main_GUI.currentStreamName)) {
 			if (ts.isOnline()) {
-			    Main_GUI.onlineStatus.setText(ts.getOnlineString());
+			    parent.onlineStatus.setText(ts.getOnlineString());
 			    Main_GUI.setPreviewImage(ts.getPreview());
 			} else {
-			    Main_GUI.onlineStatus.setText("Stream is Offline");
+			    parent.onlineStatus.setText("Stream is Offline");
 			}
 		    }
 		}
 	    } else {
-		Main_GUI.onlineStatus.setText("");
+		parent.onlineStatus.setText("");
 	    }
 	}
 	threads.clear();
-	OptionsPanel.KBLabel.setText(Main_GUI.downloadedBytes / 1000 + "");
+	settingsPane.setKBLabel(Main_GUI.downloadedBytes / 1000 + "");
 	Main_GUI.downloadedBytes = 0;
-	Main_GUI.canUpdate = true;
+	parent.canUpdate = true;
     }
 }

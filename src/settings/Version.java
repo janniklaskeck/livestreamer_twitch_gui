@@ -1,4 +1,6 @@
-package twitchlsgui;
+package settings;
+
+import twitchlsgui.Main_GUI;
 
 public class Version {
 

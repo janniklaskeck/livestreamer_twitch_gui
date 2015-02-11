@@ -12,26 +12,26 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 
 import twitchAPI.Twitch_API;
-import twitchAPI.Twitch_Stream;
+import twitchAPI.Twitch_Json;
 import twitchlsgui.Main_GUI;
 
-public class TwitchStream implements GenericStream {
+public class TwitchStream implements GenericStreamInterface {
 
     private String channel;
     private String game;
     private String title;
     private BufferedImage preview;
     private String created_at;
-
     private String updated_at;
+    private String onlineString;
     private long created_at_Long;
     private long updated_at_Long;
     private long upTimeHour;
     private long upTimeMinute;
     private boolean online = false;
-    private String onlineString;
+    private Twitch_Json ts;
+
     private static ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    private Twitch_Stream ts;
 
     public TwitchStream(String channel) {
 	this.setChannel(channel);
@@ -48,16 +48,13 @@ public class TwitchStream implements GenericStream {
 	    title = ts.getTitle();
 	    online = ts.isOnline();
 	    created_at = ts.getCreated_At();
-	    setUpdated_at(ts.getUpdated_At());
+	    updated_at = ts.getUpdated_At();
 	    upTimeHour = 0L;
 	    upTimeMinute = 0L;
 
 	    if (online) {
 		created_at_Long = convertDate(created_at);
-		// updated_at_Long = convertDate(updated_at);
-
-		upTimeHour = (((System.currentTimeMillis() - created_at_Long) / (1000 * 60 * 60)) % 24) - 1;
-		upTimeMinute = ((System.currentTimeMillis() - created_at_Long) / (1000 * 60)) % 60;
+		calcUpTime(created_at_Long);
 		setOnlineString("<html>Playing " + getGame() + " (Online for "
 			+ getUpTimeHours() + ":" + getUpTimeMinutes()
 			+ " hours)" + "<br>" + getTitle() + "</html>");
@@ -174,6 +171,16 @@ public class TwitchStream implements GenericStream {
 		e.printStackTrace();
 	}
 	return d.getTime();
+    }
+
+    /**
+     * Calculates the time from created_at to now and sets the hours and minutes
+     * 
+     * @param created_at
+     */
+    private void calcUpTime(Long created_at) {
+	upTimeHour = (((System.currentTimeMillis() - created_at) / (1000 * 60 * 60)) % 24) - 1;
+	upTimeMinute = ((System.currentTimeMillis() - created_at) / (1000 * 60)) % 60;
     }
 
     /**

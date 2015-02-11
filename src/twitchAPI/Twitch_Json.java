@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
  * @author Niklas 27.09.2014
  * 
  */
-public class Twitch_Stream {
+public class Twitch_Json {
     private boolean online;
     private String id;
     private String category;
