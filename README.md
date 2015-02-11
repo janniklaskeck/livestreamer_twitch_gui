@@ -3,7 +3,7 @@ GUI for the livestreamer application (http://livestreamer.tanuki.se/)<br>
 Its intended use is for twitch.tv.
 
 #Features
-<b>General features:</b>
+<b>General features:</b><br>
 	- supports stream lists for multiple stream services<br>
 	- save streams in a list and start them via a double click or a button<br>
 	- switch between all livestreamer available quality settings(worst, low, medium, high, best)<br>
