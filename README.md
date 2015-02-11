@@ -1,22 +1,21 @@
 #Livestreamer GUI
-#=======================
 GUI for the livestreamer application (http://livestreamer.tanuki.se/)<br>
 Its intended use is for twitch.tv.
 
 #Features
 <b>General features:</b>
-	- supports stream lists for multiple stream services
-	- save streams in a list and start them via a double click or a button
-	- switch between all livestreamer available quality settings(worst, low, medium, high, best)
-	- Import/Export streams from all saved services to a simple .txt file
-	- New version check and a link to the releases section if one is available
-<b>Twitch.tv exclusive:</b>
-	- get Stream Information like online status, current game and channel title
-	- download and display a preview image from the stream
-	- simple chat client for Twitch.tv chat(needs an OAuth Token instead of your password)
+	- supports stream lists for multiple stream services<br>
+	- save streams in a list and start them via a double click or a button<br>
+	- switch between all livestreamer available quality settings(worst, low, medium, high, best)<br>
+	- Import/Export streams from all saved services to a simple .txt file<br>
+	- New version check and a link to the releases section if one is available<br>
+<b>Twitch.tv exclusive:</b><br>
+	- get Stream Information like online status, current game and channel title<br>
+	- download and display a preview image from the stream<br>
+	- simple chat client for Twitch.tv chat(needs an OAuth Token instead of your password)<br>
 	
-#Planned Features:<br>
-	- Error output window
+#Planned Features:
+	- Error output window<br>
 	
 If you have an idea for a new feature or you found a bug, i'm happy to assist if possible.
 
