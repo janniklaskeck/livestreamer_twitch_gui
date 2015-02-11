@@ -15,7 +15,7 @@ Its intended use is for twitch.tv.
 	- simple chat client for Twitch.tv chat(needs an OAuth Token instead of your password)<br>
 	
 #Planned Features:
-	- Error output window<br>
+	- Error output window
 	
 If you have an idea for a new feature or you found a bug, i'm happy to assist if possible.
 
