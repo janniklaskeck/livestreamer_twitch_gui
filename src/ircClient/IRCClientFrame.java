@@ -1,9 +1,13 @@
 package ircClient;
 
 import java.awt.BorderLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -46,6 +50,24 @@ public class IRCClientFrame extends JFrame {
 	JPanel inputPanel = new JPanel();
 	getContentPane().add(inputPanel, BorderLayout.SOUTH);
 	inputPanel.setLayout(new BorderLayout(0, 0));
+	KeyboardFocusManager.getCurrentKeyboardFocusManager()
+		.addKeyEventDispatcher(new KeyEventDispatcher() {
+		    @Override
+		    public boolean dispatchKeyEvent(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER
+				&& e.getID() == KeyEvent.KEY_PRESSED
+				&& ircClient != null && ircClient.isConnected()
+				&& messageTextField != null
+				&& !messageTextField.getText().equals("")) {
+			    ircClient.sendMessage("#" + channel,
+				    messageTextField.getText());
+			    addMessage(Main_GUI.twitchUser,
+				    messageTextField.getText());
+			    messageTextField.setText("");
+			}
+			return false;
+		    }
+		});
 
 	messageTextField = new JTextField();
 	inputPanel.add(messageTextField, BorderLayout.CENTER);
@@ -59,7 +81,6 @@ public class IRCClientFrame extends JFrame {
 		ircClient.sendMessage("#" + channel, messageTextField.getText());
 		addMessage(Main_GUI.twitchUser, messageTextField.getText());
 		messageTextField.setText("");
-
 	    }
 	});
 	inputPanel.add(sendButton, BorderLayout.EAST);
@@ -94,6 +115,7 @@ public class IRCClientFrame extends JFrame {
 	chatTextPane.setSize(500, 400);
 	chatTextPane.setContentType("text/html");
 	chatTextPane.setText("");
+	chatTextPane.setEditable(false);
 	kit = new HTMLEditorKit();
 	doc = new HTMLDocument();
 	chatTextPane.setEditorKit(kit);
@@ -101,7 +123,6 @@ public class IRCClientFrame extends JFrame {
 	JScrollPane scrollPane = new JScrollPane(chatTextPane);
 	getContentPane().add(scrollPane, BorderLayout.CENTER);
 	scrollPane.setBounds(0, 0, 500, 400);
-
     }
 
     int offset = 0;
@@ -110,9 +131,18 @@ public class IRCClientFrame extends JFrame {
     public void addMessage(String sender, String message) {
 	SimpleAttributeSet sas = new SimpleAttributeSet();
 	StyleConstants.setBold(sas, true);
+	String m = message;
+	try {
+	    byte bytes[] = message.getBytes("UTF-8");
+	    m = new String(bytes, "UTF-8");
+	} catch (UnsupportedEncodingException e1) {
+	    if (Main_GUI._DEBUG)
+		e1.printStackTrace();
+	}
+
 	try {
 	    kit.insertHTML(doc, doc.getLength(), "<b>[" + sender + "]:</b> "
-		    + message + "<br>", 0, 0, HTML.Tag.B);
+		    + m + "<br>", 0, 0, HTML.Tag.B);
 
 	} catch (IOException | BadLocationException e) {
 	    e.printStackTrace();
