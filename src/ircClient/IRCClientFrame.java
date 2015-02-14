@@ -3,6 +3,7 @@ package ircClient;
 import java.awt.BorderLayout;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -38,6 +39,8 @@ public class IRCClientFrame extends JFrame {
     private String channel;
 
     public IRCClientFrame() {
+	setIconImage(Toolkit.getDefaultToolkit().getImage(
+		IRCClientFrame.class.getResource("/assets/icon.jpg")));
 	this.channel = Main_GUI.currentStreamName;
 	setTitle("Twitch Chat - " + Main_GUI.currentStreamName);
 	setBounds(50, 50, 500, 400);
@@ -113,9 +116,10 @@ public class IRCClientFrame extends JFrame {
 
 	chatTextPane = new JTextPane();
 	chatTextPane.setSize(500, 400);
-	chatTextPane.setContentType("text/html");
+	chatTextPane.setContentType("text/html;charset=UTF-8");
 	chatTextPane.setText("");
 	chatTextPane.setEditable(false);
+
 	kit = new HTMLEditorKit();
 	doc = new HTMLDocument();
 	chatTextPane.setEditorKit(kit);
