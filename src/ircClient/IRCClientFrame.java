@@ -1,28 +1,31 @@
 package ircClient;
 
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.WindowConstants;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.StyledEditorKit;
 
 import org.jibble.pircbot.IrcException;
 
@@ -34,9 +37,10 @@ public class IRCClientFrame extends JFrame {
     private JTextField messageTextField;
     private IRCClient ircClient;
     private JTextPane chatTextPane;
-    private HTMLEditorKit kit;
-    private HTMLDocument doc;
+    private StyledEditorKit kit;
+    private StyledDocument doc;
     private String channel;
+    private JScrollPane scrollPane;
 
     public IRCClientFrame() {
 	setIconImage(Toolkit.getDefaultToolkit().getImage(
@@ -81,11 +85,17 @@ public class IRCClientFrame extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		ircClient.sendMessage("#" + channel, messageTextField.getText());
-		addMessage(Main_GUI.twitchUser, messageTextField.getText());
-		messageTextField.setText("");
+		if (ircClient != null && ircClient.isConnected()
+			&& messageTextField != null
+			&& !messageTextField.getText().equals("")) {
+		    ircClient.sendMessage("#" + channel,
+			    messageTextField.getText());
+		    addMessage(Main_GUI.twitchUser, messageTextField.getText());
+		    messageTextField.setText("");
+		}
 	    }
 	});
+
 	inputPanel.add(sendButton, BorderLayout.EAST);
 
 	JButton connectButton = new JButton("Connect");
@@ -116,42 +126,59 @@ public class IRCClientFrame extends JFrame {
 
 	chatTextPane = new JTextPane();
 	chatTextPane.setSize(500, 400);
-	chatTextPane.setContentType("text/html;charset=UTF-8");
+	chatTextPane.setContentType("text/plain;charset=UTF-8");
 	chatTextPane.setText("");
 	chatTextPane.setEditable(false);
-
-	kit = new HTMLEditorKit();
-	doc = new HTMLDocument();
+	kit = new StyledEditorKit();
+	doc = chatTextPane.getStyledDocument();
 	chatTextPane.setEditorKit(kit);
 	chatTextPane.setDocument(doc);
-	JScrollPane scrollPane = new JScrollPane(chatTextPane);
+	scrollPane = new JScrollPane(chatTextPane);
 	getContentPane().add(scrollPane, BorderLayout.CENTER);
 	scrollPane.setBounds(0, 0, 500, 400);
-    }
 
-    int offset = 0;
-    int length = 0;
+	scrollPane.getVerticalScrollBar().addAdjustmentListener(
+		new AdjustmentListener() {
+
+		    @Override
+		    public void adjustmentValueChanged(AdjustmentEvent e) {
+			final JScrollBar sb = (JScrollBar) e.getSource();
+			if (sb.getValue() + sb.getVisibleAmount() == sb
+				.getMaximum()) {
+			    EventQueue.invokeLater(new Runnable() {
+				public void run() {
+				    EventQueue.invokeLater(new Runnable() {
+					public void run() {
+					    sb.setValue(sb.getMaximum());
+					}
+				    });
+				}
+			    });
+			}
+		    }
+		});
+    }
 
     public void addMessage(String sender, String message) {
-	SimpleAttributeSet sas = new SimpleAttributeSet();
-	StyleConstants.setBold(sas, true);
-	String m = message;
 	try {
-	    byte bytes[] = message.getBytes("UTF-8");
-	    m = new String(bytes, "UTF-8");
-	} catch (UnsupportedEncodingException e1) {
+	    MutableAttributeSet attr = new SimpleAttributeSet();
+	    // set bold attribute
+	    attr.addAttribute("bold", StyleConstants.Bold);
+	    // insert message sender
+	    doc.insertString(doc.getLength(), "<" + sender + ">: ", attr);
+	    // set sender name bold
+	    doc.setCharacterAttributes(doc.getLength() - sender.length() - 4,
+		    sender.length() + 4, attr, true);
+	    // TODO unset bold attribute, no idea why this works
+	    attr.addAttribute("bold", StyleConstants.Italic);
+	    // insert message
+	    doc.insertString(doc.getLength(), message, attr);
+	    // new line
+	    doc.insertString(doc.getLength(),
+		    System.getProperty("line.separator"), attr);
+	} catch (BadLocationException e) {
 	    if (Main_GUI._DEBUG)
-		e1.printStackTrace();
+		e.printStackTrace();
 	}
-
-	try {
-	    kit.insertHTML(doc, doc.getLength(), "<b>[" + sender + "]:</b> "
-		    + m + "<br>", 0, 0, HTML.Tag.B);
-
-	} catch (IOException | BadLocationException e) {
-	    e.printStackTrace();
-	}
-	chatTextPane.setCaretPosition(chatTextPane.getDocument().getLength());
     }
-
 }

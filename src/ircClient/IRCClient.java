@@ -18,7 +18,6 @@ public class IRCClient extends PircBot {
 
     public void onMessage(String channel, String sender, String login,
 	    String hostname, String message) {
-
 	parent.addMessage(sender, message);
     }
 
