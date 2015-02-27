@@ -41,6 +41,7 @@ public class IRCClientFrame extends JFrame {
     private StyledDocument doc;
     private String channel;
     private JScrollPane scrollPane;
+    private JButton connectButton;
 
     public IRCClientFrame() {
 	setIconImage(Toolkit.getDefaultToolkit().getImage(
@@ -98,28 +99,35 @@ public class IRCClientFrame extends JFrame {
 
 	inputPanel.add(sendButton, BorderLayout.EAST);
 
-	JButton connectButton = new JButton("Connect");
+	connectButton = new JButton("Connect");
 	inputPanel.add(connectButton, BorderLayout.WEST);
 	connectButton.addActionListener(new ActionListener() {
 
 	    @Override
 	    public void actionPerformed(ActionEvent event) {
-		if (Main_GUI.twitchUser != "" && Main_GUI.twitchOAuth != ""
-			&& Main_GUI.currentStreamName != "") {
-		    ircClient.setUserName(Main_GUI.twitchUser);
-		    try {
-			ircClient.connect("irc.twitch.tv", 6667,
-				Main_GUI.twitchOAuth);
-		    } catch (IOException | IrcException e) {
-			if (Main_GUI._DEBUG)
-			    e.printStackTrace();
+		if (!ircClient.isConnected()) {
+
+		    if (Main_GUI.twitchUser != "" && Main_GUI.twitchOAuth != ""
+			    && Main_GUI.currentStreamName != "") {
+			ircClient.setUserName(Main_GUI.twitchUser);
+			try {
+			    ircClient.connect("irc.twitch.tv", 6667,
+				    Main_GUI.twitchOAuth);
+			} catch (IOException | IrcException e) {
+			    if (Main_GUI._DEBUG)
+				e.printStackTrace();
+			}
+			ircClient.joinChannel("#" + channel);
+			System.out.println("connected");
+		    } else {
+			// TODO display Error
+			System.out
+				.println("Error while connecting. Not enough Information");
 		    }
-		    ircClient.joinChannel("#" + channel);
-		    System.out.println("connected");
+		    connectButton.setText("Disconnect");
 		} else {
-		    // TODO display Error
-		    System.out
-			    .println("Error while connecting. Not enough Information");
+		    ircClient.disconnect();
+		    connectButton.setText("Connect");
 		}
 	    }
 	});
