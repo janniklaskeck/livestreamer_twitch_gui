@@ -68,7 +68,7 @@ import twitchUpdate.TwitchUpdateThread;
 public class Main_GUI extends JFrame {
     private static final long serialVersionUID = 1L;
 
-    public static final Version VERSION = new Version(1, 7, 3, 2);
+    public static final Version VERSION = new Version(1, 7, 3, 3);
     public static boolean _DEBUG = false;
     public static SettingsManager settingsManager;
     public static String currentStreamName = "";

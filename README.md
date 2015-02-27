@@ -28,6 +28,9 @@ Java SE, i recommend you use the most current version but Java 7 and 8 should bo
 The .exe file is packed with Launch4j (http://launch4j.sourceforge.net/) but you still need Java!
 Currently only works under Windows
 
+If you need language support for languages like russian or grecian and you want to use the .jar file
+you will probably need to append the command line parameter -Dfile.encoding="UTF-8" e.g. "java -Dfile.encoding="UTF-8" -jar livestreamergui.jar"
+
 #Preview
 <br>
 <img width="auto" height="auto" src="https://github.com/westerwave/livestreamer_twitch_gui/blob/master/preview.png"></img>
