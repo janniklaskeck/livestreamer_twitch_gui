@@ -16,7 +16,6 @@ import stream.GenericStreamInterface;
 import stream.OtherStream;
 import stream.StreamList;
 import stream.TwitchStream;
-import twitchAPI.Twitch_API;
 import twitchlsgui.Main_GUI;
 
 /**
@@ -37,6 +36,7 @@ public class SettingsManager {
     private final String TWITCHUSER = "twitchusername";
     private final String TWITCHOAuth = "twitchoauth";
     private final String DEBUG = "enabledebugoutput";
+    private final String TWITCHSORT = "twitchsorting";
 
     private Main_GUI parent;
 
@@ -44,12 +44,13 @@ public class SettingsManager {
      * Constructor Responsible for loading and saving the settings and streams
      */
     public SettingsManager(Main_GUI parent) {
+	// reference
+	this.parent = parent;
 	// set registry path for saving
 	myPrefs = Preferences.userNodeForPackage(twitchlsgui.Main_GUI.class);
 	// read config on creation
 	readSettings();
-	// reference need for import/export
-	this.parent = parent;
+
     }
 
     /**
@@ -59,7 +60,7 @@ public class SettingsManager {
      * @return true if there is no error, false otherwise
      */
     private boolean streamExists(String stream) {
-	if (Twitch_API.checkTwitch(stream) != null) {
+	if (parent.globals.twitchAPI.checkTwitch(stream) != null) {
 	    return true;
 	}
 	return false;
@@ -83,7 +84,7 @@ public class SettingsManager {
 	} else {
 	    if (streamExists(stream)) {
 		parent.selectStreamService(streamService).getStreamList()
-			.add(new TwitchStream(stream));
+			.add(new TwitchStream(stream, parent));
 	    } else {
 		parent.displayMessage("This stream doesn't seem to exist."
 			+ System.lineSeparator()
@@ -119,21 +120,22 @@ public class SettingsManager {
      * Reads general settings and streamservice List from the registry
      */
     public void readSettings() {
-	Main_GUI.currentQuality = myPrefs.get(QUALITY, "High");
-	Main_GUI.showPreview = myPrefs.getBoolean(SHOWPREVIEW, true);
-	Main_GUI.checkTimer = myPrefs.getInt(TIMER, 30);
-	Main_GUI.autoUpdate = myPrefs.getBoolean(AUTOUPDATE, true);
-	Main_GUI.twitchOAuth = myPrefs.get(TWITCHOAuth, "");
-	Main_GUI.twitchUser = myPrefs.get(TWITCHUSER, "");
-	Main_GUI._DEBUG = myPrefs.getBoolean(DEBUG, false);
+	parent.globals.currentQuality = myPrefs.get(QUALITY, "High");
+	parent.globals.showPreview = myPrefs.getBoolean(SHOWPREVIEW, true);
+	parent.globals.checkTimer = myPrefs.getInt(TIMER, 30);
+	parent.globals.autoUpdate = myPrefs.getBoolean(AUTOUPDATE, true);
+	parent.globals.twitchOAuth = myPrefs.get(TWITCHOAuth, "");
+	parent.globals.twitchUser = myPrefs.get(TWITCHUSER, "");
+	parent.globals._DEBUG = myPrefs.getBoolean(DEBUG, false);
+	parent.globals.sortTwitch = myPrefs.getBoolean(TWITCHSORT, true);
 
 	String buffer = myPrefs.get(STREAMSERVICES, "twitch.tv");
 	String[] buffer2 = buffer.split(" ");
-	Main_GUI.streamServicesList = new ArrayList<StreamList>();
+	parent.globals.streamServicesList = new ArrayList<StreamList>();
 	for (String s : buffer2) {
 	    if (s.length() > 1)
-		Main_GUI.streamServicesList.add(new StreamList(s, myPrefs.get(s
-			+ "_displayname", s)));
+		parent.globals.streamServicesList.add(new StreamList(s, myPrefs
+			.get(s + "_displayname", s)));
 	}
     }
 
@@ -153,7 +155,7 @@ public class SettingsManager {
 
 	    if (streamService.equals("twitch.tv")) {
 		parent.selectStreamService(streamService).addStream(
-			new TwitchStream(streams_split[i]));
+			new TwitchStream(streams_split[i], parent));
 	    } else {
 		parent.selectStreamService(streamService).addStream(
 			new OtherStream(streams_split[i]));
@@ -182,24 +184,26 @@ public class SettingsManager {
      * Writes general settings and streamservices to the registry
      */
     public void writeSettings() {
-	myPrefs.put(QUALITY, Main_GUI.currentQuality);
-	myPrefs.putBoolean(SHOWPREVIEW, Main_GUI.showPreview);
-	myPrefs.putInt(TIMER, Main_GUI.checkTimer);
-	myPrefs.putBoolean(AUTOUPDATE, Main_GUI.autoUpdate);
-	myPrefs.put(TWITCHUSER, Main_GUI.twitchUser);
-	myPrefs.put(TWITCHOAuth, Main_GUI.twitchOAuth);
-	myPrefs.putBoolean(DEBUG, Main_GUI._DEBUG);
+	myPrefs.put(QUALITY, parent.globals.currentQuality);
+	myPrefs.putBoolean(SHOWPREVIEW, parent.globals.showPreview);
+	myPrefs.putInt(TIMER, parent.globals.checkTimer);
+	myPrefs.putBoolean(AUTOUPDATE, parent.globals.autoUpdate);
+	myPrefs.put(TWITCHUSER, parent.globals.twitchUser);
+	myPrefs.put(TWITCHOAuth, parent.globals.twitchOAuth);
+	myPrefs.putBoolean(DEBUG, parent.globals._DEBUG);
+	myPrefs.putBoolean(TWITCHSORT, parent.globals.sortTwitch);
 
 	String buffer = "";
-	for (int i = 0; i < Main_GUI.streamServicesList.size(); i++) {
-	    myPrefs.put(Main_GUI.streamServicesList.get(i).getUrl()
-		    + "_displayname", Main_GUI.streamServicesList.get(i)
+	for (int i = 0; i < parent.globals.streamServicesList.size(); i++) {
+	    myPrefs.put(parent.globals.streamServicesList.get(i).getUrl()
+		    + "_displayname", parent.globals.streamServicesList.get(i)
 		    .getDisplayName());
 	    if (buffer == "") {
-		buffer = buffer + Main_GUI.streamServicesList.get(i).getUrl();
+		buffer = buffer
+			+ parent.globals.streamServicesList.get(i).getUrl();
 	    } else {
 		buffer = buffer + " "
-			+ Main_GUI.streamServicesList.get(i).getUrl();
+			+ parent.globals.streamServicesList.get(i).getUrl();
 	    }
 	}
 	myPrefs.put(STREAMSERVICES, buffer);
@@ -253,8 +257,9 @@ public class SettingsManager {
 		    if (lineNumber == 0 || lineNumber % 2 == 0) {
 			if (parent.selectStreamServiceD(lineSplit[0]) == null
 				&& parent.selectStreamService(lineSplit[1]) == null) {
-			    Main_GUI.streamServicesList.add(new StreamList(
-				    lineSplit[1], lineSplit[0]));
+			    parent.globals.streamServicesList
+				    .add(new StreamList(lineSplit[1],
+					    lineSplit[0]));
 			}
 			lastService = lineSplit[1];
 		    } else {
@@ -284,7 +289,7 @@ public class SettingsManager {
 		}
 		br.close();
 	    } catch (Exception e) {
-		if (Main_GUI._DEBUG)
+		if (parent.globals._DEBUG)
 		    e.printStackTrace();
 	    }
 	}
@@ -321,7 +326,7 @@ public class SettingsManager {
 	    file = new File(path);
 	    try {
 		BufferedWriter output = new BufferedWriter(new FileWriter(file));
-		for (StreamList service : Main_GUI.streamServicesList) {
+		for (StreamList service : parent.globals.streamServicesList) {
 		    output.write(service.getDisplayName() + " "
 			    + service.getUrl());
 		    output.newLine();
@@ -339,7 +344,7 @@ public class SettingsManager {
 		}
 		output.close();
 	    } catch (IOException e) {
-		if (Main_GUI._DEBUG)
+		if (parent.globals._DEBUG)
 		    e.printStackTrace();
 	    }
 	}

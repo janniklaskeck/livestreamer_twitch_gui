@@ -1,6 +1,5 @@
 package settings;
 
-import twitchlsgui.Main_GUI;
 
 public class Version {
 
@@ -61,8 +60,7 @@ public class Version {
 	    this.build = Integer.parseInt(split[2]);
 	    this.revision = Integer.parseInt(split[3]);
 	} catch (Exception e) {
-	    if (Main_GUI._DEBUG)
-		e.printStackTrace();
+	    e.printStackTrace();
 	}
     }
 }

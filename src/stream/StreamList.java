@@ -1,6 +1,7 @@
 package stream;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  */
 public class StreamList {
 
-    private ArrayList<GenericStreamInterface> streamList;
+    private volatile ArrayList<GenericStreamInterface> streamList;
     private String url;
     private String displayName;
 
@@ -17,6 +18,27 @@ public class StreamList {
 	this.streamList = new ArrayList<GenericStreamInterface>();
 	this.url = url;
 	this.displayName = displayName;
+    }
+
+    public void sortList() {
+	if (url.equals("twitch.tv")) {
+	    streamList.sort(new Comparator<GenericStreamInterface>() {
+
+		@Override
+		public int compare(GenericStreamInterface o1,
+			GenericStreamInterface o2) {
+		    TwitchStream ts1 = (TwitchStream) o1;
+		    TwitchStream ts2 = (TwitchStream) o2;
+		    if (ts1.isOnline() && !ts2.isOnline()) {
+			return -1;
+		    } else if (!ts1.isOnline() && ts2.isOnline()) {
+			return 1;
+		    } else {
+			return 0;
+		    }
+		}
+	    });
+	}
     }
 
     /**
@@ -66,7 +88,6 @@ public class StreamList {
 
     public void addStream(GenericStreamInterface twitchStream) {
 	streamList.add(twitchStream);
-
     }
 
 }

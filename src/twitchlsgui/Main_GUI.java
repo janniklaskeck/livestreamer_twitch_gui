@@ -5,6 +5,7 @@ import ircClient.IRCClientFrame;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -24,7 +25,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -52,12 +52,13 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import settings.Globals;
 import settings.SettingsManager;
 import settings.SettingsPanel;
-import settings.Version;
 import stream.GenericStreamInterface;
 import stream.StreamList;
 import stream.TwitchStream;
+import twitchAPI.Twitch_API;
 import twitchUpdate.TwitchUpdateThread;
 
 /**
@@ -66,36 +67,21 @@ import twitchUpdate.TwitchUpdateThread;
  * 
  */
 public class Main_GUI extends JFrame {
-    private static final long serialVersionUID = 1L;
 
-    public static final Version VERSION = new Version(1, 7, 4, 0);
-    public static boolean _DEBUG = false;
-    public static SettingsManager settingsManager;
-    public static String currentStreamName = "";
-    public static boolean showPreview = true;
-    public static int checkTimer = 30;
-    public static int downloadedBytes = 0;
-    public static String twitchUser = "";
-    public static String twitchOAuth = "";
-    public static boolean autoUpdate = true;
+    private static final long serialVersionUID = -7120936298791835733L;
+
+    public Globals globals;
 
     public DefaultListModel<JLabel> streamListModel;
-    public static String currentQuality = "High";
+
     public String currentStreamService = "twitch.tv";
     public JComboBox<String> streamServicesBox;
-    public static ArrayList<StreamList> streamServicesList;
+
     public IRCClientFrame ircFrame = null;
     public JLabel onlineStatus;
     public JLabel updateStatus;
     public boolean streamPaneActive = true;
     public boolean canUpdate = true;
-
-    private static BufferedImage small;
-    private static Graphics g;
-    private static Main_GUI frame;
-    private static JLabel previewLabel;
-    private final static int newWidth = 267;
-    private final static int newHeight = 150;
 
     private JPanel contentPane;
     private SettingsPanel settingsPane;
@@ -116,70 +102,78 @@ public class Main_GUI extends JFrame {
     private Thread reader;
     private JPanel addPanel;
     private String customStreamName = "";
+    private final static int newWidth = 267;
+    private final static int newHeight = 150;
+    private static BufferedImage small;
+    private static Graphics g;
+    private static Main_GUI frame;
+    private static JLabel previewLabel;
+    private Main_GUI mainGUI;
 
     /**
      * Launch the application.
      */
     public static void main(String[] args) {
-	// EventQueue.invokeLater(new Runnable() {
-	// public void run() {
-	// try {
-	frame = new Main_GUI();
-	frame.setVisible(true);
-	frame.setTitle("Livestreamer GUI" + (_DEBUG ? " - Debug enabled" : ""));
-
-	try {
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	} catch (ClassNotFoundException | InstantiationException
-		| IllegalAccessException | UnsupportedLookAndFeelException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
-	frame.addWindowListener(new WindowListener() {
-	    @Override
-	    public void windowOpened(WindowEvent arg0) {
-	    }
+	EventQueue.invokeLater(new Runnable() {
 
 	    @Override
-	    public void windowIconified(WindowEvent arg0) {
-	    }
+	    public void run() {
+		frame = new Main_GUI();
 
-	    @Override
-	    public void windowDeiconified(WindowEvent arg0) {
-	    }
+		frame.setVisible(true);
+		frame.setTitle("Livestreamer GUI");
 
-	    @Override
-	    public void windowDeactivated(WindowEvent arg0) {
-	    }
-
-	    @Override
-	    public void windowClosing(WindowEvent arg0) {
-		if (frame.ircFrame != null) {
-		    frame.ircFrame.dispose();
-		    frame.ircFrame = null;
+		try {
+		    UIManager.setLookAndFeel(UIManager
+			    .getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException
+			| IllegalAccessException
+			| UnsupportedLookAndFeelException e) {
+		    e.printStackTrace();
 		}
-		if (settingsManager != null) {
-		    settingsManager.writeSettings();
+
+		frame.addWindowListener(new WindowListener() {
+		    @Override
+		    public void windowOpened(WindowEvent arg0) {
+		    }
+
+		    @Override
+		    public void windowIconified(WindowEvent arg0) {
+		    }
+
+		    @Override
+		    public void windowDeiconified(WindowEvent arg0) {
+		    }
+
+		    @Override
+		    public void windowDeactivated(WindowEvent arg0) {
+		    }
+
+		    @Override
+		    public void windowClosing(WindowEvent arg0) {
+			if (frame.ircFrame != null) {
+			    frame.ircFrame.dispose();
+			    frame.ircFrame = null;
+			}
+			if (frame.globals.settingsManager != null) {
+			    frame.globals.settingsManager.writeSettings();
+			}
+		    }
+
+		    @Override
+		    public void windowClosed(WindowEvent arg0) {
+		    }
+
+		    @Override
+		    public void windowActivated(WindowEvent arg0) {
+		    }
+		});
+
+		if (frame != null) {
+		    frame.setPreviewImage(null);
 		}
-	    }
-
-	    @Override
-	    public void windowClosed(WindowEvent arg0) {
-	    }
-
-	    @Override
-	    public void windowActivated(WindowEvent arg0) {
 	    }
 	});
-	// } catch (Exception e) {
-	// if (Main_GUI._DEBUG)
-	// e.printStackTrace();
-	// }
-	if (frame != null)
-	    setPreviewImage(null);
-	// }
-	// });
     }
 
     /**
@@ -187,6 +181,13 @@ public class Main_GUI extends JFrame {
      */
     public void updateList() {
 	streamListModel.clear();
+	if (globals.sortTwitch) {
+	    if (currentStreamService.equals("twitch.tv")
+		    || currentStreamService.equals("Twitch")) {
+		selectStreamService(currentStreamService).sortList();
+	    }
+	}
+
 	for (int i = 0; i < selectStreamService(currentStreamService)
 		.getStreamList().size(); i++) {
 	    streamListModel.addElement(new JLabel(selectStreamService(
@@ -200,12 +201,13 @@ public class Main_GUI extends JFrame {
     public void updateServiceList() {
 	if (streamServicesBox != null) {
 	    streamServicesBox.removeAllItems();
-	    if (streamServicesList.size() == 0) {
-		streamServicesList.add(new StreamList("twitch.tv", "Twitch"));
+	    if (globals.streamServicesList.size() == 0) {
+		globals.streamServicesList.add(new StreamList("twitch.tv",
+			"Twitch"));
 	    }
 
-	    for (int i = 0; i < streamServicesList.size(); i++) {
-		streamServicesBox.addItem(streamServicesList.get(i)
+	    for (int i = 0; i < globals.streamServicesList.size(); i++) {
+		streamServicesBox.addItem(globals.streamServicesList.get(i)
 			.getDisplayName());
 	    }
 	    streamServicesBox
@@ -217,6 +219,9 @@ public class Main_GUI extends JFrame {
      * Create the frame.
      */
     public Main_GUI() {
+	mainGUI = this;
+	globals = new Globals();
+	globals.twitchAPI = new Twitch_API(this);
 	setIconImage(Toolkit.getDefaultToolkit().getImage(
 		Main_GUI.class.getResource("/assets/icon.jpg")));
 	setResizable(true);
@@ -239,7 +244,7 @@ public class Main_GUI extends JFrame {
 	    }
 	});
 
-	settingsManager = new SettingsManager(this);
+	globals.settingsManager = new SettingsManager(this);
 
 	settingsPane = new SettingsPanel(this);
 	contentPane = new JPanel();
@@ -296,7 +301,8 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void mouseClicked(MouseEvent e) {
 		if (e.getClickCount() == 2) {
-		    OpenStream(currentStreamName, currentQuality);
+		    OpenStream(globals.currentStreamName,
+			    globals.currentQuality);
 		}
 	    }
 	});
@@ -316,7 +322,8 @@ public class Main_GUI extends JFrame {
 		    if (currentStreamService == null) {
 			currentStreamService = "twitch.tv";
 		    }
-		    settingsManager.readStreamList(currentStreamService);
+		    globals.settingsManager
+			    .readStreamList(currentStreamService);
 		    updateList();
 		}
 	    }
@@ -403,7 +410,7 @@ public class Main_GUI extends JFrame {
 	startStreambutton.addActionListener(new ActionListener() {
 
 	    public void actionPerformed(ActionEvent arg0) {
-		OpenStream(currentStreamName, currentQuality);
+		OpenStream(globals.currentStreamName, globals.currentQuality);
 	    }
 	});
 	middle_panel.add(startStreambutton, gbc_startStreambutton);
@@ -418,7 +425,7 @@ public class Main_GUI extends JFrame {
 
 	    public void actionPerformed(ActionEvent arg0) {
 		if (customStreamName != "") {
-		    OpenStream(customStreamTF.getText(), currentQuality);
+		    OpenStream(customStreamTF.getText(), globals.currentQuality);
 		}
 	    }
 	});
@@ -446,7 +453,7 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		settingsManager.writeSettings();
+		globals.settingsManager.writeSettings();
 		System.exit(0);
 	    }
 	});
@@ -498,7 +505,7 @@ public class Main_GUI extends JFrame {
 		"Worst", "Low", "Medium", "High", "Best" }));
 
 	for (int i = 0; i < qualityComboBox.getModel().getSize(); i++) {
-	    if (currentQuality.equals(qualityComboBox.getModel()
+	    if (globals.currentQuality.equals(qualityComboBox.getModel()
 		    .getElementAt(i))) {
 		qualityComboBox.setSelectedIndex(i);
 	    }
@@ -609,8 +616,12 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		ircFrame = new IRCClientFrame();
-		ircFrame.setVisible(true);
+		if (globals.currentStreamName != "") {
+		    ircFrame = new IRCClientFrame(mainGUI);
+		    ircFrame.setVisible(true);
+		} else {
+		    displayMessage("No Stream selected");
+		}
 	    }
 	});
 	openChatButton.setToolTipText("Only available for Twitch.tv Streams");
@@ -627,11 +638,11 @@ public class Main_GUI extends JFrame {
      * 
      * @param prev
      */
-    public static void setPreviewImage(BufferedImage prev) {
+    public void setPreviewImage(BufferedImage prev) {
 	small = new BufferedImage(newWidth, newHeight,
 		BufferedImage.TYPE_INT_RGB);
 	g = small.createGraphics();
-	if (prev != null && showPreview) {
+	if (prev != null && globals.showPreview) {
 	    g.drawImage(prev, 0, 0, newWidth, newHeight, null);
 	} else {
 	    g.setColor(frame.getBackground());
@@ -647,7 +658,7 @@ public class Main_GUI extends JFrame {
      * @param event
      */
     private void setQuality() {
-	currentQuality = qualityComboBox.getModel().getSelectedItem()
+	globals.currentQuality = qualityComboBox.getModel().getSelectedItem()
 		.toString();
     }
 
@@ -658,13 +669,14 @@ public class Main_GUI extends JFrame {
      */
     private void setStream() {
 	if (stream_list.getSelectedValue() != null) {
-	    currentStreamName = stream_list.getSelectedValue().getText();
+	    globals.currentStreamName = stream_list.getSelectedValue()
+		    .getText();
 	    if (currentStreamService.equals("twitch.tv")) {
 		for (int i = 0; i < selectStreamService(currentStreamService)
 			.getStreamList().size(); i++) {
 		    ts = (TwitchStream) selectStreamService(
 			    currentStreamService).getStreamList().get(i);
-		    if (ts.getChannel().equals(currentStreamName)) {
+		    if (ts.getChannel().equals(globals.currentStreamName)) {
 			if (ts.isOnline()) {
 			    onlineStatus.setText(ts.getOnlineString());
 			    setPreviewImage(ts.getPreview());
@@ -679,14 +691,14 @@ public class Main_GUI extends JFrame {
 			.getStreamList().size(); i++) {
 		    gs = selectStreamService(currentStreamService)
 			    .getStreamList().get(i);
-		    if (gs.getChannel().equals(currentStreamName)) {
+		    if (gs.getChannel().equals(globals.currentStreamName)) {
 			onlineStatus.setText("No Stream Information");
 			setPreviewImage(null);
 		    }
 		}
 	    }
 	} else {
-	    currentStreamName = "";
+	    globals.currentStreamName = "";
 	}
     }
 
@@ -696,7 +708,7 @@ public class Main_GUI extends JFrame {
      * @return
      */
     public StreamList selectStreamService(String streamService) {
-	for (StreamList sl : streamServicesList) {
+	for (StreamList sl : globals.streamServicesList) {
 	    if (sl.getUrl().equals(streamService)) {
 		return sl;
 	    }
@@ -710,7 +722,7 @@ public class Main_GUI extends JFrame {
      * @return
      */
     public StreamList selectStreamServiceD(String streamService) {
-	for (StreamList sl : streamServicesList) {
+	for (StreamList sl : globals.streamServicesList) {
 	    if (sl.getDisplayName().equals(streamService)) {
 		return sl;
 	    }
@@ -738,11 +750,11 @@ public class Main_GUI extends JFrame {
 		    "Please Enter URL and display Name",
 		    JOptionPane.OK_CANCEL_OPTION);
 	    if (result == JOptionPane.OK_OPTION) {
-		streamServicesList.add(new StreamList(urlField.getText(),
-			displayNameField.getText().trim()));
+		globals.streamServicesList.add(new StreamList(urlField
+			.getText(), displayNameField.getText().trim()));
 		updateServiceList();
 		updateList();
-		settingsManager.writeSettings();
+		globals.settingsManager.writeSettings();
 	    }
 	} else {
 	    JTextField channelField = new JTextField(20);
@@ -754,8 +766,8 @@ public class Main_GUI extends JFrame {
 	    int result = JOptionPane.showConfirmDialog(null, addPanel,
 		    "Please Enter Channel Name", JOptionPane.OK_CANCEL_OPTION);
 	    if (result == JOptionPane.OK_OPTION) {
-		settingsManager.saveStream(channelField.getText().trim(),
-			currentStreamService);
+		globals.settingsManager.saveStream(channelField.getText()
+			.trim(), currentStreamService);
 		updateList();
 		if (currentStreamService.equals("twitch.tv")) {
 		    twitchUpdateThread.interrupt();
@@ -769,20 +781,20 @@ public class Main_GUI extends JFrame {
      */
     private void removeButton() {
 	if (shiftPressed && streamServicesBox.getItemCount() > 1) {
-	    for (int i = 0; i < streamServicesList.size(); i++) {
-		if (streamServicesList.get(i).getUrl()
+	    for (int i = 0; i < globals.streamServicesList.size(); i++) {
+		if (globals.streamServicesList.get(i).getUrl()
 			.equals(currentStreamService)) {
-		    streamServicesList.remove(i);
+		    globals.streamServicesList.remove(i);
 		    break;
 		}
 	    }
 	    updateServiceList();
-	    settingsManager.writeSettings();
-	    if (streamServicesList.size() == 1) {
+	    globals.settingsManager.writeSettings();
+	    if (globals.streamServicesList.size() == 1) {
 		twitchUpdateThread.interrupt();
 	    }
 	} else {
-	    settingsManager.removeStream(currentStreamName,
+	    globals.settingsManager.removeStream(globals.currentStreamName,
 		    currentStreamService);
 	    updateList();
 	    if (currentStreamService.equals("twitch.tv")) {
@@ -802,10 +814,10 @@ public class Main_GUI extends JFrame {
 		+ quality;
 	try {
 	    prc = Runtime.getRuntime().exec(cmd);
-	    reader = new Thread(new PromptReader(prc.getInputStream()));
+	    reader = new Thread(new PromptReader(prc.getInputStream(), this));
 	    reader.start();
 	} catch (IOException e) {
-	    if (Main_GUI._DEBUG)
+	    if (globals._DEBUG)
 		e.printStackTrace();
 	}
     }
@@ -820,4 +832,5 @@ public class Main_GUI extends JFrame {
 	msgPanel.add(new JLabel(message));
 	JOptionPane.showMessageDialog(this, msgPanel);
     }
+
 }

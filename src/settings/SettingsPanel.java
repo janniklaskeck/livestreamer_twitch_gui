@@ -52,8 +52,11 @@ public class SettingsPanel extends JPanel {
     private JLabel lblCurrentVersion;
     private JLabel lblNewVersion;
     private JButton twitchCredentialsButton;
+    private JCheckBox showOnlineTwitchCheckBox;
+    private Main_GUI parent;
 
-    public SettingsPanel(Main_GUI parent) {
+    public SettingsPanel(Main_GUI parentGUI) {
+	this.parent = parentGUI;
 	setBorder(new EmptyBorder(5, 5, 5, 5));
 	GridBagLayout gridBagLayout = new GridBagLayout();
 	gridBagLayout.columnWidths = new int[] { 290, 150 };
@@ -65,13 +68,34 @@ public class SettingsPanel extends JPanel {
 	setLayout(gridBagLayout);
 
 	showPreviewCheckBox = new JCheckBox("Download Preview Image");
-	showPreviewCheckBox.setSelected(Main_GUI.showPreview);
+	showPreviewCheckBox.setSelected(parent.globals.showPreview);
 	showPreviewCheckBox.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		Main_GUI.showPreview = showPreviewCheckBox.isSelected();
+		parent.globals.showPreview = showPreviewCheckBox.isSelected();
 	    }
 	});
+
+	showOnlineTwitchCheckBox = new JCheckBox(
+		"Show online Twitch streams first");
+	showOnlineTwitchCheckBox.setSelected(parent.globals.sortTwitch);
+	showOnlineTwitchCheckBox.setHorizontalAlignment(SwingConstants.LEFT);
+	showOnlineTwitchCheckBox.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		parent.globals.sortTwitch = showOnlineTwitchCheckBox
+			.isSelected();
+
+	    }
+	});
+
+	GridBagConstraints gbc_ShowOnlineTwitchCheckBox = new GridBagConstraints();
+	gbc_ShowOnlineTwitchCheckBox.fill = GridBagConstraints.BOTH;
+	gbc_ShowOnlineTwitchCheckBox.insets = new Insets(0, 0, 5, 5);
+	gbc_ShowOnlineTwitchCheckBox.gridx = 0;
+	gbc_ShowOnlineTwitchCheckBox.gridy = 0;
+	add(showOnlineTwitchCheckBox, gbc_ShowOnlineTwitchCheckBox);
 	GridBagConstraints gbc_showPreviewCheckBox = new GridBagConstraints();
 	gbc_showPreviewCheckBox.fill = GridBagConstraints.BOTH;
 	gbc_showPreviewCheckBox.insets = new Insets(0, 0, 5, 5);
@@ -81,11 +105,11 @@ public class SettingsPanel extends JPanel {
 
 	autoUpdateCheckBox = new JCheckBox(
 		"Automatically update Streams from Twitch");
-	autoUpdateCheckBox.setSelected(Main_GUI.autoUpdate);
+	autoUpdateCheckBox.setSelected(parent.globals.autoUpdate);
 	autoUpdateCheckBox.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		Main_GUI.autoUpdate = autoUpdateCheckBox.isSelected();
+		parent.globals.autoUpdate = autoUpdateCheckBox.isSelected();
 	    }
 	});
 	GridBagConstraints gbc_autoUpdateCheckBox = new GridBagConstraints();
@@ -106,7 +130,7 @@ public class SettingsPanel extends JPanel {
 	add(timeIntervalLabel, gbc_timeIntervalLabel);
 
 	timeIntervalTextField = new JTextField();
-	timeIntervalTextField.setText(Main_GUI.checkTimer + "");
+	timeIntervalTextField.setText(parent.globals.checkTimer + "");
 	timeIntervalTextField.getDocument().addDocumentListener(
 		new DocumentListener() {
 
@@ -114,14 +138,14 @@ public class SettingsPanel extends JPanel {
 		    public void removeUpdate(DocumentEvent arg0) {
 			if (timeIntervalTextField.getText().length() > 0) {
 			    try {
-				Main_GUI.checkTimer = Integer
+				parent.globals.checkTimer = Integer
 					.parseInt(timeIntervalTextField
 						.getText());
 			    } catch (NumberFormatException e) {
 				e.printStackTrace();
 			    }
-			    if (Main_GUI.checkTimer < 20) {
-				Main_GUI.checkTimer = 20;
+			    if (parent.globals.checkTimer < 20) {
+				parent.globals.checkTimer = 20;
 			    }
 			}
 		    }
@@ -130,14 +154,14 @@ public class SettingsPanel extends JPanel {
 		    public void insertUpdate(DocumentEvent arg0) {
 			if (timeIntervalTextField.getText().length() > 0) {
 			    try {
-				Main_GUI.checkTimer = Integer
+				parent.globals.checkTimer = Integer
 					.parseInt(timeIntervalTextField
 						.getText());
 			    } catch (NumberFormatException e) {
 				e.printStackTrace();
 			    }
-			    if (Main_GUI.checkTimer < 20) {
-				Main_GUI.checkTimer = 20;
+			    if (parent.globals.checkTimer < 20) {
+				parent.globals.checkTimer = 20;
 			    }
 			}
 		    }
@@ -146,14 +170,14 @@ public class SettingsPanel extends JPanel {
 		    public void changedUpdate(DocumentEvent arg0) {
 			if (timeIntervalTextField.getText().length() > 0) {
 			    try {
-				Main_GUI.checkTimer = Integer
+				parent.globals.checkTimer = Integer
 					.parseInt(timeIntervalTextField
 						.getText());
 			    } catch (NumberFormatException e) {
 				e.printStackTrace();
 			    }
-			    if (Main_GUI.checkTimer < 20) {
-				Main_GUI.checkTimer = 20;
+			    if (parent.globals.checkTimer < 20) {
+				parent.globals.checkTimer = 20;
 			    }
 			}
 		    }
@@ -167,11 +191,11 @@ public class SettingsPanel extends JPanel {
 	timeIntervalTextField.setColumns(1);
 
 	debugCheckBox = new JCheckBox("Enable Debug Output");
-	debugCheckBox.setSelected(Main_GUI._DEBUG);
+	debugCheckBox.setSelected(parent.globals._DEBUG);
 	debugCheckBox.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		Main_GUI._DEBUG = debugCheckBox.isSelected();
+		parent.globals._DEBUG = debugCheckBox.isSelected();
 	    }
 	});
 	GridBagConstraints gbc_debugCheckBox = new GridBagConstraints();
@@ -201,7 +225,7 @@ public class SettingsPanel extends JPanel {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		Main_GUI.settingsManager.writeSettings();
+		parent.globals.settingsManager.writeSettings();
 	    }
 	});
 
@@ -210,7 +234,7 @@ public class SettingsPanel extends JPanel {
 
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		Main_GUI.settingsManager.importStreams();
+		parent.globals.settingsManager.importStreams();
 	    }
 	});
 
@@ -233,8 +257,8 @@ public class SettingsPanel extends JPanel {
 			"Please enter your Twitch.tv username and OAuth Token",
 			JOptionPane.OK_CANCEL_OPTION);
 		if (result == JOptionPane.OK_OPTION) {
-		    Main_GUI.twitchUser = twitchUser.getText().trim();
-		    Main_GUI.twitchOAuth = twitchOAuth.getText().trim();
+		    parent.globals.twitchUser = twitchUser.getText().trim();
+		    parent.globals.twitchOAuth = twitchOAuth.getText().trim();
 		}
 	    }
 	});
@@ -259,7 +283,7 @@ public class SettingsPanel extends JPanel {
 
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		Main_GUI.settingsManager.exportStreams();
+		parent.globals.settingsManager.exportStreams();
 	    }
 	});
 	GridBagConstraints gbc_exportButton = new GridBagConstraints();
@@ -269,7 +293,7 @@ public class SettingsPanel extends JPanel {
 	add(exportButton, gbc_exportButton);
 
 	lblCurrentVersion = new JLabel("Current Version: "
-		+ Main_GUI.VERSION.asString());
+		+ parent.globals.VERSION.asString());
 	GridBagConstraints gbc_lblCurrentVersion = new GridBagConstraints();
 	gbc_lblCurrentVersion.insets = new Insets(0, 0, 5, 5);
 	gbc_lblCurrentVersion.gridx = 0;
@@ -291,7 +315,7 @@ public class SettingsPanel extends JPanel {
 		    try {
 			Desktop.getDesktop().browse(new URI(downloadURL));
 		    } catch (URISyntaxException | IOException e) {
-			if (Main_GUI._DEBUG)
+			if (parent.globals._DEBUG)
 			    e.printStackTrace();
 		    }
 		}
@@ -315,11 +339,11 @@ public class SettingsPanel extends JPanel {
 		reader.close();
 	    }
 	    version = new Version(buffer.toString());
-	    if (Main_GUI.VERSION.isNewerVersion(version)) {
+	    if (parent.globals.VERSION.isNewerVersion(version)) {
 		return true;
 	    }
 	} catch (IOException e) {
-	    if (Main_GUI._DEBUG)
+	    if (parent.globals._DEBUG)
 		e.printStackTrace();
 	}
 	return false;

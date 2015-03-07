@@ -11,7 +11,6 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
-import twitchAPI.Twitch_API;
 import twitchAPI.Twitch_Json;
 import twitchlsgui.Main_GUI;
 
@@ -30,11 +29,13 @@ public class TwitchStream implements GenericStreamInterface {
     private long upTimeMinute;
     private boolean online = false;
     private Twitch_Json ts;
+    private Main_GUI parent;
 
     private static ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-    public TwitchStream(String channel) {
+    public TwitchStream(String channel, Main_GUI parent) {
 	this.setChannel(channel);
+	this.parent = parent;
     }
 
     /**
@@ -42,7 +43,7 @@ public class TwitchStream implements GenericStreamInterface {
      * the stream is online
      */
     public void refresh() {
-	ts = Twitch_API.getStream(this.getChannel());
+	ts = parent.globals.twitchAPI.getStream(this.getChannel());
 	if (ts != null) {
 	    game = ts.getMeta_game();
 	    title = ts.getTitle();
@@ -60,16 +61,17 @@ public class TwitchStream implements GenericStreamInterface {
 			+ " hours)" + "<br>" + getTitle() + "</html>");
 	    }
 	    preview = null;
-	    if (ts.getScreen_cap_url_medium() != null && Main_GUI.showPreview) {
+	    if (ts.getScreen_cap_url_medium() != null
+		    && parent.globals.showPreview) {
 		for (int i = 0; i < 5; i++) {
 		    try {
 			preview = ImageIO.read(new URL(ts
 				.getScreen_cap_url_medium()));
 			@SuppressWarnings("unused")
 			boolean rw = ImageIO.write(preview, "PNG", bos);
-			Main_GUI.downloadedBytes += bos.toByteArray().length;
+			parent.globals.downloadedBytes += bos.toByteArray().length;
 		    } catch (IOException e) {
-			if (Main_GUI._DEBUG)
+			if (parent.globals._DEBUG)
 			    e.printStackTrace();
 		    }
 		    if (preview != null) {
@@ -167,7 +169,7 @@ public class TwitchStream implements GenericStreamInterface {
 	try {
 	    d = fm.parse(dateS);
 	} catch (ParseException e) {
-	    if (Main_GUI._DEBUG)
+	    if (parent.globals._DEBUG)
 		e.printStackTrace();
 	}
 	return d.getTime();

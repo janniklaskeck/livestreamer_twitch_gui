@@ -14,4 +14,14 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>libvlc</name>
+			<value>file:/C:/Program%20Files%20(x86)/VideoLAN/VLC</value>
+		</variable>
+		<variable>
+			<name>libvlcdll</name>
+			<value>file:/C:/Program%20Files%20(x86)/VideoLAN/VLC/libvlc.dll</value>
+		</variable>
+	</variableList>
 </projectDescription>

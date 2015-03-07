@@ -42,12 +42,14 @@ public class IRCClientFrame extends JFrame {
     private String channel;
     private JScrollPane scrollPane;
     private JButton connectButton;
+    private Main_GUI parent;
 
-    public IRCClientFrame() {
+    public IRCClientFrame(Main_GUI parentGUI) {
+	this.parent = parentGUI;
 	setIconImage(Toolkit.getDefaultToolkit().getImage(
 		IRCClientFrame.class.getResource("/assets/icon.jpg")));
-	this.channel = Main_GUI.currentStreamName;
-	setTitle("Twitch Chat - " + Main_GUI.currentStreamName);
+	this.channel = parent.globals.currentStreamName;
+	setTitle("Twitch Chat - " + parent.globals.currentStreamName);
 	setBounds(50, 50, 500, 400);
 	setResizable(true);
 	setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -69,7 +71,7 @@ public class IRCClientFrame extends JFrame {
 				&& !messageTextField.getText().equals("")) {
 			    ircClient.sendMessage("#" + channel,
 				    messageTextField.getText());
-			    addMessage(Main_GUI.twitchUser,
+			    addMessage(parent.globals.twitchUser,
 				    messageTextField.getText());
 			    messageTextField.setText("");
 			}
@@ -91,7 +93,8 @@ public class IRCClientFrame extends JFrame {
 			&& !messageTextField.getText().equals("")) {
 		    ircClient.sendMessage("#" + channel,
 			    messageTextField.getText());
-		    addMessage(Main_GUI.twitchUser, messageTextField.getText());
+		    addMessage(parent.globals.twitchUser,
+			    messageTextField.getText());
 		    messageTextField.setText("");
 		}
 	    }
@@ -107,14 +110,15 @@ public class IRCClientFrame extends JFrame {
 	    public void actionPerformed(ActionEvent event) {
 		if (!ircClient.isConnected()) {
 
-		    if (Main_GUI.twitchUser != "" && Main_GUI.twitchOAuth != ""
-			    && Main_GUI.currentStreamName != "") {
-			ircClient.setUserName(Main_GUI.twitchUser);
+		    if (parent.globals.twitchUser != ""
+			    && parent.globals.twitchOAuth != ""
+			    && parent.globals.currentStreamName != "") {
+			ircClient.setUserName(parent.globals.twitchUser);
 			try {
 			    ircClient.connect("irc.twitch.tv", 6667,
-				    Main_GUI.twitchOAuth);
+				    parent.globals.twitchOAuth);
 			} catch (IOException | IrcException e) {
-			    if (Main_GUI._DEBUG)
+			    if (parent.globals._DEBUG)
 				e.printStackTrace();
 			}
 			ircClient.joinChannel("#" + channel);
@@ -185,7 +189,7 @@ public class IRCClientFrame extends JFrame {
 	    doc.insertString(doc.getLength(),
 		    System.getProperty("line.separator"), attr);
 	} catch (BadLocationException e) {
-	    if (Main_GUI._DEBUG)
+	    if (parent.globals._DEBUG)
 		e.printStackTrace();
 	}
     }

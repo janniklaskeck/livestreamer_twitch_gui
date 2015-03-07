@@ -14,9 +14,10 @@ import java.io.InputStreamReader;
 public class PromptReader implements Runnable {
 
     private InputStream inputStream;
-
-    public PromptReader(InputStream inStream) {
+    private Main_GUI parent;
+    public PromptReader(InputStream inStream, Main_GUI parent) {
 	this.inputStream = inStream;
+	this.parent = parent;
     }
 
     @Override
@@ -28,7 +29,7 @@ public class PromptReader implements Runnable {
 	    while ((s = stdInput.readLine()) != null)
 		System.out.println(s);
 	} catch (IOException e) {
-	    if (Main_GUI._DEBUG)
+	    if (parent.globals._DEBUG)
 		e.printStackTrace();
 	}
     }

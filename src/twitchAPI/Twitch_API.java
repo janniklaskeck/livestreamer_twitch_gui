@@ -13,6 +13,11 @@ import com.google.gson.JsonObject;
 public class Twitch_API {
     private static Gson gson = new Gson();
     private static String jsonString;
+    private Main_GUI parent;
+
+    public Twitch_API(Main_GUI parent) {
+	this.parent = parent;
+    }
 
     /**
      * Downloads the content from the Twitch.tv API to be processed as JSON into
@@ -21,7 +26,7 @@ public class Twitch_API {
      * @param channelname
      * @return
      */
-    public static Twitch_Json getStream(String channelname) {
+    public Twitch_Json getStream(String channelname) {
 	JsonObject a = null;
 	JsonObject b = null;
 	try {
@@ -47,8 +52,7 @@ public class Twitch_API {
 		return stream;
 	    }
 	} catch (Exception e) {
-	    if (Main_GUI._DEBUG)
-		e.printStackTrace();
+	    e.printStackTrace();
 	}
 	return null;
     }
@@ -60,7 +64,7 @@ public class Twitch_API {
      * @param urlString
      * @return
      */
-    public static String readJsonFromUrl(String urlString) {
+    public String readJsonFromUrl(String urlString) {
 	BufferedReader reader = null;
 	try {
 	    URL url = new URL(urlString);
@@ -71,19 +75,19 @@ public class Twitch_API {
 	    while ((read = reader.read(chars)) != -1) {
 		buffer.append(chars, 0, read);
 	    }
-	    Main_GUI.downloadedBytes += buffer.toString().getBytes("UTF-8").length;
+	    parent.globals.downloadedBytes += buffer.toString().getBytes(
+		    "UTF-8").length;
 	    if (reader != null) {
 		reader.close();
 	    }
 	    return buffer.toString();
 	} catch (IOException e) {
-	    if (Main_GUI._DEBUG)
-		e.printStackTrace();
+	    e.printStackTrace();
 	    return null;
 	}
     }
 
-    public static String checkTwitch(String channelname) {
+    public String checkTwitch(String channelname) {
 	return readJsonFromUrl("https://api.twitch.tv/kraken/streams/"
 		+ channelname);
     }
