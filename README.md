@@ -16,6 +16,7 @@ Its intended use is for twitch.tv.
 	
 #Planned Features:
 	- Error output window
+	- vlcj integration
 	
 If you have an idea for a new feature or you found a bug, i'm happy to assist if possible.
 
