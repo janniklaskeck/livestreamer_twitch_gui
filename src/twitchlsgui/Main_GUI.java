@@ -180,6 +180,8 @@ public class Main_GUI extends JFrame {
      * Updates the streamListModel of the JList
      */
     public void updateList() {
+	int selection_index = stream_list.getSelectedIndex();
+	
 	streamListModel.clear();
 	if (globals.sortTwitch) {
 	    if (currentStreamService.equals("twitch.tv")
@@ -193,6 +195,7 @@ public class Main_GUI extends JFrame {
 	    streamListModel.addElement(new JLabel(selectStreamService(
 		    currentStreamService).getStreamList().get(i).getChannel()));
 	}
+	stream_list.setSelectedIndex(selection_index);
     }
 
     /**
@@ -329,7 +332,6 @@ public class Main_GUI extends JFrame {
 	    }
 	});
 	updateServiceList();
-	updateList();
 	JPanel custom_StreamPanel = new JPanel();
 	stream_panel.add(custom_StreamPanel, BorderLayout.SOUTH);
 	GridBagLayout gbl_custom_StreamPanel = new GridBagLayout();

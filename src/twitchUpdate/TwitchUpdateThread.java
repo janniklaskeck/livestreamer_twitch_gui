@@ -1,5 +1,6 @@
 package twitchUpdate;
 
+import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -122,7 +123,13 @@ public class TwitchUpdateThread extends Thread {
 	parent.globals.downloadedBytes = 0;
 	parent.canUpdate = true;
 	if (parent.globals.sortTwitch) {
-	    parent.updateList();
+	    EventQueue.invokeLater(new Runnable() {
+		@Override
+		public void run() {
+		    parent.updateList();
+		}
+	    });
+
 	}
     }
 }

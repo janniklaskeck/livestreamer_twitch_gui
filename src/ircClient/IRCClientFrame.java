@@ -188,6 +188,7 @@ public class IRCClientFrame extends JFrame {
 	    // new line
 	    doc.insertString(doc.getLength(),
 		    System.getProperty("line.separator"), attr);
+	    chatTextPane.setCaretPosition(doc.getLength());
 	} catch (BadLocationException e) {
 	    if (parent.globals._DEBUG)
 		e.printStackTrace();
