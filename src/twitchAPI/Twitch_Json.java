@@ -28,12 +28,14 @@ public class Twitch_Json {
     private String screen_cap_url_medium;
     private String screen_cap_url_huge;
     private String category_title;
+    private int current_viewers;
     private int views_count;
 
     public void load(JsonObject job) {
 	setTitle(job.get("channel").getAsJsonObject().get("status")
 		.getAsString());
 	setMeta_game(job.get("game").getAsString());
+	setCurrent_viewers(job.get("viewers").getAsInt());
 	setScreen_cap_url_large(job.get("preview").getAsJsonObject()
 		.get("large").getAsString());
 	setScreen_cap_url_small(job.get("preview").getAsJsonObject()
@@ -203,5 +205,20 @@ public class Twitch_Json {
 
     public void setViews_count(int views_count) {
 	this.views_count = views_count;
+    }
+
+    /**
+     * @return the current_viewers
+     */
+    public int getCurrent_viewers() {
+	return current_viewers;
+    }
+
+    /**
+     * @param current_viewers
+     *            the current_viewers to set
+     */
+    public void setCurrent_viewers(int current_viewers) {
+	this.current_viewers = current_viewers;
     }
 }

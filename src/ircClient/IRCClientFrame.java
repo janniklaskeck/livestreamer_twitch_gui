@@ -131,6 +131,7 @@ public class IRCClientFrame extends JFrame {
 		    connectButton.setText("Disconnect");
 		} else {
 		    ircClient.disconnect();
+		    System.out.println("disconnected");
 		    connectButton.setText("Connect");
 		}
 	    }

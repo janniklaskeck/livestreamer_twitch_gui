@@ -181,7 +181,7 @@ public class Main_GUI extends JFrame {
      */
     public void updateList() {
 	int selection_index = stream_list.getSelectedIndex();
-	
+
 	streamListModel.clear();
 	if (globals.sortTwitch) {
 	    if (currentStreamService.equals("twitch.tv")

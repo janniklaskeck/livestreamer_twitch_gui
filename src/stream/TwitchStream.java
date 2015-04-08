@@ -19,6 +19,7 @@ public class TwitchStream implements GenericStreamInterface {
     private String channel;
     private String game;
     private String title;
+    private int current_viewers;
     private BufferedImage preview;
     private String created_at;
     private String updated_at;
@@ -48,6 +49,7 @@ public class TwitchStream implements GenericStreamInterface {
 	    game = ts.getMeta_game();
 	    title = ts.getTitle();
 	    online = ts.isOnline();
+	    current_viewers = ts.getCurrent_viewers();
 	    created_at = ts.getCreated_At();
 	    updated_at = ts.getUpdated_At();
 	    upTimeHour = 0L;
@@ -56,9 +58,11 @@ public class TwitchStream implements GenericStreamInterface {
 	    if (online) {
 		created_at_Long = convertDate(created_at);
 		calcUpTime(created_at_Long);
-		setOnlineString("<html>Playing " + getGame() + " (Online for "
-			+ getUpTimeHours() + ":" + getUpTimeMinutes()
-			+ " hours)" + "<br>" + getTitle() + "</html>");
+		setOnlineString("<html>Currently playing: " + getGame()
+			+ "<br>(Online for: " + getUpTimeHours() + ":"
+			+ getUpTimeMinutes() + " hours) |"
+			+ " Current Viewers: " + getCurrent_viewers() + "<br>"
+			+ getTitle() + "</html>");
 	    }
 	    preview = null;
 	    if (ts.getScreen_cap_url_medium() != null
@@ -255,8 +259,17 @@ public class TwitchStream implements GenericStreamInterface {
 	return channel;
     }
 
+    /**
+     * @return the current_viewers
+     */
+    public int getCurrent_viewers() {
+	return current_viewers;
+    }
+
     @Override
     public void setChannel(String channel) {
 	this.channel = channel;
+
     }
+
 }
