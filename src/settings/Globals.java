@@ -13,23 +13,25 @@ import twitchAPI.Twitch_API;
  */
 public class Globals {
 
-    public boolean sortTwitch = true;
-    public ArrayList<StreamList> streamServicesList;
-    public String currentQuality = "High";
-    public final Version VERSION = new Version(1, 8, 1, 0);
-    public boolean _DEBUG = false;
-    public SettingsManager settingsManager;
-    public String currentStreamName = "";
-    public boolean showPreview = true;
-    public int checkTimer = 30;
-    public int downloadedBytes = 0;
-    public String twitchUser = "";
-    public String twitchOAuth = "";
-    public boolean autoUpdate = true;
-    public Twitch_API twitchAPI;
+	public boolean sortTwitch = true;
+	public ArrayList<StreamList> streamServicesList;
+	public String currentQuality = "High";
+	public final Version VERSION = new Version(1, 8, 1, 0);
+	public boolean _DEBUG = false;
+	public SettingsManager settingsManager;
+	public String currentStreamName = "";
+	public boolean showPreview = true;
+	public int checkTimer = 30;
+	public int downloadedBytes = 0;
+	public String twitchUser = "";
+	public String twitchOAuth = "";
+	public boolean autoUpdate = true;
+	public Twitch_API twitchAPI;
+	public String path = "";
+	public boolean showLog = false;
 
-    public Globals() {
+	public Globals() {
 
-    }
+	}
 
 }
