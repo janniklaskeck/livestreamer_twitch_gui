@@ -27,7 +27,7 @@ public class PromptReader implements Runnable {
 	String s = null;
 	try {
 	    while ((s = stdInput.readLine()) != null)
-		System.out.println(s);
+	    	Main_GUI.updateLog(s);
 	} catch (IOException e) {
 	    if (parent.globals._DEBUG)
 		e.printStackTrace();

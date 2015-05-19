@@ -37,6 +37,8 @@ public class SettingsManager {
     private final String TWITCHOAuth = "twitchoauth";
     private final String DEBUG = "enabledebugoutput";
     private final String TWITCHSORT = "twitchsorting";
+    private final String PATH = "recordingpath";
+    private final String SHOW_LOG = "showing_log";
 
     private Main_GUI parent;
 
@@ -128,6 +130,8 @@ public class SettingsManager {
 	parent.globals.twitchUser = myPrefs.get(TWITCHUSER, "");
 	parent.globals._DEBUG = myPrefs.getBoolean(DEBUG, false);
 	parent.globals.sortTwitch = myPrefs.getBoolean(TWITCHSORT, true);
+	parent.globals.path = myPrefs.get(PATH, "");
+	parent.globals.showLog = myPrefs.getBoolean(SHOW_LOG, false);
 
 	String buffer = myPrefs.get(STREAMSERVICES, "twitch.tv");
 	String[] buffer2 = buffer.split(" ");
@@ -192,6 +196,8 @@ public class SettingsManager {
 	myPrefs.put(TWITCHOAuth, parent.globals.twitchOAuth);
 	myPrefs.putBoolean(DEBUG, parent.globals._DEBUG);
 	myPrefs.putBoolean(TWITCHSORT, parent.globals.sortTwitch);
+	myPrefs.put(PATH, parent.globals.path);
+	myPrefs.putBoolean(SHOW_LOG, parent.globals.showLog);
 
 	String buffer = "";
 	for (int i = 0; i < parent.globals.streamServicesList.size(); i++) {
