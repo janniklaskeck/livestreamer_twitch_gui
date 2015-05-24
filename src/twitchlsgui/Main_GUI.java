@@ -32,7 +32,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -54,6 +56,7 @@ import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
@@ -104,7 +107,6 @@ public class Main_GUI extends JFrame {
 	private boolean shiftPressed = false;
 	private TwitchStream ts;
 	private GenericStreamInterface gs;
-	private String cmd;
 	private JComboBox<String> qualityComboBox;
 	private JButton openChatButton;
 	private Component verticalStrut;
@@ -127,6 +129,8 @@ public class Main_GUI extends JFrame {
 	private JButton logButton;
 	private JButton recordStreambutton;
 
+	private final Dimension DIM = new Dimension(620, 420);
+
 	/**
 	 * Launch the application.
 	 */
@@ -146,7 +150,6 @@ public class Main_GUI extends JFrame {
 				}
 
 				frame = new Main_GUI();
-
 				frame.setVisible(true);
 				frame.setTitle("Livestreamer GUI");
 
@@ -245,11 +248,11 @@ public class Main_GUI extends JFrame {
 		globals.twitchAPI = new Twitch_API(this);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(
 				Main_GUI.class.getResource("/assets/icon.jpg")));
-		setResizable(true);
-		setMinimumSize(new Dimension(600, 500));
-		setPreferredSize(new Dimension(600, 500));
+		setResizable(false);
+		setMinimumSize(DIM);
+		setPreferredSize(DIM);
+		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 600, 500);
 
 		addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
@@ -283,7 +286,7 @@ public class Main_GUI extends JFrame {
 		innerContentPane.setLayout(new BorderLayout(0, 0));
 
 		JPanel stream_panel = new JPanel();
-		innerContentPane.add(stream_panel, BorderLayout.CENTER);
+		innerContentPane.add(stream_panel, BorderLayout.WEST);
 		stream_panel.setLayout(new BorderLayout(0, 0));
 
 		JScrollPane scrollPane = new JScrollPane();
@@ -293,6 +296,7 @@ public class Main_GUI extends JFrame {
 
 		stream_list = new JList<JLabel>();
 		stream_list.setVisibleRowCount(9);
+    	stream_list.setFixedCellWidth(DIM.width/2);
 		stream_list.setCellRenderer(new CustomListCellRenderer(this));
 		stream_list.setModel(streamListModel);
 
@@ -459,7 +463,9 @@ public class Main_GUI extends JFrame {
 						displayMessage("No Stream selected");
 					}
 				} else {
-					stopRecording();
+					if (prc != null) {
+						prc.destroy();
+					}
 				}
 
 			}
@@ -532,17 +538,28 @@ public class Main_GUI extends JFrame {
 					logScrollPane.setVisible(false);
 					logButton.setText("Show Log");
 					globals.showLog = false;
+					setMinimumSize(DIM);
+					setPreferredSize(DIM);
+					setMaximumSize(DIM);
+					setSize(DIM);
+
 				} else {
 					logScrollPane.setVisible(true);
 					logButton.setText("Close Log");
 					globals.showLog = true;
+					Dimension newDim = new Dimension(DIM.width, DIM.height
+							+ logScrollPane.getPreferredSize().height);
+					setMinimumSize(newDim);
+					setPreferredSize(newDim);
+					setMaximumSize(newDim);
+					setSize(newDim);
 				}
 				validate();
 			}
 		});
 
 		log = new JTextArea();
-		log.setRows(4);
+		log.setRows(5);
 		log.setLineWrap(true);
 		log.setFont(new Font("Consolas", Font.PLAIN, 11));
 
@@ -550,11 +567,24 @@ public class Main_GUI extends JFrame {
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 		logScrollPane = new JScrollPane(log);
+		logScrollPane.setMinimumSize(new Dimension(DIM.width, 76));
+		logScrollPane.setPreferredSize(new Dimension(DIM.width, 76));
+		logScrollPane.setMaximumSize(new Dimension(DIM.width, 76));
 
 		if (globals.showLog == true) {
 			logButton.setText("Close Log");
+			Dimension newDim = new Dimension(DIM.width, DIM.height
+					+ logScrollPane.getPreferredSize().height);
+			setMinimumSize(newDim);
+			setPreferredSize(newDim);
+			setMaximumSize(newDim);
+			setSize(newDim);
 		} else {
 			logButton.setText("Show Log");
+			setMinimumSize(DIM);
+			setPreferredSize(DIM);
+			setMaximumSize(DIM);
+			setSize(DIM);
 		}
 		logScrollPane.setVisible(globals.showLog);
 
@@ -718,10 +748,9 @@ public class Main_GUI extends JFrame {
 					openWebpage(new URI("http://www.twitch.tv/"
 							+ globals.currentStreamName));
 				} catch (URISyntaxException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					if (globals._DEBUG)
+						e1.printStackTrace();
 				}
-
 			}
 		});
 		openBrowserButton
@@ -929,10 +958,16 @@ public class Main_GUI extends JFrame {
 	 * @param quality
 	 */
 	private void OpenStream(String name, String quality) {
-		cmd = "livestreamer " + currentStreamService + "/" + name + " "
-				+ quality;
 
-		runLivestreamer(cmd);
+		new SwingWorker<Void, Void>() {
+			protected Void doInBackground() throws Exception {
+
+				String stream = currentStreamService + "/" + name;
+				runLivestreamer(Arrays.asList("livestreamer", stream, quality));
+
+				return null;
+			}
+		}.execute();
 	}
 
 	/**
@@ -943,44 +978,54 @@ public class Main_GUI extends JFrame {
 	 */
 	private void recordStream(String name, String quality) {
 
-		GregorianCalendar now = new GregorianCalendar();
+		new SwingWorker<Void, Void>() {
 
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
-				DateFormat.SHORT);
+			protected void done() {
+				updateLog("Recording stopped.");
+				recordStreambutton.setText("Record Stream");
+				try {
+					get();
+				} catch (Exception e) {
+					if (globals._DEBUG)
+						e.printStackTrace();
+				}
+			}
 
-		String date = df.format(now.getTime());
+			protected Void doInBackground() throws Exception {
 
-		String fileName = onlineStatus.getToolTipText() + "_" + date;
+				GregorianCalendar now = new GregorianCalendar();
+				DateFormat df = DateFormat.getDateTimeInstance(
+						DateFormat.SHORT, DateFormat.SHORT);
+				String date = df.format(now.getTime());
 
-		fileName = fileName.replace(".", "-").replace(" ", "_")
-				.replace(":", "-");
+				String fileName = onlineStatus.getToolTipText() + "_" + date;
+				fileName = fileName.replace(".", "-").replace(" ", "_")
+						.replace(":", "-").replaceAll("[^a-zA-Z0-9_-]", "")
+						.concat(".mpeg4");
+				String path = globals.path;
 
-		String path = globals.path;
+				final JFileChooser fc = new JFileChooser();
+				if (path != "") {
+					fc.setCurrentDirectory(new File(path));
+				}
+				fc.setSelectedFile(new File(fileName));
+				int returnVal = fc.showSaveDialog(mainGUI);
 
-		final JFileChooser fc = new JFileChooser();
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					String recordPath = fc.getCurrentDirectory().toString();
+					globals.path = recordPath;
+					String file = recordPath + "/"
+							+ fc.getSelectedFile().getName() + ".mpeg4";
+					String stream = currentStreamService + "/" + name;
 
-		if (path != "") {
-			fc.setCurrentDirectory(new File(path));
-		}
+					recordStreambutton.setText("Stop Recording");
 
-		fc.setSelectedFile(new File(fileName));
-
-		int returnVal = fc.showSaveDialog(mainGUI);
-
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-
-			String recordPath = fc.getCurrentDirectory().toString();
-			globals.path = recordPath;
-
-			cmd = "livestreamer " + "-o " + recordPath + "/"
-					+ fc.getSelectedFile().getName() + ".mpeg4 "
-					+ currentStreamService + "/" + name + " " + quality;
-
-			runLivestreamer(cmd);
-
-			recordStreambutton.setText("Stop Recording");
-		}
-
+					runLivestreamer(Arrays.asList("livestreamer", "-o", file,
+							stream, quality));
+				}
+				return null;
+			}
+		}.execute();
 	}
 
 	/**
@@ -988,19 +1033,19 @@ public class Main_GUI extends JFrame {
 	 * 
 	 * @param cmd
 	 */
-	private void runLivestreamer(String cmd) {
-
-		updateLog(cmd);
+	private void runLivestreamer(List<String> cmd) {
 
 		try {
-			prc = Runtime.getRuntime().exec(cmd);
+			ProcessBuilder pb = new ProcessBuilder(cmd);
+			pb.redirectErrorStream(true);
+			prc = pb.start();
 			reader = new Thread(new PromptReader(prc.getInputStream(), this));
 			reader.start();
-		} catch (IOException e) {
+			prc.waitFor();
+		} catch (IOException | InterruptedException e) {
 			if (globals._DEBUG)
 				e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -1008,24 +1053,12 @@ public class Main_GUI extends JFrame {
 	 * 
 	 */
 	public static void updateLog(String text) {
-
-		if (log.getText().isEmpty()) {
-			log.setText(text);
-		} else {
-			log.append("\n" + text);
+		if (!text.isEmpty()) {
+			GregorianCalendar now = new GregorianCalendar();
+			DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT);
+			String date = df.format(now.getTime());
+			log.append("[" + date + "] " + text + "\n");
 		}
-	}
-
-	/**
-	 * Stop recording of stream
-	 * 
-	 */
-	private void stopRecording() {
-		if (prc != null) {
-			prc.destroy();
-		}
-		updateLog("Recording stopped.");
-		recordStreambutton.setText("Record Stream");
 	}
 
 	/**
@@ -1043,14 +1076,15 @@ public class Main_GUI extends JFrame {
 	 * Open Webbrowser with specified uri
 	 * 
 	 */
-	public static void openWebpage(URI uri) {
+	public void openWebpage(URI uri) {
 		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop()
 				: null;
 		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
 			try {
 				desktop.browse(uri);
 			} catch (Exception e) {
-				e.printStackTrace();
+				if (globals._DEBUG)
+					e.printStackTrace();
 			}
 		}
 	}
@@ -1059,14 +1093,15 @@ public class Main_GUI extends JFrame {
 	 * Open Webbrowser with specified url
 	 * 
 	 */
-	public static void openWebpage(URL url) {
+	public void openWebpage(URL url) {
 
 		updateLog("Open chat" + url.toString());
 
 		try {
 			openWebpage(url.toURI());
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			if (globals._DEBUG)
+				e.printStackTrace();
 		}
 	}
 
