@@ -17,13 +17,18 @@ import java.net.URL;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -54,6 +59,7 @@ public class SettingsPanel extends JPanel {
     private JButton twitchCredentialsButton;
     private JCheckBox showOnlineTwitchCheckBox;
     private Main_GUI parent;
+    private JComboBox<String> lookAndFeelComboBox;
 
     public SettingsPanel(Main_GUI parentGUI) {
 	this.parent = parentGUI;
@@ -62,7 +68,7 @@ public class SettingsPanel extends JPanel {
 	gridBagLayout.columnWidths = new int[] { 290, 150 };
 	gridBagLayout.rowHeights = new int[] { 20, 20, 20, 20, 20, 0, 0, 0, 0,
 		0 };
-	gridBagLayout.columnWeights = new double[] { 0.0, 0.0 };
+	gridBagLayout.columnWeights = new double[] { 0.0, 1.0 };
 	gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 		0.0, 0.0, 0.0, 0.0 };
 	setLayout(gridBagLayout);
@@ -96,6 +102,48 @@ public class SettingsPanel extends JPanel {
 	gbc_ShowOnlineTwitchCheckBox.gridx = 0;
 	gbc_ShowOnlineTwitchCheckBox.gridy = 0;
 	add(showOnlineTwitchCheckBox, gbc_ShowOnlineTwitchCheckBox);
+
+	lookAndFeelComboBox = new JComboBox<String>();
+	lookAndFeelComboBox.setSelectedItem(parent.globals.lookAndFeel);
+	lookAndFeelComboBox.setModel(new DefaultComboBoxModel<String>(
+		new String[] { "system", "cross-Platform" }));
+	lookAndFeelComboBox.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		String currentLaF = (String) lookAndFeelComboBox
+			.getSelectedItem();
+		if (currentLaF == "system") {
+		    try {
+			UIManager.setLookAndFeel(UIManager
+				.getSystemLookAndFeelClassName());
+		    } catch (ClassNotFoundException | InstantiationException
+			    | IllegalAccessException
+			    | UnsupportedLookAndFeelException e1) {
+			e1.printStackTrace();
+		    }
+		    SwingUtilities.updateComponentTreeUI(parent);
+		    parent.pack();
+		} else if (currentLaF == "cross-Platform") {
+		    try {
+			UIManager.setLookAndFeel(UIManager
+				.getCrossPlatformLookAndFeelClassName());
+		    } catch (ClassNotFoundException | InstantiationException
+			    | IllegalAccessException
+			    | UnsupportedLookAndFeelException e1) {
+			e1.printStackTrace();
+		    }
+		    SwingUtilities.updateComponentTreeUI(parent);
+		    parent.pack();
+		}
+	    }
+	});
+	GridBagConstraints gbc_lookAndFeelComboBox = new GridBagConstraints();
+	gbc_lookAndFeelComboBox.insets = new Insets(0, 0, 5, 0);
+	gbc_lookAndFeelComboBox.fill = GridBagConstraints.HORIZONTAL;
+	gbc_lookAndFeelComboBox.gridx = 1;
+	gbc_lookAndFeelComboBox.gridy = 0;
+	add(lookAndFeelComboBox, gbc_lookAndFeelComboBox);
 	GridBagConstraints gbc_showPreviewCheckBox = new GridBagConstraints();
 	gbc_showPreviewCheckBox.fill = GridBagConstraints.BOTH;
 	gbc_showPreviewCheckBox.insets = new Insets(0, 0, 5, 5);

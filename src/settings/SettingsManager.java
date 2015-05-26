@@ -39,6 +39,7 @@ public class SettingsManager {
     private final String TWITCHSORT = "twitchsorting";
     private final String PATH = "recordingpath";
     private final String SHOW_LOG = "showing_log";
+    private final String LOOKANDFEEL = "look_and_feel";
 
     private Main_GUI parent;
 
@@ -132,6 +133,9 @@ public class SettingsManager {
 	parent.globals.sortTwitch = myPrefs.getBoolean(TWITCHSORT, true);
 	parent.globals.path = myPrefs.get(PATH, "");
 	parent.globals.showLog = myPrefs.getBoolean(SHOW_LOG, false);
+	parent.globals.lookAndFeel = myPrefs.get(LOOKANDFEEL, "system");
+
+	
 
 	String buffer = myPrefs.get(STREAMSERVICES, "twitch.tv");
 	String[] buffer2 = buffer.split(" ");
@@ -198,6 +202,7 @@ public class SettingsManager {
 	myPrefs.putBoolean(TWITCHSORT, parent.globals.sortTwitch);
 	myPrefs.put(PATH, parent.globals.path);
 	myPrefs.putBoolean(SHOW_LOG, parent.globals.showLog);
+	myPrefs.put(LOOKANDFEEL, parent.globals.lookAndFeel);
 
 	String buffer = "";
 	for (int i = 0; i < parent.globals.streamServicesList.size(); i++) {
