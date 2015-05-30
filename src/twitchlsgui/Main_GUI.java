@@ -408,6 +408,7 @@ public class Main_GUI extends JFrame {
 
 	onlineStatus = new JLabel("No Stream selected");
 	onlineStatus.setHorizontalAlignment(SwingConstants.CENTER);
+
 	GridBagConstraints gbc_onlineStatus = new GridBagConstraints();
 	gbc_onlineStatus.fill = GridBagConstraints.BOTH;
 	gbc_onlineStatus.gridx = 0;
@@ -782,7 +783,6 @@ public class Main_GUI extends JFrame {
 	// start checker thread
 	twitchUpdateThread = new TwitchUpdateThread(settingsPane, this);
 	twitchUpdateThread.start();
-
     }
 
     /**
@@ -820,6 +820,7 @@ public class Main_GUI extends JFrame {
      * @param event
      */
     private void setStream() {
+
 	if (stream_list.getSelectedValue() != null) {
 	    globals.currentStreamName = stream_list.getSelectedValue()
 		    .getText();
@@ -830,7 +831,10 @@ public class Main_GUI extends JFrame {
 			    currentStreamService).getStreamList().get(i);
 		    if (ts.getChannel().equals(globals.currentStreamName)) {
 			if (ts.isOnline()) {
-			    onlineStatus.setText(ts.getOnlineString());
+			    int maxWidth = DIM.width / 2;
+			    onlineStatus.setText("<html><div WIDTH=" + maxWidth
+				    + ">" + ts.getOnlineString()
+				    + "</div></html>");
 			    onlineStatus.setToolTipText(ts.getTitle());
 			    setPreviewImage(ts.getPreview());
 			} else {
