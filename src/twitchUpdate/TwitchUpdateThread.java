@@ -54,10 +54,10 @@ public class TwitchUpdateThread extends Thread {
 	if (streamList.size() > 0) {
 	    if (parent.currentStreamService.equals(parent.selectStreamService(
 		    "twitch.tv").getUrl())) {
-		parent.updateStatus.setText("Updating " + "(" + finishedUpdates
-			+ "/" + parent.streamListModel.size() + ")");
-	    } else {
-		parent.updateStatus.setText("");
+		parent.updateToolBar.setVisible(true);
+		int max = parent.selectStreamService("twitch.tv")
+			.getStreamList().size();
+		parent.updateProgressBar.setMaximum(max);
 	    }
 
 	    for (int i = 0; i < streamList.size(); i++) {
@@ -74,14 +74,12 @@ public class TwitchUpdateThread extends Thread {
 	    for (int i = 0; i < streamList.size(); i++) {
 		try {
 		    threads.get(i).join();
-		    parent.updateStatus.setText("Updating. " + "("
-			    + finishedUpdates + "/"
-			    + parent.streamListModel.size() + ")");
+		    parent.updateProgressBar.setValue(finishedUpdates
+			    .intValue());
 		} catch (InterruptedException e) {
 		    if (parent.globals._DEBUG)
 			e.printStackTrace();
 		}
-
 	    }
 	    if (parent.globals._DEBUG)
 		System.out.println(streamList.size() + " threads were joined");
@@ -93,11 +91,10 @@ public class TwitchUpdateThread extends Thread {
 
 	if (parent.currentStreamService.equals(parent.selectStreamService(
 		"twitch.tv").getUrl())) {
-	    parent.updateStatus.setText("Finished updating");
 	    finishedUpdates.set(0);
+	    parent.updateProgressBar.setValue(0);
+	    parent.updateToolBar.setVisible(false);
 	    ;
-	} else {
-	    parent.updateStatus.setText("");
 	}
 	if (!parent.globals.currentStreamName.equals("")) {
 	    if (parent.currentStreamService.equals(parent.selectStreamService(

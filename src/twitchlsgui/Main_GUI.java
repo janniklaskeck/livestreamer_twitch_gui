@@ -74,6 +74,7 @@ import stream.StreamList;
 import stream.TwitchStream;
 import twitchAPI.Twitch_API;
 import twitchUpdate.TwitchUpdateThread;
+import javax.swing.JProgressBar;
 
 /**
  * 
@@ -93,9 +94,10 @@ public class Main_GUI extends JFrame {
 
     public IRCClientFrame ircFrame = null;
     public JLabel onlineStatus;
-    public JLabel updateStatus;
     public boolean streamPaneActive = true;
     public boolean canUpdate = true;
+    public JProgressBar updateProgressBar;
+    public JToolBar updateToolBar;
 
     private JPanel contentPane;
     private SettingsPanel settingsPane;
@@ -526,9 +528,6 @@ public class Main_GUI extends JFrame {
 	contentPane.add(statusBar, BorderLayout.SOUTH);
 	statusBar.setFloatable(false);
 
-	updateStatus = new JLabel("1");
-	statusBar.add(updateStatus);
-
 	JPanel logPanel = new JPanel();
 	logPanel.setLayout(new BorderLayout(0, 0));
 
@@ -599,9 +598,16 @@ public class Main_GUI extends JFrame {
 
 	contentPane.add(logPanel, BorderLayout.SOUTH);
 
-	JToolBar toolBar = new JToolBar();
-	contentPane.add(toolBar, BorderLayout.NORTH);
-	toolBar.setFloatable(false);
+	updateToolBar = new JToolBar();
+	updateToolBar.setFloatable(false);
+	logPanel.add(updateToolBar, BorderLayout.SOUTH);
+
+	updateProgressBar = new JProgressBar();
+	updateToolBar.add(updateProgressBar);
+
+	JToolBar topToolBar = new JToolBar();
+	contentPane.add(topToolBar, BorderLayout.NORTH);
+	topToolBar.setFloatable(false);
 
 	JButton streamPaneButton = new JButton("Streams");
 	streamPaneButton.addActionListener(new ActionListener() {
@@ -617,7 +623,7 @@ public class Main_GUI extends JFrame {
 		}
 	    }
 	});
-	toolBar.add(streamPaneButton);
+	topToolBar.add(streamPaneButton);
 
 	JButton optionsPaneButton = new JButton("Options");
 	optionsPaneButton.addActionListener(new ActionListener() {
@@ -631,7 +637,7 @@ public class Main_GUI extends JFrame {
 		repaint();
 	    }
 	});
-	toolBar.add(optionsPaneButton);
+	topToolBar.add(optionsPaneButton);
 
 	qualityComboBox = new JComboBox<String>();
 	qualityComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {
@@ -651,15 +657,15 @@ public class Main_GUI extends JFrame {
 	    }
 	});
 	Component topToolbarStrutLeft = Box.createHorizontalStrut(20);
-	toolBar.add(topToolbarStrutLeft);
+	topToolBar.add(topToolbarStrutLeft);
 
 	JLabel lblQuality = new JLabel("Quality: ");
-	toolBar.add(lblQuality);
+	topToolBar.add(lblQuality);
 	qualityComboBox.setMaximumRowCount(5);
-	toolBar.add(qualityComboBox);
+	topToolBar.add(qualityComboBox);
 
 	JButton addButton = new JButton("");
-	toolBar.add(addButton);
+	topToolBar.add(addButton);
 	addButton.setIcon(new ImageIcon(Main_GUI.class
 		.getResource("/assets/plus.png")));
 	addButton.setToolTipText("Add custom Stream to List");
@@ -692,7 +698,7 @@ public class Main_GUI extends JFrame {
 	});
 
 	JButton removeButton = new JButton("");
-	toolBar.add(removeButton);
+	topToolBar.add(removeButton);
 	removeButton.setIcon(new ImageIcon(Main_GUI.class
 		.getResource("/assets/minus.png")));
 	removeButton.setToolTipText("Remove selected Stream");
@@ -726,7 +732,7 @@ public class Main_GUI extends JFrame {
 	});
 
 	JButton refreshButton = new JButton("");
-	toolBar.add(refreshButton);
+	topToolBar.add(refreshButton);
 	refreshButton.addActionListener(new ActionListener() {
 
 	    @Override
@@ -741,8 +747,8 @@ public class Main_GUI extends JFrame {
 	refreshButton.setIcon(new ImageIcon(Main_GUI.class
 		.getResource("/assets/refresh.png")));
 
-	Component topToolbarStrutRight = Box.createHorizontalStrut(150);
-	toolBar.add(topToolbarStrutRight);
+	Component topToolbarStrutRight = Box.createHorizontalStrut(50);
+	topToolBar.add(topToolbarStrutRight);
 
 	openBrowserButton = new JButton("Open in Browser");
 	openBrowserButton.addActionListener(new ActionListener() {
@@ -761,7 +767,7 @@ public class Main_GUI extends JFrame {
 	});
 	openBrowserButton
 		.setToolTipText("Only available for Twitch.tv Streams");
-	toolBar.add(openBrowserButton);
+	topToolBar.add(openBrowserButton);
 
 	openChatButton = new JButton("Open Chat");
 	openChatButton.addActionListener(new ActionListener() {
@@ -778,7 +784,7 @@ public class Main_GUI extends JFrame {
 	    }
 	});
 	openChatButton.setToolTipText("Only available for Twitch.tv Streams");
-	toolBar.add(openChatButton);
+	topToolBar.add(openChatButton);
 
 	// start checker thread
 	twitchUpdateThread = new TwitchUpdateThread(settingsPane, this);
