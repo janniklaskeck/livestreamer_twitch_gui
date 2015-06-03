@@ -43,7 +43,7 @@ import twitchlsgui.Main_GUI;
 public class SettingsPanel extends JPanel {
 
     private static final String versionURL = "https://raw.githubusercontent.com/westerwave/livestreamer_twitch_gui/master/VERSION";
-    private static final String downloadURL = "https://github.com/westerwave/livestreamer_twitch_gui/releases/tag/v1.x";
+    private static final String downloadURL = "https://github.com/westerwave/livestreamer_twitch_gui/releases";
     private static final long serialVersionUID = 1L;
     private JTextField timeIntervalTextField;
     private JCheckBox showPreviewCheckBox;
