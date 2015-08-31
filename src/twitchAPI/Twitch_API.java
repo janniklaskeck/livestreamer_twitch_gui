@@ -5,13 +5,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 import twitchlsgui.Main_GUI;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 public class Twitch_API {
     private static Gson gson = new Gson();
     private static String jsonString;
+    private static String jsonString2;
     private Main_GUI parent;
 
     public Twitch_API(Main_GUI parent) {
@@ -49,6 +52,50 @@ public class Twitch_API {
 		    return stream;
 		}
 		return stream;
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return null;
+    }
+
+    /**
+     * Downloads the top 100 games from Twitch to json
+     * 
+     * @param in
+     * @return
+     */
+    public JsonObject getGames() {
+	JsonObject a = null;
+	try {
+
+	    jsonString2 = readJsonFromUrl("https://api.twitch.tv/kraken/games/top?limit=28&offset=0");
+	    if (jsonString2 != null) {
+		a = gson.fromJson(jsonString2, JsonObject.class);
+		return a;
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return null;
+    }
+
+    /**
+     * Downloads the top 100 games from Twitch to json
+     * 
+     * @param in
+     * @return
+     */
+    public JsonObject getGame(String name) {
+	JsonObject a = null;
+	try {
+	    System.out.println(name);
+	    String url = "https://api.twitch.tv/kraken/streams?game=" + name
+		    + "&limit=28";
+	    jsonString2 = readJsonFromUrl(url);
+	    if (jsonString2 != null) {
+		a = gson.fromJson(jsonString2, JsonObject.class);
+		return a;
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();

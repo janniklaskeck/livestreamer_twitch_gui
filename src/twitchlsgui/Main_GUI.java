@@ -1,5 +1,6 @@
 package twitchlsgui;
 
+import gamesPanel.GamesPane;
 import ircClient.IRCClientFrame;
 
 import java.awt.BorderLayout;
@@ -49,6 +50,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -74,13 +76,13 @@ import stream.StreamList;
 import stream.TwitchStream;
 import twitchAPI.Twitch_API;
 import twitchUpdate.TwitchUpdateThread;
-import javax.swing.JProgressBar;
 
 /**
  * 
  * @author Niklas 27.09.2014
  * 
  */
+
 public class Main_GUI extends JFrame {
 
     private static final long serialVersionUID = -7120936298791835733L;
@@ -99,9 +101,11 @@ public class Main_GUI extends JFrame {
     public JProgressBar updateProgressBar;
     public JToolBar updateToolBar;
 
+    private PANELSTATE panelState;
     private JPanel contentPane;
     private SettingsPanel settingsPane;
     private JPanel innerContentPane;
+    private GamesPane gamesPane;
     private JList<JLabel> stream_list;
     private JTextField customStreamTF;
     private JPanel previewPanel;
@@ -245,6 +249,7 @@ public class Main_GUI extends JFrame {
      * Create the frame.
      */
     public Main_GUI() {
+	panelState = PANELSTATE.STREAM;
 	mainGUI = this;
 	globals = new Globals();
 	globals.twitchAPI = new Twitch_API(this);
@@ -276,6 +281,7 @@ public class Main_GUI extends JFrame {
 	globals.settingsManager = new SettingsManager(this);
 
 	settingsPane = new SettingsPanel(this);
+	gamesPane = new GamesPane(this);
 	contentPane = new JPanel();
 	contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	setContentPane(contentPane);
@@ -614,12 +620,17 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		if (!streamPaneActive) {
-		    contentPane.remove(settingsPane);
+		if (panelState != PANELSTATE.STREAM) {
+		    if (panelState == PANELSTATE.SETTINGS) {
+			contentPane.remove(settingsPane);
+		    } else {
+			contentPane.remove(gamesPane);
+		    }
+
 		    contentPane.add(innerContentPane);
-		    streamPaneActive = true;
 		    revalidate();
 		    repaint();
+		    panelState = PANELSTATE.STREAM;
 		}
 	    }
 	});
@@ -630,14 +641,45 @@ public class Main_GUI extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		contentPane.remove(innerContentPane);
-		contentPane.add(settingsPane);
-		streamPaneActive = false;
-		revalidate();
-		repaint();
+		if (panelState != PANELSTATE.SETTINGS) {
+		    if (panelState == PANELSTATE.STREAM) {
+			contentPane.remove(innerContentPane);
+		    } else {
+			contentPane.remove(gamesPane);
+		    }
+
+		    contentPane.add(settingsPane);
+		    revalidate();
+		    repaint();
+		    panelState = PANELSTATE.SETTINGS;
+		}
 	    }
 	});
 	topToolBar.add(optionsPaneButton);
+
+	JButton gamePaneButton = new JButton("Games");
+	gamePaneButton.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		if (panelState != PANELSTATE.GAMES) {
+		    if (panelState == PANELSTATE.STREAM) {
+			contentPane.remove(innerContentPane);
+		    } else {
+			contentPane.remove(settingsPane);
+		    }
+
+		    contentPane.add(gamesPane);
+		    gamesPane.activate();
+		    revalidate();
+		    repaint();
+		    panelState = PANELSTATE.GAMES;
+		}
+	    }
+
+	});
+
+	topToolBar.add(gamePaneButton);
 
 	qualityComboBox = new JComboBox<String>();
 	qualityComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {
@@ -656,8 +698,6 @@ public class Main_GUI extends JFrame {
 		setQuality();
 	    }
 	});
-	Component topToolbarStrutLeft = Box.createHorizontalStrut(20);
-	topToolBar.add(topToolbarStrutLeft);
 
 	JLabel lblQuality = new JLabel("Quality: ");
 	topToolBar.add(lblQuality);
@@ -747,7 +787,7 @@ public class Main_GUI extends JFrame {
 	refreshButton.setIcon(new ImageIcon(Main_GUI.class
 		.getResource("/assets/refresh.png")));
 
-	Component topToolbarStrutRight = Box.createHorizontalStrut(50);
+	Component topToolbarStrutRight = Box.createHorizontalStrut(5);
 	topToolBar.add(topToolbarStrutRight);
 
 	openBrowserButton = new JButton("Open in Browser");
@@ -972,7 +1012,7 @@ public class Main_GUI extends JFrame {
      * @param name
      * @param quality
      */
-    private void OpenStream(final String name, final String quality) {
+    public void OpenStream(final String name, final String quality) {
 
 	new SwingWorker<Void, Void>() {
 	    protected Void doInBackground() throws Exception {
