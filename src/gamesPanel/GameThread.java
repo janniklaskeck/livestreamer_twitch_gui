@@ -15,6 +15,7 @@ public class GameThread {
     }
 
     public void load() {
+	parent.progressBar.setVisible(true);
 	for (int i = 0; i < parent.tDir.channels.size(); i++) {
 	    threads.add(new GameRunnable(parent, i));
 	}
@@ -34,8 +35,9 @@ public class GameThread {
 	for (int i = 0; i < parent.tDir.channels.size(); i++) {
 	    threads.get(i).addButton();
 	}
-	System.out.println("finished loading channels");
 	t.clear();
+	parent.progress.set(0);
+	parent.progressBar.setVisible(false);
 	parent.revalidate();
     }
 }

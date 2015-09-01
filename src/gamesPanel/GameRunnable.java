@@ -23,11 +23,10 @@ public class GameRunnable implements Runnable {
     public GameRunnable(GamesPane parent, int index) {
 	this.index = index;
 	this.parent = parent;
-	tgj = this.parent.tDir.channels.get(this.index);
+
     }
 
     public void addButton() {
-
 	JButton jb = new JButton();
 	String text = tgj.getName();
 	String viewers = tgj.getViewers() + "";
@@ -48,12 +47,13 @@ public class GameRunnable implements Runnable {
 
     @Override
     public void run() {
+	tgj = this.parent.tDir.channels.get(this.index);
 	try {
 	    img = ImageIO.read(new URL(tgj.getPreview_image_small()));
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
-
+	parent.inc();
     }
 
 }

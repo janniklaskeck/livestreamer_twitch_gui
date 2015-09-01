@@ -13,6 +13,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import twitchAPI.Twitch_API;
+
 public class ImageRunnable implements Runnable {
 
     int i;
@@ -45,13 +47,11 @@ public class ImageRunnable implements Runnable {
 		String before = ((JButton) e.getSource()).getToolTipText();
 		// special characers needed for url
 		String game = before.replace(" ", "+").replace(":", "%3A");
-		parent.tDir.currentGameJSon = parent.parent.globals.twitchAPI
-			.getGame(game);
+		parent.tDir.currentGameJSon = Twitch_API.getGame(game);
 		parent.tDir.switchToGame();
 	    }
 	});
 	parent.scrollView.add(l);
-
     }
 
     @Override
@@ -72,5 +72,6 @@ public class ImageRunnable implements Runnable {
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
+	parent.inc();
     }
 }

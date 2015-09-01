@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -18,6 +19,8 @@ import twitchAPI.Twitch_List_Json;
 import twitchlsgui.Main_GUI;
 
 import com.google.gson.JsonObject;
+
+import javax.swing.JProgressBar;
 
 public class GamesPane extends JPanel {
 
@@ -33,6 +36,12 @@ public class GamesPane extends JPanel {
 
     TwitchDirectory tDir;
     JPanel scrollView;
+    JProgressBar progressBar;
+    AtomicInteger progress;
+
+    public synchronized void inc() {
+	progressBar.setValue(progress.incrementAndGet());
+    }
 
     public void activate() {
 	tDir.home();
@@ -41,6 +50,7 @@ public class GamesPane extends JPanel {
     public GamesPane(Main_GUI parent) {
 	this.parent = parent;
 	it = new ImageThread(this);
+	progress = new AtomicInteger(0);
 
 	tDir = new TwitchDirectory(this);
 	setLayout(new BorderLayout(0, 0));
@@ -66,6 +76,9 @@ public class GamesPane extends JPanel {
 	});
 	twitchDirToolbar.add(homeButton);
 	twitchDirToolbar.add(refreshButton);
+
+	progressBar = new JProgressBar(0, 56);
+	twitchDirToolbar.add(progressBar);
 
 	JPanel twitchDirPanel = new JPanel();
 	add(twitchDirPanel, BorderLayout.CENTER);

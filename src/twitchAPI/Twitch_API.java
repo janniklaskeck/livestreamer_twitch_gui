@@ -15,10 +15,10 @@ public class Twitch_API {
     private static Gson gson = new Gson();
     private static String jsonString;
     private static String jsonString2;
-    private Main_GUI parent;
+    private static Main_GUI parent;
 
     public Twitch_API(Main_GUI parent) {
-	this.parent = parent;
+	Twitch_API.parent = parent;
     }
 
     /**
@@ -86,7 +86,7 @@ public class Twitch_API {
      * @param in
      * @return
      */
-    public JsonObject getGame(String name) {
+    public static JsonObject getGame(String name) {
 	JsonObject a = null;
 	try {
 	    System.out.println(name);
@@ -110,7 +110,7 @@ public class Twitch_API {
      * @param urlString
      * @return
      */
-    public String readJsonFromUrl(String urlString) {
+    public static String readJsonFromUrl(String urlString) {
 	BufferedReader reader = null;
 	HttpURLConnection connUrl;
 	try {

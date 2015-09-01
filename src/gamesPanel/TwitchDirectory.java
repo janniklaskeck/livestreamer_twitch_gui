@@ -23,34 +23,33 @@ public class TwitchDirectory {
 	this.parent = parent;
 	channels = new ArrayList<Twitch_Game_Json>();
 	gt = new GameThread(this.parent);
-	jp = new JPanel();
+
     }
 
     public void refresh() {
-	System.out.println("refresh");
+	parent.scrollView.removeAll();
+	parent.scrollView.setLayout(new GridLayout(0, 4, 0, 0));
 	new Thread(new Runnable() {
-
 	    @Override
 	    public void run() {
 		parent.it.loadImages();
 	    }
-
 	}).start();
 	home = parent.scrollView;
     }
 
     public void home() {
-	System.out.println("home");
 	channels.clear();
 	if (home == null) {
 	    refresh();
 	} else {
 	    parent.scrollPane.setViewportView(home);
 	}
+	parent.progress.set(0);
     }
 
     public void switchToGame() {
-	jp.removeAll();
+	jp = new JPanel();
 	jp.setLayout(new GridLayout(0, 4, 0, 0));
 	int size = currentGameJSon.get("streams").getAsJsonArray().size();
 	for (int i = 0; i < size; i++) {

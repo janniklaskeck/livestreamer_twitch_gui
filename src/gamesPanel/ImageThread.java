@@ -15,6 +15,7 @@ public class ImageThread {
     }
 
     public void loadImages() {
+	parent.progressBar.setVisible(true);
 	for (int i = 0; i < parent.size; i++) {
 	    threads.add(new ImageRunnable(parent, i));
 	}
@@ -34,8 +35,9 @@ public class ImageThread {
 	for (int i = 0; i < parent.size; i++) {
 	    threads.get(i).addImage();
 	}
-	System.out.println("finished");
 	t.clear();
+	parent.progress.set(0);
+	parent.progressBar.setVisible(false);
 	parent.revalidate();
 	parent.repaint();
     }
