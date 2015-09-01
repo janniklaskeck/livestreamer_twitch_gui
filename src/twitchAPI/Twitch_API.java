@@ -69,7 +69,7 @@ public class Twitch_API {
 	JsonObject a = null;
 	try {
 
-	    jsonString2 = readJsonFromUrl("https://api.twitch.tv/kraken/games/top?limit=28&offset=0");
+	    jsonString2 = readJsonFromUrl("https://api.twitch.tv/kraken/games/top?limit=56&offset=0");
 	    if (jsonString2 != null) {
 		a = gson.fromJson(jsonString2, JsonObject.class);
 		return a;
@@ -91,7 +91,7 @@ public class Twitch_API {
 	try {
 	    System.out.println(name);
 	    String url = "https://api.twitch.tv/kraken/streams?game=" + name
-		    + "&limit=28";
+		    + "&limit=56";
 	    jsonString2 = readJsonFromUrl(url);
 	    if (jsonString2 != null) {
 		a = gson.fromJson(jsonString2, JsonObject.class);

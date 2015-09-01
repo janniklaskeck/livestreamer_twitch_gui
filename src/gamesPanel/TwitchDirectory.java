@@ -2,17 +2,8 @@ package gamesPanel;
 
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import twitchAPI.Twitch_Game_Json;
@@ -25,10 +16,14 @@ public class TwitchDirectory {
     Component home;
     JsonObject currentGameJSon;
     ArrayList<Twitch_Game_Json> channels;
+    private GameThread gt;
+    JPanel jp;
 
     public TwitchDirectory(GamesPane parent) {
 	this.parent = parent;
 	channels = new ArrayList<Twitch_Game_Json>();
+	gt = new GameThread(this.parent);
+	jp = new JPanel();
     }
 
     public void refresh() {
@@ -55,7 +50,7 @@ public class TwitchDirectory {
     }
 
     public void switchToGame() {
-	JPanel jp = new JPanel();
+	jp.removeAll();
 	jp.setLayout(new GridLayout(0, 4, 0, 0));
 	int size = currentGameJSon.get("streams").getAsJsonArray().size();
 	for (int i = 0; i < size; i++) {
@@ -65,31 +60,15 @@ public class TwitchDirectory {
 	    channels.add(a);
 	}
 
-	for (Twitch_Game_Json tgj : channels) {
-	    BufferedImage img = null;
-	    try {
-		img = ImageIO.read(new URL(tgj.getPreview_image_small()));
-	    } catch (IOException e) {
-		e.printStackTrace();
-	    }
+	channels.sort(new ChannelComparator());
 
-	    JButton jb = new JButton();
-	    String text = tgj.getName();
-	    String viewers = tgj.getViewers() + "";
-	    jb.setIcon(new ImageIcon(img));
-	    jb.setHorizontalTextPosition(JLabel.CENTER);
-	    jb.setVerticalTextPosition(JLabel.BOTTOM);
-	    jb.setText("<html>" + text + "<br>Viewers: " + viewers + "</html>");
-	    jb.setToolTipText(tgj.getChannel());
-	    jb.addActionListener(new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-		    String name = ((JButton) e.getSource()).getToolTipText();
-		    parent.openStream(name);
-		}
-	    });
-	    jp.add(jb);
-	}
+	new Thread(new Runnable() {
+	    @Override
+	    public void run() {
+		gt.load();
+	    }
+	}).start();
+
 	parent.scrollPane.setViewportView(jp);
     }
 }
