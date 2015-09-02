@@ -1,4 +1,6 @@
-package gamesPanel;
+package gamesPanel.game;
+
+import gamesPanel.GamesPane;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,14 +15,14 @@ import javax.swing.JLabel;
 
 import twitchAPI.Twitch_Game_Json;
 
-public class GameRunnable implements Runnable {
+public class ChannelRunnable implements Runnable {
 
     private int index;
     private GamesPane parent;
     BufferedImage img = null;
     Twitch_Game_Json tgj;
 
-    public GameRunnable(GamesPane parent, int index) {
+    public ChannelRunnable(GamesPane parent, int index) {
 	this.index = index;
 	this.parent = parent;
 

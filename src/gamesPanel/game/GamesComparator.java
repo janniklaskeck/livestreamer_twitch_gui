@@ -1,4 +1,4 @@
-package gamesPanel;
+package gamesPanel.game;
 
 import java.util.Comparator;
 

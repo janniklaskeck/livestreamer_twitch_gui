@@ -1,5 +1,7 @@
 package gamesPanel;
 
+import gamesPanel.game.GamesComparator;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -10,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
@@ -20,24 +23,21 @@ import twitchlsgui.Main_GUI;
 
 import com.google.gson.JsonObject;
 
-import javax.swing.JProgressBar;
-
 public class GamesPane extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
     Main_GUI parent;
-    private JsonObject gamesJSON;
+    JsonObject gamesJSON;
     JScrollPane scrollPane;
-    ScrollableJPanel panel;
     public ArrayList<Twitch_List_Json> games;
-    ImageThread it;
+
     public int size = 100;
 
-    TwitchDirectory tDir;
-    JPanel scrollView;
-    JProgressBar progressBar;
-    AtomicInteger progress;
+    public TwitchDirectory tDir;
+    public JPanel scrollView;
+    public JProgressBar progressBar;
+    public AtomicInteger progress;
 
     public synchronized void inc() {
 	progressBar.setValue(progress.incrementAndGet());
@@ -47,9 +47,17 @@ public class GamesPane extends JPanel {
 	tDir.home();
     }
 
+    public void setProgressBar(String type) {
+	if (type.equals("channel")) {
+	    progressBar.setMaximum(parent.globals.maxChannelsLoad);
+	} else if (type.equals("game")) {
+	    progressBar.setMaximum(parent.globals.maxGamesLoad);
+	}
+    }
+
     public GamesPane(Main_GUI parent) {
 	this.parent = parent;
-	it = new ImageThread(this);
+
 	progress = new AtomicInteger(0);
 
 	tDir = new TwitchDirectory(this);
@@ -77,7 +85,7 @@ public class GamesPane extends JPanel {
 	twitchDirToolbar.add(homeButton);
 	twitchDirToolbar.add(refreshButton);
 
-	progressBar = new JProgressBar(0, 56);
+	progressBar = new JProgressBar(0, 20);
 	twitchDirToolbar.add(progressBar);
 
 	JPanel twitchDirPanel = new JPanel();
@@ -96,7 +104,7 @@ public class GamesPane extends JPanel {
 	twitchDirPanel.add(scrollPane);
 
 	scrollPane.revalidate();
-	gamesJSON = this.parent.globals.twitchAPI.getGames();
+	gamesJSON = parent.globals.twitchAPI.getGames();
 	size = gamesJSON.get("top").getAsJsonArray().size();
 	games = new ArrayList<Twitch_List_Json>();
 
@@ -109,7 +117,7 @@ public class GamesPane extends JPanel {
 	games.sort(new GamesComparator());
     }
 
-    void openStream(final String name) {
+    public void openStream(final String name) {
 	parent.OpenStream(name, parent.globals.currentQuality);
     }
 }

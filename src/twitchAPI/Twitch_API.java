@@ -69,7 +69,8 @@ public class Twitch_API {
 	JsonObject a = null;
 	try {
 
-	    jsonString2 = readJsonFromUrl("https://api.twitch.tv/kraken/games/top?limit=56&offset=0");
+	    jsonString2 = readJsonFromUrl("https://api.twitch.tv/kraken/games/top?limit="
+		    + parent.globals.maxGamesLoad + "&offset=0");
 	    if (jsonString2 != null) {
 		a = gson.fromJson(jsonString2, JsonObject.class);
 		return a;
@@ -86,12 +87,11 @@ public class Twitch_API {
      * @param in
      * @return
      */
-    public static JsonObject getGame(String name) {
+    public static JsonObject getChannels(String name) {
 	JsonObject a = null;
 	try {
-	    System.out.println(name);
 	    String url = "https://api.twitch.tv/kraken/streams?game=" + name
-		    + "&limit=56";
+		    + "&limit=" + parent.globals.maxChannelsLoad;
 	    jsonString2 = readJsonFromUrl(url);
 	    if (jsonString2 != null) {
 		a = gson.fromJson(jsonString2, JsonObject.class);

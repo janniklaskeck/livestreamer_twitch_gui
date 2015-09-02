@@ -41,6 +41,8 @@ public class SettingsManager {
     private final String PATH = "recordingpath";
     private final String SHOW_LOG = "showing_log";
     private final String LOOKANDFEEL = "look_and_feel";
+    private final String CHANNELSLOAD = "load_max_channels";
+    private final String GAMESSLOAD = "load_max_games";
 
     private Main_GUI parent;
     private Twitch_API twitchApi;
@@ -132,6 +134,8 @@ public class SettingsManager {
 	parent.globals.path = myPrefs.get(PATH, "");
 	parent.globals.showLog = myPrefs.getBoolean(SHOW_LOG, false);
 	parent.globals.lookAndFeel = myPrefs.get(LOOKANDFEEL, "system");
+	parent.globals.maxChannelsLoad = myPrefs.getInt(CHANNELSLOAD, 20);
+	parent.globals.maxGamesLoad = myPrefs.getInt(GAMESSLOAD, 20);
 
 	String buffer = myPrefs.get(STREAMSERVICES, "twitch.tv");
 	String[] buffer2 = buffer.split(" ");
@@ -199,6 +203,8 @@ public class SettingsManager {
 	myPrefs.put(PATH, parent.globals.path);
 	myPrefs.putBoolean(SHOW_LOG, parent.globals.showLog);
 	myPrefs.put(LOOKANDFEEL, parent.globals.lookAndFeel);
+	myPrefs.putInt(GAMESSLOAD, parent.globals.maxGamesLoad);
+	myPrefs.putInt(CHANNELSLOAD, parent.globals.maxChannelsLoad);
 
 	String buffer = "";
 	for (int i = 0; i < parent.globals.streamServicesList.size(); i++) {

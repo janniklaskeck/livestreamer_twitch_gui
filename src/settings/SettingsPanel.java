@@ -60,14 +60,18 @@ public class SettingsPanel extends JPanel {
     private JCheckBox showOnlineTwitchCheckBox;
     private Main_GUI parent;
     private JComboBox<String> lookAndFeelComboBox;
+    private JComboBox<Integer> maxChannelsLoad;
+    private JComboBox<Integer> maxGamesLoad;
+    private JLabel lblMaxChannelLoad;
+    private JLabel lblMaxGamesLoad;
+    private JLabel lblLookandfeel;
 
     public SettingsPanel(Main_GUI parentGUI) {
 	this.parent = parentGUI;
 	setBorder(new EmptyBorder(5, 5, 5, 5));
 	GridBagLayout gridBagLayout = new GridBagLayout();
-	gridBagLayout.columnWidths = new int[] { 290, 150 };
-	gridBagLayout.rowHeights = new int[] { 20, 20, 20, 20, 20, 0, 0, 0, 0,
-		0 };
+	gridBagLayout.columnWidths = new int[] { 290, 75, 75 };
+	gridBagLayout.rowHeights = new int[] { 20, 20, 20, 20, 20 };
 	gridBagLayout.columnWeights = new double[] { 0.0, 1.0 };
 	gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 		0.0, 0.0, 0.0, 0.0 };
@@ -138,10 +142,18 @@ public class SettingsPanel extends JPanel {
 		}
 	    }
 	});
+
+	this.lblLookandfeel = new JLabel("LookAndFeel");
+	GridBagConstraints gbc_lblLookandfeel = new GridBagConstraints();
+	gbc_lblLookandfeel.insets = new Insets(0, 0, 5, 5);
+	gbc_lblLookandfeel.anchor = GridBagConstraints.EAST;
+	gbc_lblLookandfeel.gridx = 1;
+	gbc_lblLookandfeel.gridy = 0;
+	add(this.lblLookandfeel, gbc_lblLookandfeel);
 	GridBagConstraints gbc_lookAndFeelComboBox = new GridBagConstraints();
 	gbc_lookAndFeelComboBox.insets = new Insets(0, 0, 5, 0);
 	gbc_lookAndFeelComboBox.fill = GridBagConstraints.HORIZONTAL;
-	gbc_lookAndFeelComboBox.gridx = 1;
+	gbc_lookAndFeelComboBox.gridx = 2;
 	gbc_lookAndFeelComboBox.gridy = 0;
 	add(lookAndFeelComboBox, gbc_lookAndFeelComboBox);
 	GridBagConstraints gbc_showPreviewCheckBox = new GridBagConstraints();
@@ -160,12 +172,68 @@ public class SettingsPanel extends JPanel {
 		parent.globals.autoUpdate = autoUpdateCheckBox.isSelected();
 	    }
 	});
+
+	this.lblMaxGamesLoad = new JLabel("Max Games Load");
+	GridBagConstraints gbc_lblMaxGamesLoad = new GridBagConstraints();
+	gbc_lblMaxGamesLoad.insets = new Insets(0, 0, 5, 5);
+	gbc_lblMaxGamesLoad.anchor = GridBagConstraints.EAST;
+	gbc_lblMaxGamesLoad.gridx = 1;
+	gbc_lblMaxGamesLoad.gridy = 1;
+	add(this.lblMaxGamesLoad, gbc_lblMaxGamesLoad);
+
+	this.maxGamesLoad = new JComboBox<Integer>();
+	this.maxGamesLoad.setModel(new DefaultComboBoxModel<Integer>(
+		new Integer[] { 20, 40, 60, 80, 100 }));
+	this.maxGamesLoad.setMaximumRowCount(5);
+	GridBagConstraints gbc_maxGamesLoad = new GridBagConstraints();
+	gbc_maxGamesLoad.insets = new Insets(0, 0, 5, 0);
+	gbc_maxGamesLoad.fill = GridBagConstraints.HORIZONTAL;
+	gbc_maxGamesLoad.gridx = 2;
+	gbc_maxGamesLoad.gridy = 1;
+	maxGamesLoad.setSelectedIndex((parent.globals.maxGamesLoad - 20) / 20);
+	maxGamesLoad.addActionListener(new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		parent.globals.maxGamesLoad = (int) maxGamesLoad
+			.getSelectedItem();
+	    }
+	});
+	add(this.maxGamesLoad, gbc_maxGamesLoad);
+
 	GridBagConstraints gbc_autoUpdateCheckBox = new GridBagConstraints();
 	gbc_autoUpdateCheckBox.fill = GridBagConstraints.BOTH;
 	gbc_autoUpdateCheckBox.insets = new Insets(0, 0, 5, 5);
 	gbc_autoUpdateCheckBox.gridx = 0;
 	gbc_autoUpdateCheckBox.gridy = 2;
 	add(autoUpdateCheckBox, gbc_autoUpdateCheckBox);
+
+	this.lblMaxChannelLoad = new JLabel("Max Channel Load");
+	GridBagConstraints gbc_lblMaxChannelLoad = new GridBagConstraints();
+	gbc_lblMaxChannelLoad.insets = new Insets(0, 0, 5, 5);
+	gbc_lblMaxChannelLoad.anchor = GridBagConstraints.EAST;
+	gbc_lblMaxChannelLoad.gridx = 1;
+	gbc_lblMaxChannelLoad.gridy = 2;
+	add(this.lblMaxChannelLoad, gbc_lblMaxChannelLoad);
+
+	this.maxChannelsLoad = new JComboBox<Integer>();
+	this.maxChannelsLoad.setMaximumRowCount(5);
+	this.maxChannelsLoad.setModel(new DefaultComboBoxModel<Integer>(
+		new Integer[] { 20, 40, 60, 80, 100 }));
+	GridBagConstraints gbc_maxChannelsLoad = new GridBagConstraints();
+	gbc_maxChannelsLoad.insets = new Insets(0, 0, 5, 0);
+	gbc_maxChannelsLoad.fill = GridBagConstraints.HORIZONTAL;
+	gbc_maxChannelsLoad.gridx = 2;
+	gbc_maxChannelsLoad.gridy = 2;
+	maxChannelsLoad
+		.setSelectedIndex((parent.globals.maxChannelsLoad - 20) / 20);
+	maxChannelsLoad.addActionListener(new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		parent.globals.maxChannelsLoad = (int) maxChannelsLoad
+			.getSelectedItem();
+	    }
+	});
+	add(this.maxChannelsLoad, gbc_maxChannelsLoad);
 
 	timeIntervalLabel = new JLabel(
 		"Automatic Update Time Interval in seconds");
@@ -231,6 +299,7 @@ public class SettingsPanel extends JPanel {
 		    }
 		});
 	GridBagConstraints gbc_timeIntervalTextField = new GridBagConstraints();
+	gbc_timeIntervalTextField.gridwidth = 2;
 	gbc_timeIntervalTextField.fill = GridBagConstraints.BOTH;
 	gbc_timeIntervalTextField.insets = new Insets(0, 0, 5, 0);
 	gbc_timeIntervalTextField.gridx = 1;
@@ -263,6 +332,7 @@ public class SettingsPanel extends JPanel {
 
 	KBLabel = new JLabel("0");
 	GridBagConstraints gbc_KBLabel = new GridBagConstraints();
+	gbc_KBLabel.gridwidth = 2;
 	gbc_KBLabel.insets = new Insets(0, 0, 5, 0);
 	gbc_KBLabel.gridx = 1;
 	gbc_KBLabel.gridy = 5;
@@ -316,6 +386,7 @@ public class SettingsPanel extends JPanel {
 	gbc_twitchCredentialsButton.gridy = 6;
 	add(twitchCredentialsButton, gbc_twitchCredentialsButton);
 	GridBagConstraints gbc_importButton = new GridBagConstraints();
+	gbc_importButton.gridwidth = 2;
 	gbc_importButton.insets = new Insets(0, 0, 5, 0);
 	gbc_importButton.gridx = 1;
 	gbc_importButton.gridy = 6;
@@ -335,6 +406,7 @@ public class SettingsPanel extends JPanel {
 	    }
 	});
 	GridBagConstraints gbc_exportButton = new GridBagConstraints();
+	gbc_exportButton.gridwidth = 2;
 	gbc_exportButton.insets = new Insets(0, 0, 5, 0);
 	gbc_exportButton.gridx = 1;
 	gbc_exportButton.gridy = 7;

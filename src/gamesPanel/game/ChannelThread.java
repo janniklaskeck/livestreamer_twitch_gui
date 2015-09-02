@@ -1,23 +1,26 @@
-package gamesPanel;
+package gamesPanel.game;
+
+import gamesPanel.GamesPane;
 
 import java.util.ArrayList;
 
-public class GameThread {
+public class ChannelThread {
 
-    private ArrayList<GameRunnable> threads;
+    private ArrayList<ChannelRunnable> threads;
     private ArrayList<Thread> t;
     private GamesPane parent;
 
-    public GameThread(GamesPane parent) {
-	threads = new ArrayList<GameRunnable>();
+    public ChannelThread(GamesPane parent) {
+	threads = new ArrayList<ChannelRunnable>();
 	t = new ArrayList<Thread>();
 	this.parent = parent;
     }
 
     public void load() {
 	parent.progressBar.setVisible(true);
+	parent.setProgressBar("channel");
 	for (int i = 0; i < parent.tDir.channels.size(); i++) {
-	    threads.add(new GameRunnable(parent, i));
+	    threads.add(new ChannelRunnable(parent, i));
 	}
 
 	for (int i = 0; i < parent.tDir.channels.size(); i++) {

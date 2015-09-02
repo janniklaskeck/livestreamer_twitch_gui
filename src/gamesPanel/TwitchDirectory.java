@@ -1,5 +1,9 @@
 package gamesPanel;
 
+import gamesPanel.channel.ChannelComparator;
+import gamesPanel.channel.GameThread;
+import gamesPanel.game.ChannelThread;
+
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -14,25 +18,28 @@ public class TwitchDirectory {
 
     GamesPane parent;
     Component home;
-    JsonObject currentGameJSon;
-    ArrayList<Twitch_Game_Json> channels;
-    private GameThread gt;
-    JPanel jp;
+    public JsonObject currentGameJSon;
+    public ArrayList<Twitch_Game_Json> channels;
+    private ChannelThread ct;
+    public JPanel jp;
+    GameThread gt;
 
     public TwitchDirectory(GamesPane parent) {
 	this.parent = parent;
 	channels = new ArrayList<Twitch_Game_Json>();
+	ct = new ChannelThread(this.parent);
 	gt = new GameThread(this.parent);
-
     }
 
     public void refresh() {
+	parent.gamesJSON = parent.parent.globals.twitchAPI.getGames();
+	parent.size = parent.gamesJSON.get("top").getAsJsonArray().size();
 	parent.scrollView.removeAll();
 	parent.scrollView.setLayout(new GridLayout(0, 4, 0, 0));
 	new Thread(new Runnable() {
 	    @Override
 	    public void run() {
-		parent.it.loadImages();
+		gt.loadImages();
 	    }
 	}).start();
 	home = parent.scrollView;
@@ -64,7 +71,7 @@ public class TwitchDirectory {
 	new Thread(new Runnable() {
 	    @Override
 	    public void run() {
-		gt.load();
+		ct.load();
 	    }
 	}).start();
 

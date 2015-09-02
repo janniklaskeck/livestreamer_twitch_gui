@@ -16,7 +16,7 @@ public class Globals {
     public boolean sortTwitch = true;
     public ArrayList<StreamList> streamServicesList;
     public String currentQuality = "High";
-    public final Version VERSION = new Version(2, 0, 1, 0);
+    public final Version VERSION = new Version(2, 0, 2, 0);
     public boolean _DEBUG = false;
     public SettingsManager settingsManager;
     public String currentStreamName = "";
@@ -30,9 +30,9 @@ public class Globals {
     public String path = "";
     public boolean showLog = false;
     public String lookAndFeel = "System";
+    public int maxGamesLoad = 20;
+    public int maxChannelsLoad = 20;
 
     public Globals() {
-
     }
-
 }

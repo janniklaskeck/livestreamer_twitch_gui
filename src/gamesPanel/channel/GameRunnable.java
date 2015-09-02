@@ -1,4 +1,6 @@
-package gamesPanel;
+package gamesPanel.channel;
+
+import gamesPanel.GamesPane;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,13 +17,13 @@ import javax.swing.JLabel;
 
 import twitchAPI.Twitch_API;
 
-public class ImageRunnable implements Runnable {
+public class GameRunnable implements Runnable {
 
     int i;
     private GamesPane parent;
     private BufferedImage img;
 
-    public ImageRunnable(GamesPane parent, int i) {
+    public GameRunnable(GamesPane parent, int i) {
 	this.i = i;
 	this.parent = parent;
     }
@@ -47,7 +49,7 @@ public class ImageRunnable implements Runnable {
 		String before = ((JButton) e.getSource()).getToolTipText();
 		// special characers needed for url
 		String game = before.replace(" ", "+").replace(":", "%3A");
-		parent.tDir.currentGameJSon = Twitch_API.getGame(game);
+		parent.tDir.currentGameJSon = Twitch_API.getChannels(game);
 		parent.tDir.switchToGame();
 	    }
 	});
