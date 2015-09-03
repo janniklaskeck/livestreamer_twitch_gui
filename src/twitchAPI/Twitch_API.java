@@ -65,7 +65,7 @@ public class Twitch_API {
      * @param in
      * @return
      */
-    public JsonObject getGames() {
+    public static JsonObject getGames() {
 	JsonObject a = null;
 	try {
 

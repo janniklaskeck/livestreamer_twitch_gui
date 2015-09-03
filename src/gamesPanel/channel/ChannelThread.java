@@ -1,4 +1,4 @@
-package gamesPanel.game;
+package gamesPanel.channel;
 
 import gamesPanel.GamesPane;
 
@@ -16,26 +16,28 @@ public class ChannelThread {
 	this.parent = parent;
     }
 
-    public void load() {
-	parent.progressBar.setVisible(true);
+    public void load(int size) {
 	parent.setProgressBar("channel");
-	for (int i = 0; i < parent.tDir.channels.size(); i++) {
+	parent.progressBar.setValue(0);
+	parent.progressBar.setVisible(true);
+
+	for (int i = 0; i < size; i++) {
 	    threads.add(new ChannelRunnable(parent, i));
 	}
 
-	for (int i = 0; i < parent.tDir.channels.size(); i++) {
+	for (int i = 0; i < size; i++) {
 	    t.add(new Thread(threads.get(i)));
 	    t.get(i).start();
 	}
 
-	for (int i = 0; i < parent.tDir.channels.size(); i++) {
+	for (int i = 0; i < size; i++) {
 	    try {
 		t.get(i).join();
 	    } catch (InterruptedException e) {
 		e.printStackTrace();
 	    }
 	}
-	for (int i = 0; i < parent.tDir.channels.size(); i++) {
+	for (int i = 0; i < size; i++) {
 	    threads.get(i).addButton();
 	}
 	t.clear();

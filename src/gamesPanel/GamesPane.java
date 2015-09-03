@@ -1,13 +1,10 @@
 package gamesPanel;
 
-import gamesPanel.game.GamesComparator;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JButton;
@@ -18,21 +15,15 @@ import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.LineBorder;
 
-import twitchAPI.Twitch_List_Json;
 import twitchlsgui.Main_GUI;
-
-import com.google.gson.JsonObject;
 
 public class GamesPane extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    Main_GUI parent;
-    JsonObject gamesJSON;
-    JScrollPane scrollPane;
-    public ArrayList<Twitch_List_Json> games;
+    public Main_GUI parent;
 
-    public int size = 100;
+    public JScrollPane scrollPane;
 
     public TwitchDirectory tDir;
     public JPanel scrollView;
@@ -48,10 +39,14 @@ public class GamesPane extends JPanel {
     }
 
     public void setProgressBar(String type) {
+	int maxChannel = parent.globals.maxChannelsLoad <= tDir.channel_list.getSize() ? parent.globals.maxChannelsLoad
+		: tDir.channel_list.getSize();
+	int maxGame = parent.globals.maxGamesLoad <= tDir.games_list.getSize() ? parent.globals.maxGamesLoad
+		: tDir.games_list.getSize();
 	if (type.equals("channel")) {
-	    progressBar.setMaximum(parent.globals.maxChannelsLoad);
+	    progressBar.setMaximum(maxChannel);
 	} else if (type.equals("game")) {
-	    progressBar.setMaximum(parent.globals.maxGamesLoad);
+	    progressBar.setMaximum(maxGame);
 	}
     }
 
@@ -95,26 +90,14 @@ public class GamesPane extends JPanel {
 	scrollView = new JPanel();
 	scrollView.setLayout(new GridLayout(0, 4, 0, 0));
 	scrollPane = new JScrollPane(scrollView);
-	scrollPane
-		.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	scrollPane
-		.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+	scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	scrollPane.getVerticalScrollBar().setUnitIncrement(30);
 	scrollPane.setViewportBorder(new LineBorder(Color.MAGENTA));
 	twitchDirPanel.add(scrollPane);
 
 	scrollPane.revalidate();
-	gamesJSON = parent.globals.twitchAPI.getGames();
-	size = gamesJSON.get("top").getAsJsonArray().size();
-	games = new ArrayList<Twitch_List_Json>();
 
-	for (int i = 0; i < size; i++) {
-	    Twitch_List_Json a = new Twitch_List_Json();
-	    a.load(gamesJSON.get("top").getAsJsonArray().get(i)
-		    .getAsJsonObject());
-	    games.add(a);
-	}
-	games.sort(new GamesComparator());
     }
 
     public void openStream(final String name) {

@@ -19,9 +19,9 @@ public class TwitchUpdateThread extends Thread {
 
     private static ArrayList<Thread> threads = new ArrayList<Thread>();
     private static ArrayList<GenericStreamInterface> streamList;
-    public static AtomicInteger finishedUpdates = new AtomicInteger(0);
+    public AtomicInteger finishedUpdates = new AtomicInteger(0);
     private SettingsPanel settingsPane;
-    private Main_GUI parent;
+    Main_GUI parent;
 
     public TwitchUpdateThread(SettingsPanel settingsPane, Main_GUI parent) {
 	this.settingsPane = settingsPane;
@@ -52,20 +52,18 @@ public class TwitchUpdateThread extends Thread {
 	streamList = parent.selectStreamService("twitch.tv").getStreamList();
 
 	if (streamList.size() > 0) {
-	    if (parent.currentStreamService.equals(parent.selectStreamService(
-		    "twitch.tv").getUrl())) {
+	    if (parent.currentStreamService.equals(parent.selectStreamService("twitch.tv").getUrl())) {
+		parent.updateProgressBar.setValue(0);
 		parent.updateToolBar.setVisible(true);
-		int max = parent.selectStreamService("twitch.tv")
-			.getStreamList().size();
+		int max = parent.selectStreamService("twitch.tv").getStreamList().size();
 		parent.updateProgressBar.setMaximum(max);
 	    }
 
 	    for (int i = 0; i < streamList.size(); i++) {
-		threads.add(new Thread(new TwitchUpdateWorker(i, streamList)));
+		threads.add(new Thread(new TwitchUpdateWorker(i, streamList, this)));
 	    }
 	    if (parent.globals._DEBUG)
-		System.out.println("added " + streamList.size()
-			+ " new threads");
+		System.out.println("added " + streamList.size() + " new threads");
 	    for (int i = 0; i < streamList.size(); i++) {
 		threads.get(i).start();
 	    }
@@ -74,8 +72,7 @@ public class TwitchUpdateThread extends Thread {
 	    for (int i = 0; i < streamList.size(); i++) {
 		try {
 		    threads.get(i).join();
-		    parent.updateProgressBar.setValue(finishedUpdates
-			    .intValue());
+		    parent.updateProgressBar.setValue(finishedUpdates.intValue());
 		} catch (InterruptedException e) {
 		    if (parent.globals._DEBUG)
 			e.printStackTrace();
@@ -84,25 +81,21 @@ public class TwitchUpdateThread extends Thread {
 	    if (parent.globals._DEBUG)
 		System.out.println(streamList.size() + " threads were joined");
 	    for (int i = 0; i < parent.streamListModel.size(); i++) {
-		parent.streamListModel.setElementAt(
-			parent.streamListModel.get(i), i);
+		parent.streamListModel.setElementAt(parent.streamListModel.get(i), i);
 	    }
 	}
 
-	if (parent.currentStreamService.equals(parent.selectStreamService(
-		"twitch.tv").getUrl())) {
+	if (parent.currentStreamService.equals(parent.selectStreamService("twitch.tv").getUrl())) {
 	    finishedUpdates.set(0);
 	    parent.updateProgressBar.setValue(0);
 	    parent.updateToolBar.setVisible(false);
 	    ;
 	}
 	if (!parent.globals.currentStreamName.equals("")) {
-	    if (parent.currentStreamService.equals(parent.selectStreamService(
-		    "twitch.tv").getUrl())) {
+	    if (parent.currentStreamService.equals(parent.selectStreamService("twitch.tv").getUrl())) {
 		for (int i = 0; i < streamList.size(); i++) {
 		    TwitchStream ts = (TwitchStream) streamList.get(i);
-		    if (ts.getChannel()
-			    .equals(parent.globals.currentStreamName)) {
+		    if (ts.getChannel().equals(parent.globals.currentStreamName)) {
 			if (ts.isOnline()) {
 			    parent.onlineStatus.setText(ts.getOnlineString());
 			    parent.setPreviewImage(ts.getPreview());

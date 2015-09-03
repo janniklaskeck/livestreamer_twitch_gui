@@ -14,15 +14,17 @@ import stream.TwitchStream;
 class TwitchUpdateWorker implements Runnable {
     private int index = -1;
     private ArrayList<GenericStreamInterface> streamList;
+    private TwitchUpdateThread parent;
 
-    public TwitchUpdateWorker(int i, ArrayList<GenericStreamInterface> streamList) {
+    public TwitchUpdateWorker(int i, ArrayList<GenericStreamInterface> streamList, TwitchUpdateThread parent) {
 	index = i;
 	this.streamList = streamList;
+	this.parent = parent;
     }
 
     @Override
     public void run() {
 	((TwitchStream) streamList.get(index)).refresh();
-	TwitchUpdateThread.finishedUpdates.getAndIncrement();
+	parent.parent.incProgress();
     }
 }

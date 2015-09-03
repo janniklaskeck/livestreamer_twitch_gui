@@ -1,4 +1,4 @@
-package gamesPanel.channel;
+package gamesPanel.game;
 
 import gamesPanel.GamesPane;
 
@@ -16,26 +16,27 @@ public class GameThread {
 	this.parent = parent;
     }
 
-    public void loadImages() {
-	parent.progressBar.setVisible(true);
+    public void loadImages(int size) {
 	parent.setProgressBar("game");
-	for (int i = 0; i < parent.size; i++) {
+	parent.progressBar.setValue(0);
+	parent.progressBar.setVisible(true);
+	for (int i = 0; i < size; i++) {
 	    threads.add(new GameRunnable(parent, i));
 	}
 
-	for (int i = 0; i < parent.size; i++) {
+	for (int i = 0; i < size; i++) {
 	    t.add(new Thread(threads.get(i)));
 	    t.get(i).start();
 	}
 
-	for (int i = 0; i < parent.size; i++) {
+	for (int i = 0; i < size; i++) {
 	    try {
 		t.get(i).join();
 	    } catch (InterruptedException e) {
 		e.printStackTrace();
 	    }
 	}
-	for (int i = 0; i < parent.size; i++) {
+	for (int i = 0; i < size; i++) {
 	    threads.get(i).addImage();
 	}
 	t.clear();

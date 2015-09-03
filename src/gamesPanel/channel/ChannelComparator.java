@@ -2,15 +2,13 @@ package gamesPanel.channel;
 
 import java.util.Comparator;
 
-import twitchAPI.Twitch_Game_Json;
-
-public class ChannelComparator implements Comparator<Twitch_Game_Json> {
+public class ChannelComparator implements Comparator<TwitchChannel> {
 
     @Override
-    public int compare(Twitch_Game_Json a, Twitch_Game_Json b) {
-	if (a.getViewers() > b.getViewers()) {
+    public int compare(TwitchChannel a, TwitchChannel b) {
+	if (a.getJson().getViewers() > b.getJson().getViewers()) {
 	    return -1;
-	} else if (a.getViewers() < b.getViewers()) {
+	} else if (a.getJson().getViewers() < b.getJson().getViewers()) {
 	    return 1;
 	}
 	return 0;
