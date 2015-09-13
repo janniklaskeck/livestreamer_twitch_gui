@@ -1,8 +1,5 @@
 package twitchlsgui;
 
-import gamesPanel.GamesPane;
-import ircClient.IRCClientFrame;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -68,6 +65,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.DefaultCaret;
 
+import gamesPanel.GamesPane;
+import ircClient.IRCClientFrame;
 import settings.Globals;
 import settings.SettingsManager;
 import settings.SettingsPanel;
@@ -121,10 +120,10 @@ public class Main_GUI extends JFrame {
     private Thread reader;
     private JPanel addPanel;
     private String customStreamName = "";
-    private final static int newWidth = 267;
-    private final static int newHeight = 150;
-    private static BufferedImage small;
-    private static Graphics g;
+    private final int newWidth = 267;
+    private final int newHeight = 150;
+    private BufferedImage small;
+    private Graphics g;
     private static Main_GUI frame;
     private static JLabel previewLabel;
     private Main_GUI mainGUI;
@@ -245,7 +244,7 @@ public class Main_GUI extends JFrame {
 	panelState = PANELSTATE.STREAM;
 	mainGUI = this;
 	globals = new Globals();
-	globals.twitchAPI = new Twitch_API(this);
+	new Twitch_API();
 	setIconImage(Toolkit.getDefaultToolkit().getImage(Main_GUI.class.getResource("/assets/icon.jpg")));
 	setResizable(true);
 	setMinimumSize(DIM);
@@ -432,7 +431,7 @@ public class Main_GUI extends JFrame {
 	startStreambutton.addActionListener(new ActionListener() {
 
 	    public void actionPerformed(ActionEvent arg0) {
-		if (globals.currentStreamName != "") {
+		if (globals.currentStreamName.equals("")) {
 		    OpenStream(globals.currentStreamName, globals.currentQuality);
 		} else {
 		    displayMessage("No Stream selected");
@@ -452,7 +451,7 @@ public class Main_GUI extends JFrame {
 	    public void actionPerformed(ActionEvent arg0) {
 
 		if (recordStreambutton.getText().equals("Record Stream")) {
-		    if (globals.currentStreamName != "") {
+		    if (globals.currentStreamName.equals("")) {
 			recordStream(globals.currentStreamName, globals.currentQuality);
 		    } else {
 			displayMessage("No Stream selected");
@@ -476,7 +475,7 @@ public class Main_GUI extends JFrame {
 	startCustomStreamBtn.addActionListener(new ActionListener() {
 
 	    public void actionPerformed(ActionEvent arg0) {
-		if (customStreamName != "") {
+		if (customStreamName.equals("")) {
 		    OpenStream(customStreamTF.getText(), globals.currentQuality);
 		} else {
 		    displayMessage("No Stream entered");
@@ -788,7 +787,7 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 
-		if (globals.currentStreamName != "") {
+		if (globals.currentStreamName.equals("")) {
 		    ircFrame = new IRCClientFrame(mainGUI);
 		    ircFrame.setVisible(true);
 		} else {
@@ -1018,7 +1017,7 @@ public class Main_GUI extends JFrame {
 		String path = globals.path;
 
 		final JFileChooser fc = new JFileChooser();
-		if (path != "") {
+		if (path.equals("")) {
 		    fc.setCurrentDirectory(new File(path));
 		}
 		fc.setSelectedFile(new File(fileName));
@@ -1117,6 +1116,10 @@ public class Main_GUI extends JFrame {
 
     public synchronized void incProgress() {
 	updateProgressBar.setValue(twitchUpdateThread.finishedUpdates.incrementAndGet());
+    }
+
+    public static Main_GUI getRef() {
+	return frame;
     }
 
 }

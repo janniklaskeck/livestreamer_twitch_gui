@@ -11,6 +11,7 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
+import twitchAPI.Twitch_API;
 import twitchAPI.Twitch_Json;
 import twitchlsgui.Main_GUI;
 
@@ -44,7 +45,7 @@ public class TwitchStream implements GenericStreamInterface {
      * the stream is online
      */
     public void refresh() {
-	ts = parent.globals.twitchAPI.getStream(this.getChannel());
+	ts = Twitch_API.getStream(this.getChannel());
 	if (ts != null) {
 	    game = ts.getMeta_game();
 	    title = ts.getTitle();
@@ -58,19 +59,15 @@ public class TwitchStream implements GenericStreamInterface {
 	    if (online) {
 		created_at_Long = convertDate(created_at);
 		calcUpTime(created_at_Long);
-		setOnlineString("<html>Currently playing: " + getGame()
-			+ "<br>(Online for: " + getUpTimeHours() + ":"
-			+ getUpTimeMinutes() + " hours) |"
-			+ " Current Viewers: " + getCurrent_viewers() + "<br>"
+		setOnlineString("<html>Currently playing: " + getGame() + "<br>(Online for: " + getUpTimeHours() + ":"
+			+ getUpTimeMinutes() + " hours) |" + " Current Viewers: " + getCurrent_viewers() + "<br>"
 			+ getTitle() + "</html>");
 	    }
 	    preview = null;
-	    if (ts.getScreen_cap_url_medium() != null
-		    && parent.globals.showPreview) {
+	    if (ts.getScreen_cap_url_medium() != null && parent.globals.showPreview) {
 		for (int i = 0; i < 5; i++) {
 		    try {
-			preview = ImageIO.read(new URL(ts
-				.getScreen_cap_url_medium()));
+			preview = ImageIO.read(new URL(ts.getScreen_cap_url_medium()));
 			@SuppressWarnings("unused")
 			boolean rw = ImageIO.write(preview, "PNG", bos);
 			parent.globals.downloadedBytes += bos.toByteArray().length;
@@ -169,7 +166,7 @@ public class TwitchStream implements GenericStreamInterface {
 	for (String s : dateArray) {
 	    dateS += s;
 	}
-	Date d = null;
+	Date d = new Date();
 	try {
 	    d = fm.parse(dateS);
 	} catch (ParseException e) {
@@ -269,7 +266,5 @@ public class TwitchStream implements GenericStreamInterface {
     @Override
     public void setChannel(String channel) {
 	this.channel = channel;
-
     }
-
 }

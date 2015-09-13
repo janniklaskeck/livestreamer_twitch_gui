@@ -35,6 +35,7 @@ public class GamesPane extends JPanel {
     }
 
     public void activate() {
+	tDir.games_list.loadJson();
 	tDir.home();
     }
 

@@ -46,8 +46,7 @@ public class IRCClientFrame extends JFrame {
 
     public IRCClientFrame(Main_GUI parentGUI) {
 	this.parent = parentGUI;
-	setIconImage(Toolkit.getDefaultToolkit().getImage(
-		IRCClientFrame.class.getResource("/assets/icon.jpg")));
+	setIconImage(Toolkit.getDefaultToolkit().getImage(IRCClientFrame.class.getResource("/assets/icon.jpg")));
 	this.channel = parent.globals.currentStreamName;
 	setTitle("Twitch Chat - " + parent.globals.currentStreamName);
 	setBounds(50, 50, 500, 400);
@@ -60,24 +59,19 @@ public class IRCClientFrame extends JFrame {
 	JPanel inputPanel = new JPanel();
 	getContentPane().add(inputPanel, BorderLayout.SOUTH);
 	inputPanel.setLayout(new BorderLayout(0, 0));
-	KeyboardFocusManager.getCurrentKeyboardFocusManager()
-		.addKeyEventDispatcher(new KeyEventDispatcher() {
-		    @Override
-		    public boolean dispatchKeyEvent(KeyEvent e) {
-			if (e.getKeyCode() == KeyEvent.VK_ENTER
-				&& e.getID() == KeyEvent.KEY_PRESSED
-				&& ircClient != null && ircClient.isConnected()
-				&& messageTextField != null
-				&& !messageTextField.getText().equals("")) {
-			    ircClient.sendMessage("#" + channel,
-				    messageTextField.getText());
-			    addMessage(parent.globals.twitchUser,
-				    messageTextField.getText());
-			    messageTextField.setText("");
-			}
-			return false;
-		    }
-		});
+	KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+	    @Override
+	    public boolean dispatchKeyEvent(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_ENTER && e.getID() == KeyEvent.KEY_PRESSED && ircClient != null
+			&& ircClient.isConnected() && messageTextField != null
+			&& !messageTextField.getText().equals("")) {
+		    ircClient.sendMessage("#" + channel, messageTextField.getText());
+		    addMessage(parent.globals.twitchUser, messageTextField.getText());
+		    messageTextField.setText("");
+		}
+		return false;
+	    }
+	});
 
 	messageTextField = new JTextField();
 	inputPanel.add(messageTextField, BorderLayout.CENTER);
@@ -88,13 +82,10 @@ public class IRCClientFrame extends JFrame {
 
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		if (ircClient != null && ircClient.isConnected()
-			&& messageTextField != null
+		if (ircClient != null && ircClient.isConnected() && messageTextField != null
 			&& !messageTextField.getText().equals("")) {
-		    ircClient.sendMessage("#" + channel,
-			    messageTextField.getText());
-		    addMessage(parent.globals.twitchUser,
-			    messageTextField.getText());
+		    ircClient.sendMessage("#" + channel, messageTextField.getText());
+		    addMessage(parent.globals.twitchUser, messageTextField.getText());
 		    messageTextField.setText("");
 		}
 	    }
@@ -110,13 +101,11 @@ public class IRCClientFrame extends JFrame {
 	    public void actionPerformed(ActionEvent event) {
 		if (!ircClient.isConnected()) {
 
-		    if (parent.globals.twitchUser != ""
-			    && parent.globals.twitchOAuth != ""
-			    && parent.globals.currentStreamName != "") {
+		    if (parent.globals.twitchUser.equals("") && parent.globals.twitchOAuth.equals("")
+			    && parent.globals.currentStreamName.equals("")) {
 			ircClient.setUserName(parent.globals.twitchUser);
 			try {
-			    ircClient.connect("irc.twitch.tv", 6667,
-				    parent.globals.twitchOAuth);
+			    ircClient.connect("irc.twitch.tv", 6667, parent.globals.twitchOAuth);
 			} catch (IOException | IrcException e) {
 			    if (parent.globals._DEBUG)
 				e.printStackTrace();
@@ -125,8 +114,7 @@ public class IRCClientFrame extends JFrame {
 			System.out.println("connected");
 		    } else {
 			// TODO display Error
-			System.out
-				.println("Error while connecting. Not enough Information");
+			System.out.println("Error while connecting. Not enough Information");
 		    }
 		    connectButton.setText("Disconnect");
 		} else {
@@ -150,26 +138,24 @@ public class IRCClientFrame extends JFrame {
 	getContentPane().add(scrollPane, BorderLayout.CENTER);
 	scrollPane.setBounds(0, 0, 500, 400);
 
-	scrollPane.getVerticalScrollBar().addAdjustmentListener(
-		new AdjustmentListener() {
+	scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 
-		    @Override
-		    public void adjustmentValueChanged(AdjustmentEvent e) {
-			final JScrollBar sb = (JScrollBar) e.getSource();
-			if (sb.getValue() + sb.getVisibleAmount() == sb
-				.getMaximum()) {
+	    @Override
+	    public void adjustmentValueChanged(AdjustmentEvent e) {
+		final JScrollBar sb = (JScrollBar) e.getSource();
+		if (sb.getValue() + sb.getVisibleAmount() == sb.getMaximum()) {
+		    EventQueue.invokeLater(new Runnable() {
+			public void run() {
 			    EventQueue.invokeLater(new Runnable() {
 				public void run() {
-				    EventQueue.invokeLater(new Runnable() {
-					public void run() {
-					    sb.setValue(sb.getMaximum());
-					}
-				    });
+				    sb.setValue(sb.getMaximum());
 				}
 			    });
 			}
-		    }
-		});
+		    });
+		}
+	    }
+	});
     }
 
     public void addMessage(String sender, String message) {
@@ -180,15 +166,13 @@ public class IRCClientFrame extends JFrame {
 	    // insert message sender
 	    doc.insertString(doc.getLength(), "<" + sender + ">: ", attr);
 	    // set sender name bold
-	    doc.setCharacterAttributes(doc.getLength() - sender.length() - 4,
-		    sender.length() + 4, attr, true);
+	    doc.setCharacterAttributes(doc.getLength() - sender.length() - 4, sender.length() + 4, attr, true);
 	    // TODO unset bold attribute, no idea why this works
 	    attr.addAttribute("bold", StyleConstants.Italic);
 	    // insert message
 	    doc.insertString(doc.getLength(), message, attr);
 	    // new line
-	    doc.insertString(doc.getLength(),
-		    System.getProperty("line.separator"), attr);
+	    doc.insertString(doc.getLength(), System.getProperty("line.separator"), attr);
 	    chatTextPane.setCaretPosition(doc.getLength());
 	} catch (BadLocationException e) {
 	    if (parent.globals._DEBUG)

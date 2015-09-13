@@ -45,7 +45,6 @@ public class SettingsManager {
     private final String GAMESSLOAD = "load_max_games";
 
     private Main_GUI parent;
-    private Twitch_API twitchApi;
 
     /**
      * Constructor Responsible for loading and saving the settings and streams
@@ -53,7 +52,6 @@ public class SettingsManager {
     public SettingsManager(Main_GUI parent) {
 	// reference
 	this.parent = parent;
-	twitchApi = new Twitch_API(parent);
 
 	// set registry path for saving
 	myPrefs = Preferences.userNodeForPackage(twitchlsgui.Main_GUI.class);
@@ -68,7 +66,7 @@ public class SettingsManager {
      * @return true if there is no error, false otherwise
      */
     private boolean streamExists(String stream) {
-	return twitchApi.checkTwitch(stream);
+	return Twitch_API.checkTwitch(stream);
     }
 
     /**
@@ -82,14 +80,11 @@ public class SettingsManager {
      *            to add the stream to
      */
     public void saveStream(String stream, String streamService) {
-	if (!streamService.equals("twitch.tv")
-		&& !streamService.equals("Twitch")) {
-	    parent.selectStreamService(streamService).getStreamList()
-		    .add(new OtherStream(stream));
+	if (!streamService.equals("twitch.tv") && !streamService.equals("Twitch")) {
+	    parent.selectStreamService(streamService).getStreamList().add(new OtherStream(stream));
 	} else {
 	    if (streamExists(stream)) {
-		parent.selectStreamService(streamService).getStreamList()
-			.add(new TwitchStream(stream, parent));
+		parent.selectStreamService(streamService).getStreamList().add(new TwitchStream(stream, parent));
 	    } else {
 		parent.displayMessage("This stream doesn't seem to exist. Check if you spelled it correctly.");
 	    }
@@ -107,12 +102,9 @@ public class SettingsManager {
      *            to remove the stream from
      */
     public void removeStream(String stream, String streamService) {
-	for (int i = 0; i < parent.selectStreamService(streamService)
-		.getStreamList().size(); i++) {
-	    if (parent.selectStreamService(streamService).getStreamList()
-		    .get(i).getChannel().equals(stream)) {
-		parent.selectStreamService(streamService).getStreamList()
-			.remove(i);
+	for (int i = 0; i < parent.selectStreamService(streamService).getStreamList().size(); i++) {
+	    if (parent.selectStreamService(streamService).getStreamList().get(i).getChannel().equals(stream)) {
+		parent.selectStreamService(streamService).getStreamList().remove(i);
 		break;
 	    }
 	}
@@ -142,8 +134,7 @@ public class SettingsManager {
 	parent.globals.streamServicesList = new ArrayList<StreamList>();
 	for (String s : buffer2) {
 	    if (s.length() > 1)
-		parent.globals.streamServicesList.add(new StreamList(s, myPrefs
-			.get(s + "_displayname", s)));
+		parent.globals.streamServicesList.add(new StreamList(s, myPrefs.get(s + "_displayname", s)));
 	}
     }
 
@@ -157,16 +148,13 @@ public class SettingsManager {
 	String streams = myPrefs.get(streamService, "");
 	streams = correctStreamList(streams);
 	String[] streams_split = streams.split(" ");
-	parent.selectStreamService(streamService).setStreamList(
-		new ArrayList<GenericStreamInterface>());
+	parent.selectStreamService(streamService).setStreamList(new ArrayList<GenericStreamInterface>());
 	for (int i = 0; i < streams_split.length; i++) {
 
 	    if (streamService.equals("twitch.tv")) {
-		parent.selectStreamService(streamService).addStream(
-			new TwitchStream(streams_split[i], parent));
+		parent.selectStreamService(streamService).addStream(new TwitchStream(streams_split[i], parent));
 	    } else {
-		parent.selectStreamService(streamService).addStream(
-			new OtherStream(streams_split[i]));
+		parent.selectStreamService(streamService).addStream(new OtherStream(streams_split[i]));
 	    }
 	}
     }
@@ -208,15 +196,12 @@ public class SettingsManager {
 
 	String buffer = "";
 	for (int i = 0; i < parent.globals.streamServicesList.size(); i++) {
-	    myPrefs.put(parent.globals.streamServicesList.get(i).getUrl()
-		    + "_displayname", parent.globals.streamServicesList.get(i)
-		    .getDisplayName());
+	    myPrefs.put(parent.globals.streamServicesList.get(i).getUrl() + "_displayname",
+		    parent.globals.streamServicesList.get(i).getDisplayName());
 	    if (buffer == "") {
-		buffer = buffer
-			+ parent.globals.streamServicesList.get(i).getUrl();
+		buffer = buffer + parent.globals.streamServicesList.get(i).getUrl();
 	    } else {
-		buffer = buffer + " "
-			+ parent.globals.streamServicesList.get(i).getUrl();
+		buffer = buffer + " " + parent.globals.streamServicesList.get(i).getUrl();
 	    }
 	}
 	myPrefs.put(STREAMSERVICES, buffer);
@@ -227,8 +212,7 @@ public class SettingsManager {
      */
     public void writeStreams(String streamService) {
 	String buffer = "";
-	for (GenericStreamInterface ts : parent.selectStreamService(
-		streamService).getStreamList()) {
+	for (GenericStreamInterface ts : parent.selectStreamService(streamService).getStreamList()) {
 	    if (buffer == "") {
 		buffer = ts.getChannel();
 	    } else {
@@ -245,8 +229,7 @@ public class SettingsManager {
 	String path = "";
 	JFileChooser jfc = new JFileChooser(path);
 	jfc.setDialogType(JFileChooser.OPEN_DIALOG);
-	FileNameExtensionFilter txtFilter = new FileNameExtensionFilter(".txt",
-		"txt");
+	FileNameExtensionFilter txtFilter = new FileNameExtensionFilter(".txt", "txt");
 
 	jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
 	jfc.setFileFilter(txtFilter);
@@ -270,22 +253,17 @@ public class SettingsManager {
 		    if (lineNumber == 0 || lineNumber % 2 == 0) {
 			if (parent.selectStreamServiceD(lineSplit[0]) == null
 				&& parent.selectStreamService(lineSplit[1]) == null) {
-			    parent.globals.streamServicesList
-				    .add(new StreamList(lineSplit[1],
-					    lineSplit[0]));
+			    parent.globals.streamServicesList.add(new StreamList(lineSplit[1], lineSplit[0]));
 			}
 			lastService = lineSplit[1];
 		    } else {
 			boolean exists = false;
 			for (String stream : lineSplit) {
 			    if (!stream.equals(" ") || !stream.equals("")) {
-				if (parent.selectStreamService(lastService)
-					.getStreamList().size() > 0) {
-				    for (GenericStreamInterface gs : parent
-					    .selectStreamService(lastService)
+				if (parent.selectStreamService(lastService).getStreamList().size() > 0) {
+				    for (GenericStreamInterface gs : parent.selectStreamService(lastService)
 					    .getStreamList()) {
-					if (gs.getChannel().toLowerCase()
-						.equals(stream.toLowerCase())) {
+					if (gs.getChannel().toLowerCase().equals(stream.toLowerCase())) {
 					    exists = true;
 					}
 				    }
@@ -318,8 +296,7 @@ public class SettingsManager {
 	String path = "";
 	JFileChooser jfc = new JFileChooser(path);
 	jfc.setDialogType(JFileChooser.SAVE_DIALOG);
-	FileNameExtensionFilter txtFilter = new FileNameExtensionFilter(".txt",
-		"txt");
+	FileNameExtensionFilter txtFilter = new FileNameExtensionFilter(".txt", "txt");
 
 	jfc.removeChoosableFileFilter(jfc.getAcceptAllFileFilter());
 	jfc.setFileFilter(txtFilter);
@@ -329,7 +306,7 @@ public class SettingsManager {
 
 	if (result == JFileChooser.APPROVE_OPTION) {
 	    path = jfc.getSelectedFile().toString();
-	    String[] pathSplit = path.split(".");
+	    String[] pathSplit = path.split("\\.");
 	    if (pathSplit.length > 0 && pathSplit[pathSplit.length] != "txt") {
 		path = path + ".txt";
 	    } else if (pathSplit.length == 0) {
@@ -340,14 +317,11 @@ public class SettingsManager {
 	    try {
 		BufferedWriter output = new BufferedWriter(new FileWriter(file));
 		for (StreamList service : parent.globals.streamServicesList) {
-		    output.write(service.getDisplayName() + " "
-			    + service.getUrl());
+		    output.write(service.getDisplayName() + " " + service.getUrl());
 		    output.newLine();
 		    for (int i = 0; i < service.getStreamList().size(); i++) {
-			if (!service.getStreamList().get(i).getChannel()
-				.equals(" ")) {
-			    output.write(service.getStreamList().get(i)
-				    .getChannel());
+			if (!service.getStreamList().get(i).getChannel().equals(" ")) {
+			    output.write(service.getStreamList().get(i).getChannel());
 			    if (i < service.getStreamList().size() - 1) {
 				output.write(" ");
 			    }

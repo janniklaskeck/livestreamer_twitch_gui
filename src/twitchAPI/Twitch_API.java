@@ -15,11 +15,6 @@ public class Twitch_API {
     private static Gson gson = new Gson();
     private static String jsonString;
     private static String jsonString2;
-    private static Main_GUI parent;
-
-    public Twitch_API(Main_GUI parent) {
-	Twitch_API.parent = parent;
-    }
 
     /**
      * Downloads the content from the Twitch.tv API to be processed as JSON into
@@ -28,20 +23,18 @@ public class Twitch_API {
      * @param channelname
      * @return
      */
-    public Twitch_Json getStream(String channelname) {
+    public static Twitch_Json getStream(String channelname) {
 	JsonObject a = null;
 	JsonObject b = null;
 	try {
 
-	    jsonString = readJsonFromUrl("https://api.twitch.tv/kraken/streams/"
-		    + channelname);
+	    jsonString = readJsonFromUrl("https://api.twitch.tv/kraken/streams/" + channelname);
 	    if (jsonString != null) {
 		Twitch_Json stream = new Twitch_Json();
 		a = gson.fromJson(jsonString, JsonObject.class);
 		if (a.get("stream") != null) {
 		    if (!a.get("stream").toString().equals("null")) {
-			b = gson.fromJson(a.get("stream").toString(),
-				JsonObject.class);
+			b = gson.fromJson(a.get("stream").toString(), JsonObject.class);
 		    }
 		}
 		if (b != null) {
@@ -67,10 +60,11 @@ public class Twitch_API {
      */
     public static JsonObject getGames() {
 	JsonObject a = null;
+	Main_GUI parent = Main_GUI.getRef();
 	try {
 
-	    jsonString2 = readJsonFromUrl("https://api.twitch.tv/kraken/games/top?limit="
-		    + parent.globals.maxGamesLoad + "&offset=0");
+	    jsonString2 = readJsonFromUrl(
+		    "https://api.twitch.tv/kraken/games/top?limit=" + parent.globals.maxGamesLoad + "&offset=0");
 	    if (jsonString2 != null) {
 		a = gson.fromJson(jsonString2, JsonObject.class);
 		return a;
@@ -89,9 +83,10 @@ public class Twitch_API {
      */
     public static JsonObject getChannels(String name) {
 	JsonObject a = null;
+	Main_GUI parent = Main_GUI.getRef();
 	try {
-	    String url = "https://api.twitch.tv/kraken/streams?game=" + name
-		    + "&limit=" + parent.globals.maxChannelsLoad;
+	    String url = "https://api.twitch.tv/kraken/streams?game=" + name + "&limit="
+		    + parent.globals.maxChannelsLoad;
 	    jsonString2 = readJsonFromUrl(url);
 	    if (jsonString2 != null) {
 		a = gson.fromJson(jsonString2, JsonObject.class);
@@ -117,8 +112,7 @@ public class Twitch_API {
 	    URL url = new URL(urlString);
 	    connUrl = (HttpURLConnection) url.openConnection();
 	    if (connUrl.getResponseCode() == HttpURLConnection.HTTP_OK) {
-		reader = new BufferedReader(new InputStreamReader(
-			connUrl.getInputStream()));
+		reader = new BufferedReader(new InputStreamReader(connUrl.getInputStream()));
 	    } else {
 		return null;
 	    }
@@ -128,8 +122,8 @@ public class Twitch_API {
 	    while ((read = reader.read(chars)) != -1) {
 		buffer.append(chars, 0, read);
 	    }
-	    parent.globals.downloadedBytes += buffer.toString().getBytes(
-		    "UTF-8").length;
+	    Main_GUI parent = Main_GUI.getRef();
+	    parent.globals.downloadedBytes += buffer.toString().getBytes("UTF-8").length;
 	    if (reader != null) {
 		reader.close();
 	    }
@@ -140,8 +134,7 @@ public class Twitch_API {
 	return null;
     }
 
-    public boolean checkTwitch(String channelname) {
-	return readJsonFromUrl("https://api.twitch.tv/kraken/streams/"
-		+ channelname) != null;
+    public static boolean checkTwitch(String channelname) {
+	return readJsonFromUrl("https://api.twitch.tv/kraken/streams/" + channelname) != null;
     }
 }

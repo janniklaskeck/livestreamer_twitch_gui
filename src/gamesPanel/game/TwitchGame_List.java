@@ -1,17 +1,16 @@
 package gamesPanel.game;
 
-import gamesPanel.TwitchDirectory;
-
 import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
 
+import com.google.gson.JsonObject;
+
+import gamesPanel.TwitchDirectory;
 import twitchAPI.Twitch_API;
 import twitchAPI.Twitch_List_Json;
-
-import com.google.gson.JsonObject;
 
 public class TwitchGame_List {
 
@@ -22,16 +21,13 @@ public class TwitchGame_List {
     public TwitchGame_List(TwitchDirectory parent) {
 	games = new ArrayList<TwitchGame>();
 	this.parent = parent;
-	load();
     }
 
     public void load() {
 	games.clear();
-	gamesJSON = Twitch_API.getGames();
 	for (int i = 0; i < gamesJSON.get("top").getAsJsonArray().size(); i++) {
 	    Twitch_List_Json a = new Twitch_List_Json();
-	    a.load(gamesJSON.get("top").getAsJsonArray().get(i)
-		    .getAsJsonObject());
+	    a.load(gamesJSON.get("top").getAsJsonArray().get(i).getAsJsonObject());
 	    games.add(new TwitchGame(a, parent));
 	}
 	sort();
@@ -49,8 +45,7 @@ public class TwitchGame_List {
 	new Thread(new Runnable() {
 	    @Override
 	    public void run() {
-		parent.gt.loadImages(gamesJSON.get("top").getAsJsonArray()
-			.size());
+		parent.gt.loadImages(gamesJSON.get("top").getAsJsonArray().size());
 	    }
 	}).start();
     }
@@ -69,5 +64,10 @@ public class TwitchGame_List {
 
     public int getSize() {
 	return games.size();
+    }
+
+    public void loadJson() {
+	gamesJSON = Twitch_API.getGames();
+	load();
     }
 }
