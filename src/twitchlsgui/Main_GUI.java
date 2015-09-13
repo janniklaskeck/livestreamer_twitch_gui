@@ -431,7 +431,7 @@ public class Main_GUI extends JFrame {
 	startStreambutton.addActionListener(new ActionListener() {
 
 	    public void actionPerformed(ActionEvent arg0) {
-		if (globals.currentStreamName.equals("")) {
+		if (!globals.currentStreamName.equals("")) {
 		    OpenStream(globals.currentStreamName, globals.currentQuality);
 		} else {
 		    displayMessage("No Stream selected");
@@ -451,7 +451,7 @@ public class Main_GUI extends JFrame {
 	    public void actionPerformed(ActionEvent arg0) {
 
 		if (recordStreambutton.getText().equals("Record Stream")) {
-		    if (globals.currentStreamName.equals("")) {
+		    if (!globals.currentStreamName.equals("")) {
 			recordStream(globals.currentStreamName, globals.currentQuality);
 		    } else {
 			displayMessage("No Stream selected");
@@ -475,7 +475,7 @@ public class Main_GUI extends JFrame {
 	startCustomStreamBtn.addActionListener(new ActionListener() {
 
 	    public void actionPerformed(ActionEvent arg0) {
-		if (customStreamName.equals("")) {
+		if (!customStreamName.equals("")) {
 		    OpenStream(customStreamTF.getText(), globals.currentQuality);
 		} else {
 		    displayMessage("No Stream entered");
@@ -787,7 +787,7 @@ public class Main_GUI extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 
-		if (globals.currentStreamName.equals("")) {
+		if (!globals.currentStreamName.equals("")) {
 		    ircFrame = new IRCClientFrame(mainGUI);
 		    ircFrame.setVisible(true);
 		} else {
@@ -1017,7 +1017,7 @@ public class Main_GUI extends JFrame {
 		String path = globals.path;
 
 		final JFileChooser fc = new JFileChooser();
-		if (path.equals("")) {
+		if (!path.equals("")) {
 		    fc.setCurrentDirectory(new File(path));
 		}
 		fc.setSelectedFile(new File(fileName));
