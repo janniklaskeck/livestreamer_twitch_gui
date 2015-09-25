@@ -14,6 +14,7 @@ public class Globals {
 
     public boolean sortTwitch = true;
     public ArrayList<StreamList> streamServicesList;
+    public String currentStreamService = "twitch.tv";
     public String currentQuality = "High";
     public final Version VERSION = new Version(2, 0, 2, 3);
     public boolean _DEBUG = false;

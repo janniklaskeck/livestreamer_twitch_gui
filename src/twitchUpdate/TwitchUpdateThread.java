@@ -52,7 +52,7 @@ public class TwitchUpdateThread extends Thread {
 	streamList = parent.selectStreamService("twitch.tv").getStreamList();
 
 	if (streamList.size() > 0) {
-	    if (parent.currentStreamService.equals(parent.selectStreamService("twitch.tv").getUrl())) {
+	    if (parent.globals.currentStreamService.equals(parent.selectStreamService("twitch.tv").getUrl())) {
 		parent.updateProgressBar.setValue(0);
 		parent.updateToolBar.setVisible(true);
 		int max = parent.selectStreamService("twitch.tv").getStreamList().size();
@@ -85,14 +85,14 @@ public class TwitchUpdateThread extends Thread {
 	    }
 	}
 
-	if (parent.currentStreamService.equals(parent.selectStreamService("twitch.tv").getUrl())) {
+	if (parent.globals.currentStreamService.equals(parent.selectStreamService("twitch.tv").getUrl())) {
 	    finishedUpdates.set(0);
 	    parent.updateProgressBar.setValue(0);
 	    parent.updateToolBar.setVisible(false);
 	    ;
 	}
 	if (!parent.globals.currentStreamName.equals("")) {
-	    if (parent.currentStreamService.equals(parent.selectStreamService("twitch.tv").getUrl())) {
+	    if (parent.globals.currentStreamService.equals(parent.selectStreamService("twitch.tv").getUrl())) {
 		for (int i = 0; i < streamList.size(); i++) {
 		    TwitchStream ts = (TwitchStream) streamList.get(i);
 		    if (ts.getChannel().equals(parent.globals.currentStreamName)) {

@@ -2,6 +2,8 @@ package gamesPanel.channel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -15,7 +17,8 @@ public class TwitchChannel {
     private BufferedImage preview;
     private Twitch_Game_Json json;
     private String name;
-    private TwitchDirectory parent;
+    TwitchDirectory parent;
+    private JButton button;
 
     public TwitchChannel(BufferedImage preview, Twitch_Game_Json json, TwitchDirectory parent) {
 	this.preview = preview;
@@ -32,14 +35,13 @@ public class TwitchChannel {
     }
 
     public JButton getButton() {
-	JButton button = new JButton();
-	String text = json.getName();
+	button = new JButton();
 	String viewers = json.getViewers() + "";
 	setPreview(preview);
 	button.setIcon(new ImageIcon(preview));
 	button.setHorizontalTextPosition(JLabel.CENTER);
 	button.setVerticalTextPosition(JLabel.BOTTOM);
-	button.setText("<html>" + text + "<br>Viewers: " + viewers + "</html>");
+	button.setText("<html>" + this.getName() + "<br>Viewers: " + viewers + "</html>");
 	button.setToolTipText(json.getChannel());
 	button.addActionListener(new ActionListener() {
 	    @Override
@@ -48,7 +50,37 @@ public class TwitchChannel {
 		parent.parent.openStream(name);
 	    }
 	});
+	button.addMouseListener(new MouseListener() {
+	    @Override
+	    public void mouseReleased(MouseEvent e) {
+	    }
+
+	    @Override
+	    public void mousePressed(MouseEvent e) {
+	    }
+
+	    @Override
+	    public void mouseExited(MouseEvent e) {
+	    }
+
+	    @Override
+	    public void mouseEntered(MouseEvent e) {
+	    }
+
+	    @Override
+	    public void mouseClicked(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON3) {
+		    showPopUp(e);
+		}
+	    }
+	});
 	return button;
+    }
+
+    private void showPopUp(MouseEvent e) {
+	ChannelPopUp pop = new ChannelPopUp(this, this.name);
+	pop.show(this.button, e.getX(), e.getY());
+
     }
 
     /**

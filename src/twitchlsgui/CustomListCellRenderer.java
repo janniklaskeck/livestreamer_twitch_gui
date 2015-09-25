@@ -30,19 +30,17 @@ public class CustomListCellRenderer implements ListCellRenderer<JLabel> {
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends JLabel> list,
-	    JLabel value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends JLabel> list, JLabel value, int index,
+	    boolean isSelected, boolean cellHasFocus) {
 	value.setOpaque(true);
 	value.setFont(new Font("Dialog", Font.BOLD, 12));
 	if (bg == null) {
 	    bg = value.getBackground();
 	}
-	if (parent.currentStreamService.equals("twitch.tv")) {
-	    for (int i = 0; i < parent
-		    .selectStreamService(parent.currentStreamService)
-		    .getStreamList().size(); i++) {
-		TwitchStream ts = (TwitchStream) parent
-			.selectStreamService(parent.currentStreamService)
+	if (parent.globals.currentStreamService.equals("twitch.tv")) {
+	    for (int i = 0; i < parent.selectStreamService(parent.globals.currentStreamService).getStreamList()
+		    .size(); i++) {
+		TwitchStream ts = (TwitchStream) parent.selectStreamService(parent.globals.currentStreamService)
 			.getStreamList().get(i);
 		if (ts.getChannel().equals(value.getText())) {
 		    if (isSelected) {

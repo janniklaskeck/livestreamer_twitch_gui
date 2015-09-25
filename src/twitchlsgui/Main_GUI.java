@@ -90,7 +90,6 @@ public class Main_GUI extends JFrame {
 
     public DefaultListModel<JLabel> streamListModel;
 
-    public String currentStreamService = "twitch.tv";
     public JComboBox<String> streamServicesBox;
 
     public IRCClientFrame ircFrame = null;
@@ -208,14 +207,14 @@ public class Main_GUI extends JFrame {
 
 	streamListModel.clear();
 	if (globals.sortTwitch) {
-	    if (currentStreamService.equals("twitch.tv") || currentStreamService.equals("Twitch")) {
-		selectStreamService(currentStreamService).sortList();
+	    if (globals.currentStreamService.equals("twitch.tv") || globals.currentStreamService.equals("Twitch")) {
+		selectStreamService(globals.currentStreamService).sortList();
 	    }
 	}
 
-	for (int i = 0; i < selectStreamService(currentStreamService).getStreamList().size(); i++) {
+	for (int i = 0; i < selectStreamService(globals.currentStreamService).getStreamList().size(); i++) {
 	    streamListModel.addElement(
-		    new JLabel(selectStreamService(currentStreamService).getStreamList().get(i).getChannel()));
+		    new JLabel(selectStreamService(globals.currentStreamService).getStreamList().get(i).getChannel()));
 	}
 	stream_list.setSelectedIndex(selection_index);
     }
@@ -341,11 +340,12 @@ public class Main_GUI extends JFrame {
 	    public void itemStateChanged(ItemEvent arg0) {
 		if (streamServicesBox.getSelectedItem() != null) {
 
-		    currentStreamService = selectStreamServiceD((String) streamServicesBox.getSelectedItem()).getUrl();
-		    if (currentStreamService == null) {
-			currentStreamService = "twitch.tv";
+		    globals.currentStreamService = selectStreamServiceD((String) streamServicesBox.getSelectedItem())
+			    .getUrl();
+		    if (globals.currentStreamService == null) {
+			globals.currentStreamService = "twitch.tv";
 		    }
-		    globals.settingsManager.readStreamList(currentStreamService);
+		    globals.settingsManager.readStreamList(globals.currentStreamService);
 		    updateList();
 		}
 	    }
@@ -839,9 +839,9 @@ public class Main_GUI extends JFrame {
 
 	if (stream_list.getSelectedValue() != null) {
 	    globals.currentStreamName = stream_list.getSelectedValue().getText();
-	    if (currentStreamService.equals("twitch.tv")) {
-		for (int i = 0; i < selectStreamService(currentStreamService).getStreamList().size(); i++) {
-		    ts = (TwitchStream) selectStreamService(currentStreamService).getStreamList().get(i);
+	    if (globals.currentStreamService.equals("twitch.tv")) {
+		for (int i = 0; i < selectStreamService(globals.currentStreamService).getStreamList().size(); i++) {
+		    ts = (TwitchStream) selectStreamService(globals.currentStreamService).getStreamList().get(i);
 		    if (ts.getChannel().equals(globals.currentStreamName)) {
 			if (ts.isOnline()) {
 			    int maxWidth = DIM.width / 2;
@@ -856,8 +856,8 @@ public class Main_GUI extends JFrame {
 		    }
 		}
 	    } else {
-		for (int i = 0; i < selectStreamService(currentStreamService).getStreamList().size(); i++) {
-		    gs = selectStreamService(currentStreamService).getStreamList().get(i);
+		for (int i = 0; i < selectStreamService(globals.currentStreamService).getStreamList().size(); i++) {
+		    gs = selectStreamService(globals.currentStreamService).getStreamList().get(i);
 		    if (gs.getChannel().equals(globals.currentStreamName)) {
 			onlineStatus.setText("No Stream Information");
 			setPreviewImage(null);
@@ -897,6 +897,22 @@ public class Main_GUI extends JFrame {
 	return null;
     }
 
+    public void addStreamToCurrent(String channel) {
+	globals.settingsManager.saveStream(channel.trim(), globals.currentStreamService);
+	updateList();
+	if (globals.currentStreamService.equals("twitch.tv")) {
+	    twitchUpdateThread.interrupt();
+	}
+    }
+    
+    public void addStream(String channel, String service) {
+	globals.settingsManager.saveStream(channel.trim(), service);
+	updateList();
+	if (globals.currentStreamService.equals("twitch.tv")) {
+	    twitchUpdateThread.interrupt();
+	}
+    }
+
     /**
      * Opens a Dialog to add a stream/streamService when pressed
      */
@@ -931,11 +947,7 @@ public class Main_GUI extends JFrame {
 	    int result = JOptionPane.showConfirmDialog(null, addPanel, "Please Enter Channel Name",
 		    JOptionPane.OK_CANCEL_OPTION);
 	    if (result == JOptionPane.OK_OPTION) {
-		globals.settingsManager.saveStream(channelField.getText().trim(), currentStreamService);
-		updateList();
-		if (currentStreamService.equals("twitch.tv")) {
-		    twitchUpdateThread.interrupt();
-		}
+		addStreamToCurrent(channelField.getText());
 	    }
 	}
     }
@@ -946,7 +958,7 @@ public class Main_GUI extends JFrame {
     private void removeButton() {
 	if (shiftPressed && streamServicesBox.getItemCount() > 1) {
 	    for (int i = 0; i < globals.streamServicesList.size(); i++) {
-		if (globals.streamServicesList.get(i).getUrl().equals(currentStreamService)) {
+		if (globals.streamServicesList.get(i).getUrl().equals(globals.currentStreamService)) {
 		    globals.streamServicesList.remove(i);
 		    break;
 		}
@@ -957,9 +969,9 @@ public class Main_GUI extends JFrame {
 		twitchUpdateThread.interrupt();
 	    }
 	} else {
-	    globals.settingsManager.removeStream(globals.currentStreamName, currentStreamService);
+	    globals.settingsManager.removeStream(globals.currentStreamName, globals.currentStreamService);
 	    updateList();
-	    if (currentStreamService.equals("twitch.tv")) {
+	    if (globals.currentStreamService.equals("twitch.tv")) {
 		twitchUpdateThread.interrupt();
 	    }
 	}
@@ -976,7 +988,7 @@ public class Main_GUI extends JFrame {
 	new SwingWorker<Void, Void>() {
 	    protected Void doInBackground() throws Exception {
 
-		String stream = currentStreamService + "/" + name;
+		String stream = globals.currentStreamService + "/" + name;
 		runLivestreamer(Arrays.asList("livestreamer", stream, quality));
 
 		return null;
@@ -1027,7 +1039,7 @@ public class Main_GUI extends JFrame {
 		    String recordPath = fc.getCurrentDirectory().toString();
 		    globals.path = recordPath;
 		    String file = recordPath + "/" + fc.getSelectedFile().getName() + ".mpeg4";
-		    String stream = currentStreamService + "/" + name;
+		    String stream = globals.currentStreamService + "/" + name;
 
 		    recordStreambutton.setText("Stop Recording");
 
