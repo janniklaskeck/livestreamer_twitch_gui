@@ -101,8 +101,8 @@ public class IRCClientFrame extends JFrame {
 	    public void actionPerformed(ActionEvent event) {
 		if (!ircClient.isConnected()) {
 
-		    if (parent.globals.twitchUser.equals("") && parent.globals.twitchOAuth.equals("")
-			    && parent.globals.currentStreamName.equals("")) {
+		    if (!parent.globals.twitchUser.equals("") && !parent.globals.twitchOAuth.equals("")
+			    && !parent.globals.currentStreamName.equals("")) {
 			ircClient.setUserName(parent.globals.twitchUser);
 			try {
 			    ircClient.connect("irc.twitch.tv", 6667, parent.globals.twitchOAuth);
