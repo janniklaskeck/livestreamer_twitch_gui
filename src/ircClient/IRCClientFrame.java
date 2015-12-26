@@ -11,6 +11,8 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -42,12 +44,13 @@ public class IRCClientFrame extends JFrame {
     private String channel;
     private JScrollPane scrollPane;
     private JButton connectButton;
+    private JButton sendButton;
     private Main_GUI parent;
 
     public IRCClientFrame(Main_GUI parentGUI) {
 	this.parent = parentGUI;
 	setIconImage(Toolkit.getDefaultToolkit().getImage(IRCClientFrame.class.getResource("/assets/icon.jpg")));
-	this.channel = parent.globals.currentStreamName;
+	this.channel = parent.globals.currentStreamName.toLowerCase();
 	setTitle("Twitch Chat - " + parent.globals.currentStreamName);
 	setBounds(50, 50, 500, 400);
 	setResizable(true);
@@ -77,7 +80,7 @@ public class IRCClientFrame extends JFrame {
 	inputPanel.add(messageTextField, BorderLayout.CENTER);
 	messageTextField.setColumns(10);
 
-	JButton sendButton = new JButton("Send Message");
+	sendButton = new JButton("Send Message");
 	sendButton.addActionListener(new ActionListener() {
 
 	    @Override
@@ -111,15 +114,23 @@ public class IRCClientFrame extends JFrame {
 				e.printStackTrace();
 			}
 			ircClient.joinChannel("#" + channel);
-			System.out.println("connected");
+			
+			sendButton.setEnabled(true);
 		    } else {
-			// TODO display Error
-			System.out.println("Error while connecting. Not enough Information");
+			String uuid = UUID.randomUUID().toString().replace("-", "");
+			ircClient.setUserName("justinfan" + new BigInteger(uuid, 16));
+			try {
+			    ircClient.connect("irc.twitch.tv", 6667, "");
+			} catch (IOException | IrcException e) {
+			    if (parent.globals._DEBUG)
+				e.printStackTrace();
+			}
+			ircClient.joinChannel("#" + channel);
+			sendButton.setEnabled(false);
 		    }
 		    connectButton.setText("Disconnect");
 		} else {
 		    ircClient.disconnect();
-		    System.out.println("disconnected");
 		    connectButton.setText("Connect");
 		}
 	    }
