@@ -25,4 +25,14 @@ public class IRCClient extends PircBot {
 	this.setName(name);
     }
 
+    @Override
+    protected void onConnect() {
+        super.onConnect();
+        System.out.println("Connection successful");
+    }
+    @Override
+    protected void onDisconnect() {
+        super.onDisconnect();
+        System.out.println("Disconnected");
+    }
 }
