@@ -16,7 +16,7 @@ public class Globals {
     public ArrayList<StreamList> streamServicesList;
     public String currentStreamService = "twitch.tv";
     public String currentQuality = "High";
-    public final Version VERSION = new Version(2, 0, 2, 4);
+    public final Version VERSION = new Version(2, 0, 3, 0);
     public boolean _DEBUG = false;
     public SettingsManager settingsManager;
     public String currentStreamName = "";

@@ -12,7 +12,7 @@ Its intended use is for twitch.tv.
 <b>Twitch.tv exclusive:</b><br>
 	- get Stream Information like online status, current game and channel title<br>
 	- download and display a preview image from the stream<br>
-	- simple chat client for Twitch.tv chat(needs an OAuth Token instead of your password)<br>
+	- simple chat client for Twitch.tv chat(read-only unless login name and OAuth token is provided)<br>
 	
 #Planned Features:
 	- Error output window
