@@ -16,7 +16,7 @@ public class Globals {
     public ArrayList<StreamList> streamServicesList;
     public String currentStreamService = "twitch.tv";
     public String currentQuality = "High";
-    public final Version VERSION = new Version(2, 0, 3, 0);
+    public final Version VERSION = new Version(2, 0, 4, 0);
     public boolean _DEBUG = false;
     public SettingsManager settingsManager;
     public String currentStreamName = "";
@@ -31,4 +31,6 @@ public class Globals {
     public String lookAndFeel = "System";
     public int maxGamesLoad = 20;
     public int maxChannelsLoad = 20;
+    public Integer chatFontSize = 3;
+    public String chatFont = "Tahoma";
 }
