@@ -120,12 +120,12 @@ public class IRCClientFrame extends JFrame {
 	this.textPanel.add(this.fontSizeLabel, gbc_fontSizeLabel);
 
 	this.fontSizeComboBox = new JComboBox<Integer>();
-	this.fontSizeComboBox.setSelectedIndex(3);
 	DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
 	for (int i = 1; i < 8; i++) {
 	    model.addElement(i);
 	}
 	fontSizeComboBox.setModel(model);
+	this.fontSizeComboBox.setSelectedIndex(3);
 	GridBagConstraints gbc_fontSizeComboBox = new GridBagConstraints();
 	gbc_fontSizeComboBox.fill = GridBagConstraints.HORIZONTAL;
 	gbc_fontSizeComboBox.gridx = 5;
