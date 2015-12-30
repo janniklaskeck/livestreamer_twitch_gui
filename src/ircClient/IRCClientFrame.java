@@ -2,6 +2,9 @@ package ircClient;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
@@ -14,20 +17,20 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.UUID;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.WindowConstants;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.StyledEditorKit;
+import javax.swing.text.html.HTMLEditorKit;
 
 import org.jibble.pircbot.IrcException;
 
@@ -40,12 +43,19 @@ public class IRCClientFrame extends JFrame {
     private IRCClient ircClient;
     private JTextPane chatTextPane;
     private StyledEditorKit kit;
-    private StyledDocument doc;
+    private String currentChatHistory = "";
     private String channel;
     private JScrollPane scrollPane;
     private JButton connectButton;
     private JButton sendButton;
     private Main_GUI parent;
+    private JPanel textPanel;
+    private JButton changeChannelBtn;
+    private JLabel fontSizeLabel;
+    private JLabel fontLabel;
+    private JComboBox<String> fontComboBox;
+    private JComboBox<Integer> fontSizeComboBox;
+    private JComboBox<String> streamListComboBox;
 
     public IRCClientFrame(Main_GUI parentGUI) {
 	this.parent = parentGUI;
@@ -58,6 +68,69 @@ public class IRCClientFrame extends JFrame {
 
 	ircClient = new IRCClient(this);
 	ircClient.setVerbose(false);
+
+	this.textPanel = new JPanel();
+	this.textPanel.setBorder(new EmptyBorder(2, 3, 2, 3));
+	getContentPane().add(this.textPanel, BorderLayout.NORTH);
+	GridBagLayout gbl_textPanel = new GridBagLayout();
+	gbl_textPanel.columnWidths = new int[] { 79, 40, 22, 44, 44, 39, 0 };
+	gbl_textPanel.rowHeights = new int[] { 23, 0 };
+	gbl_textPanel.columnWeights = new double[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+	gbl_textPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+	this.textPanel.setLayout(gbl_textPanel);
+
+	this.streamListComboBox = new JComboBox<String>();
+	GridBagConstraints gbc_streamListComboBox = new GridBagConstraints();
+	gbc_streamListComboBox.fill = GridBagConstraints.HORIZONTAL;
+	gbc_streamListComboBox.insets = new Insets(0, 0, 0, 5);
+	gbc_streamListComboBox.gridx = 0;
+	gbc_streamListComboBox.gridy = 0;
+	this.textPanel.add(this.streamListComboBox, gbc_streamListComboBox);
+
+	this.changeChannelBtn = new JButton("Change Channel");
+	GridBagConstraints gbc_changeChannelBtn = new GridBagConstraints();
+	gbc_changeChannelBtn.insets = new Insets(0, 0, 0, 5);
+	gbc_changeChannelBtn.gridx = 1;
+	gbc_changeChannelBtn.gridy = 0;
+	this.textPanel.add(this.changeChannelBtn, gbc_changeChannelBtn);
+
+	this.fontLabel = new JLabel("Font");
+	GridBagConstraints gbc_fontLabel = new GridBagConstraints();
+	gbc_fontLabel.anchor = GridBagConstraints.EAST;
+	gbc_fontLabel.insets = new Insets(0, 0, 0, 5);
+	gbc_fontLabel.gridx = 2;
+	gbc_fontLabel.gridy = 0;
+	this.textPanel.add(this.fontLabel, gbc_fontLabel);
+
+	this.fontComboBox = new JComboBox<String>();
+	this.fontComboBox.setModel(new DefaultComboBoxModel<String>(new String[] { "Arial", "Tahoma", "Calibri" }));
+	GridBagConstraints gbc_fontComboBox = new GridBagConstraints();
+	gbc_fontComboBox.insets = new Insets(0, 0, 0, 5);
+	gbc_fontComboBox.fill = GridBagConstraints.HORIZONTAL;
+	gbc_fontComboBox.gridx = 3;
+	gbc_fontComboBox.gridy = 0;
+	this.textPanel.add(this.fontComboBox, gbc_fontComboBox);
+
+	this.fontSizeLabel = new JLabel("Font Size");
+	GridBagConstraints gbc_fontSizeLabel = new GridBagConstraints();
+	gbc_fontSizeLabel.anchor = GridBagConstraints.EAST;
+	gbc_fontSizeLabel.insets = new Insets(0, 0, 0, 5);
+	gbc_fontSizeLabel.gridx = 4;
+	gbc_fontSizeLabel.gridy = 0;
+	this.textPanel.add(this.fontSizeLabel, gbc_fontSizeLabel);
+
+	this.fontSizeComboBox = new JComboBox<Integer>();
+	this.fontSizeComboBox.setSelectedIndex(3);
+	DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
+	for (int i = 1; i < 8; i++) {
+	    model.addElement(i);
+	}
+	fontSizeComboBox.setModel(model);
+	GridBagConstraints gbc_fontSizeComboBox = new GridBagConstraints();
+	gbc_fontSizeComboBox.fill = GridBagConstraints.HORIZONTAL;
+	gbc_fontSizeComboBox.gridx = 5;
+	gbc_fontSizeComboBox.gridy = 0;
+	this.textPanel.add(this.fontSizeComboBox, gbc_fontSizeComboBox);
 
 	JPanel inputPanel = new JPanel();
 	getContentPane().add(inputPanel, BorderLayout.SOUTH);
@@ -114,7 +187,7 @@ public class IRCClientFrame extends JFrame {
 				e.printStackTrace();
 			}
 			ircClient.joinChannel("#" + channel);
-			
+
 			sendButton.setEnabled(true);
 		    } else {
 			String uuid = UUID.randomUUID().toString().replace("-", "");
@@ -138,13 +211,11 @@ public class IRCClientFrame extends JFrame {
 
 	chatTextPane = new JTextPane();
 	chatTextPane.setSize(500, 400);
-	chatTextPane.setContentType("text/plain;charset=UTF-8");
+	chatTextPane.setContentType("text/html");
 	chatTextPane.setText("");
 	chatTextPane.setEditable(false);
-	kit = new StyledEditorKit();
-	doc = chatTextPane.getStyledDocument();
+	kit = new HTMLEditorKit();
 	chatTextPane.setEditorKit(kit);
-	chatTextPane.setDocument(doc);
 	scrollPane = new JScrollPane(chatTextPane);
 	getContentPane().add(scrollPane, BorderLayout.CENTER);
 	scrollPane.setBounds(0, 0, 500, 400);
@@ -170,24 +241,25 @@ public class IRCClientFrame extends JFrame {
     }
 
     public void addMessage(String sender, String message) {
-	try {
-	    MutableAttributeSet attr = new SimpleAttributeSet();
-	    // set bold attribute
-	    attr.addAttribute("bold", StyleConstants.Bold);
-	    // insert message sender
-	    doc.insertString(doc.getLength(), "<" + sender + ">: ", attr);
-	    // set sender name bold
-	    doc.setCharacterAttributes(doc.getLength() - sender.length() - 4, sender.length() + 4, attr, true);
-	    // TODO unset bold attribute, no idea why this works
-	    attr.addAttribute("bold", StyleConstants.Italic);
-	    // insert message
-	    doc.insertString(doc.getLength(), message, attr);
-	    // new line
-	    doc.insertString(doc.getLength(), System.getProperty("line.separator"), attr);
-	    chatTextPane.setCaretPosition(doc.getLength());
-	} catch (BadLocationException e) {
-	    if (parent.globals._DEBUG)
-		e.printStackTrace();
+	// calculate some color base on sender hash
+	int hash = sender.hashCode();
+	int r = (hash & 0xFF0000) >> 16;
+	if (r > 200) {
+	    r = 200;
 	}
+	int g = (hash & 0x00FF00) >> 8;
+	if (g > 200) {
+	    g = 200;
+	}
+	int b = hash & 0x0000FF;
+	if (b > 200) {
+	    b = 200;
+	}
+	String colorString = "rgb(" + r + "," + g + "," + b + ")";
+	currentChatHistory += "<b><font size='" + (Integer) fontSizeComboBox.getSelectedItem() + "' face='"
+		+ (String) fontComboBox.getSelectedItem() + "' color='" + colorString + "'>&#60" + sender
+		+ "&#62:</b></font> <font size='" + (Integer) fontSizeComboBox.getSelectedItem() + "' face='"
+		+ (String) fontComboBox.getSelectedItem() + "'>" + message + "</font><br>";
+	chatTextPane.setText("<html><body>" + currentChatHistory + "</body></html>");
     }
 }
