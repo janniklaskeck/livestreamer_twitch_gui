@@ -71,7 +71,7 @@ public class TwitchUpdateThread extends Thread {
 		System.out.println("started " + streamList.size() + " threads");
 	    for (int i = 0; i < streamList.size(); i++) {
 		try {
-		    threads.get(i).join();
+		    threads.get(i).join(parent.globals.timeout);
 		    parent.updateProgressBar.setValue(finishedUpdates.intValue());
 		} catch (InterruptedException e) {
 		    if (parent.globals._DEBUG)
