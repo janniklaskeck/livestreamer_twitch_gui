@@ -2,7 +2,7 @@ package streamService;
 
 import java.io.IOException;
 
-import channel.Channel;
+import app.channel.Channel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;

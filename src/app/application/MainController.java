@@ -1,4 +1,4 @@
-package application;
+package app.application;
 
 import java.awt.AWTException;
 import java.awt.Desktop;
@@ -15,8 +15,11 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
-import channel.Channel;
-import channel.TwitchChannel;
+import app.channel.Channel;
+import app.channel.TwitchChannel;
+import app.logger.LogReader;
+import app.logger.LogWriter;
+import app.logger.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -38,9 +41,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import logger.LogReader;
-import logger.LogWriter;
-import logger.Logger;
 import settings.SettingManager;
 import streamService.StreamService;
 import util.WrappedImageView;

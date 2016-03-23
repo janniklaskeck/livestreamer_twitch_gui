@@ -1,9 +1,10 @@
-package channel;
+package app.channel;
 
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
+import app.logger.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -15,7 +16,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.util.converter.DateTimeStringConverter;
-import logger.Logger;
 import remoteAPI.Twitch_API;
 import remoteAPI.TwitchChannel_Json;
 

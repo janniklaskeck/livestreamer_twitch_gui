@@ -1,6 +1,6 @@
 package updateFramework;
 
-import channel.Channel;
+import app.channel.Channel;
 import javafx.concurrent.Task;
 
 public class UpdateWorker extends Task<Void> {

@@ -14,8 +14,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 
-import channel.Channel;
-import channel.TwitchChannel;
+import app.channel.Channel;
+import app.channel.TwitchChannel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import streamService.StreamService;

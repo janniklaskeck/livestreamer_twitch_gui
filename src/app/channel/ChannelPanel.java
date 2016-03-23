@@ -1,4 +1,4 @@
-package channel;
+package app.channel;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package channel;
+package app.channel;
 
 public interface Channel {
 

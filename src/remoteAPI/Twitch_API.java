@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import logger.Logger;
+import app.logger.Logger;
 import settings.SettingManager;
 
 public class Twitch_API {

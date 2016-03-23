@@ -3,7 +3,7 @@ package updateFramework;
 import java.util.ArrayList;
 import java.util.List;
 
-import channel.Channel;
+import app.channel.Channel;
 import settings.SettingManager;
 import streamService.StreamService;
 

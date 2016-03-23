@@ -1,4 +1,4 @@
-package logger;
+package app.logger;
 
 public class Logger {
 
