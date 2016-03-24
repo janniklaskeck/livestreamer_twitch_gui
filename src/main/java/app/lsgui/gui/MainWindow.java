@@ -23,11 +23,9 @@ public class MainWindow extends Application {
 	public void init() {
 		loader = new FXMLLoader();
 		Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-
 			public void uncaughtException(Thread t, Throwable e) {
 				LOGGER.error("Uncaught Exception on JavaFX Thread", e);
 				LOGGER.error("Exiting JavaFX Thread...");
-
 				Platform.exit();
 			}
 		});
@@ -49,7 +47,5 @@ public class MainWindow extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }
