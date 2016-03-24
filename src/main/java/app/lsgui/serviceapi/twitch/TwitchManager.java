@@ -3,7 +3,6 @@ package app.lsgui.serviceapi.twitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class TwitchManager {
@@ -23,17 +22,17 @@ public class TwitchManager {
 		return instance;
 	}
 
-	public JsonObject getStreamData(final String streamName) {
+	public TwitchStreamData getStreamData(final String streamName) {
 		// TODO
 		return null;
 	}
 
-	public JsonObject getGameData(final String gameName) {
+	public TwitchGameData getGameData() {
 		// TODO
 		return null;
 	}
 
-	public JsonObject getChannelData(final String channelName) {
+	public TwitchChannelsData getChannelData(final String gameName) {
 		// TODO
 		return null;
 	}
