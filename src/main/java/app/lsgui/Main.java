@@ -8,15 +8,15 @@ import javafx.application.Application;
 
 public class Main {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-	public static void main(String[] args) {
-		System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
+    public static void main(String[] args) {
+        System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
 
-		LOGGER.debug("PRE-Launch finished");
+        LOGGER.debug("PRE-Launch finished");
 
-		Application.launch(MainWindow.class, args);
+        Application.launch(MainWindow.class, args);
 
-	}
+    }
 
 }
