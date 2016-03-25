@@ -5,7 +5,7 @@ import java.util.HashMap;
 import com.google.gson.JsonObject;
 import com.sun.javafx.collections.MappingChange.Map;
 
-import app.lsgui.model.TwitchGameModel;
+import app.lsgui.model.twitch.TwitchGameModel;
 
 public class TwitchGames {
 
