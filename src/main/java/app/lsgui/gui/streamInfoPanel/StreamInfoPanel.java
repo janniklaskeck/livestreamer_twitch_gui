@@ -42,13 +42,11 @@ public class StreamInfoPanel extends BorderPane {
 
     @FXML
     private void startStream() {
-        LOGGER.info("Starting Stream {} with Quality {}", "NOSTREAM", "NOQUALITY");
         Utils.startLivestreamer("", "");
     }
 
     @FXML
     private void recordStream() {
-        LOGGER.info("Record Stream {} with Quality {}", "NOSTREAM", "NOQUALITY");
         Utils.recordLivestreamer("", "");
     }
 
