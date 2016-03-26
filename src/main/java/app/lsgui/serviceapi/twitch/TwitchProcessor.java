@@ -1,13 +1,10 @@
 package app.lsgui.serviceapi.twitch;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -18,6 +15,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -69,44 +68,37 @@ public class TwitchProcessor {
         return data;
     }
 
-    /**
-     * Responsible for downloading the source from an URL and returning it as a
-     * String
-     *
-     * @param urlString
-     * @return
-     */
-    @Deprecated
-    public String readJsonFromUrl(String urlString) {
-        LOGGER.debug("replace method readJsonFromUrl");
-        BufferedReader reader = null;
-        HttpURLConnection connUrl;
-        try {
-            URL url = new URL(urlString);
-            connUrl = (HttpURLConnection) url.openConnection();
-            if (connUrl.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                reader = new BufferedReader(new InputStreamReader(connUrl.getInputStream()));
-            } else {
-                return null;
+    public Set<String> getListOfFollowedStreams(final String userName) {
+        Set<String> followedStreams = new TreeSet<String>();
+        JsonObject jo = JSONPARSER
+                .parse(getAPIResponse("https://api.twitch.tv/kraken/users/" + userName + "/follows/channels"))
+                .getAsJsonObject();
+
+        final int total = jo.get("_total").getAsInt();
+        JsonArray streams = jo.getAsJsonArray("follows");
+        JsonObject _links = jo.get("_links").getAsJsonObject();
+        String self = _links.get("self").getAsString();
+        String next = _links.get("next").getAsString();
+
+        int offset = Integer.valueOf(self.split("&")[2].split("=")[1]);
+
+        while (offset < total) {
+
+            for (JsonElement je : streams) {
+                JsonObject channel = je.getAsJsonObject().get("channel").getAsJsonObject();
+                String name = channel.get("name").getAsString();
+                followedStreams.add(name);
             }
-            StringBuffer buffer = new StringBuffer();
-            int read;
-            char[] chars = new char[1024];
-            while ((read = reader.read(chars)) != -1) {
-                buffer.append(chars, 0, read);
-            }
-            if (reader != null) {
-                reader.close();
-            }
-            return buffer.toString();
-        } catch (IOException e) {
-            if (e.getClass().equals(UnknownHostException.class)) {
-                LOGGER.error("No Internet Connection or URL has changed", e);
-            } else {
-                e.printStackTrace();
-            }
+
+            jo = JSONPARSER.parse(getAPIResponse(next)).getAsJsonObject();
+            streams = jo.getAsJsonArray("follows");
+            _links = jo.get("_links").getAsJsonObject();
+            self = _links.get("self").getAsString();
+            next = _links.get("next").getAsString();
+            offset = Integer.valueOf(self.split("&")[2].split("=")[1]);
         }
-        return null;
+
+        return followedStreams;
     }
 
     public String getAPIResponse(final String apiUrl) {
