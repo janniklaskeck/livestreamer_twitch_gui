@@ -1,5 +1,5 @@
 package app.lsgui.model;
 
-public class ChannelModel {
+public class StreamModel {
 
 }
