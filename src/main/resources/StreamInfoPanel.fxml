@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+
+<fx:root type="BorderPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+   <center>
+      <ImageView fx:id="previewImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </BorderPane.margin>
+      </ImageView>
+   </center>
+   <bottom>
+      <Label fx:id="streamInfoLabel" minHeight="150.0" prefHeight="150.0" text="Label" BorderPane.alignment="CENTER" />
+   </bottom>
+   <left>
+      <VBox alignment="CENTER_LEFT" maxWidth="105.0" minWidth="105.0" prefWidth="105.0" spacing="5.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="startStreamButton" mnemonicParsing="false" onAction="#startStream" text="Start Stream" />
+            <Button fx:id="recordStreamButton" mnemonicParsing="false" onAction="#recordStream" text="Record Stream" />
+            <Button fx:id="openChatButton" mnemonicParsing="false" onAction="#openChat" text="Open Chat" />
+            <Button fx:id="openInBrowserButton" mnemonicParsing="false" onAction="#openInBrowser" text="Open Browser" />
+            <CheckBox fx:id="notifyCheckBox" mnemonicParsing="false" text="Notify" />
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </VBox>
+   </left>
+</fx:root>
