@@ -21,24 +21,24 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class TwitchManager {
+public class TwitchProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchProcessor.class);
     private static final JsonParser JSONPARSER = new JsonParser();
     private static final String TWITCHBASEURL = "https://api.twitch.tv/kraken/";
     private static final String LSGUI_CLIENT_ID = "rfpepzumaxd1iija3ip3fixao6z13pj";
     private static final int CONNECTION_COUNT = 100;
     private static final HttpClient HTTP_CLIENT;
 
-    private static TwitchManager instance = null;
+    private static TwitchProcessor instance = null;
 
-    private TwitchManager() {
+    private TwitchProcessor() {
         LOGGER.debug("TwitchManager constructed");
     }
 
-    public static TwitchManager instance() {
+    public static TwitchProcessor instance() {
         if (instance == null) {
-            instance = new TwitchManager();
+            instance = new TwitchProcessor();
         }
         return instance;
     }
