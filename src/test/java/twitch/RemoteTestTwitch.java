@@ -2,7 +2,7 @@ package twitch;
 
 import org.junit.Test;
 
-import app.lsgui.serviceapi.twitch.TwitchProcessor;
+import app.lsgui.service.twitch.TwitchProcessor;
 
 public class RemoteTestTwitch {
 

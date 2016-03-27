@@ -2,7 +2,7 @@ package app.lsgui.utils;
 
 import java.util.concurrent.Callable;
 
-import app.lsgui.serviceapi.twitch.TwitchStreamData;
+import app.lsgui.service.twitch.TwitchStreamData;
 import javafx.scene.image.Image;
 
 public class StreamImageUpdateCallable implements Callable<Void> {

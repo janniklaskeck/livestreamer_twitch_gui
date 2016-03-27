@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.streamInfoPanel.StreamInfoPanel;
 import app.lsgui.gui.streamList.StreamList;
-import app.lsgui.serviceapi.twitch.TwitchProcessor;
+import app.lsgui.service.twitch.TwitchProcessor;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
