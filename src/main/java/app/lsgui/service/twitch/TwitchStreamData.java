@@ -1,4 +1,4 @@
-package app.lsgui.serviceapi.twitch;
+package app.lsgui.service.twitch;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

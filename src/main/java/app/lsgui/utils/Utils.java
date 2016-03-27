@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
-import app.lsgui.serviceapi.twitch.TwitchStreamData;
+import app.lsgui.service.twitch.TwitchStreamData;
 
 public class Utils {
 
