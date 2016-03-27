@@ -1,5 +1,9 @@
 package app.lsgui.model;
 
-public class StreamModel {
+import javafx.beans.property.StringProperty;
+
+public interface StreamModel {
+
+    public StringProperty getName();
 
 }
