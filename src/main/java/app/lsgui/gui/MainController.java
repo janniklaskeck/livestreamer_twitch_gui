@@ -1,13 +1,22 @@
 package app.lsgui.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.streamInfoPanel.StreamInfoPanel;
 import app.lsgui.gui.streamList.StreamList;
+import app.lsgui.serviceapi.twitch.TwitchProcessor;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 
 public class MainController {
@@ -27,10 +36,10 @@ public class MainController {
     private Button settingsButton;
 
     @FXML
-    private ComboBox qualityComboBox;
+    private ComboBox<Void> qualityComboBox;
 
     @FXML
-    private ComboBox serviceComboBox;
+    private ComboBox<Void> serviceComboBox;
 
     @FXML
     private BorderPane contentBorderPane;
@@ -61,4 +70,26 @@ public class MainController {
 
     }
 
+    @FXML
+    private void importStreams() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Import Twitch.tv followed Streams");
+        dialog.setContentText("Please enter your Twitch.tv Username:");
+
+        // Traditional way to get the response value.
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    Set<String> list = TwitchProcessor.instance().getListOfFollowedStreams(result.get());
+                    List<String> list2 = new ArrayList<String>();
+                    list2.addAll(list);
+                    streamList.getStreams()
+                            .setValue(FXCollections.observableArrayList(FXCollections.observableList(list2)));
+                }
+            });
+        }
+    }
 }
