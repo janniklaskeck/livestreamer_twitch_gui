@@ -45,7 +45,7 @@ public class TwitchProcessor {
     public TwitchStreamData getStreamData(final String streamName) {
         LOGGER.debug("Load streamData for {}", streamName);
 
-        JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "/streams/" + streamName)).getAsJsonObject();
+        JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "streams/" + streamName)).getAsJsonObject();
         TwitchStreamData data = new TwitchStreamData(jo);
         return data;
     }
@@ -99,6 +99,13 @@ public class TwitchProcessor {
         }
 
         return followedStreams;
+    }
+
+    public boolean channelExists(final String channel) {
+        if (getAPIResponse(TWITCHBASEURL + "streams/" + channel) == null) {
+            return false;
+        }
+        return true;
     }
 
     public String getAPIResponse(final String apiUrl) {
