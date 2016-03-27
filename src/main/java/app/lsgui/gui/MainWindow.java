@@ -6,6 +6,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.lsgui.service.Settings;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -32,6 +33,7 @@ public class MainWindow extends Application {
             }
         });
         Platform.setImplicitExit(false);
+        Settings.instance();
     }
 
     @Override
@@ -53,6 +55,7 @@ public class MainWindow extends Application {
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
+                Settings.instance().saveSettings();
                 Platform.exit();
             }
         });
@@ -60,6 +63,7 @@ public class MainWindow extends Application {
         primaryStage.setOnHiding(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
+                Settings.instance().saveSettings();
                 Platform.exit();
             }
         });
