@@ -1,15 +1,26 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'application'
 
-
-archivesBaseName = "Test LSGUI"
+archivesBaseName = "LSGUI"
+mainClassName = "app.lsgui.Main"
 sourceCompatibility = 1.8
 version = '0.1'
 jar {
     manifest {
-        attributes 'Main-Class': 'app.lsgui.Main',
-                   'Implementation-Version': version
+        attributes 'Main-Class': 'app.lsgui.Main'
     }
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+            'Implementation-Version': version,
+            'Main-Class': 'app.lsgui.Main'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 repositories {
@@ -29,10 +40,7 @@ dependencies {
     compile  'org.apache.logging.log4j:log4j-jul:2.5'
     compile  'commons-io:commons-io:2.4'
     compile  'junit:junit:4.12'
-
-
 }
-
 
 uploadArchives {
     repositories {
