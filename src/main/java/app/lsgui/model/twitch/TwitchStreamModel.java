@@ -3,19 +3,25 @@ package app.lsgui.model.twitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.serviceapi.twitch.TwitchStreamData;
+import app.lsgui.model.StreamModel;
+import app.lsgui.service.twitch.TwitchStreamData;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 
-public class TwitchStreamModel {
+public class TwitchStreamModel implements StreamModel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchStreamModel.class);
     // TODO Choose other default image
-    private static final String DEFAULT_CHANNEL_LOGO = "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png";
+    private static final String DEFAULT_CHANNEL_LOGO = "http://static-cdn.jtvnw.net/jtv_user_pictures/nuamor/404_user_150x150.png";
 
     private StringProperty name;
     private StringProperty logoURL;
@@ -27,8 +33,20 @@ public class TwitchStreamModel {
     private BooleanProperty online;
     private ObjectProperty<Image> previewImage;
 
-    public TwitchStreamModel(TwitchStreamData data) {
+    public TwitchStreamModel(final TwitchStreamData data) {
 
+    }
+
+    public TwitchStreamModel(final String name) {
+        this.name = new SimpleStringProperty(name);
+        this.logoURL = new SimpleStringProperty("");
+        this.previewURL = new SimpleStringProperty("");
+        this.game = new SimpleStringProperty("");
+        this.title = new SimpleStringProperty("");
+        this.uptime = new SimpleLongProperty(0L);
+        this.viewers = new SimpleIntegerProperty(0);
+        this.online = new SimpleBooleanProperty(false);
+        this.previewImage = new SimpleObjectProperty<Image>(null);
     }
 
     /**
