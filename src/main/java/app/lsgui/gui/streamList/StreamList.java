@@ -1,16 +1,12 @@
 package app.lsgui.gui.streamList;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.twitch.TwitchStreamModel;
-import app.lsgui.service.twitch.TwitchProcessor;
-import javafx.application.Platform;
+import app.lsgui.model.StreamModel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -25,10 +21,10 @@ public class StreamList extends AnchorPane {
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamList.class);
     private static FXMLLoader loader;
 
-    private ListProperty<TwitchStreamModel> streamProperty;
+    private ListProperty<StreamModel> streamProperty;
 
     @FXML
-    private ListView<TwitchStreamModel> streamList;
+    private ListView<StreamModel> streamList;
 
     public StreamList() {
         LOGGER.debug("Construct StreamList");
@@ -41,56 +37,12 @@ public class StreamList extends AnchorPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        streamProperty = new SimpleListProperty<TwitchStreamModel>();
+        streamProperty = new SimpleListProperty<StreamModel>();
         streamList.itemsProperty().bind(streamProperty);
-        streamList.setCellFactory(new Callback<ListView<TwitchStreamModel>, ListCell<TwitchStreamModel>>() {
+        streamList.setCellFactory(new Callback<ListView<StreamModel>, ListCell<StreamModel>>() {
             @Override
-            public ListCell<TwitchStreamModel> call(ListView<TwitchStreamModel> param) {
+            public ListCell<StreamModel> call(ListView<StreamModel> param) {
                 return new StreamCell();
-            }
-        });
-    }
-
-    public void addStream(final String name) {
-        LOGGER.debug("Add Stream to List");
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                List<TwitchStreamModel> streams = new ArrayList<TwitchStreamModel>(
-                        getStreams().subList(0, getStreams().getSize()));
-                streams.add(new TwitchStreamModel(name));
-                getStreams().setValue(FXCollections.observableArrayList(streams));
-            }
-        });
-    }
-
-    public void removeSelectedStream() {
-        if (!getListView().getSelectionModel().getSelectedItem().equals("")
-                || !getListView().getSelectionModel().getSelectedItem().equals(null)) {
-            TwitchStreamModel selectedStream = getListView().getSelectionModel().getSelectedItem();
-            LOGGER.debug("Remove stream {} from list", selectedStream.getName());
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    List<TwitchStreamModel> streams = getStreams().subList(0, getStreams().getSize());
-                    streams.remove(selectedStream);
-                    getStreams().setValue(FXCollections.observableArrayList(streams));
-                }
-            });
-        }
-    }
-
-    public void addFollowedStreams(final String username) {
-        LOGGER.debug("Import followed Streams for user {}", username);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Set<String> set = TwitchProcessor.instance().getListOfFollowedStreams(username);
-                List<TwitchStreamModel> list = new ArrayList<TwitchStreamModel>();
-                for (String s : set) {
-                    list.add(new TwitchStreamModel(s));
-                }
-                getStreams().setValue(FXCollections.observableArrayList(list));
             }
         });
     }
@@ -98,7 +50,7 @@ public class StreamList extends AnchorPane {
     /**
      * @return the streams
      */
-    public ListProperty<TwitchStreamModel> getStreams() {
+    public ListProperty<StreamModel> getStreams() {
         return streamProperty;
     }
 
@@ -106,14 +58,14 @@ public class StreamList extends AnchorPane {
      * @param streams
      *            the streams to set
      */
-    public void setStreams(List<TwitchStreamModel> streams) {
+    public void setStreams(List<StreamModel> streams) {
         streamProperty.set(FXCollections.observableList(streams));
     }
 
     /**
      * @return the streamList
      */
-    public ListView<TwitchStreamModel> getListView() {
+    public ListView<StreamModel> getListView() {
         return streamList;
     }
 
@@ -121,7 +73,7 @@ public class StreamList extends AnchorPane {
      * @param streamList
      *            the streamList to set
      */
-    public void setListView(ListView<TwitchStreamModel> streamList) {
+    public void setListView(ListView<StreamModel> streamList) {
         this.streamList = streamList;
     }
 }
