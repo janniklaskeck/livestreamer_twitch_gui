@@ -37,7 +37,7 @@ public class MainController {
     private static StreamInfoPanel streamInfoPanel;
 
     @FXML
-    private ComboBox<Void> qualityComboBox;
+    private ComboBox<String> qualityComboBox;
 
     @FXML
     private ComboBox<ServiceModel> serviceComboBox;
@@ -59,7 +59,8 @@ public class MainController {
         LOGGER.debug("INIT MainController");
 
         streamList = new StreamList();
-        streamInfoPanel = new StreamInfoPanel(null);
+        streamInfoPanel = new StreamInfoPanel(serviceComboBox, qualityComboBox);
+        streamInfoPanel.getModelProperty().bind(streamList.getModelProperty());
 
         if (Settings.instance().getStreamServices().size() == 0) {
             Settings.instance().getStreamServices().add(new ServiceModel("Twitch.tv", "http://twitch.tv/"));

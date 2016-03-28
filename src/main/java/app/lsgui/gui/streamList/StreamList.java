@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.StreamModel;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +24,7 @@ public class StreamList extends AnchorPane {
     private static FXMLLoader loader;
 
     private ListProperty<StreamModel> streamProperty;
+    private ObjectProperty<StreamModel> modelProperty;
 
     @FXML
     private ListView<StreamModel> streamList;
@@ -37,7 +40,9 @@ public class StreamList extends AnchorPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        modelProperty = new SimpleObjectProperty<StreamModel>();
         streamProperty = new SimpleListProperty<StreamModel>();
+        modelProperty.bind(streamList.getSelectionModel().selectedItemProperty());
         streamList.itemsProperty().bind(streamProperty);
         streamList.setCellFactory(new Callback<ListView<StreamModel>, ListCell<StreamModel>>() {
             @Override
@@ -75,5 +80,20 @@ public class StreamList extends AnchorPane {
      */
     public void setListView(ListView<StreamModel> streamList) {
         this.streamList = streamList;
+    }
+
+    /**
+     * @return the modelProperty
+     */
+    public ObjectProperty<StreamModel> getModelProperty() {
+        return modelProperty;
+    }
+
+    /**
+     * @param modelProperty
+     *            the modelProperty to set
+     */
+    public void setModelProperty(ObjectProperty<StreamModel> modelProperty) {
+        this.modelProperty = modelProperty;
     }
 }
