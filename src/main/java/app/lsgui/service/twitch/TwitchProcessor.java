@@ -81,15 +81,12 @@ public class TwitchProcessor {
         String next = _links.get("next").getAsString();
 
         int offset = Integer.valueOf(self.split("&")[2].split("=")[1]);
-
         while (offset < total) {
-
             for (JsonElement je : streams) {
                 JsonObject channel = je.getAsJsonObject().get("channel").getAsJsonObject();
                 String name = channel.get("name").getAsString();
                 followedStreams.add(name);
             }
-
             jo = JSONPARSER.parse(getAPIResponse(next)).getAsJsonObject();
             streams = jo.getAsJsonArray("follows");
             _links = jo.get("_links").getAsJsonObject();
@@ -97,7 +94,6 @@ public class TwitchProcessor {
             next = _links.get("next").getAsString();
             offset = Integer.valueOf(self.split("&")[2].split("=")[1]);
         }
-
         return followedStreams;
     }
 

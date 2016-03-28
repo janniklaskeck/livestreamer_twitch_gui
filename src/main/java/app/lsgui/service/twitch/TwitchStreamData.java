@@ -32,21 +32,34 @@ public class TwitchStreamData {
     private Image logoImage;
 
     public TwitchStreamData(JsonObject streamObject) {
-        LOGGER.debug("Load stream Json");
+        if (streamObject != null) {
+            LOGGER.debug("Load stream Json");
+            JsonObject channel = streamObject.get("channel").getAsJsonObject();
+            JsonObject preview = streamObject.get("preview").getAsJsonObject();
 
-        JsonObject channel = streamObject.get("channel").getAsJsonObject();
-        JsonObject preview = streamObject.get("preview").getAsJsonObject();
+            setName(Utils.getStringIfNotNull("name", channel));
+            setTitle(Utils.getStringIfNotNull("status", channel));
+            setGame(Utils.getStringIfNotNull("game", streamObject));
+            setViewers(Utils.getIntegerIfNotNull("viewers", streamObject));
+            setPreviewURL(Utils.getStringIfNotNull("large", preview));
+            setCreatedAt(Utils.getStringIfNotNull("created_at", streamObject));
+            setUpdatedAt(Utils.getStringIfNotNull("updated_at", channel));
+            setLogoURL(Utils.getStringIfNotNull("logo", channel));
 
-        setTitle(Utils.getStringIfNotNull("status", channel));
-        setGame(Utils.getStringIfNotNull("game", streamObject));
-        setViewers(Utils.getIntegerIfNotNull("viewers", streamObject));
-        setPreviewURL(Utils.getStringIfNotNull("large", preview));
-        setCreatedAt(Utils.getStringIfNotNull("created_at", streamObject));
-        setUpdatedAt(Utils.getStringIfNotNull("updated_at", channel));
-        setLogoURL(Utils.getStringIfNotNull("logo", channel));
+            calculateAndSetUptime();
+            Utils.loadImageFromURLAsync(this);
+        } else {
+            LOGGER.debug("Set stream offline data");
+            setName(null);
+            setTitle(null);
+            setGame(null);
+            setViewers(0);
+            setPreviewURL(null);
+            setCreatedAt(null);
+            setUpdatedAt(null);
+            setLogoURL(null);
+        }
 
-        calculateAndSetUptime();
-        Utils.loadImageFromURLAsync(this);
     }
 
     private void calculateAndSetUptime() {

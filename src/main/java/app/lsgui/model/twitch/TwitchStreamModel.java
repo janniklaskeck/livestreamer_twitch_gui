@@ -29,6 +29,7 @@ public class TwitchStreamModel implements StreamModel {
     private StringProperty previewURL;
     private StringProperty game;
     private StringProperty title;
+    private StringProperty description;
     private LongProperty uptime;
     private IntegerProperty viewers;
     private BooleanProperty online;
@@ -36,6 +37,17 @@ public class TwitchStreamModel implements StreamModel {
 
     public TwitchStreamModel(final TwitchStreamData data) {
         LOGGER.debug("Create Twitch Stream Model from Json");
+
+        this.name = new SimpleStringProperty(data.getName());
+        this.logoURL = new SimpleStringProperty(data.getLogoURL());
+        this.previewURL = new SimpleStringProperty(data.getPreviewURL());
+        this.game = new SimpleStringProperty(data.getGame());
+        this.title = new SimpleStringProperty(data.getTitle());
+        this.uptime = new SimpleLongProperty(data.getUptime());
+        this.viewers = new SimpleIntegerProperty(data.getViewers());
+        this.online = new SimpleBooleanProperty(false);
+        this.previewImage = new SimpleObjectProperty<Image>(data.getPreviewImage());
+        this.description = new SimpleStringProperty(getTitle().get() + " " + getViewers() + "/n" + getGame());
     }
 
     public TwitchStreamModel(final String name) {
@@ -49,6 +61,33 @@ public class TwitchStreamModel implements StreamModel {
         this.viewers = new SimpleIntegerProperty(0);
         this.online = new SimpleBooleanProperty(false);
         this.previewImage = new SimpleObjectProperty<Image>(null);
+        this.description = new SimpleStringProperty("Stream is offline");
+    }
+
+    public void updateData(final TwitchStreamData data) {
+        if (data != null) {
+            this.name.setValue(data.getName());
+            this.logoURL.setValue(data.getLogoURL());
+            this.previewURL.setValue(data.getPreviewURL());
+            this.game.setValue(data.getGame());
+            this.title.setValue(data.getTitle());
+            this.uptime.setValue(data.getUptime());
+            this.viewers.setValue(data.getViewers());
+            this.online.setValue(true);
+            this.previewImage.setValue(data.getPreviewImage());
+            this.description.setValue(getTitle().get() + " " + getViewers() + "/n" + getGame());
+        } else {
+            this.name.setValue(null);
+            this.logoURL.setValue(null);
+            this.previewURL.setValue(null);
+            this.game.setValue(null);
+            this.title.setValue(null);
+            this.uptime.setValue(null);
+            this.viewers.setValue(null);
+            this.online.setValue(false);
+            this.previewImage.setValue(null);
+            this.description.setValue("Stream is offline");
+        }
     }
 
     /**
@@ -186,6 +225,10 @@ public class TwitchStreamModel implements StreamModel {
      */
     public void setPreviewImage(ObjectProperty<Image> previewImage) {
         this.previewImage = previewImage;
+    }
+
+    public StringProperty getDescription() {
+        return description;
     }
 
 }

@@ -7,9 +7,12 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.ServiceModel;
 import app.lsgui.model.StreamModel;
+import app.lsgui.model.twitch.TwitchStreamModel;
 import app.lsgui.utils.Utils;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -37,8 +40,7 @@ public class StreamInfoPanel extends BorderPane {
     @FXML
     private ImageView previewImageView;
 
-    public StreamInfoPanel(ComboBox<ServiceModel> serviceComboBox,
-            ComboBox<String> qualityComboBox) {
+    public StreamInfoPanel(ComboBox<ServiceModel> serviceComboBox, ComboBox<String> qualityComboBox) {
         LOGGER.debug("Construct StreamInfoPanel");
         modelProperty = new SimpleObjectProperty<StreamModel>();
 
@@ -52,6 +54,18 @@ public class StreamInfoPanel extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        modelProperty.addListener(new ChangeListener<StreamModel>() {
+            @Override
+            public void changed(ObservableValue<? extends StreamModel> observable, StreamModel oldValue,
+                    StreamModel newValue) {
+                if (newValue.getClass().equals(TwitchStreamModel.class)) {
+                    previewImageView.imageProperty().bind(((TwitchStreamModel) newValue).getPreviewImage());
+                    streamInfoLabel.textProperty().bind(((TwitchStreamModel) newValue).getDescription());
+                } else {
+                    streamInfoLabel.textProperty().bind(modelProperty.get().getName());
+                }
+            }
+        });
     }
 
     public void setStream(StreamModel model) {
