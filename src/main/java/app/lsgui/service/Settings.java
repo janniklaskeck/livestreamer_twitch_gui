@@ -17,7 +17,6 @@ import com.google.gson.stream.JsonWriter;
 
 import app.lsgui.model.ServiceModel;
 import app.lsgui.model.StreamModel;
-import app.lsgui.model.twitch.TwitchStreamModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import sun.misc.Version;
@@ -132,8 +131,7 @@ public class Settings {
                 if (channels.size() > 0) {
                     for (int e = 0; e < channels.size(); e++) {
                         // TODO include other services
-                        StreamModel newChannel = new TwitchStreamModel(channels.get(e).getAsString());
-                        ss.getChannels().add(newChannel);
+                        ss.addStream(channels.get(e).getAsString());
                     }
                 }
                 streamServices.add(ss);
@@ -165,8 +163,8 @@ public class Settings {
             w.beginArray();
             for (ServiceModel s : streamServices) {
                 w.beginObject();
-                w.name(SERVICENAME).value(s.getName());
-                w.name(SERVICEURL).value(s.getUrl());
+                w.name(SERVICENAME).value(s.getName().get());
+                w.name(SERVICEURL).value(s.getUrl().get());
                 w.name("channels");
                 w.beginArray();
                 for (StreamModel channel : s.getChannels()) {
