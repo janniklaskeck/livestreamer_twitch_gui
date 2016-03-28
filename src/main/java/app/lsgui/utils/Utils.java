@@ -11,8 +11,8 @@ public class Utils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
-    public static void startLivestreamer(String URL, String quality) {
-        LOGGER.info("Starting Stream {} with Quality {}", URL, quality);
+    public static void startLivestreamer(String serviceURL, String name, String quality) {
+        LOGGER.info("Starting Stream {} on {} with Quality {}", name, serviceURL, quality);
     }
 
     public static void recordLivestreamer(String URL, String quality) {
