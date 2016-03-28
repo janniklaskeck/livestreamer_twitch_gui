@@ -1,13 +1,13 @@
 package app.lsgui.gui.streamList;
 
-import app.lsgui.model.twitch.TwitchStreamModel;
+import app.lsgui.model.StreamModel;
 import javafx.scene.control.ListCell;
 import javafx.scene.paint.Color;
 
-public class StreamCell extends ListCell<TwitchStreamModel> {
+public class StreamCell extends ListCell<StreamModel> {
 
     @Override
-    protected void updateItem(TwitchStreamModel item, boolean isEmpty) {
+    protected void updateItem(StreamModel item, boolean isEmpty) {
         super.updateItem(item, isEmpty);
 
         if (isEmpty || item == null) {
@@ -19,6 +19,5 @@ public class StreamCell extends ListCell<TwitchStreamModel> {
                 setTextFill(Color.BLACK);
             }
         }
-
     }
 }
