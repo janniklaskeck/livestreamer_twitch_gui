@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.streamInfoPanel.StreamInfoPanel;
 import app.lsgui.gui.streamList.StreamList;
+import app.lsgui.model.ServiceModel;
+import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchProcessor;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -18,10 +20,14 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 public class MainController {
 
@@ -34,7 +40,7 @@ public class MainController {
     private ComboBox<Void> qualityComboBox;
 
     @FXML
-    private ComboBox<Void> serviceComboBox;
+    private ComboBox<ServiceModel> serviceComboBox;
 
     @FXML
     private BorderPane contentBorderPane;
@@ -54,6 +60,34 @@ public class MainController {
 
         streamList = new StreamList();
         streamInfoPanel = new StreamInfoPanel(null);
+
+        if (Settings.instance().getStreamServices().size() == 0) {
+            Settings.instance().getStreamServices().add(new ServiceModel("Twitch.tv", "http://twitch.tv/"));
+        }
+        serviceComboBox.getItems().addAll(Settings.instance().getStreamServices());
+        serviceComboBox.setCellFactory(new Callback<ListView<ServiceModel>, ListCell<ServiceModel>>() {
+            @Override
+            public ListCell<ServiceModel> call(ListView<ServiceModel> param) {
+                return new ServiceCell();
+            }
+        });
+        serviceComboBox.setConverter(new StringConverter<ServiceModel>() {
+            @Override
+            public String toString(ServiceModel object) {
+                if (object == null) {
+                    return null;
+                }
+                return object.getName().get();
+            }
+
+            @Override
+            public ServiceModel fromString(String string) {
+                return null;
+            }
+        });
+        serviceComboBox.getSelectionModel().select(0);
+        streamList.getStreams().bind(serviceComboBox.getSelectionModel().getSelectedItem().getChannels());
+        serviceComboBox.valueProperty().addListener((observable, oldValue, newValue) -> changeService(newValue));
 
         contentBorderPane.setLeft(streamList);
         contentBorderPane.setCenter(streamInfoPanel);
@@ -77,6 +111,11 @@ public class MainController {
         Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
         settingsButton.setOnAction(event -> openSettings());
         toolBarRight.getItems().add(settingsButton);
+    }
+
+    private void changeService(final ServiceModel newService) {
+        LOGGER.debug("Change Service to {}", newService.getName().get());
+        streamList.getStreams().bind(newService.getChannels());
     }
 
     private void openSettings() {
@@ -113,13 +152,14 @@ public class MainController {
         Optional<Boolean> result = dialog.showAndWait();
         if (result.isPresent()) {
             if (result.get()) {
-                streamList.addStream(tf.getText().trim());
+                serviceComboBox.getSelectionModel().getSelectedItem().addStream(tf.getText().trim());
             }
         }
     }
 
     private void removeAction() {
-        streamList.removeSelectedStream();
+        serviceComboBox.getSelectionModel().getSelectedItem()
+                .removeSelectedStream(streamList.getListView().getSelectionModel().getSelectedItem());
     }
 
     private void importStreams() {
@@ -129,7 +169,7 @@ public class MainController {
 
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            streamList.addFollowedStreams(result.get());
+            serviceComboBox.getSelectionModel().getSelectedItem().addFollowedStreams(result.get());
         }
     }
 }
