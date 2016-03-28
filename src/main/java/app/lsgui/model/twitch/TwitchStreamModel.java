@@ -21,7 +21,8 @@ public class TwitchStreamModel implements StreamModel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchStreamModel.class);
     // TODO Choose other default image
-    private static final String DEFAULT_CHANNEL_LOGO = "http://static-cdn.jtvnw.net/jtv_user_pictures/nuamor/404_user_150x150.png";
+    @SuppressWarnings("unused")
+    private static final String DEFAULT_CHANNEL_LOGO = "";
 
     private StringProperty name;
     private StringProperty logoURL;
@@ -34,10 +35,11 @@ public class TwitchStreamModel implements StreamModel {
     private ObjectProperty<Image> previewImage;
 
     public TwitchStreamModel(final TwitchStreamData data) {
-
+        LOGGER.debug("Create Twitch Stream Model from Json");
     }
 
     public TwitchStreamModel(final String name) {
+        LOGGER.debug("Create Twitch Stream Model from username");
         this.name = new SimpleStringProperty(name);
         this.logoURL = new SimpleStringProperty("");
         this.previewURL = new SimpleStringProperty("");
@@ -52,6 +54,7 @@ public class TwitchStreamModel implements StreamModel {
     /**
      * @return the name
      */
+    @Override
     public StringProperty getName() {
         return name;
     }
@@ -157,6 +160,7 @@ public class TwitchStreamModel implements StreamModel {
     /**
      * @return the online
      */
+    @Override
     public BooleanProperty getOnline() {
         return online;
     }
