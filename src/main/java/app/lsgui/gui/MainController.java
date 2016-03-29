@@ -10,9 +10,11 @@ import app.lsgui.gui.streamList.StreamList;
 import app.lsgui.model.ServiceModel;
 import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchProcessor;
+import app.lsgui.utils.Utils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -31,146 +33,151 @@ import javafx.util.StringConverter;
 
 public class MainController {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(MainController.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
-    private static StreamList streamList;
-    private static StreamInfoPanel streamInfoPanel;
+	private static StreamList streamList;
+	private static StreamInfoPanel streamInfoPanel;
 
-    @FXML
-    private ComboBox<String> qualityComboBox;
+	@FXML
+	private ComboBox<String> qualityComboBox;
 
-    @FXML
-    private ComboBox<ServiceModel> serviceComboBox;
+	@FXML
+	private ComboBox<ServiceModel> serviceComboBox;
 
-    @FXML
-    private BorderPane contentBorderPane;
+	@FXML
+	private BorderPane contentBorderPane;
 
-    @FXML
-    private ToolBar toolBarLeft;
+	@FXML
+	private ToolBar toolBarLeft;
 
-    @FXML
-    private ToolBar toolBarRight;
+	@FXML
+	private ToolBar toolBarRight;
 
-    @FXML
-    private Button importStreamsButton;
+	@FXML
+	private Button importStreamsButton;
 
-    @FXML
-    public void initialize() {
-        LOGGER.debug("INIT MainController");
+	@FXML
+	public void initialize() {
+		LOGGER.debug("INIT MainController");
 
-        streamList = new StreamList();
-        streamInfoPanel = new StreamInfoPanel(serviceComboBox, qualityComboBox);
-        streamInfoPanel.getModelProperty().bind(streamList.getModelProperty());
+		streamList = new StreamList();
+		streamInfoPanel = new StreamInfoPanel(serviceComboBox, qualityComboBox);
+		streamInfoPanel.getModelProperty().bind(streamList.getModelProperty());
 
-        if (Settings.instance().getStreamServices().size() == 0) {
-            Settings.instance().getStreamServices().add(new ServiceModel("Twitch.tv", "http://twitch.tv/"));
-        }
-        serviceComboBox.getItems().addAll(Settings.instance().getStreamServices());
-        serviceComboBox.setCellFactory(new Callback<ListView<ServiceModel>, ListCell<ServiceModel>>() {
-            @Override
-            public ListCell<ServiceModel> call(ListView<ServiceModel> param) {
-                return new ServiceCell();
-            }
-        });
-        serviceComboBox.setConverter(new StringConverter<ServiceModel>() {
-            @Override
-            public String toString(ServiceModel object) {
-                if (object == null) {
-                    return null;
-                }
-                return object.getName().get();
-            }
+		streamList.getListView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue,
+				newValue) -> qualityComboBox.setItems(FXCollections.observableArrayList(
+						Utils.getAvailableQuality(serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get(),
+								newValue.getName().get()))));
 
-            @Override
-            public ServiceModel fromString(String string) {
-                return null;
-            }
-        });
-        serviceComboBox.getSelectionModel().select(0);
-        streamList.getStreams().bind(serviceComboBox.getSelectionModel().getSelectedItem().getChannels());
-        serviceComboBox.valueProperty().addListener((observable, oldValue, newValue) -> changeService(newValue));
+		if (Settings.instance().getStreamServices().size() == 0) {
+			Settings.instance().getStreamServices().add(new ServiceModel("Twitch.tv", "http://twitch.tv/"));
+		}
+		serviceComboBox.getItems().addAll(Settings.instance().getStreamServices());
+		serviceComboBox.setCellFactory(new Callback<ListView<ServiceModel>, ListCell<ServiceModel>>() {
+			@Override
+			public ListCell<ServiceModel> call(ListView<ServiceModel> param) {
+				return new ServiceCell();
+			}
+		});
+		serviceComboBox.setConverter(new StringConverter<ServiceModel>() {
+			@Override
+			public String toString(ServiceModel object) {
+				if (object == null) {
+					return null;
+				}
+				return object.getName().get();
+			}
 
-        contentBorderPane.setLeft(streamList);
-        contentBorderPane.setCenter(streamInfoPanel);
+			@Override
+			public ServiceModel fromString(String string) {
+				return null;
+			}
+		});
+		serviceComboBox.getSelectionModel().select(0);
+		streamList.getStreams().bind(serviceComboBox.getSelectionModel().getSelectedItem().getChannels());
+		serviceComboBox.valueProperty().addListener((observable, oldValue, newValue) -> changeService(newValue));
 
-        Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS_SQUARE);
-        addButton.setOnAction(event -> {
-            addAction();
-        });
-        Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS_SQUARE);
-        removeButton.setOnAction(event -> {
-            removeAction();
-        });
-        Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
-        importButton.setOnAction(event -> {
-            importStreams();
-        });
-        toolBarLeft.getItems().add(addButton);
-        toolBarLeft.getItems().add(removeButton);
-        toolBarLeft.getItems().add(importButton);
+		contentBorderPane.setLeft(streamList);
+		contentBorderPane.setCenter(streamInfoPanel);
 
-        Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
-        settingsButton.setOnAction(event -> openSettings());
-        toolBarRight.getItems().add(settingsButton);
-    }
+		Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS_SQUARE);
+		addButton.setOnAction(event -> {
+			addAction();
+		});
+		Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS_SQUARE);
+		removeButton.setOnAction(event -> {
+			removeAction();
+		});
+		Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
+		importButton.setOnAction(event -> {
+			importStreams();
+		});
+		toolBarLeft.getItems().add(addButton);
+		toolBarLeft.getItems().add(removeButton);
+		toolBarLeft.getItems().add(importButton);
 
-    private void changeService(final ServiceModel newService) {
-        LOGGER.debug("Change Service to {}", newService.getName().get());
-        streamList.getStreams().bind(newService.getChannels());
-    }
+		Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
+		settingsButton.setOnAction(event -> openSettings());
+		toolBarRight.getItems().add(settingsButton);
+	}
 
-    private void openSettings() {
+	private void changeService(final ServiceModel newService) {
+		LOGGER.debug("Change Service to {}", newService.getName().get());
+		streamList.getStreams().bind(newService.getChannels());
+	}
 
-    }
+	private void openSettings() {
 
-    private void addAction() {
-        Dialog<Boolean> dialog = new Dialog<Boolean>();
-        dialog.setTitle("Add Stream to current Service");
-        ButtonType bt = new ButtonType("Submit", ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
+	}
 
-        BorderPane ap = new BorderPane();
-        TextField tf = new TextField();
-        ap.setCenter(tf);
-        dialog.getDialogPane().setContent(ap);
+	private void addAction() {
+		Dialog<Boolean> dialog = new Dialog<Boolean>();
+		dialog.setTitle("Add Stream to current Service");
+		ButtonType bt = new ButtonType("Submit", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
 
-        Node submitButton = dialog.getDialogPane().lookupButton(bt);
-        submitButton.setDisable(true);
+		BorderPane ap = new BorderPane();
+		TextField tf = new TextField();
+		ap.setCenter(tf);
+		dialog.getDialogPane().setContent(ap);
 
-        tf.textProperty().addListener((observable, oldValue, newValue) -> {
-            submitButton.setDisable(newValue.trim().isEmpty());
-        });
+		Node submitButton = dialog.getDialogPane().lookupButton(bt);
+		submitButton.setDisable(true);
 
-        dialog.setResultConverter(button -> {
-            if (TwitchProcessor.instance().channelExists(tf.getText().trim()) && !tf.getText().trim().equals("")) {
-                return true;
-            }
-            return false;
-        });
+		tf.textProperty().addListener((observable, oldValue, newValue) -> {
+			submitButton.setDisable(newValue.trim().isEmpty());
+		});
 
-        Platform.runLater(() -> tf.requestFocus());
+		dialog.setResultConverter(button -> {
+			if (TwitchProcessor.instance().channelExists(tf.getText().trim()) && !tf.getText().trim().equals("")) {
+				return true;
+			}
+			return false;
+		});
 
-        Optional<Boolean> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            if (result.get()) {
-                serviceComboBox.getSelectionModel().getSelectedItem().addStream(tf.getText().trim());
-            }
-        }
-    }
+		Platform.runLater(() -> tf.requestFocus());
 
-    private void removeAction() {
-        serviceComboBox.getSelectionModel().getSelectedItem()
-                .removeSelectedStream(streamList.getListView().getSelectionModel().getSelectedItem());
-    }
+		Optional<Boolean> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			if (result.get()) {
+				serviceComboBox.getSelectionModel().getSelectedItem().addStream(tf.getText().trim());
+			}
+		}
+	}
 
-    private void importStreams() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Import Twitch.tv followed Streams");
-        dialog.setContentText("Please enter your Twitch.tv Username:");
+	private void removeAction() {
+		serviceComboBox.getSelectionModel().getSelectedItem()
+				.removeSelectedStream(streamList.getListView().getSelectionModel().getSelectedItem());
+	}
 
-        Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            serviceComboBox.getSelectionModel().getSelectedItem().addFollowedStreams(result.get());
-        }
-    }
+	private void importStreams() {
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("Import Twitch.tv followed Streams");
+		dialog.setContentText("Please enter your Twitch.tv Username:");
+
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			serviceComboBox.getSelectionModel().getSelectedItem().addFollowedStreams(result.get());
+		}
+	}
 }
