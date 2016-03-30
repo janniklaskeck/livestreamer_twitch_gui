@@ -66,6 +66,7 @@ public class TwitchStreamModel implements StreamModel {
 
     public void updateData(final TwitchStreamData data) {
         if (data != null) {
+            LOGGER.info("update with data {}", data.getGame());
             this.name.setValue(data.getName());
             this.logoURL.setValue(data.getLogoURL());
             this.previewURL.setValue(data.getPreviewURL());
@@ -75,7 +76,7 @@ public class TwitchStreamModel implements StreamModel {
             this.viewers.setValue(data.getViewers());
             this.online.setValue(true);
             this.previewImage.setValue(data.getPreviewImage());
-            this.description.setValue(getTitle().get() + " " + getViewers() + "/n" + getGame());
+            this.description.setValue(getTitle().get() + " Viewers: " + getViewers().get() + "\n" + getGame().get());
         } else {
             this.name.setValue(null);
             this.logoURL.setValue(null);

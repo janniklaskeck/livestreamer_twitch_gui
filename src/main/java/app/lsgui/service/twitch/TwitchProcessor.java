@@ -19,6 +19,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 public class TwitchProcessor {
 
@@ -32,21 +33,28 @@ public class TwitchProcessor {
     private static TwitchProcessor instance = null;
 
     private TwitchProcessor() {
-        LOGGER.debug("TwitchManager constructed");
+        LOGGER.debug("TwitchProcessor constructed");
     }
 
-    public static TwitchProcessor instance() {
+    public static synchronized TwitchProcessor instance() {
         if (instance == null) {
             instance = new TwitchProcessor();
         }
+
         return instance;
     }
 
     public TwitchStreamData getStreamData(final String streamName) {
         LOGGER.debug("Load streamData for {}", streamName);
-
-        JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "streams/" + streamName)).getAsJsonObject();
-        TwitchStreamData data = new TwitchStreamData(jo);
+        JsonObject jo = null;
+        try {
+            jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "streams/" + streamName)).getAsJsonObject();
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+        }
+        LOGGER.debug("{}", jo);
+        TwitchStreamData data = new TwitchStreamData(jo, streamName);
+        LOGGER.debug("data loaded {}", data.getName());
         return data;
     }
 

@@ -16,7 +16,7 @@ public class StreamCell extends ListCell<StreamModel> {
             setText(item.getName().get());
             if (item.getOnline().get()) {
                 setStyle("-fx-background-color: lightgreen; -fx-border-color: black");
-                setTextFill(Color.BLACK);
+                setTextFill(Color.GREEN);
             }
         }
     }

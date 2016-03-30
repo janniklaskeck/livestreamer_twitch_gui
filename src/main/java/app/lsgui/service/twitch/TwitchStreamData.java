@@ -31,33 +31,40 @@ public class TwitchStreamData {
     private Image previewImage;
     private Image logoImage;
 
-    public TwitchStreamData(JsonObject streamObject) {
-        if (streamObject != null) {
-            LOGGER.debug("Load stream Json");
-            JsonObject channel = streamObject.get("channel").getAsJsonObject();
-            JsonObject preview = streamObject.get("preview").getAsJsonObject();
+    public TwitchStreamData(final JsonObject streamJson, final String name) {
+        JsonObject streamObject = null;
+        LOGGER.debug("Make StreamData");
+        if (!streamJson.get("stream").isJsonNull()) {
+            streamObject = streamJson.get("stream").getAsJsonObject();
 
-            setName(Utils.getStringIfNotNull("name", channel));
-            setTitle(Utils.getStringIfNotNull("status", channel));
-            setGame(Utils.getStringIfNotNull("game", streamObject));
-            setViewers(Utils.getIntegerIfNotNull("viewers", streamObject));
-            setPreviewURL(Utils.getStringIfNotNull("large", preview));
-            setCreatedAt(Utils.getStringIfNotNull("created_at", streamObject));
-            setUpdatedAt(Utils.getStringIfNotNull("updated_at", channel));
-            setLogoURL(Utils.getStringIfNotNull("logo", channel));
+            if (streamObject != null && !streamObject.get("channel").isJsonNull() && !streamObject.isJsonNull()) {
+                JsonObject channel = streamObject.get("channel").getAsJsonObject();
+                JsonObject preview = streamObject.get("preview").getAsJsonObject();
 
-            calculateAndSetUptime();
-            Utils.loadImageFromURLAsync(this);
+                setName(name);
+                setTitle(Utils.getStringIfNotNull("status", channel));
+                setGame(Utils.getStringIfNotNull("game", streamObject));
+                setViewers(Utils.getIntegerIfNotNull("viewers", streamObject));
+                setPreviewURL(Utils.getStringIfNotNull("large", preview));
+                setCreatedAt(Utils.getStringIfNotNull("created_at", streamObject));
+                setUpdatedAt(Utils.getStringIfNotNull("updated_at", channel));
+                setLogoURL(Utils.getStringIfNotNull("logo", channel));
+
+                calculateAndSetUptime();
+                Utils.loadImageFromURLAsync(this);
+                LOGGER.debug("Stream Data loaded for {}", getName());
+            }
         } else {
             LOGGER.debug("Set stream offline data");
-            setName(null);
-            setTitle(null);
-            setGame(null);
+            setName(name);
+            setTitle("");
+            setGame("");
             setViewers(0);
-            setPreviewURL(null);
-            setCreatedAt(null);
-            setUpdatedAt(null);
-            setLogoURL(null);
+            setPreviewURL("");
+            setCreatedAt("");
+            setUpdatedAt("");
+            setLogoURL("");
+            LOGGER.debug("offline data set");
         }
 
     }
