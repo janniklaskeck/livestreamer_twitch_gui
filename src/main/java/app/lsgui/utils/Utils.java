@@ -1,8 +1,11 @@
 package app.lsgui.utils;
 
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +33,14 @@ public class Utils {
 
     }
 
-    public static void openURLInBrowser(String URL) {
-
+    public static void openURLInBrowser(final String URL) {
+        LOGGER.info("Open Browser URL {}", URL);
+        try {
+            URI uri = new URI(URL);
+            Desktop.getDesktop().browse(uri);
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void loadImageFromURLAsync(final TwitchStreamData data) {
@@ -42,22 +51,21 @@ public class Utils {
         if (obj.has(name) && !obj.get(name).isJsonNull()) {
             return obj.get(name).getAsString();
         }
-        return null;
+        return "";
     }
 
     public static Boolean getBooleanIfNotNull(final String name, JsonObject obj) {
-
         if (obj.has(name) && !obj.get(name).isJsonNull()) {
             return obj.get(name).getAsBoolean();
         }
-        return null;
+        return false;
     }
 
     public static Integer getIntegerIfNotNull(final String name, JsonObject obj) {
         if (obj.has(name) && !obj.get(name).isJsonNull()) {
             return obj.get(name).getAsInt();
         }
-        return null;
+        return 0;
     }
 
     public static List<String> getAvailableQuality(final String URL, final String channel) {

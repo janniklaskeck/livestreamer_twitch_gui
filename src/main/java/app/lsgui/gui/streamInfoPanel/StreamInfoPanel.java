@@ -93,7 +93,8 @@ public class StreamInfoPanel extends BorderPane {
 
     @FXML
     private void openInBrowser() {
-        Utils.openURLInBrowser("");
+        Utils.openURLInBrowser(
+                serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get() + modelProperty.get().getName().get());
     }
 
     /**

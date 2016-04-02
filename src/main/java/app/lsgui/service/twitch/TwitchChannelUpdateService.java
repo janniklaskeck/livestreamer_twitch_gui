@@ -7,6 +7,8 @@ import app.lsgui.model.StreamModel;
 import app.lsgui.model.twitch.TwitchStreamModel;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.util.Duration;
 
 public class TwitchChannelUpdateService extends ScheduledService<TwitchStreamData> {
@@ -18,15 +20,23 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchStreamDat
         LOGGER.debug("Create UpdateService for {}", model.getName().get());
         if (model.getClass().equals(TwitchStreamModel.class)) {
             this.model = (TwitchStreamModel) model;
-            setPeriod(Duration.seconds(60));
+            setPeriod(Duration.seconds(10));
             setRestartOnFailure(true);
             setOnSucceeded(event -> {
                 final TwitchStreamData updatedModel = (TwitchStreamData) event.getSource().getValue();
                 if (updatedModel != null) {
-                    synchronized (this.model) {
-                        LOGGER.debug("Update model {}", model.getName().get());
+                    //synchronized (this.model) {
+
                         this.model.updateData(updatedModel);
-                    }
+                    //}
+                }
+            });
+            setOnFailed(new EventHandler<WorkerStateEvent>() {
+
+                @Override
+                public void handle(WorkerStateEvent event) {
+                    LOGGER.debug("FAILED");
+
                 }
             });
         }

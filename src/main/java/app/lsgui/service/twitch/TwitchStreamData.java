@@ -33,7 +33,6 @@ public class TwitchStreamData {
 
     public TwitchStreamData(final JsonObject streamJson, final String name) {
         JsonObject streamObject = null;
-        LOGGER.debug("Make StreamData");
         if (!streamJson.get("stream").isJsonNull()) {
             streamObject = streamJson.get("stream").getAsJsonObject();
 
@@ -52,10 +51,8 @@ public class TwitchStreamData {
                 setOnline(true);
                 calculateAndSetUptime();
                 Utils.loadImageFromURLAsync(this);
-                LOGGER.debug("Stream Data loaded for {}", getName());
             }
         } else {
-            LOGGER.debug("Set stream offline data");
             setName(name);
             setTitle("");
             setGame("");
@@ -65,9 +62,7 @@ public class TwitchStreamData {
             setUpdatedAt("");
             setLogoURL("");
             setOnline(false);
-            LOGGER.debug("offline data set");
         }
-
     }
 
     private void calculateAndSetUptime() {

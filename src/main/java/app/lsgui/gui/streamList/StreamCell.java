@@ -14,18 +14,6 @@ public class StreamCell extends ListCell<StreamModel> {
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamCell.class);
 
     public StreamCell() {
-
-        itemProperty().addListener(new ChangeListener<StreamModel>() {
-            @Override
-            public void changed(ObservableValue<? extends StreamModel> observable, StreamModel oldValue,
-                    StreamModel newValue) {
-                LOGGER.debug("StreamCell change");
-                if (newValue.getOnline().get()) {
-                    setStyle("-fx-background-color: lightgreen; -fx-border-color: black");
-                    setTextFill(Color.GREEN);
-                }
-            }
-        });
     }
 
     @Override

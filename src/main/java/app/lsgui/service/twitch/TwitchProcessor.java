@@ -46,7 +46,7 @@ public class TwitchProcessor {
 
     public TwitchStreamData getStreamData(final String streamName) {
         LOGGER.debug("Load streamData for {}", streamName);
-        JsonObject jo = null;
+        JsonObject jo = new JsonObject();
         try {
             jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "streams/" + streamName)).getAsJsonObject();
         } catch (JsonSyntaxException e) {

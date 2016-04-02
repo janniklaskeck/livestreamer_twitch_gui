@@ -38,7 +38,6 @@ public class TwitchStreamModel implements StreamModel {
     private ObjectProperty<Image> previewImage;
 
     public TwitchStreamModel(final String name) {
-        LOGGER.debug("Create Twitch Stream Model from username");
         this.name = new SimpleStringProperty(name);
         this.logoURL = new SimpleStringProperty("");
         this.previewURL = new SimpleStringProperty("");
@@ -53,7 +52,7 @@ public class TwitchStreamModel implements StreamModel {
 
     public void updateData(final TwitchStreamData data) {
         if (data != null) {
-            LOGGER.info("update with data {}", data.getGame());
+            LOGGER.info("update {} with data {}", data.getName(), data.isOnline());
             this.name.setValue(data.getName());
             this.logoURL.setValue(data.getLogoURL());
             this.previewURL.setValue(data.getPreviewURL());
@@ -76,7 +75,6 @@ public class TwitchStreamModel implements StreamModel {
             this.previewImage.setValue(null);
             this.description.setValue("Stream is offline");
         }
-        LOGGER.debug("online status of {} is {}", name.get(), online.get());
     }
 
     public static Callback<StreamModel, Observable[]> extractor() {
