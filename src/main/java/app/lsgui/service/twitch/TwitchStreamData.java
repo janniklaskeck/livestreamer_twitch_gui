@@ -49,7 +49,7 @@ public class TwitchStreamData {
                 setCreatedAt(Utils.getStringIfNotNull("created_at", streamObject));
                 setUpdatedAt(Utils.getStringIfNotNull("updated_at", channel));
                 setLogoURL(Utils.getStringIfNotNull("logo", channel));
-
+                setOnline(true);
                 calculateAndSetUptime();
                 Utils.loadImageFromURLAsync(this);
                 LOGGER.debug("Stream Data loaded for {}", getName());
@@ -64,6 +64,7 @@ public class TwitchStreamData {
             setCreatedAt("");
             setUpdatedAt("");
             setLogoURL("");
+            setOnline(false);
             LOGGER.debug("offline data set");
         }
 

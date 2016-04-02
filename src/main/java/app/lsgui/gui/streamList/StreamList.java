@@ -7,27 +7,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.StreamModel;
-import app.lsgui.service.twitch.TwitchChannelUpdateService;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
 public class StreamList extends AnchorPane {
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamList.class);
     private static FXMLLoader loader;
-
-    private final ObservableMap<StreamModel, TwitchChannelUpdateService> updateServices = FXCollections
-            .observableHashMap();
 
     private final ListProperty<StreamModel> streams = new SimpleListProperty<StreamModel>(
             FXCollections.observableArrayList());
@@ -49,28 +44,12 @@ public class StreamList extends AnchorPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        streams.addListener((final ListChangeListener.Change<? extends StreamModel> c) -> {
-            while (c.next()) {
-                if (c.wasAdded()) {
-                    for (final StreamModel sm : c.getAddedSubList()) {
-                        final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
-                        tcus.start();
-                        updateServices.put(sm, tcus);
-                    }
-                } else if (c.wasRemoved()) {
-                    for (final StreamModel sm : c.getRemoved()) {
-                        final TwitchChannelUpdateService tcus = updateServices.remove(sm);
-                        tcus.cancel();
-                    }
-                }
-            }
-        });
-
+        streamList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         modelProperty = new SimpleObjectProperty<StreamModel>();
         streamProperty = new SimpleListProperty<StreamModel>();
         modelProperty.bind(streamList.getSelectionModel().selectedItemProperty());
         streamList.itemsProperty().bind(streamProperty);
+
         streamList.setCellFactory(new Callback<ListView<StreamModel>, ListCell<StreamModel>>() {
             @Override
             public ListCell<StreamModel> call(ListView<StreamModel> param) {
@@ -78,7 +57,6 @@ public class StreamList extends AnchorPane {
             }
         });
         streams.bind(getListView().itemsProperty());
-
 
     }
 

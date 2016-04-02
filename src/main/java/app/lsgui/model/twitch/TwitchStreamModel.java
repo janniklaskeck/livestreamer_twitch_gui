@@ -74,7 +74,7 @@ public class TwitchStreamModel implements StreamModel {
             this.title.setValue(data.getTitle());
             this.uptime.setValue(data.getUptime());
             this.viewers.setValue(data.getViewers());
-            this.online.setValue(true);
+            this.online.setValue(data.isOnline());
             this.previewImage.setValue(data.getPreviewImage());
             this.description.setValue(getTitle().get() + " Viewers: " + getViewers().get() + "\n" + getGame().get());
         } else {
@@ -89,6 +89,7 @@ public class TwitchStreamModel implements StreamModel {
             this.previewImage.setValue(null);
             this.description.setValue("Stream is offline");
         }
+        LOGGER.debug("online status of {} is {}", name.get(), online.get());
     }
 
     /**

@@ -58,9 +58,10 @@ public class StreamInfoPanel extends BorderPane {
             @Override
             public void changed(ObservableValue<? extends StreamModel> observable, StreamModel oldValue,
                     StreamModel newValue) {
-                if (newValue.getClass().equals(TwitchStreamModel.class)) {
-                    previewImageView.imageProperty().bind(((TwitchStreamModel) newValue).getPreviewImage());
-                    streamInfoLabel.textProperty().bind(((TwitchStreamModel) newValue).getDescription());
+                StreamModel valueStreamModel = newValue == null ? oldValue : newValue;
+                if (valueStreamModel.getClass().equals(TwitchStreamModel.class)) {
+                    previewImageView.imageProperty().bind(((TwitchStreamModel) valueStreamModel).getPreviewImage());
+                    streamInfoLabel.textProperty().bind(((TwitchStreamModel) valueStreamModel).getDescription());
                 } else {
                     streamInfoLabel.textProperty().bind(modelProperty.get().getName());
                 }

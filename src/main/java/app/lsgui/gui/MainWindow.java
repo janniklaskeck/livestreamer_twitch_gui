@@ -2,11 +2,16 @@ package app.lsgui.gui;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.lsgui.model.ServiceModel;
+import app.lsgui.model.StreamModel;
 import app.lsgui.service.Settings;
+import app.lsgui.service.twitch.TwitchChannelUpdateService;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -56,6 +61,13 @@ public class MainWindow extends Application {
             @Override
             public void handle(WindowEvent event) {
                 Settings.instance().saveSettings();
+                Iterator<Map.Entry<StreamModel, TwitchChannelUpdateService>> it = ServiceModel.UPDATESERVICES.entrySet()
+                        .iterator();
+                while (it.hasNext()) {
+                    @SuppressWarnings("unused")
+                    Map.Entry<StreamModel, TwitchChannelUpdateService> pair = it.next();
+                    it.remove();
+                }
                 Platform.exit();
             }
         });
@@ -64,6 +76,13 @@ public class MainWindow extends Application {
             @Override
             public void handle(WindowEvent event) {
                 Settings.instance().saveSettings();
+                Iterator<Map.Entry<StreamModel, TwitchChannelUpdateService>> it = ServiceModel.UPDATESERVICES.entrySet()
+                        .iterator();
+                while (it.hasNext()) {
+                    @SuppressWarnings("unused")
+                    Map.Entry<StreamModel, TwitchChannelUpdateService> pair = it.next();
+                    it.remove();
+                }
                 Platform.exit();
             }
         });

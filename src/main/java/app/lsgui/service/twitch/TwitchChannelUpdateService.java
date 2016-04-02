@@ -18,17 +18,15 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchStreamDat
         LOGGER.debug("Create UpdateService for {}", model.getName().get());
         if (model.getClass().equals(TwitchStreamModel.class)) {
             this.model = (TwitchStreamModel) model;
-
             setPeriod(Duration.seconds(60));
             setRestartOnFailure(true);
             setOnSucceeded(event -> {
-                LOGGER.info("task succeeded");
                 final TwitchStreamData updatedModel = (TwitchStreamData) event.getSource().getValue();
                 if (updatedModel != null) {
-                    // synchronized (this.model) {
-                    LOGGER.debug("Update model {}", model.getName().get());
-                    this.model.updateData(updatedModel);
-                    // }
+                    synchronized (this.model) {
+                        LOGGER.debug("Update model {}", model.getName().get());
+                        this.model.updateData(updatedModel);
+                    }
                 }
             });
         }
@@ -37,7 +35,6 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchStreamDat
     @Override
     protected Task<TwitchStreamData> createTask() {
         return new Task<TwitchStreamData>() {
-
             @Override
             protected TwitchStreamData call() throws Exception {
                 return TwitchProcessor.instance().getStreamData(model.getName().get());

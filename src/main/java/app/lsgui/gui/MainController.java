@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import app.lsgui.gui.streamInfoPanel.StreamInfoPanel;
 import app.lsgui.gui.streamList.StreamList;
 import app.lsgui.model.ServiceModel;
+import app.lsgui.model.StreamModel;
 import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchProcessor;
 import app.lsgui.utils.Utils;
@@ -66,11 +67,12 @@ public class MainController {
 
         streamList.getListView().getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
+                    String valueString = newValue == null ? oldValue.getName().get() : newValue.getName().get();
                     qualityComboBox.setItems(FXCollections.observableArrayList(Utils.getAvailableQuality(
-                            serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get(),
-                            newValue.getName().get())));
+                            serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get(), valueString)));
                     qualityComboBox.getSelectionModel().select(0);
                 });
+
         if (Settings.instance().getStreamServices().size() == 0) {
             Settings.instance().getStreamServices().add(new ServiceModel("Twitch.tv", "http://twitch.tv/"));
         }
@@ -121,6 +123,23 @@ public class MainController {
         Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
         settingsButton.setOnAction(event -> openSettings());
         toolBarRight.getItems().add(settingsButton);
+
+        Thread t = new Thread(() -> {
+            while (true) {
+                Platform.runLater(() -> {
+                    int selected = streamList.getListView().getSelectionModel().getSelectedIndex();
+                    serviceComboBox.getSelectionModel().getSelectedItem().forceRefresh();
+                    streamList.getListView().getSelectionModel().select(selected);
+                });
+                try {
+                    Thread.sleep(3000L);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.setDaemon(true);
+        t.start();
     }
 
     private void changeService(final ServiceModel newService) {
@@ -168,8 +187,8 @@ public class MainController {
     }
 
     private void removeAction() {
-        serviceComboBox.getSelectionModel().getSelectedItem()
-                .removeSelectedStream(streamList.getListView().getSelectionModel().getSelectedItem());
+        StreamModel toRemove = streamList.getListView().getSelectionModel().getSelectedItem();
+        serviceComboBox.getSelectionModel().getSelectedItem().removeSelectedStream(toRemove);
     }
 
     private void importStreams() {

@@ -52,7 +52,6 @@ public class TwitchProcessor {
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
         }
-        LOGGER.debug("{}", jo);
         TwitchStreamData data = new TwitchStreamData(jo, streamName);
         LOGGER.debug("data loaded {}", data.getName());
         return data;
