@@ -123,23 +123,6 @@ public class MainController {
         Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
         settingsButton.setOnAction(event -> openSettings());
         toolBarRight.getItems().add(settingsButton);
-
-        Thread t = new Thread(() -> {
-            while (true) {
-                Platform.runLater(() -> {
-                    int selected = streamList.getListView().getSelectionModel().getSelectedIndex();
-                    serviceComboBox.getSelectionModel().getSelectedItem().forceRefresh();
-                    streamList.getListView().getSelectionModel().select(selected);
-                });
-                try {
-                    Thread.sleep(3000L);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        t.setDaemon(true);
-        t.start();
     }
 
     private void changeService(final ServiceModel newService) {

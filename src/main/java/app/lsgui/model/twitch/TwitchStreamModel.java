@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.StreamModel;
 import app.lsgui.service.twitch.TwitchStreamData;
+import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
@@ -16,6 +17,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
+import javafx.util.Callback;
 
 public class TwitchStreamModel implements StreamModel {
 
@@ -34,21 +36,6 @@ public class TwitchStreamModel implements StreamModel {
     private IntegerProperty viewers;
     private BooleanProperty online;
     private ObjectProperty<Image> previewImage;
-
-    public TwitchStreamModel(final TwitchStreamData data) {
-        LOGGER.debug("Create Twitch Stream Model from Json");
-
-        this.name = new SimpleStringProperty(data.getName());
-        this.logoURL = new SimpleStringProperty(data.getLogoURL());
-        this.previewURL = new SimpleStringProperty(data.getPreviewURL());
-        this.game = new SimpleStringProperty(data.getGame());
-        this.title = new SimpleStringProperty(data.getTitle());
-        this.uptime = new SimpleLongProperty(data.getUptime());
-        this.viewers = new SimpleIntegerProperty(data.getViewers());
-        this.online = new SimpleBooleanProperty(false);
-        this.previewImage = new SimpleObjectProperty<Image>(data.getPreviewImage());
-        this.description = new SimpleStringProperty(getTitle().get() + " " + getViewers() + "/n" + getGame());
-    }
 
     public TwitchStreamModel(final String name) {
         LOGGER.debug("Create Twitch Stream Model from username");
@@ -90,6 +77,15 @@ public class TwitchStreamModel implements StreamModel {
             this.description.setValue("Stream is offline");
         }
         LOGGER.debug("online status of {} is {}", name.get(), online.get());
+    }
+
+    public static Callback<StreamModel, Observable[]> extractor() {
+        return (StreamModel sm) -> new Observable[] { ((TwitchStreamModel) sm).getName(),
+                ((TwitchStreamModel) sm).getGame(), ((TwitchStreamModel) sm).getOnline(),
+                ((TwitchStreamModel) sm).getTitle(), ((TwitchStreamModel) sm).getDescription(),
+                ((TwitchStreamModel) sm).getLogoURL(), ((TwitchStreamModel) sm).getPreviewImage(),
+                ((TwitchStreamModel) sm).getPreviewURL(), ((TwitchStreamModel) sm).getUptime(),
+                ((TwitchStreamModel) sm).getViewers() };
     }
 
     /**

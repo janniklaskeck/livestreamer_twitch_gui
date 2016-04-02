@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import app.lsgui.model.twitch.TwitchStreamModel;
 import app.lsgui.service.twitch.TwitchChannelUpdateService;
 import app.lsgui.service.twitch.TwitchProcessor;
-import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -42,7 +41,9 @@ public class ServiceModel {
         List<StreamModel> streams = new ArrayList<StreamModel>(getChannels().subList(0, getChannels().getSize()));
         StreamModel sm = new TwitchStreamModel(name);
         streams.add(sm);
-        getChannels().setValue(FXCollections.observableArrayList(streams));
+        ObservableList<StreamModel> obsStreams = FXCollections.observableArrayList(TwitchStreamModel.extractor());
+        obsStreams.addAll(streams);
+        getChannels().setValue(obsStreams);
 
         final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
         tcus.start();
@@ -52,14 +53,11 @@ public class ServiceModel {
     public void removeSelectedStream(final StreamModel selectedStream) {
         if (selectedStream != null) {
             LOGGER.debug("Remove stream {} from list", selectedStream.getName());
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    List<StreamModel> streams = getChannels().subList(0, getChannels().getSize());
-                    streams.remove(selectedStream);
-                    getChannels().setValue(FXCollections.observableArrayList(streams));
-                }
-            });
+            List<StreamModel> streams = getChannels().subList(0, getChannels().getSize());
+            streams.remove(selectedStream);
+            ObservableList<StreamModel> obsStreams = FXCollections.observableArrayList(TwitchStreamModel.extractor());
+            obsStreams.addAll(streams);
+            getChannels().setValue(obsStreams);
 
             final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(selectedStream);
             tcus.cancel();
@@ -75,23 +73,14 @@ public class ServiceModel {
             list.add(new TwitchStreamModel(s));
         }
         streams = FXCollections.observableArrayList(list);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                getChannels().setValue(streams);
-            }
-        });
+        ObservableList<StreamModel> obsStreams = FXCollections.observableArrayList(TwitchStreamModel.extractor());
+        obsStreams.addAll(streams);
+        getChannels().setValue(obsStreams);
 
         for (StreamModel sm : streams) {
             final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
             tcus.start();
             UPDATESERVICES.put(sm, tcus);
-        }
-    }
-
-    public void forceRefresh() {
-        for (StreamModel sm : channels) {
-            channels.set(channels.indexOf(sm), sm);
         }
     }
 
