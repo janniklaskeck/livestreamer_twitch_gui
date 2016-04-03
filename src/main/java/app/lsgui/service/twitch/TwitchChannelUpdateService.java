@@ -20,23 +20,20 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchStreamDat
         LOGGER.debug("Create UpdateService for {}", model.getName().get());
         if (model.getClass().equals(TwitchStreamModel.class)) {
             this.model = (TwitchStreamModel) model;
-            setPeriod(Duration.seconds(10));
+            setPeriod(Duration.seconds(40));
             setRestartOnFailure(true);
             setOnSucceeded(event -> {
                 final TwitchStreamData updatedModel = (TwitchStreamData) event.getSource().getValue();
                 if (updatedModel != null) {
-                    //synchronized (this.model) {
-
+                    synchronized (this.model) {
                         this.model.updateData(updatedModel);
-                    //}
+                    }
                 }
             });
             setOnFailed(new EventHandler<WorkerStateEvent>() {
-
                 @Override
                 public void handle(WorkerStateEvent event) {
-                    LOGGER.debug("FAILED");
-
+                    LOGGER.warn("UPDATE SERVICE FAILED");
                 }
             });
         }

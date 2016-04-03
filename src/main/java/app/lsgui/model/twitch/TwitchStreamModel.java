@@ -8,10 +8,12 @@ import app.lsgui.service.twitch.TwitchStreamData;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,8 +36,9 @@ public class TwitchStreamModel implements StreamModel {
     private StringProperty description;
     private LongProperty uptime;
     private IntegerProperty viewers;
-    private BooleanProperty online;
+    private BooleanProperty isOnline;
     private ObjectProperty<Image> previewImage;
+    private ListProperty<String> availableQualities;
 
     public TwitchStreamModel(final String name) {
         this.name = new SimpleStringProperty(name);
@@ -45,9 +48,10 @@ public class TwitchStreamModel implements StreamModel {
         this.title = new SimpleStringProperty("");
         this.uptime = new SimpleLongProperty(0L);
         this.viewers = new SimpleIntegerProperty(0);
-        this.online = new SimpleBooleanProperty(false);
+        this.isOnline = new SimpleBooleanProperty(false);
         this.previewImage = new SimpleObjectProperty<Image>(null);
         this.description = new SimpleStringProperty("Stream is offline");
+        this.availableQualities = new SimpleListProperty<String>();
     }
 
     public void updateData(final TwitchStreamData data) {
@@ -60,7 +64,12 @@ public class TwitchStreamModel implements StreamModel {
             this.title.setValue(data.getTitle());
             this.uptime.setValue(data.getUptime());
             this.viewers.setValue(data.getViewers());
-            this.online.setValue(data.isOnline());
+            if (data.isOnline() && !isOnline.get()) {
+                this.isOnline.setValue(true);
+                LOGGER.info("Stream {} just came online. TODO Notice User", getName().get());
+            } else if (!data.isOnline() && isOnline.get()) {
+                this.isOnline.setValue(false);
+            }
             this.previewImage.setValue(data.getPreviewImage());
             this.description.setValue(getTitle().get() + " Viewers: " + getViewers().get() + "\n" + getGame().get());
         } else {
@@ -71,7 +80,7 @@ public class TwitchStreamModel implements StreamModel {
             this.title.setValue(null);
             this.uptime.setValue(null);
             this.viewers.setValue(null);
-            this.online.setValue(false);
+            this.isOnline.setValue(false);
             this.previewImage.setValue(null);
             this.description.setValue("Stream is offline");
         }
@@ -79,7 +88,7 @@ public class TwitchStreamModel implements StreamModel {
 
     public static Callback<StreamModel, Observable[]> extractor() {
         return (StreamModel sm) -> new Observable[] { ((TwitchStreamModel) sm).getName(),
-                ((TwitchStreamModel) sm).getGame(), ((TwitchStreamModel) sm).getOnline(),
+                ((TwitchStreamModel) sm).getGame(), ((TwitchStreamModel) sm).isOnline(),
                 ((TwitchStreamModel) sm).getTitle(), ((TwitchStreamModel) sm).getDescription(),
                 ((TwitchStreamModel) sm).getLogoURL(), ((TwitchStreamModel) sm).getPreviewImage(),
                 ((TwitchStreamModel) sm).getPreviewURL(), ((TwitchStreamModel) sm).getUptime(),
@@ -196,16 +205,16 @@ public class TwitchStreamModel implements StreamModel {
      * @return the online
      */
     @Override
-    public BooleanProperty getOnline() {
-        return online;
+    public BooleanProperty isOnline() {
+        return isOnline;
     }
 
     /**
      * @param online
      *            the online to set
      */
-    public void setOnline(BooleanProperty online) {
-        this.online = online;
+    public void setIsOnline(BooleanProperty isOnline) {
+        this.isOnline = isOnline;
     }
 
     /**
@@ -225,6 +234,21 @@ public class TwitchStreamModel implements StreamModel {
 
     public StringProperty getDescription() {
         return description;
+    }
+
+    /**
+     * @return the availableQualities
+     */
+    public ListProperty<String> getAvailableQualities() {
+        return availableQualities;
+    }
+
+    /**
+     * @param availableQualities
+     *            the availableQualities to set
+     */
+    public void setAvailableQualities(ListProperty<String> availableQualities) {
+        this.availableQualities = availableQualities;
     }
 
 }

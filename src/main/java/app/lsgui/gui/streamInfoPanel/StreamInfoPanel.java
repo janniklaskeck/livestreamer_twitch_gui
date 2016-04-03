@@ -9,15 +9,19 @@ import app.lsgui.model.ServiceModel;
 import app.lsgui.model.StreamModel;
 import app.lsgui.model.twitch.TwitchStreamModel;
 import app.lsgui.utils.Utils;
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 
@@ -39,6 +43,9 @@ public class StreamInfoPanel extends BorderPane {
 
     @FXML
     private ImageView previewImageView;
+
+    @FXML
+    private ToolBar buttonBox;
 
     public StreamInfoPanel(ComboBox<ServiceModel> serviceComboBox, ComboBox<String> qualityComboBox) {
         LOGGER.debug("Construct StreamInfoPanel");
@@ -67,6 +74,16 @@ public class StreamInfoPanel extends BorderPane {
                 }
             }
         });
+
+        Button startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
+        Button recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
+        Button openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
+        Button openBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.BOOKMARK);
+
+        buttonBox.getItems().add(startStreamButton);
+        buttonBox.getItems().add(recordStreamButton);
+        buttonBox.getItems().add(openChatButton);
+        buttonBox.getItems().add(openBrowserButton);
     }
 
     public void setStream(StreamModel model) {
@@ -93,8 +110,8 @@ public class StreamInfoPanel extends BorderPane {
 
     @FXML
     private void openInBrowser() {
-        Utils.openURLInBrowser(
-                serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get() + modelProperty.get().getName().get());
+        Utils.openURLInBrowser(serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get()
+                + modelProperty.get().getName().get());
     }
 
     /**

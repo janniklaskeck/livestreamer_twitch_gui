@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.StreamModel;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ListCell;
 import javafx.scene.paint.Color;
 
@@ -23,7 +21,7 @@ public class StreamCell extends ListCell<StreamModel> {
             setText(null);
         } else {
             setText(item.getName().get());
-            if (item.getOnline().get()) {
+            if (item.isOnline().get()) {
                 setStyle("-fx-background-color: lightgreen; -fx-border-color: black");
                 setTextFill(Color.GREEN);
             }

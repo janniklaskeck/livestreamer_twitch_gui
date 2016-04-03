@@ -19,7 +19,7 @@ import app.lsgui.model.ServiceModel;
 import app.lsgui.model.StreamModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import sun.misc.Version;
+import junit.runner.Version;
 
 public class Settings {
 

@@ -69,7 +69,7 @@ public class Utils {
     }
 
     public static List<String> getAvailableQuality(final String URL, final String channel) {
-        final List<String> qualities = new ArrayList<String>();
+        /*final List<String> qualities = new ArrayList<String>();
 
         final String livestreamerExec = "livestreamer";
 
@@ -91,7 +91,7 @@ public class Utils {
         } catch (final IOException | InterruptedException e) {
             LOGGER.error(
                     "failed to retrieve stream qualites for " + URL + channel + "," + " reason: " + e.getMessage());
-        }
+        }*/
         return Arrays.asList("best", "worst");
     }
 

@@ -50,7 +50,7 @@ public class TwitchStreamData {
                 setLogoURL(Utils.getStringIfNotNull("logo", channel));
                 setOnline(true);
                 calculateAndSetUptime();
-                Utils.loadImageFromURLAsync(this);
+                setPreviewImage(new Image(getPreviewURL()));
             }
         } else {
             setName(name);

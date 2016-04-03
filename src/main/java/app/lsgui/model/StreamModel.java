@@ -6,6 +6,6 @@ import javafx.beans.property.StringProperty;
 public interface StreamModel {
 
     public StringProperty getName();
-    public BooleanProperty getOnline();
+    public BooleanProperty isOnline();
 
 }
