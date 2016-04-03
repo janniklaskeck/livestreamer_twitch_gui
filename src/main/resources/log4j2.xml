@@ -2,26 +2,28 @@
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level [%t] %logger - %msg%n"/>
+            <PatternLayout
+                pattern="%d{HH:mm:ss.SSS} %-5level [%t] %logger - %msg%n" />
         </Console>
-        <RollingFile name="RollingFile" fileName="${sys:user.home}/.lsgui/lsgui.log"
-                     filePattern="${sys:user.home}/.lsgui/lsgui_old_%i.log">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level [%t] %logger - %msg%n"/>
+        <RollingFile name="RollingFile"
+            fileName="${sys:user.home}/.lsgui/lsgui.log" filePattern="${sys:user.home}/.lsgui/lsgui_%i.log">
+            <PatternLayout
+                pattern="%d{HH:mm:ss.SSS} %-5level [%t] %logger - %msg%n" />
             <Policies>
-                <OnStartupTriggeringPolicy/>
+                <OnStartupTriggeringPolicy />
             </Policies>
-            <DefaultRolloverStrategy max="3"/>
+            <DefaultRolloverStrategy max="1" />
         </RollingFile>
     </Appenders>
 
     <Loggers>
         <Root level="WARN">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
         </Root>
         <Logger name="app.lsgui" level="ALL" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
         </Logger>
     </Loggers>
 

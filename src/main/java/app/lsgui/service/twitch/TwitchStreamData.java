@@ -1,7 +1,9 @@
 package app.lsgui.service.twitch;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
@@ -15,7 +17,7 @@ import javafx.scene.image.Image;
 public class TwitchStreamData {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchStreamData.class);
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static SimpleDateFormat SDF;
 
     private boolean online = false;
     private String name = "";
@@ -29,16 +31,16 @@ public class TwitchStreamData {
     private int viewers = 0;
     private Image previewImage;
     private Image logoImage;
+    private List<String> qualities;
 
     public TwitchStreamData(final JsonObject streamJson, final String name) {
+        SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         JsonObject streamObject = null;
         if (!streamJson.get("stream").isJsonNull()) {
             streamObject = streamJson.get("stream").getAsJsonObject();
-
             if (streamObject != null && !streamObject.get("channel").isJsonNull() && !streamObject.isJsonNull()) {
                 JsonObject channel = streamObject.get("channel").getAsJsonObject();
                 JsonObject preview = streamObject.get("preview").getAsJsonObject();
-
                 setName(name);
                 setTitle(Utils.getStringIfNotNull("status", channel));
                 setGame(Utils.getStringIfNotNull("game", streamObject));
@@ -50,6 +52,7 @@ public class TwitchStreamData {
                 setOnline(true);
                 calculateAndSetUptime();
                 setPreviewImage(new Image(getPreviewURL()));
+                setQualities(Utils.getAvailableQuality("http://twitch.tv/", name));
             }
         } else {
             setName(name);
@@ -61,6 +64,7 @@ public class TwitchStreamData {
             setUpdatedAt("");
             setLogoURL("");
             setOnline(false);
+            setQualities(new ArrayList<String>());
         }
     }
 
@@ -68,11 +72,8 @@ public class TwitchStreamData {
         SDF.setTimeZone(TimeZone.getTimeZone("GMT"));
         long uptime = 0L;
         try {
-            Date start_date;
             final Date now_date = new Date();
-            LOGGER.info("createt at {}",getCreatedAt());
-            start_date = SDF.parse(getCreatedAt());
-
+            final Date start_date = SDF.parse(getCreatedAt());
             uptime = now_date.getTime() - start_date.getTime();
         } catch (Exception e) {
             LOGGER.error("ERROR while parsing date", e);
@@ -189,6 +190,21 @@ public class TwitchStreamData {
      */
     public void setPreviewImage(Image previewImage) {
         this.previewImage = previewImage;
+    }
+
+    /**
+     * @return the qualities
+     */
+    public List<String> getQualities() {
+        return qualities;
+    }
+
+    /**
+     * @param qualities
+     *            the qualities to set
+     */
+    public void setQualities(List<String> qualities) {
+        this.qualities = qualities;
     }
 
 }

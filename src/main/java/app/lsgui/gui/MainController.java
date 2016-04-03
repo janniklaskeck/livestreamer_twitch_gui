@@ -11,7 +11,6 @@ import app.lsgui.model.ServiceModel;
 import app.lsgui.model.StreamModel;
 import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchProcessor;
-import app.lsgui.utils.Utils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
@@ -67,10 +66,13 @@ public class MainController {
 
         streamList.getListView().getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
-                    String valueString = newValue == null ? oldValue.getName().get() : newValue.getName().get();
-                    qualityComboBox.setItems(FXCollections.observableArrayList(Utils.getAvailableQuality(
-                            serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get(), valueString)));
-                    qualityComboBox.getSelectionModel().select(0);
+                    StreamModel value = newValue == null ? oldValue : newValue;
+                    qualityComboBox.setItems(FXCollections.observableArrayList(value.getAvailableQualities()));
+                    if (qualityComboBox.getItems().size() > 1) {
+                        qualityComboBox.getSelectionModel().select("best");
+                    } else {
+                        qualityComboBox.getSelectionModel().select(0);
+                    }
                 });
 
         if (Settings.instance().getStreamServices().size() == 0) {

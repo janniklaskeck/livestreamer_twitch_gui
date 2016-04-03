@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.ProcessBuilder.Redirect;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -24,19 +25,21 @@ public class Utils {
 
     public static void startLivestreamer(final String URL, final String quality) {
         LOGGER.info("Starting Stream {} with Quality {}", URL, quality);
-
-        try {
-            ProcessBuilder pb = new ProcessBuilder(Arrays.asList("livestreamer", URL, quality));
-            pb.redirectErrorStream(true);
-            pb.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        new Thread(() -> {
+            try {
+                ProcessBuilder pb = new ProcessBuilder(Arrays.asList("livestreamer", URL, quality));
+                pb.redirectOutput(Redirect.INHERIT);
+                pb.redirectError(Redirect.INHERIT);
+                Process prc = pb.start();
+                prc.waitFor();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public static void recordLivestreamer(final String URL, final String quality) {
         LOGGER.info("Record Stream {} with Quality {}", URL, quality);
-
     }
 
     public static void openURLInBrowser(final String URL) {
@@ -71,23 +74,17 @@ public class Utils {
     }
 
     public static List<String> getAvailableQuality(final String URL, final String channel) {
-
         final List<String> qualities = new ArrayList<String>();
-
         final String livestreamerExec = "livestreamer";
-
         try {
             final Process process = new ProcessBuilder(livestreamerExec, "-j", URL + channel).redirectErrorStream(true)
                     .start();
-
             final JsonObject jsonQualities = PARSER
                     .parse(new JsonReader(new BufferedReader(new InputStreamReader(process.getInputStream()))))
                     .getAsJsonObject();
-
             process.waitFor();
             if (!jsonQualities.toString().contains("error")) {
                 final JsonObject jsonQualitiyList = jsonQualities.get("streams").getAsJsonObject();
-
                 jsonQualitiyList.entrySet().forEach(entry -> qualities.add(entry.getKey()));
                 return qualities;
             }
@@ -95,8 +92,7 @@ public class Utils {
             LOGGER.error(
                     "failed to retrieve stream qualites for " + URL + channel + "," + " reason: " + e.getMessage());
         }
-
-        return Arrays.asList("best", "worst");
+        return qualities;
     }
 
 }

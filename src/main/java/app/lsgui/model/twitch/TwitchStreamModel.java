@@ -1,5 +1,7 @@
 package app.lsgui.model.twitch;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -10,7 +12,6 @@ import app.lsgui.service.twitch.TwitchStreamData;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -42,7 +43,7 @@ public class TwitchStreamModel implements StreamModel {
     private StringProperty viewersString;
     private BooleanProperty isOnline;
     private ObjectProperty<Image> previewImage;
-    private ListProperty<String> availableQualities;
+    private List<String> availableQualities;
 
     public TwitchStreamModel(final String name) {
         this.name = new SimpleStringProperty(name);
@@ -58,6 +59,7 @@ public class TwitchStreamModel implements StreamModel {
         this.availableQualities = new SimpleListProperty<String>();
         this.uptimeString = new SimpleStringProperty("");
         this.viewersString = new SimpleStringProperty("");
+        this.availableQualities = new ArrayList<String>();
     }
 
     public void updateData(final TwitchStreamData data) {
@@ -69,7 +71,8 @@ public class TwitchStreamModel implements StreamModel {
             game.setValue(data.getGame());
             title.setValue(data.getTitle());
             uptime.setValue(data.getUptime());
-            String upTimeStringValue = String.format("%02d:%02d:%02d Uptime", TimeUnit.MILLISECONDS.toHours(uptime.get()),
+            String upTimeStringValue = String.format("%02d:%02d:%02d Uptime",
+                    TimeUnit.MILLISECONDS.toHours(uptime.get()),
                     TimeUnit.MILLISECONDS.toMinutes(uptime.get())
                             - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(uptime.get())),
                     TimeUnit.MILLISECONDS.toSeconds(uptime.get())
@@ -85,6 +88,7 @@ public class TwitchStreamModel implements StreamModel {
             }
             previewImage.setValue(data.getPreviewImage());
             description.setValue(getTitle().get());
+            this.availableQualities = new ArrayList<String>(data.getQualities());
         } else {
             name.setValue(null);
             logoURL.setValue(null);
@@ -96,6 +100,8 @@ public class TwitchStreamModel implements StreamModel {
             isOnline.setValue(false);
             previewImage.setValue(null);
             description.setValue("Stream is offline");
+            availableQualities = new ArrayList<String>();
+            availableQualities.add("worst, best");
         }
     }
 
@@ -252,7 +258,10 @@ public class TwitchStreamModel implements StreamModel {
     /**
      * @return the availableQualities
      */
-    public ListProperty<String> getAvailableQualities() {
+    public List<String> getAvailableQualities() {
+        if (availableQualities.size() == 0) {
+            availableQualities.add("Stream is offline");
+        }
         return availableQualities;
     }
 
@@ -260,7 +269,7 @@ public class TwitchStreamModel implements StreamModel {
      * @param availableQualities
      *            the availableQualities to set
      */
-    public void setAvailableQualities(ListProperty<String> availableQualities) {
+    public void setAvailableQualities(List<String> availableQualities) {
         this.availableQualities = availableQualities;
     }
 
