@@ -44,7 +44,13 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchStreamDat
         return new Task<TwitchStreamData>() {
             @Override
             protected TwitchStreamData call() throws Exception {
-                return TwitchProcessor.instance().getStreamData(model.getName().get());
+                TwitchStreamData tsd = null;
+                try {
+                    tsd = TwitchProcessor.instance().getStreamData(model.getName().get());
+                } catch (Exception e) {
+                    LOGGER.error("TASK EXCEPTION", e);
+                }
+                return tsd;
             }
         };
     }

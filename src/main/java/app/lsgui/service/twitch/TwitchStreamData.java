@@ -1,6 +1,5 @@
 package app.lsgui.service.twitch;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -71,11 +70,13 @@ public class TwitchStreamData {
         try {
             Date start_date;
             final Date now_date = new Date();
-
+            LOGGER.info("createt at {}",getCreatedAt());
             start_date = SDF.parse(getCreatedAt());
+
             uptime = now_date.getTime() - start_date.getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOGGER.error("ERROR while parsing date", e);
+            uptime = 0L;
         }
         setUptime(uptime);
     }

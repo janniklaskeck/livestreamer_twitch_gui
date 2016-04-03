@@ -9,6 +9,7 @@ import app.lsgui.model.ServiceModel;
 import app.lsgui.model.StreamModel;
 import app.lsgui.model.twitch.TwitchStreamModel;
 import app.lsgui.utils.Utils;
+import app.lsgui.utils.WrappedImageView;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.ObjectProperty;
@@ -22,8 +23,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 
 public class StreamInfoPanel extends BorderPane {
 
@@ -35,14 +36,21 @@ public class StreamInfoPanel extends BorderPane {
 
     private ObjectProperty<StreamModel> modelProperty;
 
+    private WrappedImageView previewImageView;
+
+    private Label streamDescription;
+    private Label streamUptime;
+    private Label streamViewers;
+    private Label streamGame;
+
+    @FXML
+    private BorderPane rootBorderPane;
+
     @FXML
     private CheckBox notifyCheckBox;
 
     @FXML
-    private Label streamInfoLabel;
-
-    @FXML
-    private ImageView previewImageView;
+    private GridPane descriptionGrid;
 
     @FXML
     private ToolBar buttonBox;
@@ -61,6 +69,20 @@ public class StreamInfoPanel extends BorderPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        previewImageView = new WrappedImageView(null);
+        rootBorderPane.setCenter(previewImageView);
+
+        streamDescription = new Label();
+        streamDescription.setWrapText(true);
+        streamUptime = new Label();
+        streamViewers = new Label();
+        streamGame = new Label();
+
+        descriptionGrid.add(streamGame, 0, 0, 1, 1);
+        descriptionGrid.add(streamViewers, 0, 1, 1, 1);
+        descriptionGrid.add(streamUptime, 0, 2, 1, 1);
+        descriptionGrid.add(streamDescription, 0, 3, 1, 2);
+
         modelProperty.addListener(new ChangeListener<StreamModel>() {
             @Override
             public void changed(ObservableValue<? extends StreamModel> observable, StreamModel oldValue,
@@ -68,17 +90,41 @@ public class StreamInfoPanel extends BorderPane {
                 StreamModel valueStreamModel = newValue == null ? oldValue : newValue;
                 if (valueStreamModel.getClass().equals(TwitchStreamModel.class)) {
                     previewImageView.imageProperty().bind(((TwitchStreamModel) valueStreamModel).getPreviewImage());
-                    streamInfoLabel.textProperty().bind(((TwitchStreamModel) valueStreamModel).getDescription());
+                    streamDescription.textProperty().bind(((TwitchStreamModel) valueStreamModel).getDescription());
+
+                    streamUptime.textProperty().bind(((TwitchStreamModel) valueStreamModel).getUptimeString());
+                    streamUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
+
+                    streamViewers.textProperty().bind(((TwitchStreamModel) valueStreamModel).getViewersString());
+                    streamViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
+
+                    streamGame.textProperty().bind(((TwitchStreamModel) valueStreamModel).getGame());
+                    streamGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
                 } else {
-                    streamInfoLabel.textProperty().bind(modelProperty.get().getName());
+                    streamDescription.textProperty().bind(modelProperty.get().getName());
                 }
             }
         });
 
         Button startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
+        startStreamButton.setOnAction((event) -> {
+            startStream();
+        });
+
         Button recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
+        recordStreamButton.setOnAction((event) -> {
+            recordStream();
+        });
+
         Button openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
-        Button openBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.BOOKMARK);
+        openChatButton.setOnAction((event) -> {
+            openChat();
+        });
+
+        Button openBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
+        openBrowserButton.setOnAction((event) -> {
+            openBrowser();
+        });
 
         buttonBox.getItems().add(startStreamButton);
         buttonBox.getItems().add(recordStreamButton);
@@ -90,26 +136,24 @@ public class StreamInfoPanel extends BorderPane {
         modelProperty.setValue(model);
     }
 
-    @FXML
     private void startStream() {
         if (modelProperty.get() != null) {
-            Utils.startLivestreamer(serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get(),
-                    modelProperty.get().getName().get(), qualityComboBox.getSelectionModel().getSelectedItem());
+            String URL = serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get()
+                    + modelProperty.get().getName().get();
+            String quality = qualityComboBox.getSelectionModel().getSelectedItem();
+            Utils.startLivestreamer(URL, quality);
         }
     }
 
-    @FXML
     private void recordStream() {
         Utils.recordLivestreamer("", "");
     }
 
-    @FXML
     private void openChat() {
 
     }
 
-    @FXML
-    private void openInBrowser() {
+    private void openBrowser() {
         Utils.openURLInBrowser(serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get()
                 + modelProperty.get().getName().get());
     }

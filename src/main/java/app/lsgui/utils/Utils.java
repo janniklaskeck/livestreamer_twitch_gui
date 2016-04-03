@@ -17,18 +17,24 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
-import app.lsgui.service.twitch.TwitchStreamData;
-
 public class Utils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
     private static final JsonParser PARSER = new JsonParser();
 
-    public static void startLivestreamer(String serviceURL, String name, String quality) {
-        LOGGER.info("Starting Stream {} on {} with Quality {}", name, serviceURL, quality);
+    public static void startLivestreamer(final String URL, final String quality) {
+        LOGGER.info("Starting Stream {} with Quality {}", URL, quality);
+
+        try {
+            ProcessBuilder pb = new ProcessBuilder(Arrays.asList("livestreamer", URL, quality));
+            pb.redirectErrorStream(true);
+            pb.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void recordLivestreamer(String URL, String quality) {
+    public static void recordLivestreamer(final String URL, final String quality) {
         LOGGER.info("Record Stream {} with Quality {}", URL, quality);
 
     }
@@ -41,10 +47,6 @@ public class Utils {
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void loadImageFromURLAsync(final TwitchStreamData data) {
-        ExecutorServiceSingleton.instance().submit(new StreamImageUpdateCallable(data));
     }
 
     public static String getStringIfNotNull(final String name, JsonObject obj) {
@@ -69,7 +71,8 @@ public class Utils {
     }
 
     public static List<String> getAvailableQuality(final String URL, final String channel) {
-        /*final List<String> qualities = new ArrayList<String>();
+
+        final List<String> qualities = new ArrayList<String>();
 
         final String livestreamerExec = "livestreamer";
 
@@ -91,7 +94,8 @@ public class Utils {
         } catch (final IOException | InterruptedException e) {
             LOGGER.error(
                     "failed to retrieve stream qualites for " + URL + channel + "," + " reason: " + e.getMessage());
-        }*/
+        }
+
         return Arrays.asList("best", "worst");
     }
 

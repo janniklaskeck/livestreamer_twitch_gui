@@ -1,5 +1,7 @@
 package app.lsgui.model.twitch;
 
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,9 @@ public class TwitchStreamModel implements StreamModel {
     private StringProperty title;
     private StringProperty description;
     private LongProperty uptime;
+    private StringProperty uptimeString;
     private IntegerProperty viewers;
+    private StringProperty viewersString;
     private BooleanProperty isOnline;
     private ObjectProperty<Image> previewImage;
     private ListProperty<String> availableQualities;
@@ -52,37 +56,46 @@ public class TwitchStreamModel implements StreamModel {
         this.previewImage = new SimpleObjectProperty<Image>(null);
         this.description = new SimpleStringProperty("Stream is offline");
         this.availableQualities = new SimpleListProperty<String>();
+        this.uptimeString = new SimpleStringProperty("");
+        this.viewersString = new SimpleStringProperty("");
     }
 
     public void updateData(final TwitchStreamData data) {
         if (data != null) {
             LOGGER.info("update {} with data {}", data.getName(), data.isOnline());
-            this.name.setValue(data.getName());
-            this.logoURL.setValue(data.getLogoURL());
-            this.previewURL.setValue(data.getPreviewURL());
-            this.game.setValue(data.getGame());
-            this.title.setValue(data.getTitle());
-            this.uptime.setValue(data.getUptime());
-            this.viewers.setValue(data.getViewers());
+            name.setValue(data.getName());
+            logoURL.setValue(data.getLogoURL());
+            previewURL.setValue(data.getPreviewURL());
+            game.setValue(data.getGame());
+            title.setValue(data.getTitle());
+            uptime.setValue(data.getUptime());
+            String upTimeStringValue = String.format("%02d:%02d:%02d Uptime", TimeUnit.MILLISECONDS.toHours(uptime.get()),
+                    TimeUnit.MILLISECONDS.toMinutes(uptime.get())
+                            - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(uptime.get())),
+                    TimeUnit.MILLISECONDS.toSeconds(uptime.get())
+                            - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime.get())));
+            uptimeString.setValue(upTimeStringValue);
+            viewers.setValue(data.getViewers());
+            viewersString.setValue(getViewers().get() + "");
             if (data.isOnline() && !isOnline.get()) {
-                this.isOnline.setValue(true);
+                isOnline.setValue(true);
                 LOGGER.info("Stream {} just came online. TODO Notice User", getName().get());
             } else if (!data.isOnline() && isOnline.get()) {
-                this.isOnline.setValue(false);
+                isOnline.setValue(false);
             }
-            this.previewImage.setValue(data.getPreviewImage());
-            this.description.setValue(getTitle().get() + " Viewers: " + getViewers().get() + "\n" + getGame().get());
+            previewImage.setValue(data.getPreviewImage());
+            description.setValue(getTitle().get());
         } else {
-            this.name.setValue(null);
-            this.logoURL.setValue(null);
-            this.previewURL.setValue(null);
-            this.game.setValue(null);
-            this.title.setValue(null);
-            this.uptime.setValue(null);
-            this.viewers.setValue(null);
-            this.isOnline.setValue(false);
-            this.previewImage.setValue(null);
-            this.description.setValue("Stream is offline");
+            name.setValue(null);
+            logoURL.setValue(null);
+            previewURL.setValue(null);
+            game.setValue(null);
+            title.setValue(null);
+            uptime.setValue(null);
+            viewers.setValue(null);
+            isOnline.setValue(false);
+            previewImage.setValue(null);
+            description.setValue("Stream is offline");
         }
     }
 
@@ -249,6 +262,36 @@ public class TwitchStreamModel implements StreamModel {
      */
     public void setAvailableQualities(ListProperty<String> availableQualities) {
         this.availableQualities = availableQualities;
+    }
+
+    /**
+     * @return the uptimeString
+     */
+    public StringProperty getUptimeString() {
+        return uptimeString;
+    }
+
+    /**
+     * @param uptimeString
+     *            the uptimeString to set
+     */
+    public void setUptimeString(StringProperty uptimeString) {
+        this.uptimeString = uptimeString;
+    }
+
+    /**
+     * @return the viewersString
+     */
+    public StringProperty getViewersString() {
+        return viewersString;
+    }
+
+    /**
+     * @param viewersString
+     *            the viewersString to set
+     */
+    public void setViewersString(StringProperty viewersString) {
+        this.viewersString = viewersString;
     }
 
 }
