@@ -86,13 +86,41 @@ public class Utils {
             if (!jsonQualities.toString().contains("error")) {
                 final JsonObject jsonQualitiyList = jsonQualities.get("streams").getAsJsonObject();
                 jsonQualitiyList.entrySet().forEach(entry -> qualities.add(entry.getKey()));
-                return qualities;
+                return sortQualities(qualities);
             }
         } catch (final IOException | InterruptedException e) {
             LOGGER.error(
                     "failed to retrieve stream qualites for " + URL + channel + "," + " reason: " + e.getMessage());
         }
         return qualities;
+    }
+
+    private static List<String> sortQualities(final List<String> qualities) {
+        List<String> sortedQualities = new ArrayList<String>();
+        qualities.forEach((s) -> s = s.toLowerCase());
+        if (qualities.contains("audio")) {
+            sortedQualities.add("Audio");
+        }
+        if (qualities.contains("mobile")) {
+            sortedQualities.add("Mobile");
+        }
+        if (qualities.contains("low")) {
+            sortedQualities.add("Low");
+        }
+        if (qualities.contains("medium")) {
+            sortedQualities.add("Medium");
+        }
+        if (qualities.contains("high")) {
+            sortedQualities.add("High");
+        }
+        if (qualities.contains("source")) {
+            sortedQualities.add("Source");
+        }
+        if (sortedQualities.size() == 0) {
+            sortedQualities.add("Worst");
+            sortedQualities.add("Best");
+        }
+        return sortedQualities;
     }
 
 }
