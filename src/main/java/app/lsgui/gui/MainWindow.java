@@ -26,6 +26,7 @@ public class MainWindow extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MainWindow.class);
     private static FXMLLoader loader;
+    private static Stage ROOTSTAGE;
 
     @Override
     public void init() {
@@ -46,7 +47,7 @@ public class MainWindow extends Application {
         try {
             Parent root = loader.load(getClass().getResourceAsStream(("/MainWindow.fxml")));
             Scene scene = new Scene(root);
-
+            ROOTSTAGE = primaryStage;
             scene.getStylesheets().add(getClass().getResource("/lightStyle.css").toString());
 
             primaryStage.setTitle("Livestreamer GUI v3.0");
@@ -86,6 +87,10 @@ public class MainWindow extends Application {
                 Platform.exit();
             }
         });
+    }
+
+    public final static Stage getRootStage() {
+        return ROOTSTAGE;
     }
 
 }

@@ -2,6 +2,7 @@ package app.lsgui.utils;
 
 import java.awt.Desktop;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
@@ -38,8 +39,22 @@ public class Utils {
         }).start();
     }
 
-    public static void recordLivestreamer(final String URL, final String quality) {
-        LOGGER.info("Record Stream {} with Quality {}", URL, quality);
+    public static void recordLivestreamer(final String URL, final String quality, final File filePath) {
+        LOGGER.info("Record Stream {} with Quality {} to file {}", URL, quality, filePath);
+        new Thread(() -> {
+            try {
+                String path = "\"" + filePath.getAbsolutePath() + "\"";
+                path = path.replace("\\", "/");
+                LOGGER.debug(path);
+                ProcessBuilder pb = new ProcessBuilder(Arrays.asList("livestreamer", "-o", path, URL, quality));
+                pb.redirectOutput(Redirect.INHERIT);
+                pb.redirectError(Redirect.INHERIT);
+                Process prc = pb.start();
+                prc.waitFor();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public static void openURLInBrowser(final String URL) {
@@ -73,26 +88,30 @@ public class Utils {
         return 0;
     }
 
-    public static List<String> getAvailableQuality(final String URL, final String channel) {
+    public static List<String> getAvailableQuality(final String URL) {
         final List<String> qualities = new ArrayList<String>();
+        final JsonObject qualitiesJson = getQualityJsonFromLivestreamer(URL);
+        if (!qualitiesJson.toString().contains("error")) {
+            final JsonObject jsonQualitiyList = qualitiesJson.get("streams").getAsJsonObject();
+            jsonQualitiyList.entrySet().forEach(entry -> qualities.add(entry.getKey()));
+            return sortQualities(qualities);
+        }
+        return qualities;
+    }
+
+    private static JsonObject getQualityJsonFromLivestreamer(final String URL) {
         final String livestreamerExec = "livestreamer";
+        JsonObject jsonQualities = new JsonObject();
         try {
-            final Process process = new ProcessBuilder(livestreamerExec, "-j", URL + channel).redirectErrorStream(true)
-                    .start();
-            final JsonObject jsonQualities = PARSER
+            final Process process = new ProcessBuilder(livestreamerExec, "-j", URL).redirectErrorStream(true).start();
+            jsonQualities = PARSER
                     .parse(new JsonReader(new BufferedReader(new InputStreamReader(process.getInputStream()))))
                     .getAsJsonObject();
             process.waitFor();
-            if (!jsonQualities.toString().contains("error")) {
-                final JsonObject jsonQualitiyList = jsonQualities.get("streams").getAsJsonObject();
-                jsonQualitiyList.entrySet().forEach(entry -> qualities.add(entry.getKey()));
-                return sortQualities(qualities);
-            }
         } catch (final IOException | InterruptedException e) {
-            LOGGER.error(
-                    "failed to retrieve stream qualites for " + URL + channel + "," + " reason: " + e.getMessage());
+            LOGGER.error("failed to retrieve stream qualites for " + URL + "," + " reason: " + e.getMessage());
         }
-        return qualities;
+        return jsonQualities;
     }
 
     private static List<String> sortQualities(final List<String> qualities) {

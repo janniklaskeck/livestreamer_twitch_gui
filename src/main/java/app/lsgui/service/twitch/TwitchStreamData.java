@@ -52,7 +52,7 @@ public class TwitchStreamData {
                 setOnline(true);
                 calculateAndSetUptime();
                 setPreviewImage(new Image(getPreviewURL()));
-                setQualities(Utils.getAvailableQuality("http://twitch.tv/", name));
+                setQualities(Utils.getAvailableQuality("http://twitch.tv/" + name));
             }
         } else {
             setName(name);

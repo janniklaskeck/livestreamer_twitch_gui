@@ -1,10 +1,12 @@
 package app.lsgui.gui.streamInfoPanel;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.lsgui.gui.MainWindow;
 import app.lsgui.model.ServiceModel;
 import app.lsgui.model.StreamModel;
 import app.lsgui.model.twitch.TwitchStreamModel;
@@ -25,6 +27,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class StreamInfoPanel extends BorderPane {
 
@@ -138,15 +142,21 @@ public class StreamInfoPanel extends BorderPane {
 
     private void startStream() {
         if (modelProperty.get() != null) {
-            String URL = serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get()
-                    + modelProperty.get().getName().get();
-            String quality = qualityComboBox.getSelectionModel().getSelectedItem();
+            String URL = buildURL();
+            String quality = buildQuality();
             Utils.startLivestreamer(URL, quality);
         }
     }
 
     private void recordStream() {
-        Utils.recordLivestreamer("", "");
+        final String URL = buildURL();
+        final String quality = buildQuality();
+
+        FileChooser recordFileChooser = new FileChooser();
+        recordFileChooser.setTitle("Choose Target file");
+        recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
+        final File recordFile = recordFileChooser.showSaveDialog(MainWindow.getRootStage());
+        Utils.recordLivestreamer(URL, quality, recordFile);
     }
 
     private void openChat() {
@@ -171,5 +181,14 @@ public class StreamInfoPanel extends BorderPane {
      */
     public void setModelProperty(ObjectProperty<StreamModel> modelProperty) {
         this.modelProperty = modelProperty;
+    }
+
+    private String buildURL() {
+        return serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get()
+                + modelProperty.get().getName().get();
+    }
+
+    private String buildQuality() {
+        return qualityComboBox.getSelectionModel().getSelectedItem();
     }
 }
