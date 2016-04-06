@@ -1,4 +1,4 @@
-package app.lsgui.gui.streamList;
+package app.lsgui.gui.streamlist;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,24 +14,21 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.Callback;
 
 public class StreamList extends AnchorPane {
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamList.class);
     private static FXMLLoader loader;
 
-    private final ListProperty<StreamModel> streams = new SimpleListProperty<StreamModel>(
-            FXCollections.observableArrayList());
+    private final ListProperty<StreamModel> streams = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     private ListProperty<StreamModel> streamProperty;
     private ObjectProperty<StreamModel> modelProperty;
 
     @FXML
-    private ListView<StreamModel> streamList;
+    private ListView<StreamModel> streamListView;
 
     public StreamList() {
         LOGGER.debug("Construct StreamList");
@@ -42,20 +39,16 @@ public class StreamList extends AnchorPane {
         try {
             loader.load();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("ERROR while loading streamlist fxml", e);
         }
-        streamList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        modelProperty = new SimpleObjectProperty<StreamModel>();
-        streamProperty = new SimpleListProperty<StreamModel>();
-        modelProperty.bind(streamList.getSelectionModel().selectedItemProperty());
-        streamList.itemsProperty().bind(streamProperty);
+        streamListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        modelProperty = new SimpleObjectProperty<>();
+        streamProperty = new SimpleListProperty<>();
+        modelProperty.bind(streamListView.getSelectionModel().selectedItemProperty());
+        streamListView.itemsProperty().bind(streamProperty);
 
-        streamList.setCellFactory(new Callback<ListView<StreamModel>, ListCell<StreamModel>>() {
-            @Override
-            public ListCell<StreamModel> call(ListView<StreamModel> param) {
-                return new StreamCell();
-            }
-        });
+        streamListView.setCellFactory(listView -> new StreamCell());
+
         streams.bind(getListView().itemsProperty());
 
     }
@@ -79,7 +72,7 @@ public class StreamList extends AnchorPane {
      * @return the streamList
      */
     public ListView<StreamModel> getListView() {
-        return streamList;
+        return streamListView;
     }
 
     /**
@@ -87,7 +80,7 @@ public class StreamList extends AnchorPane {
      *            the streamList to set
      */
     public void setListView(ListView<StreamModel> streamList) {
-        this.streamList = streamList;
+        this.streamListView = streamList;
     }
 
     /**

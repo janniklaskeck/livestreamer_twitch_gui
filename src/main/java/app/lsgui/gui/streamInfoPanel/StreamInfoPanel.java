@@ -85,7 +85,7 @@ public class StreamInfoPanel extends BorderPane {
         descriptionGrid.add(streamGame, 0, 0, 1, 1);
         descriptionGrid.add(streamViewers, 0, 1, 1, 1);
         descriptionGrid.add(streamUptime, 0, 2, 1, 1);
-        descriptionGrid.add(streamDescription, 0, 3, 1, 2);
+        descriptionGrid.add(streamDescription, 0, 3, 1, 1);
 
         modelProperty.addListener(new ChangeListener<StreamModel>() {
             @Override

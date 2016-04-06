@@ -20,10 +20,10 @@ public class TwitchStreamData {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchStreamData.class);
 
-    private final static ZoneOffset offset = ZoneOffset.ofHours(-2);
-    private final static String prefix = "GMT"; // Greenwich Mean Time
-    private final static ZoneId gmt = ZoneId.ofOffset(prefix, offset);
-    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(gmt);;
+    private static final ZoneOffset OFFSET = ZoneOffset.ofHours(-2);
+    private static final String PREFIX = "GMT"; // Greenwich Mean Time
+    private static final ZoneId GMT = ZoneId.ofOffset(PREFIX, OFFSET);
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(GMT);;
 
     private boolean online = false;
     private String name = "";
@@ -75,17 +75,16 @@ public class TwitchStreamData {
 
     private void calculateAndSetUptime() {
         try {
-
-            final ZonedDateTime now_date = ZonedDateTime.now().withZoneSameLocal(gmt);
-            ZonedDateTime start_date = ZonedDateTime.parse(getCreatedAt(), DTF);
-            long time = start_date.until(now_date, ChronoUnit.MILLIS);
-            time -= 7200000L;
+            final ZonedDateTime nowDate = ZonedDateTime.now().withZoneSameLocal(GMT);
+            ZonedDateTime startDate = ZonedDateTime.parse(getCreatedAt(), DTF);
+            long time = startDate.until(nowDate, ChronoUnit.MILLIS);
+            final long gmtCorrection = -7200000L;
+            time += gmtCorrection;
             setUptime(time);
         } catch (Exception e) {
             LOGGER.error("ERROR while parsing date", e);
             setUptime(0L);
         }
-
     }
 
     public boolean isOnline() {

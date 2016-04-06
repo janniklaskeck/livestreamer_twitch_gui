@@ -1,4 +1,4 @@
-package app.lsgui.gui.streamList;
+package app.lsgui.gui.streamlist;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +11,7 @@ public class StreamCell extends ListCell<StreamModel> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamCell.class);
 
-    public StreamCell() {
-    }
+
 
     @Override
     protected void updateItem(StreamModel item, boolean isEmpty) {

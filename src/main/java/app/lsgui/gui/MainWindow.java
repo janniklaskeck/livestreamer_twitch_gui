@@ -1,7 +1,6 @@
 package app.lsgui.gui;
 
 import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -14,29 +13,24 @@ import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchChannelUpdateService;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class MainWindow extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MainWindow.class);
-    private static FXMLLoader loader;
-    private static Stage ROOTSTAGE;
+    private static FXMLLoader loader = new FXMLLoader();;
+    private static Stage rootstage;
 
     @Override
     public void init() {
-        loader = new FXMLLoader();
-        Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-            public void uncaughtException(Thread t, Throwable e) {
-                LOGGER.error("Uncaught Exception on JavaFX Thread", e);
-                LOGGER.error("Exiting JavaFX Thread...");
-                Platform.exit();
-            }
+        Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
+            LOGGER.error("Uncaught Exception on JavaFX Thread", throwable);
+            LOGGER.error("Exiting JavaFX Thread...");
+            Platform.exit();
         });
         Platform.setImplicitExit(false);
         Settings.instance();
@@ -45,52 +39,55 @@ public class MainWindow extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         try {
-            Parent root = loader.load(getClass().getResourceAsStream(("/MainWindow.fxml")));
+            Parent root = loader.load(getClass().getResourceAsStream("/MainWindow.fxml"));
             Scene scene = new Scene(root);
-            ROOTSTAGE = primaryStage;
+            setRootStage(primaryStage);
             scene.getStylesheets().add(getClass().getResource("/lightStyle.css").toString());
+
+            primaryStage.setMinHeight(550);
+            primaryStage.setHeight(550);
+
+            primaryStage.setMinWidth(650);
+            primaryStage.setWidth(750);
 
             primaryStage.setTitle("Livestreamer GUI v3.0");
             primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("ERROR while load main fxml", e);
         }
 
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                Settings.instance().saveSettings();
-                Iterator<Map.Entry<StreamModel, TwitchChannelUpdateService>> it = ServiceModel.UPDATESERVICES.entrySet()
-                        .iterator();
-                while (it.hasNext()) {
-                    @SuppressWarnings("unused")
-                    Map.Entry<StreamModel, TwitchChannelUpdateService> pair = it.next();
-                    it.remove();
-                }
-                Platform.exit();
+        primaryStage.setOnCloseRequest(event -> {
+            Settings.instance().saveSettings();
+            Iterator<Map.Entry<StreamModel, TwitchChannelUpdateService>> it = ServiceModel.UPDATESERVICES.entrySet()
+                    .iterator();
+            while (it.hasNext()) {
+                it.next();
+                it.remove();
             }
+            Platform.exit();
+
         });
 
-        primaryStage.setOnHiding(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                Settings.instance().saveSettings();
-                Iterator<Map.Entry<StreamModel, TwitchChannelUpdateService>> it = ServiceModel.UPDATESERVICES.entrySet()
-                        .iterator();
-                while (it.hasNext()) {
-                    @SuppressWarnings("unused")
-                    Map.Entry<StreamModel, TwitchChannelUpdateService> pair = it.next();
-                    it.remove();
-                }
-                Platform.exit();
+        primaryStage.setOnHiding(event -> {
+            Settings.instance().saveSettings();
+            Iterator<Map.Entry<StreamModel, TwitchChannelUpdateService>> it = ServiceModel.UPDATESERVICES.entrySet()
+                    .iterator();
+            while (it.hasNext()) {
+                it.next();
+                it.remove();
             }
+            Platform.exit();
         });
     }
 
-    public final static Stage getRootStage() {
-        return ROOTSTAGE;
+    public static final Stage getRootStage() {
+        return rootstage;
+    }
+
+    private static final void setRootStage(final Stage newRootStage) {
+        rootstage = newRootStage;
     }
 
 }

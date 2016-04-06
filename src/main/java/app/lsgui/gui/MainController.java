@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.streamInfoPanel.StreamInfoPanel;
-import app.lsgui.gui.streamList.StreamList;
+import app.lsgui.gui.streamlist.StreamList;
 import app.lsgui.model.ServiceModel;
 import app.lsgui.model.StreamModel;
 import app.lsgui.service.Settings;
@@ -22,21 +22,18 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 public class MainController {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(MainController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
-    private static StreamList streamList;
-    private static StreamInfoPanel streamInfoPanel;
+    private StreamList streamList;
+    private StreamInfoPanel streamInfoPanel;
 
     @FXML
     private ComboBox<String> qualityComboBox;
@@ -75,16 +72,11 @@ public class MainController {
                     }
                 });
 
-        if (Settings.instance().getStreamServices().size() == 0) {
+        if (Settings.instance().getStreamServices().isEmpty()) {
             Settings.instance().getStreamServices().add(new ServiceModel("Twitch.tv", "http://twitch.tv/"));
         }
         serviceComboBox.getItems().addAll(Settings.instance().getStreamServices());
-        serviceComboBox.setCellFactory(new Callback<ListView<ServiceModel>, ListCell<ServiceModel>>() {
-            @Override
-            public ListCell<ServiceModel> call(ListView<ServiceModel> param) {
-                return new ServiceCell();
-            }
-        });
+        serviceComboBox.setCellFactory(listView -> new ServiceCell());
         serviceComboBox.setConverter(new StringConverter<ServiceModel>() {
             @Override
             public String toString(ServiceModel object) {
@@ -107,17 +99,11 @@ public class MainController {
         contentBorderPane.setCenter(streamInfoPanel);
 
         Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS_SQUARE);
-        addButton.setOnAction(event -> {
-            addAction();
-        });
+        addButton.setOnAction(event -> addAction());
         Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS_SQUARE);
-        removeButton.setOnAction(event -> {
-            removeAction();
-        });
+        removeButton.setOnAction(event -> removeAction());
         Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
-        importButton.setOnAction(event -> {
-            importStreams();
-        });
+        importButton.setOnAction(event -> importStreams());
         toolBarLeft.getItems().add(addButton);
         toolBarLeft.getItems().add(removeButton);
         toolBarLeft.getItems().add(importButton);
@@ -133,11 +119,11 @@ public class MainController {
     }
 
     private void openSettings() {
-
+        LOGGER.debug("Settings not implemented");
     }
 
     private void addAction() {
-        Dialog<Boolean> dialog = new Dialog<Boolean>();
+        Dialog<Boolean> dialog = new Dialog<>();
         dialog.setTitle("Add Stream to current Service");
         ButtonType bt = new ButtonType("Submit", ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
@@ -150,12 +136,11 @@ public class MainController {
         Node submitButton = dialog.getDialogPane().lookupButton(bt);
         submitButton.setDisable(true);
 
-        tf.textProperty().addListener((observable, oldValue, newValue) -> {
-            submitButton.setDisable(newValue.trim().isEmpty());
-        });
+        tf.textProperty()
+                .addListener((observable, oldValue, newValue) -> submitButton.setDisable(newValue.trim().isEmpty()));
 
         dialog.setResultConverter(button -> {
-            if (TwitchProcessor.instance().channelExists(tf.getText().trim()) && !tf.getText().trim().equals("")) {
+            if (TwitchProcessor.instance().channelExists(tf.getText().trim()) && !"".equals(tf.getText().trim())) {
                 return true;
             }
             return false;
@@ -164,10 +149,8 @@ public class MainController {
         Platform.runLater(() -> tf.requestFocus());
 
         Optional<Boolean> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            if (result.get()) {
-                serviceComboBox.getSelectionModel().getSelectedItem().addStream(tf.getText().trim());
-            }
+        if (result.isPresent() && result.get()) {
+            serviceComboBox.getSelectionModel().getSelectedItem().addStream(tf.getText().trim());
         }
     }
 
