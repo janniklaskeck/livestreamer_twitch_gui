@@ -1,10 +1,12 @@
 package app.lsgui.service.twitch;
 
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +19,11 @@ import javafx.scene.image.Image;
 public class TwitchStreamData {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchStreamData.class);
-    private static SimpleDateFormat SDF;
+
+    private final static ZoneOffset offset = ZoneOffset.ofHours(-2);
+    private final static String prefix = "GMT"; // Greenwich Mean Time
+    private final static ZoneId gmt = ZoneId.ofOffset(prefix, offset);
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(gmt);;
 
     private boolean online = false;
     private String name = "";
@@ -34,7 +40,6 @@ public class TwitchStreamData {
     private List<String> qualities;
 
     public TwitchStreamData(final JsonObject streamJson, final String name) {
-        SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         JsonObject streamObject = null;
         if (!streamJson.get("stream").isJsonNull()) {
             streamObject = streamJson.get("stream").getAsJsonObject();
@@ -69,17 +74,18 @@ public class TwitchStreamData {
     }
 
     private void calculateAndSetUptime() {
-        SDF.setTimeZone(TimeZone.getTimeZone("GMT"));
-        long uptime = 0L;
         try {
-            final Date now_date = new Date();
-            final Date start_date = SDF.parse(getCreatedAt());
-            uptime = now_date.getTime() - start_date.getTime();
+
+            final ZonedDateTime now_date = ZonedDateTime.now().withZoneSameLocal(gmt);
+            ZonedDateTime start_date = ZonedDateTime.parse(getCreatedAt(), DTF);
+            long time = start_date.until(now_date, ChronoUnit.MILLIS);
+            time -= 7200000L;
+            setUptime(time);
         } catch (Exception e) {
             LOGGER.error("ERROR while parsing date", e);
-            uptime = 0L;
+            setUptime(0L);
         }
-        setUptime(uptime);
+
     }
 
     public boolean isOnline() {
