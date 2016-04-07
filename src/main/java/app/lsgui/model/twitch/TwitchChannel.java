@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.StreamModel;
-import app.lsgui.service.twitch.TwitchStreamData;
+import app.lsgui.model.Channel;
+import app.lsgui.service.twitch.TwitchChannelData;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -24,9 +24,9 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 import javafx.util.Callback;
 
-public class TwitchStreamModel implements StreamModel {
+public class TwitchChannel implements Channel {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchStreamModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannel.class);
     // TODO Choose other default image
     @SuppressWarnings("unused")
     private static final String DEFAULT_CHANNEL_LOGO = "";
@@ -45,7 +45,7 @@ public class TwitchStreamModel implements StreamModel {
     private ObjectProperty<Image> previewImage;
     private List<String> availableQualities;
 
-    public TwitchStreamModel(final String name) {
+    public TwitchChannel(final String name) {
         this.name = new SimpleStringProperty(name);
         this.logoURL = new SimpleStringProperty("");
         this.previewURL = new SimpleStringProperty("");
@@ -62,7 +62,7 @@ public class TwitchStreamModel implements StreamModel {
         this.availableQualities = new ArrayList<String>();
     }
 
-    public void updateData(final TwitchStreamData data) {
+    public void updateData(final TwitchChannelData data) {
         if (data != null) {
             LOGGER.info("update {} with data {}", data.getName(), data.isOnline());
             name.setValue(data.getName());
@@ -105,13 +105,13 @@ public class TwitchStreamModel implements StreamModel {
         }
     }
 
-    public static Callback<StreamModel, Observable[]> extractor() {
-        return (StreamModel sm) -> new Observable[] { ((TwitchStreamModel) sm).getName(),
-                ((TwitchStreamModel) sm).getGame(), ((TwitchStreamModel) sm).isOnline(),
-                ((TwitchStreamModel) sm).getTitle(), ((TwitchStreamModel) sm).getDescription(),
-                ((TwitchStreamModel) sm).getLogoURL(), ((TwitchStreamModel) sm).getPreviewImage(),
-                ((TwitchStreamModel) sm).getPreviewURL(), ((TwitchStreamModel) sm).getUptime(),
-                ((TwitchStreamModel) sm).getViewers() };
+    public static Callback<Channel, Observable[]> extractor() {
+        return (Channel sm) -> new Observable[] { ((TwitchChannel) sm).getName(),
+                ((TwitchChannel) sm).getGame(), ((TwitchChannel) sm).isOnline(),
+                ((TwitchChannel) sm).getTitle(), ((TwitchChannel) sm).getDescription(),
+                ((TwitchChannel) sm).getLogoURL(), ((TwitchChannel) sm).getPreviewImage(),
+                ((TwitchChannel) sm).getPreviewURL(), ((TwitchChannel) sm).getUptime(),
+                ((TwitchChannel) sm).getViewers() };
     }
 
     /**

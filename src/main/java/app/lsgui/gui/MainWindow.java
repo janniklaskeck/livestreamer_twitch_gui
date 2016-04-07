@@ -7,8 +7,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.ServiceModel;
-import app.lsgui.model.StreamModel;
+import app.lsgui.model.Service;
+import app.lsgui.model.Channel;
 import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchChannelUpdateService;
 import javafx.application.Application;
@@ -60,7 +60,7 @@ public class MainWindow extends Application {
 
         primaryStage.setOnCloseRequest(event -> {
             Settings.instance().saveSettings();
-            Iterator<Map.Entry<StreamModel, TwitchChannelUpdateService>> it = ServiceModel.UPDATESERVICES.entrySet()
+            Iterator<Map.Entry<Channel, TwitchChannelUpdateService>> it = Service.UPDATESERVICES.entrySet()
                     .iterator();
             while (it.hasNext()) {
                 it.next();
@@ -72,7 +72,7 @@ public class MainWindow extends Application {
 
         primaryStage.setOnHiding(event -> {
             Settings.instance().saveSettings();
-            Iterator<Map.Entry<StreamModel, TwitchChannelUpdateService>> it = ServiceModel.UPDATESERVICES.entrySet()
+            Iterator<Map.Entry<Channel, TwitchChannelUpdateService>> it = Service.UPDATESERVICES.entrySet()
                     .iterator();
             while (it.hasNext()) {
                 it.next();

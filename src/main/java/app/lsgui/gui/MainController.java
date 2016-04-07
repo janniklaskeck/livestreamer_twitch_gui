@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.streamInfoPanel.StreamInfoPanel;
 import app.lsgui.gui.streamlist.StreamList;
-import app.lsgui.model.ServiceModel;
-import app.lsgui.model.StreamModel;
+import app.lsgui.model.Service;
+import app.lsgui.model.Channel;
 import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchProcessor;
 import de.jensd.fx.glyphs.GlyphsDude;
@@ -39,7 +39,7 @@ public class MainController {
     private ComboBox<String> qualityComboBox;
 
     @FXML
-    private ComboBox<ServiceModel> serviceComboBox;
+    private ComboBox<Service> serviceComboBox;
 
     @FXML
     private BorderPane contentBorderPane;
@@ -63,7 +63,7 @@ public class MainController {
 
         streamList.getListView().getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
-                    StreamModel value = newValue == null ? oldValue : newValue;
+                    Channel value = newValue == null ? oldValue : newValue;
                     qualityComboBox.setItems(FXCollections.observableArrayList(value.getAvailableQualities()));
                     if (qualityComboBox.getItems().size() > 1) {
                         qualityComboBox.getSelectionModel().select("best");
@@ -73,13 +73,13 @@ public class MainController {
                 });
 
         if (Settings.instance().getStreamServices().isEmpty()) {
-            Settings.instance().getStreamServices().add(new ServiceModel("Twitch.tv", "http://twitch.tv/"));
+            Settings.instance().getStreamServices().add(new Service("Twitch.tv", "http://twitch.tv/"));
         }
         serviceComboBox.getItems().addAll(Settings.instance().getStreamServices());
         serviceComboBox.setCellFactory(listView -> new ServiceCell());
-        serviceComboBox.setConverter(new StringConverter<ServiceModel>() {
+        serviceComboBox.setConverter(new StringConverter<Service>() {
             @Override
-            public String toString(ServiceModel object) {
+            public String toString(Service object) {
                 if (object == null) {
                     return null;
                 }
@@ -87,7 +87,7 @@ public class MainController {
             }
 
             @Override
-            public ServiceModel fromString(String string) {
+            public Service fromString(String string) {
                 return null;
             }
         });
@@ -113,7 +113,7 @@ public class MainController {
         toolBarRight.getItems().add(settingsButton);
     }
 
-    private void changeService(final ServiceModel newService) {
+    private void changeService(final Service newService) {
         LOGGER.debug("Change Service to {}", newService.getName().get());
         streamList.getStreams().bind(newService.getChannels());
     }
@@ -155,7 +155,7 @@ public class MainController {
     }
 
     private void removeAction() {
-        StreamModel toRemove = streamList.getListView().getSelectionModel().getSelectedItem();
+        Channel toRemove = streamList.getListView().getSelectionModel().getSelectedItem();
         serviceComboBox.getSelectionModel().getSelectedItem().removeSelectedStream(toRemove);
     }
 

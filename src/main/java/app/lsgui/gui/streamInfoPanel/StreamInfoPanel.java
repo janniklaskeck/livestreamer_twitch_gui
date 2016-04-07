@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.MainWindow;
-import app.lsgui.model.ServiceModel;
-import app.lsgui.model.StreamModel;
-import app.lsgui.model.twitch.TwitchStreamModel;
+import app.lsgui.model.Service;
+import app.lsgui.model.Channel;
+import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.utils.Utils;
 import app.lsgui.utils.WrappedImageView;
 import de.jensd.fx.glyphs.GlyphsDude;
@@ -35,10 +35,10 @@ public class StreamInfoPanel extends BorderPane {
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamInfoPanel.class);
     private static FXMLLoader loader;
 
-    private ComboBox<ServiceModel> serviceComboBox;
+    private ComboBox<Service> serviceComboBox;
     private ComboBox<String> qualityComboBox;
 
-    private ObjectProperty<StreamModel> modelProperty;
+    private ObjectProperty<Channel> modelProperty;
 
     private WrappedImageView previewImageView;
 
@@ -59,9 +59,9 @@ public class StreamInfoPanel extends BorderPane {
     @FXML
     private ToolBar buttonBox;
 
-    public StreamInfoPanel(ComboBox<ServiceModel> serviceComboBox, ComboBox<String> qualityComboBox) {
+    public StreamInfoPanel(ComboBox<Service> serviceComboBox, ComboBox<String> qualityComboBox) {
         LOGGER.debug("Construct StreamInfoPanel");
-        modelProperty = new SimpleObjectProperty<StreamModel>();
+        modelProperty = new SimpleObjectProperty<Channel>();
 
         this.serviceComboBox = serviceComboBox;
         this.qualityComboBox = qualityComboBox;
@@ -87,22 +87,22 @@ public class StreamInfoPanel extends BorderPane {
         descriptionGrid.add(streamUptime, 0, 2, 1, 1);
         descriptionGrid.add(streamDescription, 0, 3, 1, 1);
 
-        modelProperty.addListener(new ChangeListener<StreamModel>() {
+        modelProperty.addListener(new ChangeListener<Channel>() {
             @Override
-            public void changed(ObservableValue<? extends StreamModel> observable, StreamModel oldValue,
-                    StreamModel newValue) {
-                StreamModel valueStreamModel = newValue == null ? oldValue : newValue;
-                if (valueStreamModel.getClass().equals(TwitchStreamModel.class)) {
-                    previewImageView.imageProperty().bind(((TwitchStreamModel) valueStreamModel).getPreviewImage());
-                    streamDescription.textProperty().bind(((TwitchStreamModel) valueStreamModel).getDescription());
+            public void changed(ObservableValue<? extends Channel> observable, Channel oldValue,
+                    Channel newValue) {
+                Channel valueStreamModel = newValue == null ? oldValue : newValue;
+                if (valueStreamModel.getClass().equals(TwitchChannel.class)) {
+                    previewImageView.imageProperty().bind(((TwitchChannel) valueStreamModel).getPreviewImage());
+                    streamDescription.textProperty().bind(((TwitchChannel) valueStreamModel).getDescription());
 
-                    streamUptime.textProperty().bind(((TwitchStreamModel) valueStreamModel).getUptimeString());
+                    streamUptime.textProperty().bind(((TwitchChannel) valueStreamModel).getUptimeString());
                     streamUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
 
-                    streamViewers.textProperty().bind(((TwitchStreamModel) valueStreamModel).getViewersString());
+                    streamViewers.textProperty().bind(((TwitchChannel) valueStreamModel).getViewersString());
                     streamViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
 
-                    streamGame.textProperty().bind(((TwitchStreamModel) valueStreamModel).getGame());
+                    streamGame.textProperty().bind(((TwitchChannel) valueStreamModel).getGame());
                     streamGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
                 } else {
                     streamDescription.textProperty().bind(modelProperty.get().getName());
@@ -136,7 +136,7 @@ public class StreamInfoPanel extends BorderPane {
         buttonBox.getItems().add(openBrowserButton);
     }
 
-    public void setStream(StreamModel model) {
+    public void setStream(Channel model) {
         modelProperty.setValue(model);
     }
 
@@ -171,7 +171,7 @@ public class StreamInfoPanel extends BorderPane {
     /**
      * @return the modelProperty
      */
-    public ObjectProperty<StreamModel> getModelProperty() {
+    public ObjectProperty<Channel> getModelProperty() {
         return modelProperty;
     }
 
@@ -179,7 +179,7 @@ public class StreamInfoPanel extends BorderPane {
      * @param modelProperty
      *            the modelProperty to set
      */
-    public void setModelProperty(ObjectProperty<StreamModel> modelProperty) {
+    public void setModelProperty(ObjectProperty<Channel> modelProperty) {
         this.modelProperty = modelProperty;
     }
 

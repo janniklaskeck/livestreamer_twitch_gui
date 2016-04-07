@@ -16,9 +16,9 @@ import com.google.gson.JsonObject;
 import app.lsgui.utils.Utils;
 import javafx.scene.image.Image;
 
-public class TwitchStreamData {
+public class TwitchChannelData {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchStreamData.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelData.class);
 
     private static final ZoneOffset OFFSET = ZoneOffset.ofHours(-2);
     private static final String PREFIX = "GMT"; // Greenwich Mean Time
@@ -39,7 +39,7 @@ public class TwitchStreamData {
     private Image logoImage;
     private List<String> qualities;
 
-    public TwitchStreamData(final JsonObject streamJson, final String name) {
+    public TwitchChannelData(final JsonObject streamJson, final String name) {
         JsonObject streamObject = null;
         if (!streamJson.get("stream").isJsonNull()) {
             streamObject = streamJson.get("stream").getAsJsonObject();

@@ -1,12 +1,12 @@
 package app.lsgui.gui;
 
-import app.lsgui.model.ServiceModel;
+import app.lsgui.model.Service;
 import javafx.scene.control.ListCell;
 
-public class ServiceCell extends ListCell<ServiceModel> {
+public class ServiceCell extends ListCell<Service> {
 
     @Override
-    protected void updateItem(ServiceModel item, boolean isEmpty) {
+    protected void updateItem(Service item, boolean isEmpty) {
         super.updateItem(item, isEmpty);
 
         if (isEmpty || item == null) {

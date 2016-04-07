@@ -2,14 +2,14 @@ package app.lsgui.model.twitch;
 
 import com.google.gson.JsonObject;
 
-public class TwitchGameModel {
+public class TwitchGame {
 
     private String name;
     private String logoURL;
     private int viewers;
     private int channels;
 
-    public TwitchGameModel(JsonObject jo) {
+    public TwitchGame(JsonObject jo) {
 
     }
 

@@ -15,8 +15,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 
-import app.lsgui.model.ServiceModel;
-import app.lsgui.model.StreamModel;
+import app.lsgui.model.Service;
+import app.lsgui.model.Channel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import junit.runner.Version;
@@ -27,7 +27,7 @@ public class Settings {
 
     private static Settings instance;
 
-    private List<ServiceModel> streamServices = new ArrayList<ServiceModel>();
+    private List<Service> streamServices = new ArrayList<Service>();
     private boolean sortTwitch = true;
     private boolean showPreview = true;
     private boolean autoUpdate = true;
@@ -124,7 +124,7 @@ public class Settings {
             JsonArray services = jArray.get(1).getAsJsonArray();
             for (int i = 0; i < services.size(); i++) {
                 JsonObject service = services.get(i).getAsJsonObject();
-                ServiceModel ss = new ServiceModel(service.get(SERVICENAME).getAsString(),
+                Service ss = new Service(service.get(SERVICENAME).getAsString(),
                         service.get(SERVICEURL).getAsString());
 
                 JsonArray channels = service.get("channels").getAsJsonArray();
@@ -161,13 +161,13 @@ public class Settings {
             w.name(MINIMIZETOTRAY).value(minimizeToTray);
             w.endObject();
             w.beginArray();
-            for (ServiceModel s : streamServices) {
+            for (Service s : streamServices) {
                 w.beginObject();
                 w.name(SERVICENAME).value(s.getName().get());
                 w.name(SERVICEURL).value(s.getUrl().get());
                 w.name("channels");
                 w.beginArray();
-                for (StreamModel channel : s.getChannels()) {
+                for (Channel channel : s.getChannels()) {
                     w.value(channel.getName().get());
                 }
                 w.endArray();
@@ -182,11 +182,11 @@ public class Settings {
         }
     }
 
-    public List<ServiceModel> getStreamServices() {
+    public List<Service> getStreamServices() {
         return streamServices;
     }
 
-    public ObservableList<ServiceModel> getStreamServicesObservable() {
+    public ObservableList<Service> getStreamServicesObservable() {
         return FXCollections.observableArrayList(streamServices);
     }
 

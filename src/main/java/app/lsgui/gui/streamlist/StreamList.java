@@ -6,7 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.StreamModel;
+import app.lsgui.model.Channel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -22,13 +22,13 @@ public class StreamList extends AnchorPane {
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamList.class);
     private static FXMLLoader loader;
 
-    private final ListProperty<StreamModel> streams = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ListProperty<Channel> streams = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    private ListProperty<StreamModel> streamProperty;
-    private ObjectProperty<StreamModel> modelProperty;
+    private ListProperty<Channel> streamProperty;
+    private ObjectProperty<Channel> modelProperty;
 
     @FXML
-    private ListView<StreamModel> streamListView;
+    private ListView<Channel> streamListView;
 
     public StreamList() {
         LOGGER.debug("Construct StreamList");
@@ -56,7 +56,7 @@ public class StreamList extends AnchorPane {
     /**
      * @return the streams
      */
-    public ListProperty<StreamModel> getStreams() {
+    public ListProperty<Channel> getStreams() {
         return streamProperty;
     }
 
@@ -64,14 +64,14 @@ public class StreamList extends AnchorPane {
      * @param streams
      *            the streams to set
      */
-    public void setStreams(List<StreamModel> streams) {
+    public void setStreams(List<Channel> streams) {
         streamProperty.set(FXCollections.observableList(streams));
     }
 
     /**
      * @return the streamList
      */
-    public ListView<StreamModel> getListView() {
+    public ListView<Channel> getListView() {
         return streamListView;
     }
 
@@ -79,14 +79,14 @@ public class StreamList extends AnchorPane {
      * @param streamList
      *            the streamList to set
      */
-    public void setListView(ListView<StreamModel> streamList) {
+    public void setListView(ListView<Channel> streamList) {
         this.streamListView = streamList;
     }
 
     /**
      * @return the modelProperty
      */
-    public ObjectProperty<StreamModel> getModelProperty() {
+    public ObjectProperty<Channel> getModelProperty() {
         return modelProperty;
     }
 
@@ -94,7 +94,7 @@ public class StreamList extends AnchorPane {
      * @param modelProperty
      *            the modelProperty to set
      */
-    public void setModelProperty(ObjectProperty<StreamModel> modelProperty) {
+    public void setModelProperty(ObjectProperty<Channel> modelProperty) {
         this.modelProperty = modelProperty;
     }
 }

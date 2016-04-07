@@ -7,7 +7,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.twitch.TwitchStreamModel;
+import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.service.twitch.TwitchChannelUpdateService;
 import app.lsgui.service.twitch.TwitchProcessor;
 import javafx.beans.property.ListProperty;
@@ -18,30 +18,30 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
-public class ServiceModel {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceModel.class);
+public class Service {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
 
     private StringProperty name;
     private StringProperty url;
-    private ListProperty<StreamModel> channels;
-    private ObservableList<StreamModel> streams;
+    private ListProperty<Channel> channels;
+    private ObservableList<Channel> streams;
 
-    public final static ObservableMap<StreamModel, TwitchChannelUpdateService> UPDATESERVICES = FXCollections
+    public final static ObservableMap<Channel, TwitchChannelUpdateService> UPDATESERVICES = FXCollections
             .observableHashMap();
 
-    public ServiceModel(String name, String url) {
+    public Service(String name, String url) {
         this.name = new SimpleStringProperty(name);
         this.url = new SimpleStringProperty(url);
-        this.channels = new SimpleListProperty<StreamModel>();
+        this.channels = new SimpleListProperty<Channel>();
         this.streams = FXCollections.observableArrayList();
     }
 
     public void addStream(final String name) {
         LOGGER.debug("Add Stream to List");
-        List<StreamModel> streams = new ArrayList<StreamModel>(getChannels().subList(0, getChannels().getSize()));
-        StreamModel sm = new TwitchStreamModel(name);
+        List<Channel> streams = new ArrayList<Channel>(getChannels().subList(0, getChannels().getSize()));
+        Channel sm = new TwitchChannel(name);
         streams.add(sm);
-        ObservableList<StreamModel> obsStreams = FXCollections.observableArrayList(TwitchStreamModel.extractor());
+        ObservableList<Channel> obsStreams = FXCollections.observableArrayList(TwitchChannel.extractor());
         obsStreams.addAll(streams);
         getChannels().setValue(obsStreams);
 
@@ -50,12 +50,12 @@ public class ServiceModel {
         UPDATESERVICES.put(sm, tcus);
     }
 
-    public void removeSelectedStream(final StreamModel selectedStream) {
+    public void removeSelectedStream(final Channel selectedStream) {
         if (selectedStream != null) {
             LOGGER.debug("Remove stream {} from list", selectedStream.getName());
-            List<StreamModel> streams = getChannels().subList(0, getChannels().getSize());
+            List<Channel> streams = getChannels().subList(0, getChannels().getSize());
             streams.remove(selectedStream);
-            ObservableList<StreamModel> obsStreams = FXCollections.observableArrayList(TwitchStreamModel.extractor());
+            ObservableList<Channel> obsStreams = FXCollections.observableArrayList(TwitchChannel.extractor());
             obsStreams.addAll(streams);
             getChannels().setValue(obsStreams);
 
@@ -68,23 +68,23 @@ public class ServiceModel {
         LOGGER.debug("Import followed Streams for user {}", username);
 
         Set<String> set = TwitchProcessor.instance().getListOfFollowedStreams(username);
-        List<StreamModel> list = new ArrayList<StreamModel>();
+        List<Channel> list = new ArrayList<Channel>();
         for (String s : set) {
-            list.add(new TwitchStreamModel(s));
+            list.add(new TwitchChannel(s));
         }
         streams = FXCollections.observableArrayList(list);
-        ObservableList<StreamModel> obsStreams = FXCollections.observableArrayList(TwitchStreamModel.extractor());
+        ObservableList<Channel> obsStreams = FXCollections.observableArrayList(TwitchChannel.extractor());
         obsStreams.addAll(streams);
         getChannels().setValue(obsStreams);
 
-        for (StreamModel sm : streams) {
+        for (Channel sm : streams) {
             final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
             tcus.start();
             UPDATESERVICES.put(sm, tcus);
         }
     }
 
-    public ListProperty<StreamModel> getChannels() {
+    public ListProperty<Channel> getChannels() {
         return channels;
     }
 
