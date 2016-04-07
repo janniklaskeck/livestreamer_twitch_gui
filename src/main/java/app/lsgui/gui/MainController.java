@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.streamInfoPanel.StreamInfoPanel;
-import app.lsgui.gui.streamlist.StreamList;
+import app.lsgui.gui.streamInfoPanel.ChannelInfoPanel;
+import app.lsgui.gui.streamlist.ChannelList;
 import app.lsgui.model.Service;
 import app.lsgui.model.Channel;
 import app.lsgui.service.Settings;
@@ -32,8 +32,8 @@ public class MainController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
-    private StreamList streamList;
-    private StreamInfoPanel streamInfoPanel;
+    private ChannelList streamList;
+    private ChannelInfoPanel streamInfoPanel;
 
     @FXML
     private ComboBox<String> qualityComboBox;
@@ -57,8 +57,8 @@ public class MainController {
     public void initialize() {
         LOGGER.debug("INIT MainController");
 
-        streamList = new StreamList();
-        streamInfoPanel = new StreamInfoPanel(serviceComboBox, qualityComboBox);
+        streamList = new ChannelList();
+        streamInfoPanel = new ChannelInfoPanel(serviceComboBox, qualityComboBox);
         streamInfoPanel.getModelProperty().bind(streamList.getModelProperty());
 
         streamList.getListView().getSelectionModel().selectedItemProperty()

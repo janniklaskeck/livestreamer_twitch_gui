@@ -16,7 +16,5 @@ public class Main {
         LOGGER.debug("Pre-Launch finished");
 
         Application.launch(MainWindow.class, args);
-
     }
-
 }
