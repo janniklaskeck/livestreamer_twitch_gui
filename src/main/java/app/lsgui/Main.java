@@ -8,7 +8,11 @@ import javafx.application.Application;
 
 public class Main {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+
+    private Main() {
+
+    }
 
     public static void main(String[] args) {
         System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");

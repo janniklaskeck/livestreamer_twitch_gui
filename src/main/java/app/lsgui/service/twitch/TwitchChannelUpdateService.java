@@ -7,8 +7,6 @@ import app.lsgui.model.Channel;
 import app.lsgui.model.twitch.TwitchChannel;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.util.Duration;
 
 public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelData> {
@@ -30,12 +28,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
                     }
                 }
             });
-            setOnFailed(new EventHandler<WorkerStateEvent>() {
-                @Override
-                public void handle(WorkerStateEvent event) {
-                    LOGGER.warn("UPDATE SERVICE FAILED");
-                }
-            });
+            setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
         }
     }
 

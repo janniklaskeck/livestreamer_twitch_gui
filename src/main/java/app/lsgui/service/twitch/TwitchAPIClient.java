@@ -23,105 +23,102 @@ import com.google.gson.JsonSyntaxException;
 
 public class TwitchAPIClient {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TwitchAPIClient.class);
-	private static final JsonParser JSONPARSER = new JsonParser();
-	private static final String TWITCHBASEURL = "https://api.twitch.tv/kraken/";
-	private static final String LSGUI_CLIENT_ID = "rfpepzumaxd1iija3ip3fixao6z13pj";
-	private static final int CONNECTION_COUNT = 100;
-	private static final HttpClient HTTP_CLIENT;
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchAPIClient.class);
+    private static final JsonParser JSONPARSER = new JsonParser();
+    private static final String TWITCHBASEURL = "https://api.twitch.tv/kraken/";
+    private static final String LSGUI_CLIENT_ID = "rfpepzumaxd1iija3ip3fixao6z13pj";
+    private static final int CONNECTION_COUNT = 100;
+    private static final HttpClient HTTP_CLIENT;
 
-	private static TwitchAPIClient instance = null;
+    private static TwitchAPIClient instance = null;
 
-	private TwitchAPIClient() {
-		LOGGER.debug("TwitchProcessor constructed");
-	}
+    private TwitchAPIClient() {
+        LOGGER.debug("TwitchProcessor constructed");
+    }
 
-	public static synchronized TwitchAPIClient instance() {
-		if (instance == null) {
-			instance = new TwitchAPIClient();
-		}
+    public static synchronized TwitchAPIClient instance() {
+        if (instance == null) {
+            instance = new TwitchAPIClient();
+        }
 
-		return instance;
-	}
+        return instance;
+    }
 
-	public TwitchChannelData getStreamData(final String channelName) {
-		try {
-			LOGGER.debug("Load channelData for {}", channelName);
-			JsonObject jo = new JsonObject();
-			jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "streams/" + channelName)).getAsJsonObject();
-			TwitchChannelData data = new TwitchChannelData(jo, channelName);
-			LOGGER.debug("data loaded {}", data.getName());
-			return data;
-		} catch (JsonSyntaxException e) {
-			LOGGER.error("ERROR while loading channel data. Return empty channel", e);
-			return new TwitchChannelData(new JsonObject(), channelName);
-		}
-	}
+    public TwitchChannelData getStreamData(final String channelName) {
+        try {
+            LOGGER.debug("Load channelData for {}", channelName);
+            JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "streams/" + channelName))
+                    .getAsJsonObject();
+            TwitchChannelData data = new TwitchChannelData(jo, channelName);
+            LOGGER.debug("data loaded {}", data.getName());
+            return data;
+        } catch (JsonSyntaxException e) {
+            LOGGER.error("ERROR while loading channel data. Return empty channel", e);
+            return new TwitchChannelData(new JsonObject(), channelName);
+        }
+    }
 
-	public TwitchGameData getGameData() {
-		LOGGER.debug("Load gamesData");
-		LOGGER.debug("gamestoload not implemented");
-		JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "games/top?limit=" + 20 + "&offset=0"))
-				.getAsJsonObject();
-		TwitchGameData data = new TwitchGameData(jo);
-		return data;
-	}
+    public TwitchGameData getGameData() {
+        LOGGER.debug("Load gamesData");
+        LOGGER.debug("gamestoload not implemented");
+        JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "games/top?limit=" + 20 + "&offset=0"))
+                .getAsJsonObject();
+        return new TwitchGameData(jo);
+    }
 
-	public Set<String> getListOfFollowedStreams(final String userName) {
-		Set<String> followedStreams = new TreeSet<String>();
-		JsonObject jo = JSONPARSER
-				.parse(getAPIResponse("https://api.twitch.tv/kraken/users/" + userName + "/follows/channels"))
-				.getAsJsonObject();
+    public Set<String> getListOfFollowedStreams(final String userName) {
+        Set<String> followedStreams = new TreeSet<>();
+        JsonObject jo = JSONPARSER
+                .parse(getAPIResponse("https://api.twitch.tv/kraken/users/" + userName + "/follows/channels"))
+                .getAsJsonObject();
 
-		final int total = jo.get("_total").getAsInt();
-		JsonArray streams = jo.getAsJsonArray("follows");
-		JsonObject _links = jo.get("_links").getAsJsonObject();
-		String self = _links.get("self").getAsString();
-		String next = _links.get("next").getAsString();
+        final int total = jo.get("_total").getAsInt();
+        JsonArray streams = jo.getAsJsonArray("follows");
+        JsonObject links = jo.get("_links").getAsJsonObject();
+        String self = links.get("self").getAsString();
+        String next = links.get("next").getAsString();
 
-		int offset = Integer.valueOf(self.split("&")[2].split("=")[1]);
-		while (offset < total) {
-			for (JsonElement je : streams) {
-				JsonObject channel = je.getAsJsonObject().get("channel").getAsJsonObject();
-				String name = channel.get("name").getAsString();
-				followedStreams.add(name);
-			}
-			jo = JSONPARSER.parse(getAPIResponse(next)).getAsJsonObject();
-			streams = jo.getAsJsonArray("follows");
-			_links = jo.get("_links").getAsJsonObject();
-			self = _links.get("self").getAsString();
-			next = _links.get("next").getAsString();
-			offset = Integer.valueOf(self.split("&")[2].split("=")[1]);
-		}
-		return followedStreams;
-	}
+        int offset = Integer.parseInt(self.split("&")[2].split("=")[1]);
+        while (offset < total) {
+            for (JsonElement je : streams) {
+                JsonObject channel = je.getAsJsonObject().get("channel").getAsJsonObject();
+                String name = channel.get("name").getAsString();
+                followedStreams.add(name);
+            }
+            jo = JSONPARSER.parse(getAPIResponse(next)).getAsJsonObject();
+            streams = jo.getAsJsonArray("follows");
+            links = jo.get("_links").getAsJsonObject();
+            self = links.get("self").getAsString();
+            next = links.get("next").getAsString();
+            offset = Integer.valueOf(self.split("&")[2].split("=")[1]);
+        }
+        return followedStreams;
+    }
 
-	public boolean channelExists(final String channel) {
-		if ("".equals(getAPIResponse(TWITCHBASEURL + "streams/" + channel))) {
-			return false;
-		}
-		return true;
-	}
+    public boolean channelExists(final String channel) {
+        if ("".equals(getAPIResponse(TWITCHBASEURL + "streams/" + channel))) {
+            return false;
+        }
+        return true;
+    }
 
-	public String getAPIResponse(final String apiUrl) {
-		try {
-			String result = null;
-			final URI URL = new URI(apiUrl);
-			final HttpGet request = new HttpGet(URL);
-			request.setHeader("Client-ID", LSGUI_CLIENT_ID);
-			final HttpResponse response = HTTP_CLIENT.execute(request);
-			result = new BasicResponseHandler().handleResponse(response);
-			return result;
-		} catch (URISyntaxException | IOException e) {
-			LOGGER.error("Error when fetching twitch api response", e);
-			return "";
-		}
-	}
+    public String getAPIResponse(final String apiUrl) {
+        try {
+            final URI url = new URI(apiUrl);
+            final HttpGet request = new HttpGet(url);
+            request.setHeader("Client-ID", LSGUI_CLIENT_ID);
+            final HttpResponse response = HTTP_CLIENT.execute(request);
+            return new BasicResponseHandler().handleResponse(response);
+        } catch (URISyntaxException | IOException e) {
+            LOGGER.error("Error when fetching twitch api response", e);
+            return "";
+        }
+    }
 
-	static {
-		final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-		cm.setMaxTotal(CONNECTION_COUNT);
-		cm.setDefaultMaxPerRoute(CONNECTION_COUNT);
-		HTTP_CLIENT = HttpClients.createMinimal(cm);
-	}
+    static {
+        final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+        cm.setMaxTotal(CONNECTION_COUNT);
+        cm.setDefaultMaxPerRoute(CONNECTION_COUNT);
+        HTTP_CLIENT = HttpClients.createMinimal(cm);
+    }
 }

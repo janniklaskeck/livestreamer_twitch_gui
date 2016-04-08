@@ -11,8 +11,10 @@ public class TwitchGameData {
 
     private Map<String, TwitchGame> gamesMap;
 
-    public TwitchGameData(JsonObject twitchData) {
-        gamesMap = new HashMap<String, TwitchGame>();
+    public TwitchGameData(JsonObject jo) {
+        gamesMap = new HashMap<>();
+        JsonObject joda = jo;
+        joda.isJsonArray();
     }
 
     /**
