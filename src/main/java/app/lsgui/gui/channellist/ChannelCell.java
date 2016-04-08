@@ -1,4 +1,4 @@
-package app.lsgui.gui.streamlist;
+package app.lsgui.gui.channellist;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,9 +7,9 @@ import app.lsgui.model.Channel;
 import javafx.scene.control.ListCell;
 import javafx.scene.paint.Color;
 
-public class StreamCell extends ListCell<Channel> {
+public class ChannelCell extends ListCell<Channel> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StreamCell.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class);
 
 
 

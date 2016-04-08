@@ -1,4 +1,4 @@
-package app.lsgui.gui.streamlist;
+package app.lsgui.gui.channellist;
 
 import java.io.IOException;
 import java.util.List;
@@ -53,7 +53,7 @@ public class ChannelList extends AnchorPane {
 		modelProperty.bind(channelListView.getSelectionModel().selectedItemProperty());
 		channelListView.itemsProperty().bind(channelProperty);
 
-		channelListView.setCellFactory(listView -> new StreamCell());
+		channelListView.setCellFactory(listView -> new ChannelCell());
 
 		streams.bind(getListView().itemsProperty());
 

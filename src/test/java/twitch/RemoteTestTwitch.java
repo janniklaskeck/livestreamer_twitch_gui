@@ -2,11 +2,11 @@ package twitch;
 
 import org.junit.Test;
 
-import app.lsgui.service.twitch.TwitchProcessor;
+import app.lsgui.service.twitch.TwitchAPIClient;
 
 public class RemoteTestTwitch {
 
-    TwitchProcessor tp = TwitchProcessor.instance();
+    TwitchAPIClient tp = TwitchAPIClient.instance();
 
     @Test
     public void test() {

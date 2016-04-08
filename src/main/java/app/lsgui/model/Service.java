@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.service.twitch.TwitchChannelUpdateService;
-import app.lsgui.service.twitch.TwitchProcessor;
+import app.lsgui.service.twitch.TwitchAPIClient;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -67,7 +67,7 @@ public class Service {
     public void addFollowedStreams(final String username) {
         LOGGER.debug("Import followed Streams for user {}", username);
 
-        Set<String> set = TwitchProcessor.instance().getListOfFollowedStreams(username);
+        Set<String> set = TwitchAPIClient.instance().getListOfFollowedStreams(username);
         List<Channel> list = new ArrayList<Channel>();
         for (String s : set) {
             list.add(new TwitchChannel(s));

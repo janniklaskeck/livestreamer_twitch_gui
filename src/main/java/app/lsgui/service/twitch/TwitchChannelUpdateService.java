@@ -46,7 +46,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
             protected TwitchChannelData call() throws Exception {
                 TwitchChannelData tsd = null;
                 try {
-                    tsd = TwitchProcessor.instance().getStreamData(model.getName().get());
+                    tsd = TwitchAPIClient.instance().getStreamData(model.getName().get());
                 } catch (Exception e) {
                     LOGGER.error("TASK EXCEPTION", e);
                 }

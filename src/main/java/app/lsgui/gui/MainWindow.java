@@ -37,13 +37,21 @@ public class MainWindow extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		Parent root = null;
+		Parent root = loadFXML();
+		setupStage(root, primaryStage);
+	}
+
+	private Parent loadFXML() {
 		try {
-			root = FXMLLoader.load(getClass().getClassLoader().getResource("fxml/mainwindow.fxml"));
+			return FXMLLoader.load(getClass().getClassLoader().getResource("fxml/mainwindow.fxml"));
 		} catch (IOException e) {
 			LOGGER.error("ERROR while load main fxml", e);
 			Platform.exit();
+			return null;
 		}
+	}
+
+	private void setupStage(final Parent root, final Stage primaryStage) {
 		Scene scene = new Scene(root);
 		setRootStage(primaryStage);
 		scene.getStylesheets().add(getClass().getResource("/lightStyle.css").toString());

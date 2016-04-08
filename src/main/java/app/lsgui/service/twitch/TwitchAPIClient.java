@@ -21,40 +21,41 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-public class TwitchProcessor {
+public class TwitchAPIClient {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TwitchProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TwitchAPIClient.class);
 	private static final JsonParser JSONPARSER = new JsonParser();
 	private static final String TWITCHBASEURL = "https://api.twitch.tv/kraken/";
 	private static final String LSGUI_CLIENT_ID = "rfpepzumaxd1iija3ip3fixao6z13pj";
 	private static final int CONNECTION_COUNT = 100;
 	private static final HttpClient HTTP_CLIENT;
 
-	private static TwitchProcessor instance = null;
+	private static TwitchAPIClient instance = null;
 
-	private TwitchProcessor() {
+	private TwitchAPIClient() {
 		LOGGER.debug("TwitchProcessor constructed");
 	}
 
-	public static synchronized TwitchProcessor instance() {
+	public static synchronized TwitchAPIClient instance() {
 		if (instance == null) {
-			instance = new TwitchProcessor();
+			instance = new TwitchAPIClient();
 		}
 
 		return instance;
 	}
 
-	public TwitchChannelData getStreamData(final String streamName) {
-		LOGGER.debug("Load streamData for {}", streamName);
-		JsonObject jo = new JsonObject();
+	public TwitchChannelData getStreamData(final String channelName) {
 		try {
-			jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "streams/" + streamName)).getAsJsonObject();
+			LOGGER.debug("Load channelData for {}", channelName);
+			JsonObject jo = new JsonObject();
+			jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "streams/" + channelName)).getAsJsonObject();
+			TwitchChannelData data = new TwitchChannelData(jo, channelName);
+			LOGGER.debug("data loaded {}", data.getName());
+			return data;
 		} catch (JsonSyntaxException e) {
-			e.printStackTrace();
+			LOGGER.error("ERROR while loading channel data. Return empty channel", e);
+			return new TwitchChannelData(new JsonObject(), channelName);
 		}
-		TwitchChannelData data = new TwitchChannelData(jo, streamName);
-		LOGGER.debug("data loaded {}", data.getName());
-		return data;
 	}
 
 	public TwitchGameData getGameData() {
@@ -96,25 +97,25 @@ public class TwitchProcessor {
 	}
 
 	public boolean channelExists(final String channel) {
-		if (getAPIResponse(TWITCHBASEURL + "streams/" + channel) == null) {
+		if ("".equals(getAPIResponse(TWITCHBASEURL + "streams/" + channel))) {
 			return false;
 		}
 		return true;
 	}
 
 	public String getAPIResponse(final String apiUrl) {
-		String result = null;
 		try {
+			String result = null;
 			final URI URL = new URI(apiUrl);
 			final HttpGet request = new HttpGet(URL);
 			request.setHeader("Client-ID", LSGUI_CLIENT_ID);
 			final HttpResponse response = HTTP_CLIENT.execute(request);
 			result = new BasicResponseHandler().handleResponse(response);
+			return result;
 		} catch (URISyntaxException | IOException e) {
 			LOGGER.error("Error when fetching twitch api response", e);
+			return "";
 		}
-		return result;
-
 	}
 
 	static {

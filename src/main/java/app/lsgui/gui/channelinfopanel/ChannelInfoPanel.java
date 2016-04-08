@@ -1,4 +1,4 @@
-package app.lsgui.gui.streamInfoPanel;
+package app.lsgui.gui.channelinfopanel;
 
 import java.io.File;
 import java.io.IOException;
