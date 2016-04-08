@@ -11,7 +11,8 @@ public class ChannelCell extends ListCell<Channel> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class);
 
-
+    private ChannelCell() {
+    }
 
     @Override
     protected void updateItem(Channel item, boolean isEmpty) {
@@ -24,6 +25,9 @@ public class ChannelCell extends ListCell<Channel> {
             if (item.isOnline().get()) {
                 setStyle("-fx-background-color: lightgreen; -fx-border-color: black");
                 setTextFill(Color.GREEN);
+            } else {
+                setStyle("");
+                setTextFill(Color.BLACK);
             }
         }
     }
