@@ -64,45 +64,52 @@ public class TwitchChannel implements Channel {
 
 	public void updateData(final TwitchChannelData data) {
 		if (data != null) {
-			LOGGER.info("update {} with data {}", data.getName(), data.isOnline());
-			name.setValue(data.getName());
-			logoURL.setValue(data.getLogoURL());
-			previewURL.setValue(data.getPreviewURL());
-			game.setValue(data.getGame());
-			title.setValue(data.getTitle());
-			uptime.setValue(data.getUptime());
-			String upTimeStringValue = String.format("%02d:%02d:%02d Uptime",
-					TimeUnit.MILLISECONDS.toHours(uptime.get()),
-					TimeUnit.MILLISECONDS.toMinutes(uptime.get())
-							- TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(uptime.get())),
-					TimeUnit.MILLISECONDS.toSeconds(uptime.get())
-							- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime.get())));
-			uptimeString.setValue(upTimeStringValue);
-			viewers.setValue(data.getViewers());
-			viewersString.setValue(getViewers().get() + "");
-			if (data.isOnline() && !isOnline.get()) {
-				isOnline.setValue(true);
-				LOGGER.info("Channel {} just came online. TODO Notice User", getName().get());
-			} else if (!data.isOnline() && isOnline.get()) {
-				isOnline.setValue(false);
-			}
-			previewImage.setValue(data.getPreviewImage());
-			description.setValue(getTitle().get());
-			this.availableQualities = new ArrayList<String>(data.getQualities());
+			setOnline(data);
 		} else {
-			name.setValue(null);
-			logoURL.setValue(null);
-			previewURL.setValue(null);
-			game.setValue(null);
-			title.setValue(null);
-			uptime.setValue(null);
-			viewers.setValue(null);
-			isOnline.setValue(false);
-			previewImage.setValue(null);
-			description.setValue(getOfflineString());
-			availableQualities = new ArrayList<String>();
-			availableQualities.add("worst, best");
+			setOffline();
 		}
+	}
+
+	private void setOffline() {
+		name.setValue(null);
+		logoURL.setValue(null);
+		previewURL.setValue(null);
+		game.setValue(null);
+		title.setValue(null);
+		uptime.setValue(null);
+		viewers.setValue(null);
+		isOnline.setValue(false);
+		previewImage.setValue(null);
+		description.setValue(getOfflineString());
+		availableQualities = new ArrayList<String>();
+		availableQualities.add("worst, best");
+	}
+
+	private void setOnline(final TwitchChannelData data) {
+		LOGGER.info("update {} with data {}", data.getName(), data.isOnline());
+		name.setValue(data.getName());
+		logoURL.setValue(data.getLogoURL());
+		previewURL.setValue(data.getPreviewURL());
+		game.setValue(data.getGame());
+		title.setValue(data.getTitle());
+		uptime.setValue(data.getUptime());
+		String upTimeStringValue = String.format("%02d:%02d:%02d Uptime", TimeUnit.MILLISECONDS.toHours(uptime.get()),
+				TimeUnit.MILLISECONDS.toMinutes(uptime.get())
+						- TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(uptime.get())),
+				TimeUnit.MILLISECONDS.toSeconds(uptime.get())
+						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime.get())));
+		uptimeString.setValue(upTimeStringValue);
+		viewers.setValue(data.getViewers());
+		viewersString.setValue(getViewers().get() + "");
+		if (data.isOnline() && !isOnline.get()) {
+			isOnline.setValue(true);
+			LOGGER.info("Channel {} just came online. TODO Notice User", getName().get());
+		} else if (!data.isOnline() && isOnline.get()) {
+			isOnline.setValue(false);
+		}
+		previewImage.setValue(data.getPreviewImage());
+		description.setValue(getTitle().get());
+		availableQualities = new ArrayList<String>(data.getQualities());
 	}
 
 	public static Callback<Channel, Observable[]> extractor() {
@@ -122,26 +129,10 @@ public class TwitchChannel implements Channel {
 	}
 
 	/**
-	 * @param name
-	 *            the name to set
-	 */
-	public void setName(StringProperty name) {
-		this.name = name;
-	}
-
-	/**
 	 * @return the logoURL
 	 */
 	public StringProperty getLogoURL() {
 		return logoURL;
-	}
-
-	/**
-	 * @param logoURL
-	 *            the logoURL to set
-	 */
-	public void setLogoURL(StringProperty logoURL) {
-		this.logoURL = logoURL;
 	}
 
 	/**
@@ -152,26 +143,10 @@ public class TwitchChannel implements Channel {
 	}
 
 	/**
-	 * @param previewURL
-	 *            the previewURL to set
-	 */
-	public void setPreviewURL(StringProperty previewURL) {
-		this.previewURL = previewURL;
-	}
-
-	/**
 	 * @return the game
 	 */
 	public StringProperty getGame() {
 		return game;
-	}
-
-	/**
-	 * @param game
-	 *            the game to set
-	 */
-	public void setGame(StringProperty game) {
-		this.game = game;
 	}
 
 	/**
@@ -182,14 +157,6 @@ public class TwitchChannel implements Channel {
 	}
 
 	/**
-	 * @param title
-	 *            the title to set
-	 */
-	public void setTitle(StringProperty title) {
-		this.title = title;
-	}
-
-	/**
 	 * @return the uptime
 	 */
 	public LongProperty getUptime() {
@@ -197,26 +164,10 @@ public class TwitchChannel implements Channel {
 	}
 
 	/**
-	 * @param uptime
-	 *            the uptime to set
-	 */
-	public void setUptime(LongProperty uptime) {
-		this.uptime = uptime;
-	}
-
-	/**
 	 * @return the viewers
 	 */
 	public IntegerProperty getViewers() {
 		return viewers;
-	}
-
-	/**
-	 * @param viewers
-	 *            the viewers to set
-	 */
-	public void setViewers(IntegerProperty viewers) {
-		this.viewers = viewers;
 	}
 
 	/**
@@ -228,26 +179,10 @@ public class TwitchChannel implements Channel {
 	}
 
 	/**
-	 * @param online
-	 *            the online to set
-	 */
-	public void setIsOnline(BooleanProperty isOnline) {
-		this.isOnline = isOnline;
-	}
-
-	/**
 	 * @return the previewImage
 	 */
 	public ObjectProperty<Image> getPreviewImage() {
 		return previewImage;
-	}
-
-	/**
-	 * @param previewImage
-	 *            the previewImage to set
-	 */
-	public void setPreviewImage(ObjectProperty<Image> previewImage) {
-		this.previewImage = previewImage;
 	}
 
 	public StringProperty getDescription() {
@@ -265,14 +200,6 @@ public class TwitchChannel implements Channel {
 	}
 
 	/**
-	 * @param availableQualities
-	 *            the availableQualities to set
-	 */
-	public void setAvailableQualities(List<String> availableQualities) {
-		this.availableQualities = availableQualities;
-	}
-
-	/**
 	 * @return the uptimeString
 	 */
 	public StringProperty getUptimeString() {
@@ -280,26 +207,10 @@ public class TwitchChannel implements Channel {
 	}
 
 	/**
-	 * @param uptimeString
-	 *            the uptimeString to set
-	 */
-	public void setUptimeString(StringProperty uptimeString) {
-		this.uptimeString = uptimeString;
-	}
-
-	/**
 	 * @return the viewersString
 	 */
 	public StringProperty getViewersString() {
 		return viewersString;
-	}
-
-	/**
-	 * @param viewersString
-	 *            the viewersString to set
-	 */
-	public void setViewersString(StringProperty viewersString) {
-		this.viewersString = viewersString;
 	}
 
 	public final String getOfflineString() {

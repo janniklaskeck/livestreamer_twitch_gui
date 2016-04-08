@@ -51,9 +51,6 @@ public class MainController {
 	private ToolBar toolBarRight;
 
 	@FXML
-	private Button importStreamsButton;
-
-	@FXML
 	public void initialize() {
 		LOGGER.debug("INIT MainController");
 		setupServiceComboBox();
@@ -112,20 +109,18 @@ public class MainController {
 	}
 
 	private void setupToolbarLeft() {
-
 		Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS_SQUARE);
 		addButton.setOnAction(event -> addAction());
 		Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS_SQUARE);
 		removeButton.setOnAction(event -> removeAction());
 		Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
-		importButton.setOnAction(event -> importStreams());
+		importButton.setOnAction(event -> importFollowedChannels());
 		toolBarLeft.getItems().add(addButton);
 		toolBarLeft.getItems().add(removeButton);
 		toolBarLeft.getItems().add(importButton);
 	}
 
 	private void setupToolbarRight() {
-
 		Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
 		settingsButton.setOnAction(event -> openSettings());
 		toolBarRight.getItems().add(settingsButton);
@@ -142,7 +137,7 @@ public class MainController {
 
 	private void addAction() {
 		Dialog<Boolean> dialog = new Dialog<>();
-		dialog.setTitle("Add Stream to current Service");
+		dialog.setTitle("Add Channel to current Service");
 		ButtonType bt = new ButtonType("Submit", ButtonData.OK_DONE);
 		dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
 
@@ -168,23 +163,23 @@ public class MainController {
 
 		Optional<Boolean> result = dialog.showAndWait();
 		if (result.isPresent() && result.get()) {
-			serviceComboBox.getSelectionModel().getSelectedItem().addStream(tf.getText().trim());
+			serviceComboBox.getSelectionModel().getSelectedItem().addChannel(tf.getText().trim());
 		}
 	}
 
 	private void removeAction() {
 		Channel toRemove = channelList.getListView().getSelectionModel().getSelectedItem();
-		serviceComboBox.getSelectionModel().getSelectedItem().removeSelectedStream(toRemove);
+		serviceComboBox.getSelectionModel().getSelectedItem().removeSelectedChannel(toRemove);
 	}
 
-	private void importStreams() {
+	private void importFollowedChannels() {
 		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle("Import Twitch.tv followed Streams");
+		dialog.setTitle("Import Twitch.tv followed Channels");
 		dialog.setContentText("Please enter your Twitch.tv Username:");
 
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			serviceComboBox.getSelectionModel().getSelectedItem().addFollowedStreams(result.get());
+			serviceComboBox.getSelectionModel().getSelectedItem().addFollowedChannels(result.get());
 		}
 	}
 }

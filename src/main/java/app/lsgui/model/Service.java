@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.twitch.TwitchChannel;
-import app.lsgui.service.twitch.TwitchChannelUpdateService;
 import app.lsgui.service.twitch.TwitchAPIClient;
+import app.lsgui.service.twitch.TwitchChannelUpdateService;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,81 +19,82 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
 public class Service {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
 
-    private StringProperty name;
-    private StringProperty url;
-    private ListProperty<Channel> channels;
-    private ObservableList<Channel> streams;
+	private StringProperty name;
+	private StringProperty url;
+	private ListProperty<Channel> channelProperty;
+	private ObservableList<Channel> observableChannels;
 
-    public final static ObservableMap<Channel, TwitchChannelUpdateService> UPDATESERVICES = FXCollections
-            .observableHashMap();
+	public final static ObservableMap<Channel, TwitchChannelUpdateService> UPDATESERVICES = FXCollections
+			.observableHashMap();
 
-    public Service(String name, String url) {
-        this.name = new SimpleStringProperty(name);
-        this.url = new SimpleStringProperty(url);
-        this.channels = new SimpleListProperty<Channel>();
-        this.streams = FXCollections.observableArrayList();
-    }
+	public Service(String name, String url) {
+		this.name = new SimpleStringProperty(name);
+		this.url = new SimpleStringProperty(url);
+		this.channelProperty = new SimpleListProperty<Channel>();
+		this.observableChannels = FXCollections.observableArrayList();
+	}
 
-    public void addStream(final String name) {
-        LOGGER.debug("Add Stream to List");
-        List<Channel> streams = new ArrayList<Channel>(getChannels().subList(0, getChannels().getSize()));
-        Channel sm = new TwitchChannel(name);
-        streams.add(sm);
-        ObservableList<Channel> obsStreams = FXCollections.observableArrayList(TwitchChannel.extractor());
-        obsStreams.addAll(streams);
-        getChannels().setValue(obsStreams);
+	public void addChannel(final String name) {
+		LOGGER.debug("Add Channel to List");
+		List<Channel> channels = new ArrayList<Channel>(getChannels().subList(0, getChannels().getSize()));
+		Channel sm = new TwitchChannel(name);
+		channels.add(sm);
+		ObservableList<Channel> obsStreams = FXCollections.observableArrayList(TwitchChannel.extractor());
+		obsStreams.addAll(channels);
+		getChannels().setValue(obsStreams);
 
-        final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
-        tcus.start();
-        UPDATESERVICES.put(sm, tcus);
-    }
+		final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
+		tcus.start();
+		UPDATESERVICES.put(sm, tcus);
+	}
 
-    public void removeSelectedStream(final Channel selectedStream) {
-        if (selectedStream != null) {
-            LOGGER.debug("Remove stream {} from list", selectedStream.getName());
-            List<Channel> streams = getChannels().subList(0, getChannels().getSize());
-            streams.remove(selectedStream);
-            ObservableList<Channel> obsStreams = FXCollections.observableArrayList(TwitchChannel.extractor());
-            obsStreams.addAll(streams);
-            getChannels().setValue(obsStreams);
+	public void removeSelectedChannel(final Channel selectedStream) {
+		if (selectedStream != null) {
+			LOGGER.debug("Remove Channel {} from list", selectedStream.getName());
+			List<Channel> channels = getChannels().subList(0, getChannels().getSize());
+			channels.remove(selectedStream);
+			ObservableList<Channel> obsStreams = FXCollections.observableArrayList(TwitchChannel.extractor());
+			obsStreams.addAll(channels);
+			getChannels().setValue(obsStreams);
 
-            final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(selectedStream);
-            tcus.cancel();
-        }
-    }
+			final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(selectedStream);
+			tcus.cancel();
+		}
+	}
 
-    public void addFollowedStreams(final String username) {
-        LOGGER.debug("Import followed Streams for user {}", username);
+	public void addFollowedChannels(final String username) {
+		LOGGER.debug("Import followed Streams for user {}", username);
 
-        Set<String> set = TwitchAPIClient.instance().getListOfFollowedStreams(username);
-        List<Channel> list = new ArrayList<Channel>();
-        for (String s : set) {
-            list.add(new TwitchChannel(s));
-        }
-        streams = FXCollections.observableArrayList(list);
-        ObservableList<Channel> obsStreams = FXCollections.observableArrayList(TwitchChannel.extractor());
-        obsStreams.addAll(streams);
-        getChannels().setValue(obsStreams);
+		Set<String> set = TwitchAPIClient.instance().getListOfFollowedStreams(username);
+		List<Channel> channels = new ArrayList<Channel>();
+		for (String s : set) {
+			channels.add(new TwitchChannel(s));
+		}
+		observableChannels = FXCollections.observableArrayList(channels);
+		ObservableList<Channel> obsChannel = FXCollections.observableArrayList(TwitchChannel.extractor());
+		obsChannel.addAll(observableChannels);
+		getChannels().setValue(obsChannel);
+		// TODO Find better Solution
 
-        for (Channel sm : streams) {
-            final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
-            tcus.start();
-            UPDATESERVICES.put(sm, tcus);
-        }
-    }
+		for (Channel c : observableChannels) {
+			final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(c);
+			tcus.start();
+			UPDATESERVICES.put(c, tcus);
+		}
+	}
 
-    public ListProperty<Channel> getChannels() {
-        return channels;
-    }
+	public ListProperty<Channel> getChannels() {
+		return channelProperty;
+	}
 
-    public StringProperty getName() {
-        return name;
-    }
+	public StringProperty getName() {
+		return name;
+	}
 
-    public StringProperty getUrl() {
-        return url;
-    }
+	public StringProperty getUrl() {
+		return url;
+	}
 
 }
