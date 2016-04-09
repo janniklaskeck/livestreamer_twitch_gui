@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +28,7 @@ import javafx.util.Callback;
 public class TwitchChannel implements Channel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannel.class);
-    // TODO Choose other default image
-    @SuppressWarnings("unused")
-    private static final String DEFAULT_CHANNEL_LOGO = "";
+    private static Image DEFAULT_CHANNEL_LOGO = null;
 
     private StringProperty name;
     private StringProperty logoURL;
@@ -46,6 +45,10 @@ public class TwitchChannel implements Channel {
     private List<String> availableQualities;
 
     public TwitchChannel(final String name) {
+        if (DEFAULT_CHANNEL_LOGO == null) {
+            DEFAULT_CHANNEL_LOGO = new Image(
+                    getClass().getClassLoader().getResource("default_channel.png").toExternalForm());
+        }
         this.name = new SimpleStringProperty(name);
         this.logoURL = new SimpleStringProperty("");
         this.previewURL = new SimpleStringProperty("");
@@ -79,7 +82,7 @@ public class TwitchChannel implements Channel {
         uptime.setValue(null);
         viewers.setValue(null);
         isOnline.setValue(false);
-        previewImage.setValue(null);
+        previewImage.setValue(DEFAULT_CHANNEL_LOGO);
         description.setValue(getOfflineString());
         availableQualities = new ArrayList<>();
         availableQualities.add("worst, best");
@@ -103,7 +106,9 @@ public class TwitchChannel implements Channel {
         viewersString.setValue(Integer.toString(getViewers().get()));
         if (data.isOnline() && !isOnline.get()) {
             isOnline.setValue(true);
-            LOGGER.info("Channel {} just came online. TODO Notice User", getName().get());
+            Notifications.create().title("Channel Update")
+                    .text(name.get() + " just came online!\n The Game is " + game.get() + ".\n" + title.get())
+                    .showInformation();
         } else if (!data.isOnline() && isOnline.get()) {
             isOnline.setValue(false);
         }
