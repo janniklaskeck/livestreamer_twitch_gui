@@ -11,9 +11,6 @@ public class ChannelCell extends ListCell<Channel> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class);
 
-    private ChannelCell() {
-    }
-
     @Override
     protected void updateItem(Channel item, boolean isEmpty) {
         super.updateItem(item, isEmpty);
