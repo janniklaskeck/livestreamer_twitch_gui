@@ -22,7 +22,7 @@ public class SettingsController {
         LOGGER.info("SettingsController init");
 
         propertySheet = new PropertySheet();
-        propertySheet.getItems().setAll(new CustomPropertyItem());
+
 
         settingsAnchorPane.getChildren().add(propertySheet);
         AnchorPane.setTopAnchor(propertySheet, 0.0);
