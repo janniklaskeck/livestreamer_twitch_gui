@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.MainWindow;
+import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.model.Channel;
 import app.lsgui.model.Service;
 import app.lsgui.model.twitch.TwitchChannel;
@@ -31,7 +32,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class ChannelInfoPanel extends BorderPane {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelInfoPanel.class);
-    private static final String CHANNELINFOPANELFXML = "fxml/channelinfopanel.fxml";
+    private static final String CHANNELINFOPANELFXML = "fxml/ChannelInfoPanel.fxml";
     private static FXMLLoader loader;
 
     private ComboBox<Service> serviceComboBox;
@@ -147,7 +148,7 @@ public class ChannelInfoPanel extends BorderPane {
     }
 
     private void openChat() {
-        LOGGER.info("CHAT NOT IMPLEMENTED");
+        new ChatWindow(modelProperty.get().getName().get());
     }
 
     private void openBrowser() {

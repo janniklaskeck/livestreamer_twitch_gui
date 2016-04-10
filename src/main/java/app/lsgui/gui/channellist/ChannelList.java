@@ -20,7 +20,7 @@ import javafx.scene.layout.AnchorPane;
 
 public class ChannelList extends AnchorPane {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelList.class);
-    private static final String CHANNELLISTFXML = "fxml/channellist.fxml";
+    private static final String CHANNELLISTFXML = "fxml/ChannelList.fxml";
     private static FXMLLoader loader;
 
     private final ListProperty<Channel> channels = new SimpleListProperty<>(FXCollections.observableArrayList());

@@ -29,7 +29,7 @@ public class SettingsWindow extends AnchorPane {
 
     private Parent loadFXML() {
         try {
-            return FXMLLoader.load(getClass().getClassLoader().getResource("fxml/settingswindow.fxml"));
+            return FXMLLoader.load(getClass().getClassLoader().getResource("fxml/SettingsWindow.fxml"));
         } catch (IOException e) {
             LOGGER.error("ERROR while load settings fxml", e);
             Platform.exit();

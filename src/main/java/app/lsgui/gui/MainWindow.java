@@ -43,7 +43,7 @@ public class MainWindow extends Application {
 
     private Parent loadFXML() {
         try {
-            return FXMLLoader.load(getClass().getClassLoader().getResource("fxml/mainwindow.fxml"));
+            return FXMLLoader.load(getClass().getClassLoader().getResource("fxml/MainWindow.fxml"));
         } catch (IOException e) {
             LOGGER.error("ERROR while load main fxml", e);
             Platform.exit();
