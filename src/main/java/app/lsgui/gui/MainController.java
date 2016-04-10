@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.channelinfopanel.ChannelInfoPanel;
 import app.lsgui.gui.channellist.ChannelList;
+import app.lsgui.gui.settings.SettingsWindow;
 import app.lsgui.model.Channel;
 import app.lsgui.model.Service;
 import app.lsgui.service.Settings;
@@ -132,7 +133,7 @@ public class MainController {
     }
 
     private void openSettings() {
-
+        new SettingsWindow(contentBorderPane.getScene().getWindow());
         LOGGER.debug("Settings not implemented");
     }
 
