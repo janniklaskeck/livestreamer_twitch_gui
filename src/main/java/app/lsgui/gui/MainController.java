@@ -134,7 +134,6 @@ public class MainController {
 
     private void openSettings() {
         new SettingsWindow(contentBorderPane.getScene().getWindow());
-        LOGGER.debug("Settings not implemented");
     }
 
     private void addAction() {

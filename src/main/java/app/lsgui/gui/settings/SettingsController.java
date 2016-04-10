@@ -1,35 +1,51 @@
 package app.lsgui.gui.settings;
 
-import org.controlsfx.control.PropertySheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.MainController;
+import app.lsgui.service.Settings;
 import javafx.fxml.FXML;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 
 public class SettingsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
-    private PropertySheet propertySheet;
+    @FXML
+    private CheckBox sortCheckBox;
 
     @FXML
-    private AnchorPane settingsAnchorPane;
+    private TextField usernameTextField;
+
+    @FXML
+    private TextField oauthTextField;
 
     @FXML
     public void initialize() {
         LOGGER.info("SettingsController init");
 
-        propertySheet = new PropertySheet();
+        Settings st = Settings.instance();
 
+        sortCheckBox.setSelected(st.isSortTwitch());
+        oauthTextField.setText(st.getTwitchOAuth());
+        usernameTextField.setText(st.getTwitchUser());
 
-        settingsAnchorPane.getChildren().add(propertySheet);
-        AnchorPane.setTopAnchor(propertySheet, 0.0);
-        AnchorPane.setBottomAnchor(propertySheet, 0.0);
-        AnchorPane.setRightAnchor(propertySheet, 0.0);
-        AnchorPane.setLeftAnchor(propertySheet, 0.0);
+        sortCheckBox.setOnAction(event -> st.setSortTwitch(sortCheckBox.isSelected()));
+        usernameTextField.textProperty().addListener((observable, oldValue, newValue) -> st.setTwitchUser(newValue));
+        oauthTextField.textProperty().addListener((observable, oldValue, newValue) -> st.setTwitchOAuth(newValue));
+    }
 
+    @FXML
+    protected void cancelSettingsAction() {
+        SettingsWindow.getSettingsStage().close();
+    }
+
+    @FXML
+    protected void saveSettingsAction() {
+        Settings.instance().saveSettings();
+        SettingsWindow.getSettingsStage().close();
     }
 
 }

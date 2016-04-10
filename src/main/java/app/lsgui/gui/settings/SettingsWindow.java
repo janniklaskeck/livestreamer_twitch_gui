@@ -18,7 +18,7 @@ import javafx.stage.Window;
 public class SettingsWindow extends AnchorPane {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsWindow.class);
-    private Stage settingsStage;
+    private static Stage settingsStage;
 
     public SettingsWindow(final Window parentWindow) {
         settingsStage = new Stage();
@@ -41,9 +41,6 @@ public class SettingsWindow extends AnchorPane {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/lightStyle.css").toString());
 
-        settingsStage.setHeight(500);
-        settingsStage.setWidth(400);
-
         settingsStage.setResizable(false);
 
         settingsStage.setTitle("Livestreamer GUI v3.0 Settings");
@@ -52,6 +49,13 @@ public class SettingsWindow extends AnchorPane {
         settingsStage.initModality(Modality.APPLICATION_MODAL);
         settingsStage.initOwner(parentWindow);
         settingsStage.showAndWait();
+    }
+
+    /**
+     * @return the settingsStage
+     */
+    static Stage getSettingsStage() {
+        return settingsStage;
     }
 
 }
