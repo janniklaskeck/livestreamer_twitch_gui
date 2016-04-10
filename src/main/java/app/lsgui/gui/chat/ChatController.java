@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.UUID;
 
-import org.jibble.pircbot.IrcException;
+import org.pircbotx.Configuration;
+import org.pircbotx.PircBotX;
+import org.pircbotx.exception.IrcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +21,7 @@ public class ChatController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
 
-    private ChatClient chatClient;
+    private PircBotX pircBotX;
 
     @FXML
     private TextArea chatTextArea;
@@ -34,45 +36,47 @@ public class ChatController {
     public void initialize() {
         LOGGER.info("SettingsController init");
 
-        chatClient = new ChatClient("", chatTextArea);
         sendButton.setOnAction(event -> {
-            chatClient.sendMessage("#" + chatClient.getChannel(), inputTextField.getText());
-            chatTextArea.appendText(Settings.instance().getTwitchUser() + ": " + inputTextField.getText());
+            String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
+            pircBotX.send().message("#" + channel, inputTextField.getText());
+            chatTextArea.appendText(Settings.instance().getTwitchUser() + ": " + inputTextField.getText() + "\n");
+            inputTextField.setText("");
         });
     }
 
     public void connect() {
-        chatClient.setChannel((String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel"));
-        chatClient.setVerbose(false);
-        if (!chatClient.isConnected()) {
-            if (!"".equals(Settings.instance().getTwitchUser())) {
-                LOGGER.info("Try login with user data");
-                chatClient.setUserName(Settings.instance().getTwitchUser());
-                try {
-                    chatClient.connect("irc.twitch.tv", 6667, Settings.instance().getTwitchOAuth());
-                } catch (IOException | IrcException e) {
-                    LOGGER.error("ERROR while connecting to twitch chat", e);
-                }
-                chatClient.joinChannel("#" + chatClient.getChannel());
-                LOGGER.info("Join Channel {}", chatClient.getChannel());
-            } else {
-                LOGGER.info("Try login anonymously");
-                String uuid = UUID.randomUUID().toString().replace("-", "");
-                chatClient.setUserName("justinfan" + new BigInteger(uuid, 16));
-                try {
-                    chatClient.connect("irc.twitch.tv", 6667, "");
-                } catch (IOException | IrcException e) {
-                    LOGGER.error("ERROR while connecting to twitch chat", e);
-                }
-                chatClient.joinChannel("#" + chatClient.getChannel());
-                LOGGER.info("Join Channel {}", chatClient.getChannel());
-            }
+        String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
+        Configuration cfg;
+        if (!"".equals(Settings.instance().getTwitchUser()) && !"".equals(Settings.instance().getTwitchOAuth())) {
+            cfg = new Configuration.Builder().setName(Settings.instance().getTwitchUser())
+                    .setLogin(Settings.instance().getTwitchUser()).addAutoJoinChannel(channel)
+                    .addListener(new ChatListener(chatTextArea))
+                    .buildForServer("irc.twitch.tv", 6667, Settings.instance().getTwitchOAuth());
+        } else {
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            cfg = new Configuration.Builder().setName(Settings.instance().getTwitchUser())
+                    .setLogin("justinfan" + new BigInteger(uuid, 16)).addAutoJoinChannel(channel)
+                    .addListener(new ChatListener(chatTextArea))
+                    .buildForServer("irc.twitch.tv", 6667, Settings.instance().getTwitchOAuth());
         }
+
+        pircBotX = new PircBotX(cfg);
+
+        Thread t = new Thread(() -> {
+            try {
+                pircBotX.startBot();
+            } catch (IOException | IrcException e) {
+                LOGGER.error("ERROR while trying to connecto to chat", e);
+            }
+        });
+        t.setDaemon(true);
+        t.start();
+
     }
 
     public void disconnect() {
-        chatClient.disconnect();
-        chatClient.dispose();
+        if (pircBotX.isConnected()) {
+            pircBotX.sendIRC().quitServer();
+        }
     }
-
 }
