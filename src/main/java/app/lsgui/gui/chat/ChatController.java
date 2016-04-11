@@ -47,21 +47,31 @@ public class ChatController {
     public void connect() {
         String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
         Configuration cfg;
+
         if (!"".equals(Settings.instance().getTwitchUser()) && !"".equals(Settings.instance().getTwitchOAuth())) {
-            cfg = new Configuration.Builder().setName(Settings.instance().getTwitchUser())
-                    .setLogin(Settings.instance().getTwitchUser()).addAutoJoinChannel(channel)
-                    .addListener(new ChatListener(chatTextArea))
-                    .buildForServer("irc.twitch.tv", 6667, Settings.instance().getTwitchOAuth());
+
+            String user = Settings.instance().getTwitchUser();
+            String oauth = Settings.instance().getTwitchOAuth();
+
+            cfg = new Configuration.Builder().setName(user).setLogin(user).addAutoJoinChannel("#" + channel)
+                    .addListener(new ChatListener(chatTextArea)).setAutoNickChange(true)
+                    .buildForServer("irc.twitch.tv", 6667, oauth);
+
+            LOGGER.info("DATA Login");
         } else {
             String uuid = UUID.randomUUID().toString().replace("-", "");
-            cfg = new Configuration.Builder().setName(Settings.instance().getTwitchUser())
-                    .setLogin("justinfan" + new BigInteger(uuid, 16)).addAutoJoinChannel(channel)
-                    .addListener(new ChatListener(chatTextArea))
-                    .buildForServer("irc.twitch.tv", 6667, Settings.instance().getTwitchOAuth());
+
+            cfg = new Configuration.Builder().setName("justinfan" + new BigInteger(uuid, 16))
+                    .setLogin("justinfan" + new BigInteger(uuid, 16)).addAutoJoinChannel("#" + channel)
+                    .setAutoNickChange(true).addListener(new ChatListener(chatTextArea))
+                    .buildForServer("irc.twitch.tv", 6667);
+
+            LOGGER.info("ANON Login");
         }
 
         pircBotX = new PircBotX(cfg);
 
+        LOGGER.info("CAP {}", pircBotX.getEnabledCapabilities());
         Thread t = new Thread(() -> {
             try {
                 pircBotX.startBot();
