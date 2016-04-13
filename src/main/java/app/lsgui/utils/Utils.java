@@ -146,4 +146,21 @@ public class Utils {
         }
         return sortedQualities;
     }
+
+    public static String getColorFromString(final String input) {
+        int hash = input.hashCode();
+        int r = (hash & 0xFF0000) >> 16;
+        if (r > 200) {
+            r = 200;
+        }
+        int g = (hash & 0x00FF00) >> 8;
+        if (g > 200) {
+            g = 200;
+        }
+        int b = hash & 0x0000FF;
+        if (b > 200) {
+            b = 200;
+        }
+        return "rgb(" + r + "," + g + "," + b + ")";
+    }
 }

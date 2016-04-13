@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.UUID;
 
+import org.fxmisc.richtext.InlineCssTextArea;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.exception.IrcException;
@@ -11,10 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.service.Settings;
+import app.lsgui.utils.Utils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class ChatController {
@@ -23,8 +25,7 @@ public class ChatController {
 
     private PircBotX pircBotX;
 
-    @FXML
-    private TextArea chatTextArea;
+    private InlineCssTextArea chatTextArea;
 
     @FXML
     private TextField inputTextField;
@@ -33,13 +34,25 @@ public class ChatController {
     private Button sendButton;
 
     @FXML
+    private BorderPane chatBorderPane;
+
+    @FXML
     public void initialize() {
         LOGGER.info("SettingsController init");
+
+        chatTextArea = new InlineCssTextArea();
+        chatTextArea.setWrapText(true);
+        chatBorderPane.setCenter(chatTextArea);
 
         sendButton.setOnAction(event -> {
             String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
             pircBotX.send().message("#" + channel, inputTextField.getText());
+            final int start = chatTextArea.getText().length();
+            final int end = start + Settings.instance().getTwitchUser().length() + 1;
             chatTextArea.appendText(Settings.instance().getTwitchUser() + ": " + inputTextField.getText() + "\n");
+            chatTextArea.setStyle(start, end, "-fx-fill: "
+                    + Utils.getColorFromString(Settings.instance().getTwitchUser()) + "; -fx-font-size: 12pt");
+            chatTextArea.setStyle(end, end + inputTextField.getText().length() + 1, "-fx-font-size: 12pt");
             inputTextField.setText("");
         });
     }

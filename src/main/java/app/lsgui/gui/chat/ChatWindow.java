@@ -45,6 +45,9 @@ public class ChatWindow {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/lightStyle.css").toString());
 
+        chatStage.setMinHeight(400.0);
+        chatStage.setMinWidth(600.0);
+
         chatStage.getProperties().put("channel", channel);
         chatStage.setTitle("Livestreamer GUI v3.0 Chat - " + channel);
         chatStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
