@@ -12,11 +12,15 @@ public class ExecutorServiceSingleton {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorServiceSingleton.class);
     private static final ExecutorService EXECUTORSERVICE = Executors.newCachedThreadPool();
 
+    private ExecutorServiceSingleton() {
+    }
+
     public static void shutdown() {
         try {
             EXECUTORSERVICE.shutdown();
             EXECUTORSERVICE.awaitTermination(3L, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // SonarLint what?
             LOGGER.error("Error when shutting down ExecutorService", e);
         }
     }

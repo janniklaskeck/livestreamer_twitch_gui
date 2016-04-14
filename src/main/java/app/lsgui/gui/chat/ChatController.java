@@ -59,12 +59,12 @@ public class ChatController {
 
     public void connect() {
         String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
-        Configuration cfg;
+        final Configuration cfg;
 
         if (!"".equals(Settings.instance().getTwitchUser()) && !"".equals(Settings.instance().getTwitchOAuth())) {
 
-            String user = Settings.instance().getTwitchUser();
-            String oauth = Settings.instance().getTwitchOAuth();
+            final String user = Settings.instance().getTwitchUser();
+            final String oauth = Settings.instance().getTwitchOAuth();
 
             cfg = new Configuration.Builder().setName(user).setLogin(user).addAutoJoinChannel("#" + channel)
                     .addListener(new ChatListener(chatTextArea)).setAutoNickChange(true)
@@ -72,7 +72,7 @@ public class ChatController {
 
             LOGGER.info("DATA Login");
         } else {
-            String uuid = UUID.randomUUID().toString().replace("-", "");
+            final String uuid = UUID.randomUUID().toString().replace("-", "");
 
             cfg = new Configuration.Builder().setName("justinfan" + new BigInteger(uuid, 16))
                     .setLogin("justinfan" + new BigInteger(uuid, 16)).addAutoJoinChannel("#" + channel)

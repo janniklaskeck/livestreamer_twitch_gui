@@ -44,17 +44,17 @@ public class ChannelList extends AnchorPane {
         } catch (IOException e) {
             LOGGER.error("ERROR while loading streamlist fxml", e);
         }
+        setupChannelList();
+    }
 
+    private void setupChannelList() {
         channelListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         channelProperty = new SimpleObjectProperty<>();
         channelListProperty = new SimpleListProperty<>();
         channelProperty.bind(channelListView.getSelectionModel().selectedItemProperty());
         channelListView.itemsProperty().bind(channelListProperty);
-
         channelListView.setCellFactory(listView -> new ChannelCell());
-
         channels.bind(getListView().itemsProperty());
-
     }
 
     /**

@@ -73,19 +73,7 @@ public class ChannelInfoPanel extends BorderPane {
         } catch (IOException e) {
             LOGGER.error("ERROR while loading ChannelInfoPanel FXML", e);
         }
-        previewImageView = new WrappedImageView(null);
-        rootBorderPane.setCenter(previewImageView);
-
-        channelDescription = new Label();
-        channelDescription.setWrapText(true);
-        channelUptime = new Label();
-        channelViewers = new Label();
-        channelGame = new Label();
-
-        descriptionGrid.add(channelGame, 0, 0, 1, 1);
-        descriptionGrid.add(channelViewers, 0, 1, 1, 1);
-        descriptionGrid.add(channelUptime, 0, 2, 1, 1);
-        descriptionGrid.add(channelDescription, 0, 3, 1, 1);
+        setupChannelInfoPanel();
 
         modelProperty.addListener((observable, oldValue, newValue) -> {
             Channel valueStreamModel = newValue == null ? oldValue : newValue;
@@ -105,17 +93,33 @@ public class ChannelInfoPanel extends BorderPane {
                 channelDescription.textProperty().bind(modelProperty.get().getName());
             }
         });
+    }
 
-        Button startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
+    private void setupChannelInfoPanel() {
+        previewImageView = new WrappedImageView(null);
+        rootBorderPane.setCenter(previewImageView);
+
+        channelDescription = new Label();
+        channelDescription.setWrapText(true);
+        channelUptime = new Label();
+        channelViewers = new Label();
+        channelGame = new Label();
+
+        descriptionGrid.add(channelGame, 0, 0, 1, 1);
+        descriptionGrid.add(channelViewers, 0, 1, 1, 1);
+        descriptionGrid.add(channelUptime, 0, 2, 1, 1);
+        descriptionGrid.add(channelDescription, 0, 3, 1, 1);
+
+        final Button startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
         startStreamButton.setOnAction(event -> startStream());
 
-        Button recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
+        final Button recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
         recordStreamButton.setOnAction(event -> recordStream());
 
-        Button openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
+        final Button openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
         openChatButton.setOnAction(event -> openChat());
 
-        Button openBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
+        final Button openBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
         openBrowserButton.setOnAction(event -> openBrowser());
 
         buttonBox.getItems().add(startStreamButton);
@@ -130,8 +134,8 @@ public class ChannelInfoPanel extends BorderPane {
 
     private void startStream() {
         if (modelProperty.get() != null) {
-            String url = buildURL();
-            String quality = buildQuality();
+            final String url = buildURL();
+            final String quality = buildQuality();
             Utils.startLivestreamer(url, quality);
         }
     }
@@ -140,7 +144,7 @@ public class ChannelInfoPanel extends BorderPane {
         final String url = buildURL();
         final String quality = buildQuality();
 
-        FileChooser recordFileChooser = new FileChooser();
+        final FileChooser recordFileChooser = new FileChooser();
         recordFileChooser.setTitle("Choose Target file");
         recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
         final File recordFile = recordFileChooser.showSaveDialog(MainWindow.getRootStage());
@@ -148,7 +152,8 @@ public class ChannelInfoPanel extends BorderPane {
     }
 
     private void openChat() {
-        new ChatWindow(modelProperty.get().getName().get());
+        ChatWindow cw = new ChatWindow(modelProperty.get().getName().get());
+        cw.connect();
     }
 
     private void openBrowser() {

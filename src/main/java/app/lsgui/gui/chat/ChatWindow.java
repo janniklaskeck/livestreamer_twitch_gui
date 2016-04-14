@@ -28,7 +28,6 @@ public class ChatWindow {
         loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/ChatWindow.fxml"));
         Parent root = loadFXML();
         setupStage(root, chatStage);
-        loader.<ChatController> getController().connect();
     }
 
     private Parent loadFXML() {
@@ -63,6 +62,10 @@ public class ChatWindow {
      */
     static Stage getSettingsStage() {
         return chatStage;
+    }
+
+    public void connect() {
+        loader.<ChatController> getController().connect();
     }
 
 }

@@ -48,7 +48,6 @@ public class SettingsWindow extends AnchorPane {
         settingsStage.setScene(scene);
         settingsStage.initModality(Modality.APPLICATION_MODAL);
         settingsStage.initOwner(parentWindow);
-        settingsStage.showAndWait();
     }
 
     /**
@@ -56,6 +55,10 @@ public class SettingsWindow extends AnchorPane {
      */
     static Stage getSettingsStage() {
         return settingsStage;
+    }
+
+    public void showAndWait() {
+        settingsStage.showAndWait();
     }
 
 }

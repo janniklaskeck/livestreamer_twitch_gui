@@ -14,7 +14,6 @@ import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchAPIClient;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -82,7 +81,6 @@ public class MainController {
             }
         });
         serviceComboBox.getSelectionModel().select(0);
-
         serviceComboBox.valueProperty().addListener((observable, oldValue, newValue) -> changeService(newValue));
     }
 
@@ -133,21 +131,22 @@ public class MainController {
     }
 
     private void openSettings() {
-        new SettingsWindow(contentBorderPane.getScene().getWindow());
+        SettingsWindow sw = new SettingsWindow(contentBorderPane.getScene().getWindow());
+        sw.showAndWait();
     }
 
     private void addAction() {
-        Dialog<Boolean> dialog = new Dialog<>();
+        final Dialog<Boolean> dialog = new Dialog<>();
         dialog.setTitle("Add Channel to current Service");
-        ButtonType bt = new ButtonType("Submit", ButtonData.OK_DONE);
+        final ButtonType bt = new ButtonType("Submit", ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
 
-        BorderPane ap = new BorderPane();
-        TextField tf = new TextField();
+        final BorderPane ap = new BorderPane();
+        final TextField tf = new TextField();
         ap.setCenter(tf);
         dialog.getDialogPane().setContent(ap);
 
-        Node submitButton = dialog.getDialogPane().lookupButton(bt);
+        final Node submitButton = dialog.getDialogPane().lookupButton(bt);
         submitButton.setDisable(true);
 
         tf.textProperty()
@@ -160,9 +159,9 @@ public class MainController {
             return false;
         });
 
-        Platform.runLater(() -> tf.requestFocus());
+        tf.requestFocus();
 
-        Optional<Boolean> result = dialog.showAndWait();
+        final Optional<Boolean> result = dialog.showAndWait();
         if (result.isPresent() && result.get()) {
             serviceComboBox.getSelectionModel().getSelectedItem().addChannel(tf.getText().trim());
         }
@@ -174,11 +173,11 @@ public class MainController {
     }
 
     private void importFollowedChannels() {
-        TextInputDialog dialog = new TextInputDialog();
+        final TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Import Twitch.tv followed Channels");
         dialog.setContentText("Please enter your Twitch.tv Username:");
 
-        Optional<String> result = dialog.showAndWait();
+        final Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             serviceComboBox.getSelectionModel().getSelectedItem().addFollowedChannels(result.get());
         }
