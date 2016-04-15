@@ -17,6 +17,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.collections.transformation.SortedList;
 
 public class Service {
     private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
@@ -41,9 +42,19 @@ public class Service {
         List<Channel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
         Channel sm = new TwitchChannel(name);
         channels.add(sm);
-        ObservableList<Channel> obsStreams = FXCollections.observableArrayList(TwitchChannel.extractor());
-        obsStreams.addAll(channels);
-        getChannels().setValue(obsStreams);
+        ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
+        obsChannels.addAll(channels);
+        SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
+        obsChannelsSorted.setComparator((ch1, ch2) -> {
+            if (ch1.isOnline().get() && !ch2.isOnline().get()) {
+                return -1;
+            } else if (!ch1.isOnline().get() && ch2.isOnline().get()) {
+                return 1;
+            }
+            return 0;
+        });
+
+        getChannels().setValue(obsChannelsSorted);
 
         final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
         tcus.start();
@@ -55,9 +66,18 @@ public class Service {
             LOGGER.debug("Remove Channel {} from list", selectedStream.getName());
             List<Channel> channels = getChannels().subList(0, getChannels().getSize());
             channels.remove(selectedStream);
-            ObservableList<Channel> obsStreams = FXCollections.observableArrayList(TwitchChannel.extractor());
-            obsStreams.addAll(channels);
-            getChannels().setValue(obsStreams);
+            ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
+            obsChannels.addAll(channels);
+            SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
+            obsChannelsSorted.setComparator((ch1, ch2) -> {
+                if (ch1.isOnline().get() && !ch2.isOnline().get()) {
+                    return -1;
+                } else if (!ch1.isOnline().get() && ch2.isOnline().get()) {
+                    return 1;
+                }
+                return 0;
+            });
+            getChannels().setValue(obsChannelsSorted);
 
             final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(selectedStream);
             tcus.cancel();
@@ -73,9 +93,18 @@ public class Service {
             channels.add(new TwitchChannel(s));
         }
         observableChannels = FXCollections.observableArrayList(channels);
-        ObservableList<Channel> obsChannel = FXCollections.observableArrayList(TwitchChannel.extractor());
-        obsChannel.addAll(observableChannels);
-        getChannels().setValue(obsChannel);
+        ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
+        obsChannels.addAll(channels);
+        SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
+        obsChannelsSorted.setComparator((ch1, ch2) -> {
+            if (ch1.isOnline().get() && !ch2.isOnline().get()) {
+                return -1;
+            } else if (!ch1.isOnline().get() && ch2.isOnline().get()) {
+                return 1;
+            }
+            return 0;
+        });
+        getChannels().setValue(obsChannelsSorted);
         // TODO Find better Solution
 
         for (Channel c : observableChannels) {

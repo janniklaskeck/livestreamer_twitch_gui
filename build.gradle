@@ -13,11 +13,7 @@ jar {
 }
 
 task fatJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'LSGUI FATJAR',
-            'Implementation-Version': version,
-            'Main-Class': 'app.lsgui.Main'
-    }
+    manifest.from jar.manifest
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
@@ -28,7 +24,6 @@ repositories {
 }
 
 dependencies {
-    compile  'org.apache.commons:commons-lang3:3.4'
     compile  'org.apache.logging.log4j:log4j-api:2.5'
     compile  'org.apache.logging.log4j:log4j-core:2.5'
     compile  'de.jensd:fontawesomefx:8.9'
@@ -38,16 +33,8 @@ dependencies {
     compile  'org.slf4j:slf4j-api:1.7.19'
     compile  'org.apache.logging.log4j:log4j-slf4j-impl:2.5'
     compile  'org.apache.logging.log4j:log4j-jul:2.5'
-    compile  'commons-io:commons-io:2.4'
     compile  'junit:junit:4.12'
     compile  'org.pircbotx:pircbotx:2.1'
     compile  'org.fxmisc.richtext:richtextfx:0.6.10'
 }
 
-uploadArchives {
-    repositories {
-       flatDir {
-           dirs 'repos'
-       }
-    }
-}
