@@ -1,6 +1,7 @@
 package app.lsgui.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -10,7 +11,9 @@ import org.slf4j.LoggerFactory;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.service.twitch.TwitchAPIClient;
 import app.lsgui.service.twitch.TwitchChannelUpdateService;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -25,7 +28,8 @@ public class Service {
     private StringProperty name;
     private StringProperty url;
     private ListProperty<Channel> channelProperty;
-    private ObservableList<Channel> observableChannels;
+    private BooleanProperty sortChannels;
+    private Comparator<Channel> comp;
 
     private static final ObservableMap<Channel, TwitchChannelUpdateService> UPDATESERVICES = FXCollections
             .observableHashMap();
@@ -34,7 +38,14 @@ public class Service {
         this.name = new SimpleStringProperty(name);
         this.url = new SimpleStringProperty(url);
         this.channelProperty = new SimpleListProperty<>();
-        this.observableChannels = FXCollections.observableArrayList();
+        sortChannels = new SimpleBooleanProperty();
+    }
+
+    public void bindSortProperty(final BooleanProperty property) {
+        if (!sortChannels.isBound()) {
+            sortChannels.bind(property);
+            sortChannels.addListener((obs, oldValue, newValue) -> changeComparator(newValue));
+        }
     }
 
     public void addChannel(final String name) {
@@ -45,17 +56,8 @@ public class Service {
         ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
         obsChannels.addAll(channels);
         SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
-        obsChannelsSorted.setComparator((ch1, ch2) -> {
-            if (ch1.isOnline().get() && !ch2.isOnline().get()) {
-                return -1;
-            } else if (!ch1.isOnline().get() && ch2.isOnline().get()) {
-                return 1;
-            }
-            return 0;
-        });
-
+        obsChannelsSorted.setComparator(comp);
         getChannels().setValue(obsChannelsSorted);
-
         final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
         tcus.start();
         UPDATESERVICES.put(sm, tcus);
@@ -69,16 +71,8 @@ public class Service {
             ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
             obsChannels.addAll(channels);
             SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
-            obsChannelsSorted.setComparator((ch1, ch2) -> {
-                if (ch1.isOnline().get() && !ch2.isOnline().get()) {
-                    return -1;
-                } else if (!ch1.isOnline().get() && ch2.isOnline().get()) {
-                    return 1;
-                }
-                return 0;
-            });
+            obsChannelsSorted.setComparator(comp);
             getChannels().setValue(obsChannelsSorted);
-
             final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(selectedStream);
             tcus.cancel();
         }
@@ -86,31 +80,24 @@ public class Service {
 
     public void addFollowedChannels(final String username) {
         LOGGER.debug("Import followed Streams for user {}", username);
-
         Set<String> set = TwitchAPIClient.instance().getListOfFollowedStreams(username);
-        List<Channel> channels = new ArrayList<>();
         for (String s : set) {
-            channels.add(new TwitchChannel(s));
+            addChannel(s);
         }
-        observableChannels = FXCollections.observableArrayList(channels);
-        ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
-        obsChannels.addAll(channels);
-        SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
-        obsChannelsSorted.setComparator((ch1, ch2) -> {
-            if (ch1.isOnline().get() && !ch2.isOnline().get()) {
-                return -1;
-            } else if (!ch1.isOnline().get() && ch2.isOnline().get()) {
-                return 1;
-            }
-            return 0;
-        });
-        getChannels().setValue(obsChannelsSorted);
-        // TODO Find better Solution
+    }
 
-        for (Channel c : observableChannels) {
-            final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(c);
-            tcus.start();
-            UPDATESERVICES.put(c, tcus);
+    private void changeComparator(boolean doSorting) {
+        if (!doSorting) {
+            comp = (ch1, ch2) -> 0;
+        } else {
+            comp = (ch1, ch2) -> {
+                if (ch1.isOnline().get() && !ch2.isOnline().get()) {
+                    return -1;
+                } else if (!ch1.isOnline().get() && ch2.isOnline().get()) {
+                    return 1;
+                }
+                return 0;
+            };
         }
     }
 

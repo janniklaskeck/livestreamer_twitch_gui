@@ -28,11 +28,14 @@ public class SettingsController {
 
         Settings st = Settings.instance();
 
-        sortCheckBox.setSelected(st.isSortTwitch());
+        sortCheckBox.setSelected(st.getSortTwitch().get());
         oauthTextField.setText(st.getTwitchOAuth());
         usernameTextField.setText(st.getTwitchUser());
 
-        sortCheckBox.setOnAction(event -> st.setSortTwitch(sortCheckBox.isSelected()));
+        sortCheckBox.setOnAction(event -> {
+            st.getSortTwitch().setValue(sortCheckBox.isSelected());
+            
+        });
         usernameTextField.textProperty().addListener((observable, oldValue, newValue) -> st.setTwitchUser(newValue));
         oauthTextField.textProperty().addListener((observable, oldValue, newValue) -> st.setTwitchOAuth(newValue));
     }

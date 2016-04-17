@@ -28,7 +28,8 @@ import javafx.util.Callback;
 public class TwitchChannel implements Channel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannel.class);
-    private static Image DEFAULTCHANNELLOGO = null;
+    private static Image defaultLogo = new Image(
+            TwitchChannel.class.getClassLoader().getResource("default_channel.png").toExternalForm());
 
     private StringProperty name;
     private StringProperty logoURL;
@@ -45,10 +46,6 @@ public class TwitchChannel implements Channel {
     private List<String> availableQualities;
 
     public TwitchChannel(final String name) {
-        if (DEFAULTCHANNELLOGO == null) {
-            DEFAULTCHANNELLOGO = new Image(
-                    getClass().getClassLoader().getResource("default_channel.png").toExternalForm());
-        }
         this.name = new SimpleStringProperty(name);
         this.logoURL = new SimpleStringProperty("");
         this.previewURL = new SimpleStringProperty("");
@@ -82,7 +79,7 @@ public class TwitchChannel implements Channel {
         uptime.setValue(null);
         viewers.setValue(null);
         isOnline.setValue(false);
-        previewImage.setValue(DEFAULTCHANNELLOGO);
+        previewImage.setValue(defaultLogo);
         description.setValue(getOfflineString());
         availableQualities = new ArrayList<>();
         availableQualities.add("worst, best");

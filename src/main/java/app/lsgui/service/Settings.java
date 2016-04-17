@@ -20,6 +20,8 @@ import com.google.gson.stream.JsonWriter;
 
 import app.lsgui.model.Channel;
 import app.lsgui.model.Service;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import junit.runner.Version;
@@ -34,7 +36,7 @@ public class Settings {
     private static final Version VERSION = null;
     private static final long TIMEOUT = 5000L;
     private List<Service> services = new ArrayList<>();
-    private boolean sortTwitch = true;
+    private BooleanProperty sortTwitch = new SimpleBooleanProperty();
     private boolean minimizeToTray = true;
     private String currentService = "twitch.tv";
     private String twitchUser = "";
@@ -43,6 +45,7 @@ public class Settings {
     private int maxChannelsLoad = 20;
 
     private PrintStream logPrintStream;
+    private boolean isLoading = false;
 
     private static final String TWITCHUSERSTRING = "twitchusername";
     private static final String TWITCHOAUTHSTRING = "twitchoauth";
@@ -56,7 +59,7 @@ public class Settings {
 
     private Settings() {
         File settings = new File(FILEPATH);
-        if (settings.exists() && settings.isFile()) {
+        if (settings.exists() && settings.isFile() && !isLoading) {
             loadSettings(settings);
         }
     }
@@ -82,6 +85,7 @@ public class Settings {
     }
 
     public void loadSettings(File file) {
+        isLoading = true;
         FileInputStream fis;
         try {
             fis = new FileInputStream(file);
@@ -98,7 +102,7 @@ public class Settings {
             JsonObject settings = jArray.get(0).getAsJsonObject();
             twitchUser = settings.get(TWITCHUSERSTRING).getAsString();
             twitchOAuth = settings.get(TWITCHOAUTHSTRING).getAsString();
-            sortTwitch = settings.get(TWITCHSORT).getAsBoolean();
+            sortTwitch.setValue(settings.get(TWITCHSORT).getAsBoolean());
             maxChannelsLoad = settings.get(CHANNELSLOAD).getAsInt();
             maxGamesLoad = settings.get(GAMESSLOAD).getAsInt();
             minimizeToTray = settings.get(MINIMIZETOTRAYSTRING).getAsBoolean();
@@ -107,7 +111,7 @@ public class Settings {
             for (int i = 0; i < servicesArray.size(); i++) {
                 JsonObject service = servicesArray.get(i).getAsJsonObject();
                 Service ss = new Service(service.get(SERVICENAME).getAsString(), service.get(SERVICEURL).getAsString());
-
+                ss.bindSortProperty(sortTwitch);
                 JsonArray channels = service.get("channels").getAsJsonArray();
                 for (int e = 0; e < channels.size(); e++) {
                     // TODO include other services
@@ -129,7 +133,7 @@ public class Settings {
             w.beginObject();
             w.name(TWITCHUSERSTRING).value(twitchUser);
             w.name(TWITCHOAUTHSTRING).value(twitchOAuth);
-            w.name(TWITCHSORT).value(sortTwitch);
+            w.name(TWITCHSORT).value(sortTwitch.get());
             w.name(PATH).value("");
             w.name(CHANNELSLOAD).value(maxChannelsLoad);
             w.name(GAMESSLOAD).value(maxGamesLoad);
@@ -165,12 +169,8 @@ public class Settings {
         return FXCollections.observableArrayList(services);
     }
 
-    public boolean isSortTwitch() {
+    public BooleanProperty getSortTwitch() {
         return sortTwitch;
-    }
-
-    public void setSortTwitch(boolean sortTwitch) {
-        this.sortTwitch = sortTwitch;
     }
 
     public String getCurrentStreamService() {

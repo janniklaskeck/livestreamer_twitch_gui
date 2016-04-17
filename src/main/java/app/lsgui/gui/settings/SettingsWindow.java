@@ -18,10 +18,9 @@ import javafx.stage.Window;
 public class SettingsWindow extends AnchorPane {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsWindow.class);
-    private static Stage settingsStage;
+    private static Stage settingsStage = new Stage();
 
     public SettingsWindow(final Window parentWindow) {
-        settingsStage = new Stage();
         Parent root = loadFXML();
         setupStage(root, settingsStage, parentWindow);
 

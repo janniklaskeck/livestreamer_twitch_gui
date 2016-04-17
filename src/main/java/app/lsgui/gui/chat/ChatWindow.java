@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 public class ChatWindow {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsWindow.class);
-    private static Stage chatStage;
+    private Stage chatStage;
     private String channel;
     private FXMLLoader loader;
 
@@ -55,13 +55,6 @@ public class ChatWindow {
         chatStage.show();
 
         chatStage.setOnCloseRequest(event -> ((ChatController) loader.getController()).disconnect());
-    }
-
-    /**
-     * @return the settingsStage
-     */
-    static Stage getSettingsStage() {
-        return chatStage;
     }
 
     public void connect() {
