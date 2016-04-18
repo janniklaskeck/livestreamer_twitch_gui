@@ -37,15 +37,27 @@ public class Service {
     public Service(String name, String url) {
         this.name = new SimpleStringProperty(name);
         this.url = new SimpleStringProperty(url);
-        this.channelProperty = new SimpleListProperty<>();
+        channelProperty = new SimpleListProperty<>();
         sortChannels = new SimpleBooleanProperty();
     }
 
     public void bindSortProperty(final BooleanProperty property) {
         if (!sortChannels.isBound()) {
             sortChannels.bind(property);
-            sortChannels.addListener((obs, oldValue, newValue) -> changeComparator(newValue));
+            sortChannels.addListener((obs, oldValue, newValue) -> {
+                changeComparator(newValue);
+                refreshList();
+                LOGGER.info("Change Sorting method and refresh list");
+            });
         }
+    }
+
+    private void refreshList() {
+        ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
+        obsChannels.addAll(getChannels().getValue());
+        SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
+        obsChannelsSorted.setComparator(comp);
+        getChannels().setValue(obsChannelsSorted);
     }
 
     public void addChannel(final String name) {
@@ -88,7 +100,7 @@ public class Service {
 
     private void changeComparator(boolean doSorting) {
         if (!doSorting) {
-            comp = (ch1, ch2) -> 0;
+            comp = (ch1, ch2) -> ch1.getName().get().compareTo(ch2.getName().get());
         } else {
             comp = (ch1, ch2) -> {
                 if (ch1.isOnline().get() && !ch2.isOnline().get()) {

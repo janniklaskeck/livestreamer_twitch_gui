@@ -114,7 +114,6 @@ public class Settings {
                 ss.bindSortProperty(sortTwitch);
                 JsonArray channels = service.get("channels").getAsJsonArray();
                 for (int e = 0; e < channels.size(); e++) {
-                    // TODO include other services
                     ss.addChannel(channels.get(e).getAsString());
                 }
                 services.add(ss);

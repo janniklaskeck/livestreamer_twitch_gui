@@ -32,22 +32,21 @@ public class SettingsController {
         oauthTextField.setText(st.getTwitchOAuth());
         usernameTextField.setText(st.getTwitchUser());
 
-        sortCheckBox.setOnAction(event -> {
-            st.getSortTwitch().setValue(sortCheckBox.isSelected());
-            
-        });
+        sortCheckBox.setOnAction(event -> st.getSortTwitch().setValue(sortCheckBox.isSelected()));
         usernameTextField.textProperty().addListener((observable, oldValue, newValue) -> st.setTwitchUser(newValue));
         oauthTextField.textProperty().addListener((observable, oldValue, newValue) -> st.setTwitchOAuth(newValue));
     }
 
     @FXML
     protected void cancelSettingsAction() {
+        SettingsWindow.getSettingsStage().hide();
         SettingsWindow.getSettingsStage().close();
     }
 
     @FXML
     protected void saveSettingsAction() {
         Settings.instance().saveSettings();
+        SettingsWindow.getSettingsStage().hide();
         SettingsWindow.getSettingsStage().close();
     }
 
