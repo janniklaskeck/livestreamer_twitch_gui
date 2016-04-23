@@ -64,3 +64,7 @@ local.properties
 # Code Recommenders
 .recommenders/
 /repos/
+
+gradle
+gradlew
+gradlew.bat
