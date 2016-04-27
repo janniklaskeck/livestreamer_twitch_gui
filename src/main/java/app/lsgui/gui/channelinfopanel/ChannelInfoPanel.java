@@ -29,7 +29,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-public class ChannelInfoPanel extends BorderPane {
+public class ChannelInfoPanel extends BorderPane { // NOSONAR
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelInfoPanel.class);
     private static final String CHANNELINFOPANELFXML = "fxml/ChannelInfoPanel.fxml";

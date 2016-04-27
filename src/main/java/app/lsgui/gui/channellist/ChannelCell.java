@@ -7,7 +7,7 @@ import app.lsgui.model.Channel;
 import javafx.scene.control.ListCell;
 import javafx.scene.paint.Color;
 
-public class ChannelCell extends ListCell<Channel> {
+public class ChannelCell extends ListCell<Channel> {// NOSONAR
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class);
 

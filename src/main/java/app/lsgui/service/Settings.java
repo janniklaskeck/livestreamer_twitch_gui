@@ -100,12 +100,6 @@ public class Settings {
             Gson g = new Gson();
             JsonArray jArray = g.fromJson(sb.toString(), JsonArray.class);
             JsonObject settings = jArray.get(0).getAsJsonObject();
-            twitchUser = settings.get(TWITCHUSERSTRING).getAsString();
-            twitchOAuth = settings.get(TWITCHOAUTHSTRING).getAsString();
-            sortTwitch.setValue(settings.get(TWITCHSORT).getAsBoolean());
-            maxChannelsLoad = settings.get(CHANNELSLOAD).getAsInt();
-            maxGamesLoad = settings.get(GAMESSLOAD).getAsInt();
-            minimizeToTray = settings.get(MINIMIZETOTRAYSTRING).getAsBoolean();
 
             JsonArray servicesArray = jArray.get(1).getAsJsonArray();
             for (int i = 0; i < servicesArray.size(); i++) {
@@ -118,6 +112,13 @@ public class Settings {
                 }
                 services.add(ss);
             }
+            sortTwitch.setValue(settings.get(TWITCHSORT).getAsBoolean());
+            twitchUser = settings.get(TWITCHUSERSTRING).getAsString();
+            twitchOAuth = settings.get(TWITCHOAUTHSTRING).getAsString();
+
+            maxChannelsLoad = settings.get(CHANNELSLOAD).getAsInt();
+            maxGamesLoad = settings.get(GAMESSLOAD).getAsInt();
+            minimizeToTray = settings.get(MINIMIZETOTRAYSTRING).getAsBoolean();
         } catch (IOException e) {
             LOGGER.error("ERROR while reading Settings file", e);
         }

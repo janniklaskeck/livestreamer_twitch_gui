@@ -18,7 +18,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
 
-public class ChannelList extends AnchorPane {
+public class ChannelList extends AnchorPane {// NOSONAR
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelList.class);
     private static final String CHANNELLISTFXML = "fxml/ChannelList.fxml";
     private static FXMLLoader loader;

@@ -15,7 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-public class SettingsWindow extends AnchorPane {
+public class SettingsWindow extends AnchorPane {// NOSONAR
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsWindow.class);
     private static Stage settingsStage;
