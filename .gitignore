@@ -68,3 +68,5 @@ local.properties
 gradle
 gradlew
 gradlew.bat
+.classpath
+.project
