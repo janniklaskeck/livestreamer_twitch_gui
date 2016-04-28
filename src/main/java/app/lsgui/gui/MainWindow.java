@@ -54,7 +54,7 @@ public class MainWindow extends Application {
     private void setupStage(final Parent root, final Stage primaryStage) {
         Scene scene = new Scene(root);
         setRootStage(primaryStage);
-        scene.getStylesheets().add(getClass().getResource("/lightStyle.css").toString());
+        scene.getStylesheets().add(getClass().getResource("/JMetroLightTheme.css").toString());
 
         primaryStage.setMinHeight(550);
         primaryStage.setHeight(550);
