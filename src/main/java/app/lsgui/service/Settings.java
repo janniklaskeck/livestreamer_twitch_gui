@@ -24,7 +24,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import junit.runner.Version;
 
 public class Settings {
 
@@ -33,7 +32,7 @@ public class Settings {
 
     private static Settings instance;
 
-    private static final Version VERSION = null;
+    private static final String VERSION = "";
     private static final long TIMEOUT = 5000L;
     private List<Service> services = new ArrayList<>();
     private BooleanProperty sortTwitch = new SimpleBooleanProperty();
@@ -213,7 +212,7 @@ public class Settings {
         this.maxChannelsLoad = maxChannelsLoad;
     }
 
-    public Version getVERSION() {
+    public String getVERSION() {
         return VERSION;
     }
 
