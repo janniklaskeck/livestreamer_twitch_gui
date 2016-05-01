@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="app.lsgui.gui.settings.SettingsController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.lsgui.gui.settings.SettingsController">
   <columnConstraints>
     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
@@ -15,6 +15,7 @@
     <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
     <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
     <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -40,7 +41,7 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
       </ChoiceBox>
-      <Button mnemonicParsing="false" onAction="#cancelSettingsAction" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="5">
+      <Button mnemonicParsing="false" onAction="#cancelSettingsAction" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="6">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
@@ -50,10 +51,16 @@
       <Label text="Twitch.tv OAuth Key" GridPane.rowIndex="2" />
       <Label text="Placeholder" GridPane.rowIndex="3" />
       <Label text="Placeholder" GridPane.rowIndex="4" />
-      <Button mnemonicParsing="false" onAction="#saveSettingsAction" text="Save &amp; Close" GridPane.rowIndex="5">
+      <Button mnemonicParsing="false" onAction="#saveSettingsAction" text="Save &amp; Close" GridPane.rowIndex="6">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
       </Button>
+      <Label text="Window Style" GridPane.rowIndex="5" />
+      <ChoiceBox fx:id="styleChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </ChoiceBox>
    </children>
 </GridPane>

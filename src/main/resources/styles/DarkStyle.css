@@ -1,0 +1,32 @@
+.root {
+    -fx-base: #25282a;
+    -fx-background: #272a2c;
+    -fx-control-inner-background: derive(-fx-base, 15%);
+    -fx-control-inner-background-alt: derive(-fx-control-inner-background, -5%);
+
+    -fx-dark-text-color: #bababa;
+    -fx-mid-text-color: #bababa;
+    -fx-light-text-color: #bababa;
+
+    -fx-accent: #678bb0;
+    -fx-default-button: #28394d;
+    -fx-focus-color: #678bb0;
+
+    -fx-faint-focus-color: #28394d;
+    -fx-color: -fx-base;
+}
+
+.glyph-icon {
+    -fx-fill: #bababa;
+}
+
+.status-bar {
+    -fx-padding: 4px;
+    -fx-pref-height: 30px;
+    -fx-background-color: -fx-body-color;
+    -fx-background-insets: 0, 1
+}
+
+.label {
+    -fx-text-fill: #bababa;
+}

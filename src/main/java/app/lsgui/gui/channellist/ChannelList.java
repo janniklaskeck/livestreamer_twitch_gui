@@ -35,7 +35,6 @@ public class ChannelList extends AnchorPane {// NOSONAR
         LOGGER.debug("Construct StreamList");
 
         loader = new FXMLLoader();
-        getStylesheets().add(getClass().getResource("/ListView.css").toExternalForm());
         loader.setRoot(this);
         loader.setController(this);
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.lsgui.service.Settings;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -39,7 +40,6 @@ public class SettingsWindow extends AnchorPane {// NOSONAR
 
     private void setupStage(final Parent root, final Stage settingsStage, final Window parentWindow) {
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("/lightStyle.css").toString());
 
         settingsStage.setResizable(false);
 
@@ -48,6 +48,8 @@ public class SettingsWindow extends AnchorPane {// NOSONAR
         settingsStage.setScene(scene);
         settingsStage.initModality(Modality.APPLICATION_MODAL);
         settingsStage.initOwner(parentWindow);
+        SettingsWindow.getSettingsStage().getScene().getStylesheets().add(SettingsWindow.class
+                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
     }
 
     /**

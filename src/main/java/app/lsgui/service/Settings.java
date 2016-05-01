@@ -37,6 +37,7 @@ public class Settings {
     private List<Service> services = new ArrayList<>();
     private BooleanProperty sortTwitch = new SimpleBooleanProperty();
     private boolean minimizeToTray = true;
+    private String windowStyle = "LightStyle";
     private String currentService = "twitch.tv";
     private String twitchUser = "";
     private String twitchOAuth = "";
@@ -55,6 +56,7 @@ public class Settings {
     private static final String SERVICENAME = "serviceName";
     private static final String SERVICEURL = "serviceURL";
     private static final String MINIMIZETOTRAYSTRING = "minimizetotray";
+    private static final String WINDOWSTYLE = "windowstyle";
 
     private Settings() {
         File settings = new File(FILEPATH);
@@ -114,6 +116,7 @@ public class Settings {
             sortTwitch.setValue(settings.get(TWITCHSORT).getAsBoolean());
             twitchUser = settings.get(TWITCHUSERSTRING).getAsString();
             twitchOAuth = settings.get(TWITCHOAUTHSTRING).getAsString();
+            windowStyle = settings.get(WINDOWSTYLE).getAsString();
 
             maxChannelsLoad = settings.get(CHANNELSLOAD).getAsInt();
             maxGamesLoad = settings.get(GAMESSLOAD).getAsInt();
@@ -137,6 +140,7 @@ public class Settings {
             w.name(CHANNELSLOAD).value(maxChannelsLoad);
             w.name(GAMESSLOAD).value(maxGamesLoad);
             w.name(MINIMIZETOTRAYSTRING).value(minimizeToTray);
+            w.name(WINDOWSTYLE).value(windowStyle);
             w.endObject();
             w.beginArray();
             for (Service s : services) {
@@ -248,6 +252,21 @@ public class Settings {
      */
     public void setMinimizeToTray(boolean minimizeToTray) {
         this.minimizeToTray = minimizeToTray;
+    }
+
+    /**
+     * @return the windowStyle
+     */
+    public String getWindowStyle() {
+        return windowStyle;
+    }
+
+    /**
+     * @param windowStyle
+     *            the windowStyle to set
+     */
+    public void setWindowStyle(String windowStyle) {
+        this.windowStyle = windowStyle;
     }
 
 }

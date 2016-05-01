@@ -108,9 +108,9 @@ public class MainController {
     }
 
     private void setupToolbarLeft() {
-        Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS_SQUARE);
+        Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS);
         addButton.setOnAction(event -> addAction());
-        Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS_SQUARE);
+        Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS);
         removeButton.setOnAction(event -> removeAction());
         Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
         importButton.setOnAction(event -> importFollowedChannels());

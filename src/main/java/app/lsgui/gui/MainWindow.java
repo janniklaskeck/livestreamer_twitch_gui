@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.lsgui.gui.settings.SettingsController;
 import app.lsgui.model.Channel;
 import app.lsgui.model.Service;
 import app.lsgui.service.Settings;
@@ -54,7 +55,6 @@ public class MainWindow extends Application {
     private void setupStage(final Parent root, final Stage primaryStage) {
         Scene scene = new Scene(root);
         setRootStage(primaryStage);
-        scene.getStylesheets().add(getClass().getResource("/JMetroLightTheme.css").toString());
 
         primaryStage.setMinHeight(550);
         primaryStage.setHeight(550);
@@ -88,6 +88,8 @@ public class MainWindow extends Application {
             }
             Platform.exit();
         });
+        MainWindow.getRootStage().getScene().getStylesheets().add(MainWindow.class
+                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
     }
 
     public static final Stage getRootStage() {
