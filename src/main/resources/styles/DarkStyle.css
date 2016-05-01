@@ -50,3 +50,9 @@
     -fx-text-fill: #101010;
     -fx-font-size: 13px;
 }
+
+.styled-text-area {
+    -fx-background-color: #dddddd;
+}
+
+

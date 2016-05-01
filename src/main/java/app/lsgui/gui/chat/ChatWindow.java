@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.MainWindow;
 import app.lsgui.gui.settings.SettingsWindow;
 import app.lsgui.service.Settings;
 import javafx.application.Platform;
@@ -19,7 +18,7 @@ import javafx.stage.Stage;
 public class ChatWindow {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsWindow.class);
-    private Stage chatStage;
+    private static Stage chatStage;
     private String channel;
     private FXMLLoader loader;
 
@@ -51,7 +50,7 @@ public class ChatWindow {
         chatStage.setMinWidth(600.0);
 
         chatStage.getProperties().put("channel", channel);
-        chatStage.setTitle("Livestreamer GUI v3.0 Chat - " + channel);
+        chatStage.setTitle(channel + " - Livestreamer GUI v3.0 Chat");
         chatStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         chatStage.setScene(scene);
         chatStage.initModality(Modality.NONE);
@@ -62,6 +61,10 @@ public class ChatWindow {
 
     public void connect() {
         loader.<ChatController> getController().connect();
+    }
+
+    public static Stage getChatStage() {
+        return chatStage;
     }
 
 }

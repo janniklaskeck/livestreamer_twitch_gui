@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.MainController;
 import app.lsgui.gui.MainWindow;
+import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.service.Settings;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -45,8 +46,11 @@ public class SettingsController {
             String style = SettingsController.class.getResource("/styles/" + newValue + ".css").toExternalForm();
             MainWindow.getRootStage().getScene().getStylesheets().clear();
             SettingsWindow.getSettingsStage().getScene().getStylesheets().clear();
+            ChatWindow.getChatStage().getScene().getStylesheets().clear();
+
             MainWindow.getRootStage().getScene().getStylesheets().add(style);
             SettingsWindow.getSettingsStage().getScene().getStylesheets().add(style);
+            ChatWindow.getChatStage().getScene().getStylesheets().add(style);
         });
     }
 

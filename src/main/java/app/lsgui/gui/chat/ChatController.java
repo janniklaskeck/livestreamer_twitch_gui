@@ -42,6 +42,7 @@ public class ChatController {
 
         chatTextArea = new InlineCssTextArea();
         chatTextArea.setWrapText(true);
+
         chatBorderPane.setCenter(chatTextArea);
 
         sendButton.setOnAction(event -> {
@@ -50,9 +51,8 @@ public class ChatController {
             final int start = chatTextArea.getText().length();
             final int end = start + Settings.instance().getTwitchUser().length() + 1;
             chatTextArea.appendText(Settings.instance().getTwitchUser() + ": " + inputTextField.getText() + "\n");
-            chatTextArea.setStyle(start, end, "-fx-fill: "
-                    + Utils.getColorFromString(Settings.instance().getTwitchUser()) + "; -fx-font-size: 12pt");
-            chatTextArea.setStyle(end, end + inputTextField.getText().length() + 1, "-fx-font-size: 12pt");
+            setColoredNickName(chatTextArea, start, end);
+            setChatMessageStyle(chatTextArea, end, end + inputTextField.getText().length() + 1);
             inputTextField.setText("");
         });
     }
@@ -101,5 +101,15 @@ public class ChatController {
         if (pircBotX.isConnected()) {
             pircBotX.sendIRC().quitServer();
         }
+    }
+
+    public static void setColoredNickName(final InlineCssTextArea cta, final int start, final int end) {
+        cta.setStyle(start, end,
+                "-fx-fill: " + Utils.getColorFromString(Settings.instance().getTwitchUser()) + "; -fx-font-size: 12pt");
+
+    }
+
+    public static void setChatMessageStyle(final InlineCssTextArea cta, final int start, final int end) {
+        cta.setStyle(start, end, "-fx-font-size: 12pt");
     }
 }
