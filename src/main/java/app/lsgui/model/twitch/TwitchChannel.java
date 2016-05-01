@@ -104,7 +104,7 @@ public class TwitchChannel implements Channel {
         if (data.isOnline() && !isOnline.get()) {
             isOnline.setValue(true);
             Notifications.create().title("Channel Update")
-                    .text(name.get() + " just came online!\n The Game is " + game.get() + ".\n" + title.get())
+                    .text(name.get() + " just came online!\n The Game is " + game.get() + ".\n" + title.get()).darkStyle()
                     .showInformation();
         } else if (!data.isOnline() && isOnline.get()) {
             isOnline.setValue(false);

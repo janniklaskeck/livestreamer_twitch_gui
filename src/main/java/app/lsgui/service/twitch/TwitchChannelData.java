@@ -177,47 +177,26 @@ public class TwitchChannelData {
         this.uptime = uptime;
     }
 
-    /**
-     * @return the logoImage
-     */
     public Image getLogoImage() {
         return logoImage;
     }
 
-    /**
-     * @param logoImage
-     *            the logoImage to set
-     */
     private void setLogoImage(Image logoImage) {
         this.logoImage = logoImage;
     }
 
-    /**
-     * @return the previewImage
-     */
     public Image getPreviewImage() {
         return previewImage;
     }
 
-    /**
-     * @param previewImage
-     *            the previewImage to set
-     */
     private void setPreviewImage(Image previewImage) {
         this.previewImage = previewImage;
     }
 
-    /**
-     * @return the qualities
-     */
     public List<String> getQualities() {
         return qualities;
     }
 
-    /**
-     * @param qualities
-     *            the qualities to set
-     */
     private void setQualities(List<String> qualities) {
         this.qualities = qualities;
     }

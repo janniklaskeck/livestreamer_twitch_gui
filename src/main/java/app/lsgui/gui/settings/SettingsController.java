@@ -1,10 +1,5 @@
 package app.lsgui.gui.settings;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,15 +51,8 @@ public class SettingsController {
     }
 
     private void setupStyleChoiceBox() {
-        try {
-            List<String> files = IOUtils.readLines(
-                    SettingsController.class.getClassLoader().getResourceAsStream("styles/"), StandardCharsets.UTF_8);
-            for (final String name : files) {
-                styleChoiceBox.getItems().add(name.split("\\.")[0]);
-            }
-        } catch (IOException e) {
-            LOGGER.error("ERROR while loading styles", e);
-        }
+        styleChoiceBox.getItems().add("DarkStyle");
+        styleChoiceBox.getItems().add("LightStyle");
         styleChoiceBox.getSelectionModel().select(Settings.instance().getWindowStyle());
     }
 
