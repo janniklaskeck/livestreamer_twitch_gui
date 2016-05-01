@@ -5,7 +5,9 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.lsgui.gui.MainWindow;
 import app.lsgui.gui.settings.SettingsWindow;
+import app.lsgui.service.Settings;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -42,7 +44,8 @@ public class ChatWindow {
 
     private void setupStage(final Parent root, final Stage chatStage) {
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("/lightStyle.css").toString());
+        scene.getStylesheets().add(ChatWindow.class
+                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
 
         chatStage.setMinHeight(400.0);
         chatStage.setMinWidth(600.0);
