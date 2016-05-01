@@ -53,11 +53,13 @@ public class Service {
     }
 
     private void refreshList() {
-        ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
-        obsChannels.addAll(getChannels().getValue());
-        SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
-        obsChannelsSorted.setComparator(comp);
-        getChannels().setValue(obsChannelsSorted);
+        if (getChannels().getValue()!= null) {
+            ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
+            obsChannels.addAll(getChannels().getValue());
+            SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
+            obsChannelsSorted.setComparator(comp);
+            getChannels().setValue(obsChannelsSorted);
+        }
     }
 
     public void addChannel(final String name) {
