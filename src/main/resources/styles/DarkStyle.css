@@ -32,23 +32,29 @@
 }
 
 .list-view:focused > .virtual-flow > .clipped-container > .sheet > .list-cell:focused:selected {
-    -fx-background-color: derive(-fx-background, 25%);
-    -fx-border-color: black;
+    -fx-background-color: #333333;
+    -fx-border-color: lightgrey;
     -fx-border-width: 1px;
+    -fx-text-fill: #aaaaaa;
 }
 
 .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover {
+    -fx-text-fill: #aaaaaa;
     -fx-background-color: derive(-fx-background, 25%);
 }
 
 .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
-    -fx-text-fill: #101010;
+    -fx-text-fill: #aaaaaa;
     -fx-font-size: 13px;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
 }
 
 .list-view:focused > .virtual-flow > .clipped-container > .sheet > .list-cell:focused {
-    -fx-text-fill: #101010;
+    -fx-text-fill: #aaaaaa;
     -fx-font-size: 13px;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
 }
 
 .styled-text-area {

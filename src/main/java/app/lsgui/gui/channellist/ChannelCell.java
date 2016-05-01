@@ -20,7 +20,7 @@ public class ChannelCell extends ListCell<Channel> {// NOSONAR
         } else {
             setText(item.getName().get());
             if (item.isOnline().get()) {
-                setStyle("-fx-background-color: lightgreen");
+                setStyle("-fx-background-color: green");
                 setTextFill(Color.BLACK);
             } else {
                 setStyle("");
