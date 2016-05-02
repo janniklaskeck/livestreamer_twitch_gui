@@ -46,12 +46,9 @@ public class TwitchAPIClient {
 
     public TwitchChannelData getStreamData(final String channelName) {
         try {
-            LOGGER.debug("Load channelData for {}", channelName);
             JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCHBASEURL + "streams/" + channelName))
                     .getAsJsonObject();
-            TwitchChannelData data = new TwitchChannelData(jo, channelName);
-            LOGGER.debug("data loaded {}", data.getName());
-            return data;
+            return new TwitchChannelData(jo, channelName);
         } catch (JsonSyntaxException e) {
             LOGGER.error("ERROR while loading channel data. Return empty channel", e);
             return new TwitchChannelData(new JsonObject(), channelName);

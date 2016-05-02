@@ -53,7 +53,7 @@ public class Service {
     }
 
     private void refreshList() {
-        if (getChannels().getValue()!= null) {
+        if (getChannels().getValue() != null) {
             ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
             obsChannels.addAll(getChannels().getValue());
             SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
@@ -77,17 +77,18 @@ public class Service {
         UPDATESERVICES.put(sm, tcus);
     }
 
-    public void removeSelectedChannel(final Channel selectedStream) {
-        if (selectedStream != null) {
-            LOGGER.debug("Remove Channel {} from list", selectedStream.getName());
+    public void removeSelectedChannel(final Channel selectedChannel) {
+        if (selectedChannel != null) {
+            LOGGER.debug("Remove Channel {} from list", selectedChannel.getName());
             List<Channel> channels = getChannels().subList(0, getChannels().getSize());
-            channels.remove(selectedStream);
+            channels.remove(selectedChannel);
+            LOGGER.info("remove Channel {}", selectedChannel.getName());
             ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
             obsChannels.addAll(channels);
             SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
             obsChannelsSorted.setComparator(comp);
             getChannels().setValue(obsChannelsSorted);
-            final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(selectedStream);
+            final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(selectedChannel);
             tcus.cancel();
         }
     }

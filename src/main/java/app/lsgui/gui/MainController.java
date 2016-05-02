@@ -25,7 +25,12 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 public class MainController {
@@ -48,16 +53,12 @@ public class MainController {
     private ToolBar toolBarLeft;
 
     @FXML
-    private ToolBar toolBarRight;
-
-    @FXML
     public void initialize() {
         LOGGER.debug("INIT MainController");
         setupServiceComboBox();
         setupChannelList();
         setupChannelInfoPanel();
-        setupToolbarLeft();
-        setupToolbarRight();
+        setupToolbar();
     }
 
     private void setupServiceComboBox() {
@@ -107,22 +108,23 @@ public class MainController {
         contentBorderPane.setCenter(channelInfoPanel);
     }
 
-    private void setupToolbarLeft() {
+    private void setupToolbar() {
         Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS);
         addButton.setOnAction(event -> addAction());
         Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS);
         removeButton.setOnAction(event -> removeAction());
         Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
         importButton.setOnAction(event -> importFollowedChannels());
-        toolBarLeft.getItems().add(addButton);
-        toolBarLeft.getItems().add(removeButton);
-        toolBarLeft.getItems().add(importButton);
-    }
-
-    private void setupToolbarRight() {
+        toolBarLeft.getItems().add(toolBarLeft.getItems().size() - 1, addButton);
+        toolBarLeft.getItems().add(toolBarLeft.getItems().size() - 1, removeButton);
+        toolBarLeft.getItems().add(toolBarLeft.getItems().size() - 1, importButton);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        spacer.setMinWidth(Region.USE_PREF_SIZE);
+        toolBarLeft.getItems().add(toolBarLeft.getItems().size() - 1, spacer);
         Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
         settingsButton.setOnAction(event -> openSettings());
-        toolBarRight.getItems().add(settingsButton);
+        toolBarLeft.getItems().add(toolBarLeft.getItems().size(), settingsButton);
     }
 
     private void changeService(final Service newService) {
@@ -138,6 +140,8 @@ public class MainController {
     private void addAction() {
         final Dialog<Boolean> dialog = new Dialog<>();
         dialog.setTitle("Add Channel to current Service");
+        Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         final ButtonType bt = new ButtonType("Submit", ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
 
@@ -153,7 +157,10 @@ public class MainController {
                 .addListener((observable, oldValue, newValue) -> submitButton.setDisable(newValue.trim().isEmpty()));
 
         dialog.setResultConverter(button -> {
-            if (TwitchAPIClient.instance().channelExists(tf.getText().trim()) && !"".equals(tf.getText().trim())) {
+            if ("".equals(tf.getText().trim()) || button.equals(ButtonType.CANCEL)) {
+                return false;
+            }
+            if (TwitchAPIClient.instance().channelExists(tf.getText().trim())) {
                 return true;
             }
             return false;
@@ -163,23 +170,33 @@ public class MainController {
 
         final Optional<Boolean> result = dialog.showAndWait();
         if (result.isPresent() && result.get()) {
-            serviceComboBox.getSelectionModel().getSelectedItem().addChannel(tf.getText().trim());
+            addChannelToCurrentService(tf.getText().trim());
         }
     }
 
     private void removeAction() {
-        Channel toRemove = channelList.getListView().getSelectionModel().getSelectedItem();
-        serviceComboBox.getSelectionModel().getSelectedItem().removeSelectedChannel(toRemove);
+        final Channel toRemove = channelList.getListView().getSelectionModel().getSelectedItem();
+        removeChannelFromCurrentService(toRemove);
     }
 
     private void importFollowedChannels() {
         final TextInputDialog dialog = new TextInputDialog();
+        Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         dialog.setTitle("Import Twitch.tv followed Channels");
         dialog.setContentText("Please enter your Twitch.tv Username:");
 
         final Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            serviceComboBox.getSelectionModel().getSelectedItem().addFollowedChannels(result.get());
+            addChannelToCurrentService(result.get());
         }
+    }
+
+    private void addChannelToCurrentService(final String channel) {
+        serviceComboBox.getSelectionModel().getSelectedItem().addFollowedChannels(channel);
+    }
+
+    private void removeChannelFromCurrentService(final Channel channel) {
+        serviceComboBox.getSelectionModel().getSelectedItem().removeSelectedChannel(channel);
     }
 }
