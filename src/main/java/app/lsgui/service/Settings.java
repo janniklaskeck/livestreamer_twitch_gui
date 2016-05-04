@@ -146,24 +146,29 @@ public class Settings {
             w.name(EXEPATHSTRING).value(liveStreamerExePath);
             w.endObject();
             w.beginArray();
-            for (Service s : services) {
-                w.beginObject();
-                w.name(SERVICENAME).value(s.getName().get());
-                w.name(SERVICEURL).value(s.getUrl().get());
-                w.name("channels");
-                w.beginArray();
-                for (Channel channel : s.getChannels()) {
-                    w.value(channel.getName().get());
-                }
-                w.endArray();
-                w.endObject();
-            }
+            writeServices(w);
             w.endArray();
-
             w.endArray();
             w.close();
         } catch (IOException e) {
             LOGGER.error("ERROR while writing to Settings file", e);
+        }
+    }
+
+    private void writeServices(JsonWriter w) throws IOException {
+        for (Service s : services) {
+            w.beginObject();
+            w.name(SERVICENAME).value(s.getName().get());
+            w.name(SERVICEURL).value(s.getUrl().get());
+            w.name("channels");
+            w.beginArray();
+            for (Channel channel : s.getChannels()) {
+                if (channel.getName().get() != null) {
+                    w.value(channel.getName().get());
+                }
+            }
+            w.endArray();
+            w.endObject();
         }
     }
 

@@ -3,6 +3,7 @@ package app.lsgui.service.twitch;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -106,9 +107,16 @@ public class TwitchAPIClient {
             request.setHeader("Client-ID", LSGUI_CLIENT_ID);
             final HttpResponse response = HTTP_CLIENT.execute(request);
             return new BasicResponseHandler().handleResponse(response);
-        } catch (URISyntaxException | IOException e) {
-            LOGGER.error("Error when fetching twitch api response", e);
+        } catch (URISyntaxException e) {
+            LOGGER.error("URL syntax Error. Please message developer", e);
             return "";
+        } catch (IOException e) {
+            if (e.getClass().equals(UnknownHostException.class)) {
+                LOGGER.error("Twitch is not reachable. Check your Internet Connection");
+            } else {
+                LOGGER.error("Error when fetching twitch api response", e);
+            }
+            return "{}";
         }
     }
 

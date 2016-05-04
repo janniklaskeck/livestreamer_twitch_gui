@@ -71,12 +71,21 @@ public class Utils {
 
     private static String getLivestreamerExe() {
         if ("".equals(Settings.instance().getLivestreamerExePath())) {
-            Platform.runLater(() -> Notifications.create().title("Livestreamer GUI Warning")
-                    .text("Check for livestreamer on path").darkStyle().showInformation());
+            if (!checkForLivestreamerCMD()) {
+                Platform.runLater(() -> Notifications.create().title("Livestreamer GUI Warning")
+                        .text("Check for livestreamer on path").darkStyle().showInformation());
+                return "";
+            }
             return LIVESTREAMERCMD;
         } else {
             return Settings.instance().getLivestreamerExePath();
         }
+    }
+
+    private static boolean checkForLivestreamerCMD() {
+        LOGGER.info("NOT IMPLEMENTED. Returning true");
+        // TODO implement check if livestreamer is on PATH
+        return true;
     }
 
     public static void openURLInBrowser(final String url) {

@@ -65,13 +65,14 @@ public class TwitchChannel implements Channel {
     public void updateData(final TwitchChannelData data) {
         if (data != null && data.isOnline()) {
             setOnline(data);
-        } else {
-            setOffline();
+        } else if (data != null && !data.isOnline()) {
+            setOffline(data);
         }
     }
 
-    private void setOffline() {
-        name.setValue(null);
+    private void setOffline(final TwitchChannelData data) {
+        LOGGER.info("setoffline");
+        name.setValue(data.getName());
         logoURL.setValue(null);
         previewURL.setValue(null);
         game.setValue(null);

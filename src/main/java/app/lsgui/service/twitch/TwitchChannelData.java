@@ -40,7 +40,8 @@ public class TwitchChannelData {
     private List<String> qualities;
 
     public TwitchChannelData(final JsonObject channelAPIResponse, final String name) {
-        if (!channelAPIResponse.get("stream").isJsonNull()) {
+
+        if (channelAPIResponse.get("stream") != null && !channelAPIResponse.get("stream").isJsonNull()) {
             JsonObject streamObject = channelAPIResponse.get("stream").getAsJsonObject();
             if (streamObject != null && !streamObject.get("channel").isJsonNull() && !streamObject.isJsonNull()) {
                 setData(streamObject, name);
@@ -48,6 +49,7 @@ public class TwitchChannelData {
         } else {
             setData(null, name);
         }
+
     }
 
     private void setData(final JsonObject channelObject, final String name) {
