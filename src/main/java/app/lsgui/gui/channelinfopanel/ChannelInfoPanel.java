@@ -74,7 +74,11 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
             LOGGER.error("ERROR while loading ChannelInfoPanel FXML", e);
         }
         setupChannelInfoPanel();
+        setupModelListener();
 
+    }
+
+    private void setupModelListener() {
         modelProperty.addListener((observable, oldValue, newValue) -> {
             Channel valueStreamModel = newValue == null ? oldValue : newValue;
             if (valueStreamModel.getClass().equals(TwitchChannel.class)) {
@@ -128,7 +132,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         buttonBox.getItems().add(openBrowserButton);
     }
 
-    public void setStream(Channel model) {
+    public void setStream(final Channel model) {
         modelProperty.setValue(model);
     }
 
@@ -161,17 +165,10 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
                 + modelProperty.get().getName().get());
     }
 
-    /**
-     * @return the modelProperty
-     */
     public ObjectProperty<Channel> getModelProperty() {
         return modelProperty;
     }
 
-    /**
-     * @param modelProperty
-     *            the modelProperty to set
-     */
     public void setModelProperty(ObjectProperty<Channel> modelProperty) {
         this.modelProperty = modelProperty;
     }

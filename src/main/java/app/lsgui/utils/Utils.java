@@ -12,12 +12,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
+
+import app.lsgui.service.Settings;
+import javafx.application.Platform;
 
 public class Utils {
 
@@ -26,14 +30,13 @@ public class Utils {
     private static final String LIVESTREAMERCMD = "livestreamer";
 
     private Utils() {
-
     }
 
     public static void startLivestreamer(final String url, final String quality) {
         LOGGER.info("Starting Stream {} with Quality {}", url, quality);
-        new Thread(() -> {
+        Thread t = new Thread(() -> {
             try {
-                ProcessBuilder pb = new ProcessBuilder(Arrays.asList(LIVESTREAMERCMD, url, quality));
+                ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), url, quality));
                 pb.redirectOutput(Redirect.INHERIT);
                 pb.redirectError(Redirect.INHERIT);
                 Process prc = pb.start();
@@ -41,17 +44,19 @@ public class Utils {
             } catch (IOException | InterruptedException e) {
                 LOGGER.error("ERROR while running livestreamer", e);
             }
-        }).start();
+        });
+        t.setDaemon(true);
+        t.start();
     }
 
     public static void recordLivestreamer(final String url, final String quality, final File filePath) {
         LOGGER.info("Record Stream {} with Quality {} to file {}", url, quality, filePath);
-        new Thread(() -> {
+        Thread t = new Thread(() -> {
             try {
                 String path = "\"" + filePath.getAbsolutePath() + "\"";
                 path = path.replace("\\", "/");
                 LOGGER.debug(path);
-                ProcessBuilder pb = new ProcessBuilder(Arrays.asList(LIVESTREAMERCMD, "-o", path, url, quality));
+                ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), "-o", path, url, quality));
                 pb.redirectOutput(Redirect.INHERIT);
                 pb.redirectError(Redirect.INHERIT);
                 Process prc = pb.start();
@@ -59,7 +64,19 @@ public class Utils {
             } catch (IOException | InterruptedException e) {
                 LOGGER.error("ERROR while recording", e);
             }
-        }).start();
+        });
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private static String getLivestreamerExe() {
+        if ("".equals(Settings.instance().getLivestreamerExePath())) {
+            Platform.runLater(() -> Notifications.create().title("Livestreamer GUI Warning")
+                    .text("Check for livestreamer on path").darkStyle().showInformation());
+            return LIVESTREAMERCMD;
+        } else {
+            return Settings.instance().getLivestreamerExePath();
+        }
     }
 
     public static void openURLInBrowser(final String url) {

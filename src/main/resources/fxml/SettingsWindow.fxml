@@ -19,6 +19,7 @@
       <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
       <TextField fx:id="usernameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1">
@@ -41,7 +42,7 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
       </ChoiceBox>
-      <Button mnemonicParsing="false" onAction="#cancelSettingsAction" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="6">
+      <Button mnemonicParsing="false" onAction="#cancelSettingsAction" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="7">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
@@ -51,7 +52,7 @@
       <Label text="Twitch.tv OAuth Key" GridPane.rowIndex="2" />
       <Label text="Placeholder" GridPane.rowIndex="3" />
       <Label text="Placeholder" GridPane.rowIndex="4" />
-      <Button mnemonicParsing="false" onAction="#saveSettingsAction" text="Save &amp; Close" GridPane.rowIndex="6">
+      <Button mnemonicParsing="false" onAction="#saveSettingsAction" text="Save &amp; Close" GridPane.rowIndex="7">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
@@ -62,5 +63,11 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
       </ChoiceBox>
+      <Button fx:id="exeBrowseButton" mnemonicParsing="false" text="Browse" GridPane.columnIndex="1" GridPane.rowIndex="6">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </Button>
+      <Label text="livestreamer.exe Location" GridPane.rowIndex="6" />
    </children>
 </GridPane>

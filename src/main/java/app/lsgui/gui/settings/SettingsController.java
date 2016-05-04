@@ -1,5 +1,7 @@
 package app.lsgui.gui.settings;
 
+import java.io.File;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,9 +10,12 @@ import app.lsgui.gui.MainWindow;
 import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.service.Settings;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class SettingsController {
 
@@ -29,6 +34,9 @@ public class SettingsController {
     private ChoiceBox<String> styleChoiceBox;
 
     @FXML
+    private Button exeBrowseButton;
+
+    @FXML
     public void initialize() {
         LOGGER.info("SettingsController init");
         setupStyleChoiceBox();
@@ -44,13 +52,24 @@ public class SettingsController {
         styleChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             st.setWindowStyle(newValue);
             String style = SettingsController.class.getResource("/styles/" + newValue + ".css").toExternalForm();
-            MainWindow.getRootStage().getScene().getStylesheets().clear();
-            SettingsWindow.getSettingsStage().getScene().getStylesheets().clear();
-            ChatWindow.getChatStage().getScene().getStylesheets().clear();
 
-            MainWindow.getRootStage().getScene().getStylesheets().add(style);
-            SettingsWindow.getSettingsStage().getScene().getStylesheets().add(style);
-            ChatWindow.getChatStage().getScene().getStylesheets().add(style);
+            MainWindow.clearStylesheets();
+            SettingsWindow.clearStylesheets();
+            ChatWindow.clearStylesheets();
+
+            MainWindow.addStyleSheet(style);
+            SettingsWindow.addStyleSheet(style);
+            ChatWindow.addStyleSheet(style);
+        });
+
+        exeBrowseButton.setOnAction(event -> {
+            final FileChooser exeFileChooser = new FileChooser();
+            exeFileChooser.setTitle("Choose Livestreamer.exe file");
+            exeFileChooser.getExtensionFilters().add(new ExtensionFilter("EXE", "*.exe"));
+            final File exeFile = exeFileChooser.showOpenDialog(MainWindow.getRootStage());
+            if (exeFile != null) {
+                Settings.instance().setLivestreamerExePath(exeFile.getAbsolutePath());
+            }
         });
     }
 

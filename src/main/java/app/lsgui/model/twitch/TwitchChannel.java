@@ -55,7 +55,7 @@ public class TwitchChannel implements Channel {
         this.viewers = new SimpleIntegerProperty(0);
         this.isOnline = new SimpleBooleanProperty(false);
         this.previewImage = new SimpleObjectProperty<>(null);
-        this.description = new SimpleStringProperty("Channel is offline");
+        this.description = new SimpleStringProperty(getOfflineString());
         this.availableQualities = new SimpleListProperty<>();
         this.uptimeString = new SimpleStringProperty("");
         this.viewersString = new SimpleStringProperty("");
@@ -63,7 +63,7 @@ public class TwitchChannel implements Channel {
     }
 
     public void updateData(final TwitchChannelData data) {
-        if (data != null) {
+        if (data != null && data.isOnline()) {
             setOnline(data);
         } else {
             setOffline();
@@ -93,25 +93,33 @@ public class TwitchChannel implements Channel {
         game.setValue(data.getGame());
         title.setValue(data.getTitle());
         uptime.setValue(data.getUptime());
-        String upTimeStringValue = String.format("%02d:%02d:%02d Uptime", TimeUnit.MILLISECONDS.toHours(uptime.get()),
-                TimeUnit.MILLISECONDS.toMinutes(uptime.get())
-                        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(uptime.get())),
-                TimeUnit.MILLISECONDS.toSeconds(uptime.get())
-                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime.get())));
+        String upTimeStringValue = buildUptimeString();
         uptimeString.setValue(upTimeStringValue);
         viewers.setValue(data.getViewers());
         viewersString.setValue(Integer.toString(getViewers().get()));
         if (data.isOnline() && !isOnline.get()) {
             isOnline.setValue(true);
-            Notifications.create().title("Channel Update")
-                    .text(name.get() + " just came online!\n The Game is " + game.get() + ".\n" + title.get()).darkStyle()
-                    .showInformation();
+            showOnlineNotification();
         } else if (!data.isOnline() && isOnline.get()) {
             isOnline.setValue(false);
         }
         previewImage.setValue(data.getPreviewImage());
         description.setValue(getTitle().get());
         availableQualities = new ArrayList<>(data.getQualities());
+    }
+
+    private void showOnlineNotification() {
+        Notifications.create().title("Channel Update")
+                .text(name.get() + " just came online!\n The Game is " + game.get() + ".\n" + title.get()).darkStyle()
+                .showInformation();
+    }
+
+    private String buildUptimeString() {
+        return String.format("%02d:%02d:%02d Uptime", TimeUnit.MILLISECONDS.toHours(uptime.get()),
+                TimeUnit.MILLISECONDS.toMinutes(uptime.get())
+                        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(uptime.get())),
+                TimeUnit.MILLISECONDS.toSeconds(uptime.get())
+                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime.get())));
     }
 
     public static Callback<Channel, Observable[]> extractor() {

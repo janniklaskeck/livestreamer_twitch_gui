@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +19,7 @@ import com.google.gson.stream.JsonWriter;
 
 import app.lsgui.model.Channel;
 import app.lsgui.model.Service;
+import app.lsgui.utils.JSONUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -43,8 +43,8 @@ public class Settings {
     private String twitchOAuth = "";
     private int maxGamesLoad = 20;
     private int maxChannelsLoad = 20;
+    private String liveStreamerExePath;
 
-    private PrintStream logPrintStream;
     private boolean isLoading = false;
 
     private static final String TWITCHUSERSTRING = "twitchusername";
@@ -56,7 +56,8 @@ public class Settings {
     private static final String SERVICENAME = "serviceName";
     private static final String SERVICEURL = "serviceURL";
     private static final String MINIMIZETOTRAYSTRING = "minimizetotray";
-    private static final String WINDOWSTYLE = "windowstyle";
+    private static final String WINDOWSTYLESTRING = "windowstyle";
+    private static final String EXEPATHSTRING = "livestreamerexe";
 
     private Settings() {
         File settings = new File(FILEPATH);
@@ -113,14 +114,15 @@ public class Settings {
                 }
                 services.add(ss);
             }
-            sortTwitch.setValue(settings.get(TWITCHSORT).getAsBoolean());
-            twitchUser = settings.get(TWITCHUSERSTRING).getAsString();
-            twitchOAuth = settings.get(TWITCHOAUTHSTRING).getAsString();
-            windowStyle = settings.get(WINDOWSTYLE).getAsString();
+            sortTwitch.setValue(JSONUtils.getBooleanSafe(settings.get(TWITCHSORT), false));
+            minimizeToTray = JSONUtils.getBooleanSafe(settings.get(MINIMIZETOTRAYSTRING), false);
+            twitchUser = JSONUtils.getStringSafe(settings.get(TWITCHUSERSTRING), "");
+            twitchOAuth = JSONUtils.getStringSafe(settings.get(TWITCHOAUTHSTRING), "");
+            windowStyle = JSONUtils.getStringSafe(settings.get(WINDOWSTYLESTRING), "LightStyle");
+            liveStreamerExePath = JSONUtils.getStringSafe(settings.get(EXEPATHSTRING), "");
+            maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELSLOAD), 20);
+            maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMESSLOAD), 20);
 
-            maxChannelsLoad = settings.get(CHANNELSLOAD).getAsInt();
-            maxGamesLoad = settings.get(GAMESSLOAD).getAsInt();
-            minimizeToTray = settings.get(MINIMIZETOTRAYSTRING).getAsBoolean();
         } catch (IOException e) {
             LOGGER.error("ERROR while reading Settings file", e);
         }
@@ -140,7 +142,8 @@ public class Settings {
             w.name(CHANNELSLOAD).value(maxChannelsLoad);
             w.name(GAMESSLOAD).value(maxGamesLoad);
             w.name(MINIMIZETOTRAYSTRING).value(minimizeToTray);
-            w.name(WINDOWSTYLE).value(windowStyle);
+            w.name(WINDOWSTYLESTRING).value(windowStyle);
+            w.name(EXEPATHSTRING).value(liveStreamerExePath);
             w.endObject();
             w.beginArray();
             for (Service s : services) {
@@ -224,49 +227,27 @@ public class Settings {
         return TIMEOUT;
     }
 
-    /**
-     * @return the logPrintStream
-     */
-    public PrintStream getLogPrintStream() {
-        return logPrintStream;
-    }
-
-    /**
-     * @param logPrintStream
-     *            the logPrintStream to set
-     */
-    public void setLogPrintStream(PrintStream logPrintStream) {
-        this.logPrintStream = logPrintStream;
-    }
-
-    /**
-     * @return the minimizeToTray
-     */
     public boolean isMinimizeToTray() {
         return minimizeToTray;
     }
 
-    /**
-     * @param minimizeToTray
-     *            the minimizeToTray to set
-     */
     public void setMinimizeToTray(boolean minimizeToTray) {
         this.minimizeToTray = minimizeToTray;
     }
 
-    /**
-     * @return the windowStyle
-     */
     public String getWindowStyle() {
         return windowStyle;
     }
 
-    /**
-     * @param windowStyle
-     *            the windowStyle to set
-     */
     public void setWindowStyle(String windowStyle) {
         this.windowStyle = windowStyle;
     }
 
+    public void setLivestreamerExePath(final String absolutePath) {
+        this.liveStreamerExePath = absolutePath;
+    }
+
+    public String getLivestreamerExePath() {
+        return this.liveStreamerExePath;
+    }
 }
