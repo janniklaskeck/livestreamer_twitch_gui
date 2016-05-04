@@ -19,10 +19,11 @@ import javafx.stage.Window;
 public class SettingsWindow extends AnchorPane {// NOSONAR
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsWindow.class);
+    private static final String SETTINGSFXML = "fxml/SettingsWindow.fxml";
     private static Stage settingsStage;
 
     public SettingsWindow(final Window parentWindow) {
-        settingsStage = new Stage();
+        setSettingsStage(new Stage());
         Parent root = loadFXML();
         setupStage(root, settingsStage, parentWindow);
 
@@ -30,7 +31,7 @@ public class SettingsWindow extends AnchorPane {// NOSONAR
 
     private Parent loadFXML() {
         try {
-            return FXMLLoader.load(getClass().getClassLoader().getResource("fxml/SettingsWindow.fxml"));
+            return FXMLLoader.load(getClass().getClassLoader().getResource(SETTINGSFXML));
         } catch (IOException e) {
             LOGGER.error("ERROR while load settings fxml", e);
             Platform.exit();
@@ -50,6 +51,11 @@ public class SettingsWindow extends AnchorPane {// NOSONAR
         settingsStage.initOwner(parentWindow);
         SettingsWindow.getSettingsStage().getScene().getStylesheets().add(SettingsWindow.class
                 .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+        settingsStage.setOnCloseRequest(event -> setSettingsStage(null));
+    }
+
+    private static void setSettingsStage(final Stage stage) {
+        settingsStage = stage;
     }
 
     /**
@@ -63,4 +69,15 @@ public class SettingsWindow extends AnchorPane {// NOSONAR
         settingsStage.showAndWait();
     }
 
+    public static void clearStylesheets() {
+        if (settingsStage != null) {
+            settingsStage.getScene().getStylesheets().clear();
+        }
+    }
+
+    public static void addStyleSheet(final String style) {
+        if (settingsStage != null && !settingsStage.getScene().getStylesheets().contains(style)) {
+            settingsStage.getScene().getStylesheets().add(style);
+        }
+    }
 }

@@ -24,7 +24,7 @@ public class ChatWindow {
 
     public ChatWindow(final String channel) {
         this.channel = channel;
-        chatStage = new Stage();
+        setChatStage(new Stage());
 
         loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/ChatWindow.fxml"));
         Parent root = loadFXML();
@@ -41,22 +41,25 @@ public class ChatWindow {
         }
     }
 
-    private void setupStage(final Parent root, final Stage chatStage) {
+    private void setupStage(final Parent root, final Stage stage) {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ChatWindow.class
                 .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
 
-        chatStage.setMinHeight(400.0);
-        chatStage.setMinWidth(600.0);
+        stage.setMinHeight(400.0);
+        stage.setMinWidth(600.0);
 
-        chatStage.getProperties().put("channel", channel);
-        chatStage.setTitle(channel + " - Livestreamer GUI v3.0 Chat");
-        chatStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
-        chatStage.setScene(scene);
-        chatStage.initModality(Modality.NONE);
-        chatStage.show();
+        stage.getProperties().put("channel", channel);
+        stage.setTitle(channel + " - Livestreamer GUI v3.0 Chat");
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
+        stage.setScene(scene);
+        stage.initModality(Modality.NONE);
+        stage.show();
 
-        chatStage.setOnCloseRequest(event -> ((ChatController) loader.getController()).disconnect());
+        stage.setOnCloseRequest(event -> {
+            ((ChatController) loader.getController()).disconnect();
+            setChatStage(null);
+        });
     }
 
     public void connect() {
@@ -67,4 +70,19 @@ public class ChatWindow {
         return chatStage;
     }
 
+    private static void setChatStage(final Stage stage) {
+        chatStage = stage;
+    }
+
+    public static void clearStylesheets() {
+        if (chatStage != null) {
+            chatStage.getScene().getStylesheets().clear();
+        }
+    }
+
+    public static void addStyleSheet(final String style) {
+        if (chatStage != null && !chatStage.getScene().getStylesheets().contains(style)) {
+            chatStage.getScene().getStylesheets().add(style);
+        }
+    }
 }
