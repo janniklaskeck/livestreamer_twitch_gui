@@ -137,7 +137,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void startStream() {
-        if (modelProperty.get() != null) {
+        if (modelProperty.get() != null && modelProperty.get().isOnline().get()) {
             final String url = buildURL();
             final String quality = buildQuality();
             Utils.startLivestreamer(url, quality);
@@ -145,24 +145,34 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void recordStream() {
-        final String url = buildURL();
-        final String quality = buildQuality();
+        if (modelProperty.get() != null && !"".equals(modelProperty.get().getName().get())
+                && modelProperty.get().isOnline().get()) {
+            final String url = buildURL();
+            final String quality = buildQuality();
 
-        final FileChooser recordFileChooser = new FileChooser();
-        recordFileChooser.setTitle("Choose Target file");
-        recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
-        final File recordFile = recordFileChooser.showSaveDialog(MainWindow.getRootStage());
-        Utils.recordLivestreamer(url, quality, recordFile);
+            final FileChooser recordFileChooser = new FileChooser();
+            recordFileChooser.setTitle("Choose Target file");
+            recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
+            final File recordFile = recordFileChooser.showSaveDialog(MainWindow.getRootStage());
+            if (recordFile != null) {
+                Utils.recordLivestreamer(url, quality, recordFile);
+            }
+        }
     }
 
     private void openChat() {
-        ChatWindow cw = new ChatWindow(modelProperty.get().getName().get());
-        cw.connect();
+        if (modelProperty.get() != null && !"".equals(modelProperty.get().getName().get())) {
+            final String channel = modelProperty.get().getName().get();
+            ChatWindow cw = new ChatWindow(channel);
+            cw.connect();
+        }
     }
 
     private void openBrowser() {
-        Utils.openURLInBrowser(serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get()
-                + modelProperty.get().getName().get());
+        if (modelProperty.get() != null && !"".equals(modelProperty.get().getName().get())) {
+            final String channel = modelProperty.get().getName().get();
+            Utils.openURLInBrowser(serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get() + channel);
+        }
     }
 
     public ObjectProperty<Channel> getModelProperty() {
