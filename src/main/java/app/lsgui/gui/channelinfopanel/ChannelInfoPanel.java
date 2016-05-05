@@ -11,6 +11,7 @@ import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.model.Channel;
 import app.lsgui.model.Service;
 import app.lsgui.model.twitch.TwitchChannel;
+import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.Utils;
 import app.lsgui.utils.WrappedImageView;
 import de.jensd.fx.glyphs.GlyphsDude;
@@ -140,7 +141,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         if (modelProperty.get() != null && modelProperty.get().isOnline().get()) {
             final String url = buildURL();
             final String quality = buildQuality();
-            Utils.startLivestreamer(url, quality);
+            LivestreamerUtils.startLivestreamer(url, quality);
         }
     }
 
@@ -155,7 +156,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
             recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
             final File recordFile = recordFileChooser.showSaveDialog(MainWindow.getRootStage());
             if (recordFile != null) {
-                Utils.recordLivestreamer(url, quality, recordFile);
+                LivestreamerUtils.recordLivestreamer(url, quality, recordFile);
             }
         }
     }

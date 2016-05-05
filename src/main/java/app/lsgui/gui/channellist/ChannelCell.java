@@ -16,7 +16,6 @@ public class ChannelCell extends ListCell<Channel> {// NOSONAR
         super.updateItem(item, isEmpty);
         if (isEmpty || item == null) {
             setText(null);
-            LOGGER.debug("empty streamCell");
         } else {
             setText(item.getName().get());
             if (item.isOnline().get()) {
