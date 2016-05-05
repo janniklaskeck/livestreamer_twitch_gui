@@ -71,7 +71,6 @@ public class TwitchChannel implements Channel {
     }
 
     private void setOffline(final TwitchChannelData data) {
-        LOGGER.info("setoffline");
         name.setValue(data.getName());
         logoURL.setValue(null);
         previewURL.setValue(null);
@@ -83,7 +82,6 @@ public class TwitchChannel implements Channel {
         previewImage.setValue(defaultLogo);
         description.setValue(getOfflineString());
         availableQualities = new ArrayList<>();
-        availableQualities.add("worst, best");
     }
 
     private void setOnline(final TwitchChannelData data) {
