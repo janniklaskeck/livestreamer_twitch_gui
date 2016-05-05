@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
+import app.lsgui.utils.JSONUtils;
 import app.lsgui.utils.Utils;
 import javafx.scene.image.Image;
 
@@ -24,6 +25,7 @@ public class TwitchChannelData {
     private static final String PREFIX = "GMT"; // Greenwich Mean Time
     private static final ZoneId GMT = ZoneId.ofOffset(PREFIX, OFFSET);
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(GMT);;
+    private static final String STREAM = "stream";
 
     private boolean online = false;
     private String name = "";
@@ -41,8 +43,8 @@ public class TwitchChannelData {
 
     public TwitchChannelData(final JsonObject channelAPIResponse, final String name) {
 
-        if (channelAPIResponse.get("stream") != null && !channelAPIResponse.get("stream").isJsonNull()) {
-            JsonObject streamObject = channelAPIResponse.get("stream").getAsJsonObject();
+        if (channelAPIResponse.get(STREAM) != null && !channelAPIResponse.get(STREAM).isJsonNull()) {
+            JsonObject streamObject = channelAPIResponse.get(STREAM).getAsJsonObject();
             if (streamObject != null && !streamObject.get("channel").isJsonNull() && !streamObject.isJsonNull()) {
                 setData(streamObject, name);
             }
@@ -57,13 +59,13 @@ public class TwitchChannelData {
             JsonObject channel = channelObject.get("channel").getAsJsonObject();
             JsonObject preview = channelObject.get("preview").getAsJsonObject();
             setName(name);
-            setTitle(Utils.getStringIfNotNull("status", channel));
-            setGame(Utils.getStringIfNotNull("game", channelObject));
-            setViewers(Utils.getIntegerIfNotNull("viewers", channelObject));
-            setPreviewURL(Utils.getStringIfNotNull("large", preview));
-            setCreatedAt(Utils.getStringIfNotNull("created_at", channelObject));
-            setUpdatedAt(Utils.getStringIfNotNull("updated_at", channel));
-            setLogoURL(Utils.getStringIfNotNull("logo", channel));
+            setTitle(JSONUtils.getStringIfNotNull("status", channel));
+            setGame(JSONUtils.getStringIfNotNull("game", channelObject));
+            setViewers(JSONUtils.getIntegerIfNotNull("viewers", channelObject));
+            setPreviewURL(JSONUtils.getStringIfNotNull("large", preview));
+            setCreatedAt(JSONUtils.getStringIfNotNull("created_at", channelObject));
+            setUpdatedAt(JSONUtils.getStringIfNotNull("updated_at", channel));
+            setLogoURL(JSONUtils.getStringIfNotNull("logo", channel));
             setOnline(true);
             calculateAndSetUptime();
             setPreviewImage(new Image(getPreviewURL()));

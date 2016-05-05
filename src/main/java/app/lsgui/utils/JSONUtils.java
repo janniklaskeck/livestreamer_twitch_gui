@@ -1,6 +1,7 @@
 package app.lsgui.utils;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public class JSONUtils {
     private JSONUtils() {
@@ -26,5 +27,26 @@ public class JSONUtils {
             return element.getAsString();
         }
         return defaultValue;
+    }
+
+    public static String getStringIfNotNull(final String name, final JsonObject obj) {
+        if (obj.has(name) && !obj.get(name).isJsonNull()) {
+            return obj.get(name).getAsString();
+        }
+        return "";
+    }
+
+    public static Boolean getBooleanIfNotNull(final String name, final JsonObject obj) {
+        if (obj.has(name) && !obj.get(name).isJsonNull()) {
+            return obj.get(name).getAsBoolean();
+        }
+        return false;
+    }
+
+    public static Integer getIntegerIfNotNull(final String name, final JsonObject obj) {
+        if (obj.has(name) && !obj.get(name).isJsonNull()) {
+            return obj.get(name).getAsInt();
+        }
+        return 0;
     }
 }
