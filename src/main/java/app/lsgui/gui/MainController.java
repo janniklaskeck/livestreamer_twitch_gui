@@ -23,7 +23,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
@@ -196,19 +195,48 @@ public class MainController {
     }
 
     private void importFollowedChannels() {
-        final TextInputDialog dialog = new TextInputDialog();
+        final Dialog<Boolean> dialog = new Dialog<>();
         Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         dialog.setTitle("Import Twitch.tv followed Channels");
         dialog.setContentText("Please enter your Twitch.tv Username:");
+        final ButtonType bt = new ButtonType("Import", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
 
-        final Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            addChannelToCurrentService(result.get());
+        final BorderPane ap = new BorderPane();
+        final TextField tf = new TextField();
+        ap.setCenter(tf);
+        dialog.getDialogPane().setContent(ap);
+
+        final Node submitButton = dialog.getDialogPane().lookupButton(bt);
+        submitButton.setDisable(true);
+
+        tf.textProperty()
+                .addListener((observable, oldValue, newValue) -> submitButton.setDisable(newValue.trim().isEmpty()));
+
+        dialog.setResultConverter(button -> {
+            if ("".equals(tf.getText().trim()) || button.equals(ButtonType.CANCEL)) {
+                return false;
+            }
+            if (TwitchAPIClient.instance().channelExists(tf.getText().trim())) {
+                return true;
+            }
+            return false;
+        });
+
+        tf.requestFocus();
+
+        final Optional<Boolean> result = dialog.showAndWait();
+        if (result.isPresent() && result.get()) {
+            addFollowedChannelsToCurrentService(tf.getText().trim());
         }
     }
 
     private void addChannelToCurrentService(final String channel) {
+        serviceComboBox.getSelectionModel().getSelectedItem().addChannel(channel);
+    }
+
+    private void addFollowedChannelsToCurrentService(final String channel) {
         serviceComboBox.getSelectionModel().getSelectedItem().addFollowedChannels(channel);
     }
 
