@@ -1,5 +1,4 @@
 <Configuration status="WARN" name="lsgui">
-
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout

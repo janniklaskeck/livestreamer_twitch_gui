@@ -8,7 +8,6 @@ public class ServiceCell extends ListCell<Service> {// NOSONAR
     @Override
     protected void updateItem(Service item, boolean isEmpty) {
         super.updateItem(item, isEmpty);
-
         if (isEmpty || item == null) {
             setText(null);
         } else {
