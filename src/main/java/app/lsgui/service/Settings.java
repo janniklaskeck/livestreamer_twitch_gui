@@ -43,7 +43,9 @@ public class Settings {
     private String twitchOAuth = "";
     private int maxGamesLoad = 20;
     private int maxChannelsLoad = 20;
-    private String liveStreamerExePath;
+    private String liveStreamerExePath = "";
+    private String quality = "Best";
+    private String recordingPath;
 
     private boolean isLoading = false;
 
@@ -58,6 +60,7 @@ public class Settings {
     private static final String MINIMIZETOTRAYSTRING = "minimizetotray";
     private static final String WINDOWSTYLESTRING = "windowstyle";
     private static final String EXEPATHSTRING = "livestreamerexe";
+    private static final String QUALITYSTRING = "quality";
 
     private Settings() {
         File settings = new File(FILEPATH);
@@ -106,11 +109,15 @@ public class Settings {
             JsonArray servicesArray = jArray.get(1).getAsJsonArray();
             for (int i = 0; i < servicesArray.size(); i++) {
                 JsonObject service = servicesArray.get(i).getAsJsonObject();
-                Service ss = new Service(service.get(SERVICENAME).getAsString(), service.get(SERVICEURL).getAsString());
+                final String serviceName = service.get(SERVICENAME).getAsString();
+                final String serviceUrl = service.get(SERVICEURL).getAsString();
+                Service ss = new Service(serviceName, serviceUrl);
                 ss.bindSortProperty(sortTwitch);
+
                 JsonArray channels = service.get("channels").getAsJsonArray();
                 for (int e = 0; e < channels.size(); e++) {
-                    ss.addChannel(channels.get(e).getAsString());
+                    final String channel = channels.get(e).getAsString();
+                    ss.addChannel(channel);
                 }
                 services.add(ss);
             }
@@ -122,7 +129,8 @@ public class Settings {
             liveStreamerExePath = JSONUtils.getStringSafe(settings.get(EXEPATHSTRING), "");
             maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELSLOAD), 20);
             maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMESSLOAD), 20);
-
+            quality = JSONUtils.getStringSafe(settings.get(QUALITYSTRING), "Best");
+            setRecordingPath(JSONUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home")));
         } catch (IOException e) {
             LOGGER.error("ERROR while reading Settings file", e);
         }
@@ -138,7 +146,8 @@ public class Settings {
             w.name(TWITCHUSERSTRING).value(twitchUser);
             w.name(TWITCHOAUTHSTRING).value(twitchOAuth);
             w.name(TWITCHSORT).value(sortTwitch.get());
-            w.name(PATH).value("");
+            w.name(QUALITYSTRING).value(quality);
+            w.name(PATH).value(getRecordingPath());
             w.name(CHANNELSLOAD).value(maxChannelsLoad);
             w.name(GAMESSLOAD).value(maxGamesLoad);
             w.name(MINIMIZETOTRAYSTRING).value(minimizeToTray);
@@ -254,5 +263,21 @@ public class Settings {
 
     public String getLivestreamerExePath() {
         return this.liveStreamerExePath;
+    }
+
+    public String getQuality() {
+        return quality;
+    }
+
+    public void setQuality(String quality) {
+        this.quality = quality;
+    }
+
+    public String getRecordingPath() {
+        return recordingPath;
+    }
+
+    public void setRecordingPath(String recordingPath) {
+        this.recordingPath = recordingPath;
     }
 }

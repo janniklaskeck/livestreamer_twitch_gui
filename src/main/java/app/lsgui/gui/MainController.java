@@ -37,6 +37,8 @@ public class MainController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
+    private static final String OFFLINEQUALITY = "Channel is offline";
+
     private ChannelList channelList;
     private ChannelInfoPanel channelInfoPanel;
 
@@ -57,8 +59,17 @@ public class MainController {
         LOGGER.debug("INIT MainController");
         setupServiceComboBox();
         setupChannelList();
+        setupQualityComboBox();
         setupChannelInfoPanel();
         setupToolbar();
+    }
+
+    private void setupQualityComboBox() {
+        qualityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null && !newValue.equals(OFFLINEQUALITY)) {
+                Settings.instance().setQuality(newValue);
+            }
+        });
     }
 
     private void setupServiceComboBox() {
@@ -69,11 +80,11 @@ public class MainController {
         serviceComboBox.setCellFactory(listView -> new ServiceCell());
         serviceComboBox.setConverter(new StringConverter<Service>() {
             @Override
-            public String toString(Service object) {
-                if (object == null) {
+            public String toString(Service service) {
+                if (service == null) {
                     return null;
                 }
-                return object.getName().get();
+                return service.getName().get();
             }
 
             @Override
@@ -93,7 +104,12 @@ public class MainController {
                     Channel value = newValue == null ? oldValue : newValue;
                     qualityComboBox.setItems(FXCollections.observableArrayList(value.getAvailableQualities()));
                     if (qualityComboBox.getItems().size() > 1) {
-                        qualityComboBox.getSelectionModel().select("best");
+                        final String quality = Settings.instance().getQuality();
+                        if (qualityComboBox.getItems().contains(quality)) {
+                            qualityComboBox.getSelectionModel().select(quality);
+                        } else {
+                            qualityComboBox.getSelectionModel().select("Best");
+                        }
                     } else {
                         qualityComboBox.getSelectionModel().select(0);
                     }
