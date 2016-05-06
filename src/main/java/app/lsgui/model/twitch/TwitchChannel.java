@@ -226,5 +226,4 @@ public class TwitchChannel implements Channel {
     public final String getOfflineString() {
         return "Channel is offline";
     }
-
 }

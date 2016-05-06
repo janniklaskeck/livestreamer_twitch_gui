@@ -29,7 +29,7 @@ public class LivestreamerUtils {
 
     public static JsonObject getQualityJsonFromLivestreamer(final String url) {
         try {
-            final String livestreamerExec = "livestreamer";
+            final String livestreamerExec = LIVESTREAMERCMD;
             final Process process = new ProcessBuilder(livestreamerExec, "-j", url).redirectErrorStream(true).start();
             JsonObject jsonQualities = PARSER
                     .parse(new JsonReader(new BufferedReader(new InputStreamReader(process.getInputStream()))))
@@ -65,7 +65,7 @@ public class LivestreamerUtils {
             try {
                 String path = "\"" + filePath.getAbsolutePath() + "\"";
                 path = path.replace("\\", "/");
-                LOGGER.debug(path);
+                Settings.instance().setRecordingPath(path);
                 ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), "-o", path, url, quality));
                 pb.redirectOutput(Redirect.INHERIT);
                 pb.redirectError(Redirect.INHERIT);
@@ -95,7 +95,7 @@ public class LivestreamerUtils {
     private static boolean checkForLivestreamerOnPath() {
         Map<String, String> env = System.getenv();
         final String windowsPath = env.get("Path");
-        if (windowsPath.toLowerCase().contains("livestreamer")) {
+        if (windowsPath.toLowerCase().contains(LIVESTREAMERCMD)) {
             return true;
         }
         return false;

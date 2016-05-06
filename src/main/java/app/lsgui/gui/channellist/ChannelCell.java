@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 
 public class ChannelCell extends ListCell<Channel> {// NOSONAR
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class); // NOSONAR
 
     @Override
     protected void updateItem(Channel item, boolean isEmpty) {

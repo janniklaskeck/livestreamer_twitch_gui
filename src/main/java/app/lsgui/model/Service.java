@@ -63,7 +63,6 @@ public class Service {
     }
 
     public void addChannel(final String name) {
-        LOGGER.debug("Add Channel to List");
         List<Channel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
         Channel sm = new TwitchChannel(name);
         channels.add(sm);

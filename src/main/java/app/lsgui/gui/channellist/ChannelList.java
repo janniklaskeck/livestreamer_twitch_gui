@@ -23,8 +23,6 @@ public class ChannelList extends AnchorPane {// NOSONAR
     private static final String CHANNELLISTFXML = "fxml/ChannelList.fxml";
     private static FXMLLoader loader;
 
-    private final ListProperty<Channel> channels = new SimpleListProperty<>(FXCollections.observableArrayList());
-
     private ListProperty<Channel> channelListProperty;
     private ObjectProperty<Channel> channelProperty;
 
@@ -53,7 +51,6 @@ public class ChannelList extends AnchorPane {// NOSONAR
         channelProperty.bind(channelListView.getSelectionModel().selectedItemProperty());
         channelListView.itemsProperty().bind(channelListProperty);
         channelListView.setCellFactory(listView -> new ChannelCell());
-        channels.bind(getListView().itemsProperty());
     }
 
     /**

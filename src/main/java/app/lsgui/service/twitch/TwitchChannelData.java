@@ -42,7 +42,6 @@ public class TwitchChannelData {
     private List<String> qualities;
 
     public TwitchChannelData(final JsonObject channelAPIResponse, final String name) {
-
         if (channelAPIResponse.get(STREAM) != null && !channelAPIResponse.get(STREAM).isJsonNull()) {
             JsonObject streamObject = channelAPIResponse.get(STREAM).getAsJsonObject();
             if (streamObject != null && !streamObject.get("channel").isJsonNull() && !streamObject.isJsonNull()) {
@@ -56,35 +55,43 @@ public class TwitchChannelData {
 
     private void setData(final JsonObject channelObject, final String name) {
         if (channelObject != null) {
-            JsonObject channel = channelObject.get("channel").getAsJsonObject();
-            JsonObject preview = channelObject.get("preview").getAsJsonObject();
-            setName(name);
-            setTitle(JSONUtils.getStringIfNotNull("status", channel));
-            setGame(JSONUtils.getStringIfNotNull("game", channelObject));
-            setViewers(JSONUtils.getIntegerIfNotNull("viewers", channelObject));
-            setPreviewURL(JSONUtils.getStringIfNotNull("large", preview));
-            setCreatedAt(JSONUtils.getStringIfNotNull("created_at", channelObject));
-            setUpdatedAt(JSONUtils.getStringIfNotNull("updated_at", channel));
-            setLogoURL(JSONUtils.getStringIfNotNull("logo", channel));
-            setOnline(true);
-            calculateAndSetUptime();
-            setPreviewImage(new Image(getPreviewURL()));
-            setLogoImage(null);
-            setQualities(Utils.getAvailableQuality("http://twitch.tv/" + name));
+            setOnlineData(channelObject, name);
         } else {
-            setName(name);
-            setTitle("");
-            setGame("");
-            setViewers(0);
-            setPreviewURL("");
-            setCreatedAt("");
-            setUpdatedAt("");
-            setLogoURL("");
-            setOnline(false);
-            setQualities(new ArrayList<String>());
-            setPreviewImage(null);
-            setLogoImage(null);
+            setOfflineData(name);
         }
+    }
+
+    private void setOnlineData(final JsonObject channelObject, final String name) {
+        JsonObject channel = channelObject.get("channel").getAsJsonObject();
+        JsonObject preview = channelObject.get("preview").getAsJsonObject();
+        setName(name);
+        setTitle(JSONUtils.getStringIfNotNull("status", channel));
+        setGame(JSONUtils.getStringIfNotNull("game", channelObject));
+        setViewers(JSONUtils.getIntegerIfNotNull("viewers", channelObject));
+        setPreviewURL(JSONUtils.getStringIfNotNull("large", preview));
+        setCreatedAt(JSONUtils.getStringIfNotNull("created_at", channelObject));
+        setUpdatedAt(JSONUtils.getStringIfNotNull("updated_at", channel));
+        setLogoURL(JSONUtils.getStringIfNotNull("logo", channel));
+        setOnline(true);
+        calculateAndSetUptime();
+        setPreviewImage(new Image(getPreviewURL()));
+        setLogoImage(null);
+        setQualities(Utils.getAvailableQuality("http://twitch.tv/" + name));
+    }
+
+    private void setOfflineData(final String name) {
+        setName(name);
+        setTitle("");
+        setGame("");
+        setViewers(0);
+        setPreviewURL("");
+        setCreatedAt("");
+        setUpdatedAt("");
+        setLogoURL("");
+        setOnline(false);
+        setQualities(new ArrayList<String>());
+        setPreviewImage(null);
+        setLogoImage(null);
     }
 
     private void calculateAndSetUptime() {
@@ -92,6 +99,7 @@ public class TwitchChannelData {
             final ZonedDateTime nowDate = ZonedDateTime.now().withZoneSameLocal(GMT);
             ZonedDateTime startDate = ZonedDateTime.parse(getCreatedAt(), DTF);
             long time = startDate.until(nowDate, ChronoUnit.MILLIS);
+            // TODO don't correct manually
             final long gmtCorrection = -7200000L;
             time += gmtCorrection;
             setUptime(time);
