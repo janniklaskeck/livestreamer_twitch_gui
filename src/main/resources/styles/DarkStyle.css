@@ -1,8 +1,8 @@
 .root {
     -fx-base: #25282a;
     -fx-background: #272a2c;
-    -fx-control-inner-background: derive(-fx-base, 15%);
-    -fx-control-inner-background-alt: derive(-fx-control-inner-background, -5%);
+    -fx-control-inner-background: derive(-fx-base, 15.0%);
+    -fx-control-inner-background-alt: derive(-fx-control-inner-background, -5.0%);
 
     -fx-dark-text-color: #bababa;
     -fx-mid-text-color: #bababa;
@@ -21,10 +21,10 @@
 }
 
 .status-bar {
-    -fx-padding: 4px;
-    -fx-pref-height: 30px;
+    -fx-padding: 4.0px;
+    -fx-pref-height: 30.0px;
     -fx-background-color: -fx-body-color;
-    -fx-background-insets: 0, 1
+    -fx-background-insets: 0.0, 1.0
 }
 
 .label {
@@ -34,27 +34,41 @@
 .list-view:focused > .virtual-flow > .clipped-container > .sheet > .list-cell:focused:selected {
     -fx-background-color: #333333;
     -fx-border-color: lightgrey;
-    -fx-border-width: 1px;
+    -fx-border-width: 1.0px;
+    -fx-text-fill: #aaaaaa;
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:focused:selected {
+    -fx-background-color: #333333;
+    -fx-border-color: lightgrey;
+    -fx-border-width: 1.0px;
     -fx-text-fill: #aaaaaa;
 }
 
 .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover {
     -fx-text-fill: #aaaaaa;
-    -fx-background-color: derive(-fx-background, 25%);
+    -fx-background-color: derive(-fx-background, 25.0%);
 }
 
 .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
     -fx-text-fill: #aaaaaa;
-    -fx-font-size: 13px;
+    -fx-font-size: 13.0px;
     -fx-border-color: black;
-    -fx-border-width: 1px;
+    -fx-border-width: 1.0px;
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:focused {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-size: 13.0px;
+    -fx-border-color: black;
+    -fx-border-width: 1.0px;
 }
 
 .list-view:focused > .virtual-flow > .clipped-container > .sheet > .list-cell:focused {
     -fx-text-fill: #aaaaaa;
-    -fx-font-size: 13px;
+    -fx-font-size: 13.0px;
     -fx-border-color: black;
-    -fx-border-width: 1px;
+    -fx-border-width: 1.0px;
 }
 
 .styled-text-area {
