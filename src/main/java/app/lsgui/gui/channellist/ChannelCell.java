@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 
 public class ChannelCell extends ListCell<Channel> {// NOSONAR
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class); // NOSONAR
 
     @Override
