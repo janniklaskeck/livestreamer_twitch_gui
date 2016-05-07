@@ -105,7 +105,7 @@ public class ChatController {
 
     public static void setColoredNickName(final InlineCssTextArea cta, final int start, final int end) {
         cta.setStyle(start, end,
-                "-fx-fill: " + Utils.getColorFromString(Settings.instance().getTwitchUser()) + "; -fx-font-size: 12pt");
+                "-fx-fill: " + Utils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
 
     }
 
