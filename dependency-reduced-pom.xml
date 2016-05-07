@@ -8,11 +8,16 @@
   <scm>
     <connection>scm:git:git@github.com:westerwave/livestreamer_twitch_gui.git</connection>
     <developerConnection>scm:git:git@github.com:westerwave/livestreamer_twitch_gui.git</developerConnection>
+    <tag>v0.1.0</tag>
     <url>https://github.com/westerwave/livestreamer_twitch_gui</url>
   </scm>
   <build>
     <finalName>${project.artifactId}-${project.version}_${buildNumber}</finalName>
     <plugins>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.2</version>
