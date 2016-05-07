@@ -72,5 +72,5 @@ gradlew.bat
 .project
 /target/
 
-pom.xml.releaseBackup
+*.releaseBackup
 release.properties
