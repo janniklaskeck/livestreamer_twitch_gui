@@ -4,7 +4,7 @@
   <groupId>app.lsgui</groupId>
   <artifactId>LivestreamerGUI</artifactId>
   <name>LivestreamerGUI</name>
-  <version>0.1.0</version>
+  <version>0.1.0-SNAPSHOT</version>
   <scm>
     <connection>scm:git:git@github.com:westerwave/livestreamer_twitch_gui.git</connection>
     <developerConnection>scm:git:git@github.com:westerwave/livestreamer_twitch_gui.git</developerConnection>
