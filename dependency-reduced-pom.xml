@@ -8,8 +8,7 @@
   <scm>
     <connection>scm:git:git@github.com:westerwave/livestreamer_twitch_gui.git</connection>
     <developerConnection>scm:git:git@github.com:westerwave/livestreamer_twitch_gui.git</developerConnection>
-    <tag>v0.1.0</tag>
-    <url>https://github.com/westerwave/livestreamer_twitch_gui</url>
+    <url>git@github.com:westerwave/livestreamer_twitch_gui.git</url>
   </scm>
   <build>
     <finalName>${project.artifactId}-${project.version}_${buildNumber}</finalName>
