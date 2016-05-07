@@ -17,8 +17,8 @@
     <scm>
         <connection>scm:git:git@github.com:westerwave/livestreamer_twitch_gui.git</connection>
         <developerConnection>scm:git:git@github.com:westerwave/livestreamer_twitch_gui.git</developerConnection>
-        <url>https://github.com/westerwave/livestreamer_twitch_gui</url>
-        <tag>v0.1.0</tag>
+        <url>git@github.com:westerwave/livestreamer_twitch_gui.git</url>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
