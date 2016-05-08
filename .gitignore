@@ -71,6 +71,3 @@ gradlew.bat
 .classpath
 .project
 /target/
-
-*.releaseBackup
-release.properties
