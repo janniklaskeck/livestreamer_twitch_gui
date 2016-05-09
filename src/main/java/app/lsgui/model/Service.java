@@ -79,7 +79,7 @@ public class Service {
     public void removeSelectedChannel(final Channel selectedChannel) {
         if (selectedChannel != null) {
             LOGGER.debug("Remove Channel {} from list", selectedChannel.getName());
-            List<Channel> channels = getChannels().subList(0, getChannels().getSize());
+            List<Channel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
             channels.remove(selectedChannel);
             LOGGER.info("remove Channel {}", selectedChannel.getName());
             ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
