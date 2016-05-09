@@ -22,6 +22,8 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
@@ -40,6 +42,7 @@ public class MainController {
 
     private ChannelList channelList;
     private ChannelInfoPanel channelInfoPanel;
+    private ProgressIndicator updateProgressIndicator;
 
     @FXML
     private ComboBox<String> qualityComboBox;
@@ -51,7 +54,7 @@ public class MainController {
     private BorderPane contentBorderPane;
 
     @FXML
-    private ToolBar toolBarLeft;
+    private ToolBar toolBarTop;
 
     @FXML
     public void initialize() {
@@ -130,16 +133,26 @@ public class MainController {
         removeButton.setOnAction(event -> removeAction());
         Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
         importButton.setOnAction(event -> importFollowedChannels());
-        toolBarLeft.getItems().add(toolBarLeft.getItems().size() - 1, addButton);
-        toolBarLeft.getItems().add(toolBarLeft.getItems().size() - 1, removeButton);
-        toolBarLeft.getItems().add(toolBarLeft.getItems().size() - 1, importButton);
+
+        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, addButton);
+        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, removeButton);
+        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, importButton);
+
+        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, new Separator());
+
+        updateProgressIndicator = new ProgressIndicator();
+        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, updateProgressIndicator);
+
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         spacer.setMinWidth(Region.USE_PREF_SIZE);
-        toolBarLeft.getItems().add(toolBarLeft.getItems().size() - 1, spacer);
+        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, spacer);
+
+        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, new Separator());
+
         Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
         settingsButton.setOnAction(event -> openSettings());
-        toolBarLeft.getItems().add(toolBarLeft.getItems().size(), settingsButton);
+        toolBarTop.getItems().add(toolBarTop.getItems().size(), settingsButton);
     }
 
     private void changeService(final Service newService) {
