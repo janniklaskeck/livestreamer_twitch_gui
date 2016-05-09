@@ -12,6 +12,7 @@ import app.lsgui.model.Channel;
 import app.lsgui.model.Service;
 import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchAPIClient;
+import app.lsgui.service.twitch.TwitchChannelUpdateService;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
@@ -141,6 +142,14 @@ public class MainController {
         toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, new Separator());
 
         updateProgressIndicator = new ProgressIndicator();
+        TwitchChannelUpdateService.getActiveChannelServicesProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.size() > 0) {
+                updateProgressIndicator.setVisible(true);
+            } else {
+                updateProgressIndicator.setVisible(false);
+            }
+        });
+
         toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, updateProgressIndicator);
 
         Region spacer = new Region();

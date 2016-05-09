@@ -5,6 +5,10 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.Channel;
 import app.lsgui.model.twitch.TwitchChannel;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.util.Duration;
@@ -12,6 +16,8 @@ import javafx.util.Duration;
 public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelData> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelUpdateService.class);
+    private static final ListProperty<Channel> ACTIVELIST = new SimpleListProperty<>(
+            FXCollections.observableArrayList());
     private TwitchChannel model;
 
     public TwitchChannelUpdateService(final Channel model) {
@@ -27,9 +33,15 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
                         this.model.updateData(updatedModel);
                     }
                 }
+                synchronized (ACTIVELIST) {
+                    ObservableList<Channel> activeChannelServices = FXCollections.observableArrayList(ACTIVELIST.get());
+                    activeChannelServices.remove(model);
+                    ACTIVELIST.set(activeChannelServices);
+                }
             });
             setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
         }
+
     }
 
     @Override
@@ -37,15 +49,17 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
         return new Task<TwitchChannelData>() {
             @Override
             protected TwitchChannelData call() throws Exception {
-                TwitchChannelData tsd = null;
-                try {
-                    tsd = TwitchAPIClient.instance().getStreamData(model.getName().get());
-                } catch (Exception e) {
-                    LOGGER.error("TASK EXCEPTION", e);
+                synchronized (ACTIVELIST) {
+                    ObservableList<Channel> activeChannelServices = FXCollections.observableArrayList(ACTIVELIST.get());
+                    activeChannelServices.add(model);
+                    ACTIVELIST.set(activeChannelServices);
                 }
-                return tsd;
+                return TwitchAPIClient.instance().getStreamData(model.getName().get());
             }
         };
     }
 
+    public static ListProperty<Channel> getActiveChannelServicesProperty() {
+        return ACTIVELIST;
+    }
 }
