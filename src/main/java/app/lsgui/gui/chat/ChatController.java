@@ -2,6 +2,7 @@ package app.lsgui.gui.chat;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.UnknownHostException;
 import java.util.UUID;
 
 import org.fxmisc.richtext.InlineCssTextArea;
@@ -89,7 +90,13 @@ public class ChatController {
             try {
                 pircBotX.startBot();
             } catch (IOException | IrcException e) {
-                LOGGER.error("ERROR while trying to connecto to chat", e);
+                if (e.getClass().equals(UnknownHostException.class)) {
+                    LOGGER.error(
+                            "ERROR Unknown Hosts while trying to connecto to chat. Check your Internet Connection");
+                } else {
+                    LOGGER.error("ERROR while trying to connecto to chat", e);
+                }
+                sendButton.setDisable(true);
             }
         });
         t.setDaemon(true);
