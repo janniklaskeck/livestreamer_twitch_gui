@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.channelinfopanel.ChannelInfoPanel;
 import app.lsgui.gui.channellist.ChannelList;
+import app.lsgui.gui.settings.SettingsController;
 import app.lsgui.gui.settings.SettingsWindow;
 import app.lsgui.model.Channel;
 import app.lsgui.model.Service;
 import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchAPIClient;
 import app.lsgui.service.twitch.TwitchChannelUpdateService;
+import app.lsgui.utils.Utils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
@@ -144,6 +146,8 @@ public class MainController {
         updateProgressIndicator = new ProgressIndicator();
         TwitchChannelUpdateService.getActiveChannelServicesProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue.size() > 0) {
+                final double active = newValue.size() > 0 ? newValue.size() : 1.0;
+                updateProgressIndicator.setProgress(1.0 / active);
                 updateProgressIndicator.setVisible(true);
             } else {
                 updateProgressIndicator.setVisible(false);
@@ -178,6 +182,9 @@ public class MainController {
         final Dialog<Boolean> dialog = new Dialog<>();
         dialog.setTitle("Add Channel to current Service");
         Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        final String style = SettingsController.class
+                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm();
+        Utils.addStyleSheetToStage(dialogStage, style);
         dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         final ButtonType bt = new ButtonType("Submit", ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
@@ -219,6 +226,9 @@ public class MainController {
     private void importFollowedChannels() {
         final Dialog<Boolean> dialog = new Dialog<>();
         Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        final String style = SettingsController.class
+                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm();
+        Utils.addStyleSheetToStage(dialogStage, style);
         dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         dialog.setTitle("Import Twitch.tv followed Channels");
         dialog.setContentText("Please enter your Twitch.tv Username:");
