@@ -98,16 +98,4 @@ public class MainWindow extends Application {
     private static final void setRootStage(final Stage newRootStage) {
         rootstage = newRootStage;
     }
-    
-    public static void clearStylesheets() {
-        if (rootstage != null) {
-            rootstage.getScene().getStylesheets().clear();
-        }
-    }
-
-    public static void addStyleSheet(final String style) {
-        if (rootstage != null && !rootstage.getScene().getStylesheets().contains(style)) {
-            rootstage.getScene().getStylesheets().add(style);
-        }
-    }
 }

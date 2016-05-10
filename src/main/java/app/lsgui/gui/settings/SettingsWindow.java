@@ -58,26 +58,11 @@ public class SettingsWindow extends AnchorPane {// NOSONAR
         settingsStage = stage;
     }
 
-    /**
-     * @return the settingsStage
-     */
-    static Stage getSettingsStage() {
+    public static Stage getSettingsStage() {
         return settingsStage;
     }
 
     public void showAndWait() {
         settingsStage.showAndWait();
-    }
-
-    public static void clearStylesheets() {
-        if (settingsStage != null) {
-            settingsStage.getScene().getStylesheets().clear();
-        }
-    }
-
-    public static void addStyleSheet(final String style) {
-        if (settingsStage != null && !settingsStage.getScene().getStylesheets().contains(style)) {
-            settingsStage.getScene().getStylesheets().add(style);
-        }
     }
 }

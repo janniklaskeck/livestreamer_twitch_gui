@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
+import javafx.stage.Stage;
+
 public class Utils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
@@ -83,5 +85,17 @@ public class Utils {
             b = 200;
         }
         return "rgb(" + r + "," + g + "," + b + ")";
+    }
+
+    public static void addStyleSheetToStage(final Stage stage, final String style) {
+        if (stage != null && !stage.getScene().getStylesheets().contains(style)) {
+            stage.getScene().getStylesheets().add(style);
+        }
+    }
+
+    public static void clearStyleSheetsFromStage(final Stage stage) {
+        if (stage != null) {
+            stage.getScene().getStylesheets().clear();
+        }
     }
 }

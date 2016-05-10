@@ -73,16 +73,4 @@ public class ChatWindow {
     private static void setChatStage(final Stage stage) {
         chatStage = stage;
     }
-
-    public static void clearStylesheets() {
-        if (chatStage != null) {
-            chatStage.getScene().getStylesheets().clear();
-        }
-    }
-
-    public static void addStyleSheet(final String style) {
-        if (chatStage != null && !chatStage.getScene().getStylesheets().contains(style)) {
-            chatStage.getScene().getStylesheets().add(style);
-        }
-    }
 }

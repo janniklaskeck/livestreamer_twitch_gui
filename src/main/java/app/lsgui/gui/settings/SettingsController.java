@@ -9,6 +9,7 @@ import app.lsgui.gui.MainController;
 import app.lsgui.gui.MainWindow;
 import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.service.Settings;
+import app.lsgui.utils.Utils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -51,15 +52,15 @@ public class SettingsController {
         oauthTextField.textProperty().addListener((observable, oldValue, newValue) -> st.setTwitchOAuth(newValue));
         styleChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             st.setWindowStyle(newValue);
-            String style = SettingsController.class.getResource("/styles/" + newValue + ".css").toExternalForm();
+            final String style = SettingsController.class.getResource("/styles/" + newValue + ".css").toExternalForm();
 
-            MainWindow.clearStylesheets();
-            SettingsWindow.clearStylesheets();
-            ChatWindow.clearStylesheets();
+            Utils.clearStyleSheetsFromStage(MainWindow.getRootStage());
+            Utils.clearStyleSheetsFromStage(SettingsWindow.getSettingsStage());
+            Utils.clearStyleSheetsFromStage(ChatWindow.getChatStage());
 
-            MainWindow.addStyleSheet(style);
-            SettingsWindow.addStyleSheet(style);
-            ChatWindow.addStyleSheet(style);
+            Utils.addStyleSheetToStage(MainWindow.getRootStage(), style);
+            Utils.addStyleSheetToStage(SettingsWindow.getSettingsStage(), style);
+            Utils.addStyleSheetToStage(ChatWindow.getChatStage(), style);
         });
 
         exeBrowseButton.setOnAction(event -> {
