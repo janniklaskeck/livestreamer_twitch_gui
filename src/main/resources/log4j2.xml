@@ -2,12 +2,12 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout
-                pattern="%d{HH:mm:ss.SSS} %-5level [%t] %logger - %msg%n" />
+                pattern="%d{HH:mm:ss.SSS} %-5p (%t) [%c{1}(%M)] %m%n" />
         </Console>
         <RollingFile name="RollingFile"
             fileName="${sys:user.home}/.lsgui/lsgui.log" filePattern="${sys:user.home}/.lsgui/lsgui_%i.log">
             <PatternLayout
-                pattern="%d{HH:mm:ss.SSS} %-5level [%t] %logger - %msg%n" />
+                pattern="%d{HH:mm:ss.SSS} %-5p (%t) [%c{1}(%M)] %m%n" />
             <Policies>
                 <OnStartupTriggeringPolicy />
             </Policies>
