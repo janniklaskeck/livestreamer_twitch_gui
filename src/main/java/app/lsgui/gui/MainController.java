@@ -61,7 +61,6 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        LOGGER.debug("INIT MainController");
         setupServiceComboBox();
         setupChannelList();
         setupQualityComboBox();
@@ -146,8 +145,6 @@ public class MainController {
         updateProgressIndicator = new ProgressIndicator();
         TwitchChannelUpdateService.getActiveChannelServicesProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue.size() > 0) {
-                final double active = newValue.size() > 0 ? newValue.size() : 1.0;
-                updateProgressIndicator.setProgress(1.0 / active);
                 updateProgressIndicator.setVisible(true);
             } else {
                 updateProgressIndicator.setVisible(false);
