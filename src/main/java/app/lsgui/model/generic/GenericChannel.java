@@ -3,7 +3,7 @@ package app.lsgui.model.generic;
 import java.util.Arrays;
 import java.util.List;
 
-import app.lsgui.model.Channel;
+import app.lsgui.model.IChannel;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -11,7 +11,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.util.Callback;
 
-public class GenericChannel implements Channel {
+public class GenericChannel implements IChannel {
 
     private StringProperty nameProperty;
     private BooleanProperty onlineProperty;
@@ -38,7 +38,7 @@ public class GenericChannel implements Channel {
         return Arrays.asList("Worst", "Best");
     }
 
-    public static Callback<Channel, Observable[]> extractor() {
-        return (Channel sm) -> new Observable[] { ((GenericChannel) sm).getName(), ((GenericChannel) sm).isOnline() };
+    public static Callback<IChannel, Observable[]> extractor() {
+        return (IChannel sm) -> new Observable[] { ((GenericChannel) sm).getName(), ((GenericChannel) sm).isOnline() };
     }
 }

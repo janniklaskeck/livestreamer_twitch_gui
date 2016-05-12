@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.MainWindow;
 import app.lsgui.gui.chat.ChatWindow;
-import app.lsgui.model.Channel;
+import app.lsgui.model.IChannel;
 import app.lsgui.model.Service;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.utils.LivestreamerUtils;
@@ -39,7 +39,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     private ComboBox<Service> serviceComboBox;
     private ComboBox<String> qualityComboBox;
 
-    private ObjectProperty<Channel> modelProperty;
+    private ObjectProperty<IChannel> modelProperty;
 
     private WrappedImageView previewImageView;
 
@@ -81,7 +81,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
 
     private void setupModelListener() {
         modelProperty.addListener((observable, oldValue, newValue) -> {
-            Channel valueStreamModel = newValue == null ? oldValue : newValue;
+            IChannel valueStreamModel = newValue == null ? oldValue : newValue;
             if (valueStreamModel.getClass().equals(TwitchChannel.class)) {
                 previewImageView.imageProperty().bind(((TwitchChannel) valueStreamModel).getPreviewImage());
                 channelDescription.textProperty().bind(((TwitchChannel) valueStreamModel).getDescription());
@@ -133,7 +133,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         buttonBox.getItems().add(openBrowserButton);
     }
 
-    public void setStream(final Channel model) {
+    public void setStream(final IChannel model) {
         modelProperty.setValue(model);
     }
 
@@ -176,11 +176,11 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         }
     }
 
-    public ObjectProperty<Channel> getModelProperty() {
+    public ObjectProperty<IChannel> getModelProperty() {
         return modelProperty;
     }
 
-    public void setModelProperty(ObjectProperty<Channel> modelProperty) {
+    public void setModelProperty(ObjectProperty<IChannel> modelProperty) {
         this.modelProperty = modelProperty;
     }
 

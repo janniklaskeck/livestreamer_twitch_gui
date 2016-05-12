@@ -17,7 +17,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 
-import app.lsgui.model.Channel;
+import app.lsgui.model.IChannel;
 import app.lsgui.model.Service;
 import app.lsgui.utils.JSONUtils;
 import javafx.beans.property.BooleanProperty;
@@ -171,7 +171,7 @@ public class Settings {
             w.name(SERVICEURL).value(s.getUrl().get());
             w.name("channels");
             w.beginArray();
-            for (Channel channel : s.getChannels()) {
+            for (IChannel channel : s.getChannels()) {
                 if (channel.getName().get() != null) {
                     w.value(channel.getName().get());
                 }

@@ -3,7 +3,7 @@ package app.lsgui.service.twitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.Channel;
+import app.lsgui.model.IChannel;
 import app.lsgui.model.twitch.TwitchChannel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -16,11 +16,11 @@ import javafx.util.Duration;
 public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelData> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelUpdateService.class);
-    private static final ListProperty<Channel> ACTIVELIST = new SimpleListProperty<>(
+    private static final ListProperty<IChannel> ACTIVELIST = new SimpleListProperty<>(
             FXCollections.observableArrayList());
     private TwitchChannel model;
 
-    public TwitchChannelUpdateService(final Channel model) {
+    public TwitchChannelUpdateService(final IChannel model) {
         LOGGER.debug("Create UpdateService for {}", model.getName().get());
         if (model.getClass().equals(TwitchChannel.class)) {
             this.model = (TwitchChannel) model;
@@ -34,7 +34,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
                     }
                 }
                 synchronized (ACTIVELIST) {
-                    ObservableList<Channel> activeChannelServices = FXCollections.observableArrayList(ACTIVELIST.get());
+                    ObservableList<IChannel> activeChannelServices = FXCollections.observableArrayList(ACTIVELIST.get());
                     activeChannelServices.remove(model);
                     ACTIVELIST.set(activeChannelServices);
                 }
@@ -50,7 +50,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
             @Override
             protected TwitchChannelData call() throws Exception {
                 synchronized (ACTIVELIST) {
-                    ObservableList<Channel> activeChannelServices = FXCollections.observableArrayList(ACTIVELIST.get());
+                    ObservableList<IChannel> activeChannelServices = FXCollections.observableArrayList(ACTIVELIST.get());
                     activeChannelServices.add(model);
                     ACTIVELIST.set(activeChannelServices);
                 }
@@ -59,7 +59,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
         };
     }
 
-    public static ListProperty<Channel> getActiveChannelServicesProperty() {
+    public static ListProperty<IChannel> getActiveChannelServicesProperty() {
         return ACTIVELIST;
     }
 }

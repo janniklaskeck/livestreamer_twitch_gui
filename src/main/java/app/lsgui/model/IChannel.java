@@ -5,7 +5,7 @@ import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 
-public interface Channel {
+public interface IChannel {
 
     public StringProperty getName();
 

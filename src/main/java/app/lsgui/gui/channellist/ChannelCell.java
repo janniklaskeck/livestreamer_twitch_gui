@@ -3,13 +3,13 @@ package app.lsgui.gui.channellist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.Channel;
+import app.lsgui.model.IChannel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.css.PseudoClass;
 import javafx.scene.control.ListCell;
 
-public class ChannelCell extends ListCell<Channel> {// NOSONAR
+public class ChannelCell extends ListCell<IChannel> {// NOSONAR
 
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class); // NOSONAR
@@ -38,7 +38,7 @@ public class ChannelCell extends ListCell<Channel> {// NOSONAR
     }
 
     @Override
-    protected void updateItem(Channel item, boolean isEmpty) {
+    protected void updateItem(IChannel item, boolean isEmpty) {
         super.updateItem(item, isEmpty);
         if (isEmpty || item == null) {
             setText(null);

@@ -6,7 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.Channel;
+import app.lsgui.model.IChannel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -23,11 +23,11 @@ public class ChannelList extends AnchorPane {// NOSONAR
     private static final String CHANNELLISTFXML = "fxml/ChannelList.fxml";
     private static FXMLLoader loader;
 
-    private ListProperty<Channel> channelListProperty;
-    private ObjectProperty<Channel> channelProperty;
+    private ListProperty<IChannel> channelListProperty;
+    private ObjectProperty<IChannel> channelProperty;
 
     @FXML
-    private ListView<Channel> channelListView;
+    private ListView<IChannel> channelListView;
 
     public ChannelList() {
         LOGGER.debug("Construct StreamList");
@@ -56,7 +56,7 @@ public class ChannelList extends AnchorPane {// NOSONAR
     /**
      * @return the streams
      */
-    public ListProperty<Channel> getStreams() {
+    public ListProperty<IChannel> getStreams() {
         return channelListProperty;
     }
 
@@ -64,14 +64,14 @@ public class ChannelList extends AnchorPane {// NOSONAR
      * @param streams
      *            the streams to set
      */
-    public void setStreams(List<Channel> streams) {
+    public void setStreams(List<IChannel> streams) {
         channelListProperty.set(FXCollections.observableList(streams));
     }
 
     /**
      * @return the streamList
      */
-    public ListView<Channel> getListView() {
+    public ListView<IChannel> getListView() {
         return channelListView;
     }
 
@@ -79,14 +79,14 @@ public class ChannelList extends AnchorPane {// NOSONAR
      * @param streamList
      *            the streamList to set
      */
-    public void setListView(ListView<Channel> streamList) {
+    public void setListView(ListView<IChannel> streamList) {
         this.channelListView = streamList;
     }
 
     /**
      * @return the modelProperty
      */
-    public ObjectProperty<Channel> getModelProperty() {
+    public ObjectProperty<IChannel> getModelProperty() {
         return channelProperty;
     }
 
@@ -94,7 +94,7 @@ public class ChannelList extends AnchorPane {// NOSONAR
      * @param modelProperty
      *            the modelProperty to set
      */
-    public void setModelProperty(ObjectProperty<Channel> modelProperty) {
+    public void setModelProperty(ObjectProperty<IChannel> modelProperty) {
         this.channelProperty = modelProperty;
     }
 }

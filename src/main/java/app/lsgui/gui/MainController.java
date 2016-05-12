@@ -9,7 +9,7 @@ import app.lsgui.gui.channelinfopanel.ChannelInfoPanel;
 import app.lsgui.gui.channellist.ChannelList;
 import app.lsgui.gui.settings.SettingsController;
 import app.lsgui.gui.settings.SettingsWindow;
-import app.lsgui.model.Channel;
+import app.lsgui.model.IChannel;
 import app.lsgui.model.Service;
 import app.lsgui.service.Settings;
 import app.lsgui.service.twitch.TwitchAPIClient;
@@ -105,7 +105,7 @@ public class MainController {
 
         channelList.getListView().getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
-                    Channel value = newValue == null ? oldValue : newValue;
+                    IChannel value = newValue == null ? oldValue : newValue;
                     qualityComboBox.setItems(FXCollections.observableArrayList(value.getAvailableQualities()));
                     if (qualityComboBox.getItems().size() > 1) {
                         final String quality = Settings.instance().getQuality();
@@ -216,7 +216,7 @@ public class MainController {
     }
 
     private void removeAction() {
-        final Channel toRemove = channelList.getListView().getSelectionModel().getSelectedItem();
+        final IChannel toRemove = channelList.getListView().getSelectionModel().getSelectedItem();
         removeChannelFromCurrentService(toRemove);
     }
 
@@ -269,7 +269,7 @@ public class MainController {
         serviceComboBox.getSelectionModel().getSelectedItem().addFollowedChannels(channel);
     }
 
-    private void removeChannelFromCurrentService(final Channel channel) {
-        serviceComboBox.getSelectionModel().getSelectedItem().removeSelectedChannel(channel);
+    private void removeChannelFromCurrentService(final IChannel channel) {
+        serviceComboBox.getSelectionModel().getSelectedItem().removeChannel(channel);
     }
 }

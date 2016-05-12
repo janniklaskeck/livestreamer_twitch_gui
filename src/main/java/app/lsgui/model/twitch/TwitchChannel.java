@@ -8,7 +8,7 @@ import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.Channel;
+import app.lsgui.model.IChannel;
 import app.lsgui.service.twitch.TwitchChannelData;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
@@ -25,7 +25,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 import javafx.util.Callback;
 
-public class TwitchChannel implements Channel {
+public class TwitchChannel implements IChannel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannel.class);
     private static Image defaultLogo = new Image(
@@ -121,8 +121,8 @@ public class TwitchChannel implements Channel {
                         - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime.get())));
     }
 
-    public static Callback<Channel, Observable[]> extractor() {
-        return (Channel sm) -> new Observable[] { ((TwitchChannel) sm).getName(), ((TwitchChannel) sm).getGame(),
+    public static Callback<IChannel, Observable[]> extractor() {
+        return (IChannel sm) -> new Observable[] { ((TwitchChannel) sm).getName(), ((TwitchChannel) sm).getGame(),
                 ((TwitchChannel) sm).isOnline(), ((TwitchChannel) sm).getTitle(), ((TwitchChannel) sm).getDescription(),
                 ((TwitchChannel) sm).getLogoURL(), ((TwitchChannel) sm).getPreviewImage(),
                 ((TwitchChannel) sm).getPreviewURL(), ((TwitchChannel) sm).getUptime(),
