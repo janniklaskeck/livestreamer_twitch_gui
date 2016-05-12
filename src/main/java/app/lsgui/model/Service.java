@@ -8,6 +8,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.lsgui.model.generic.GenericChannel;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.service.twitch.TwitchAPIClient;
 import app.lsgui.service.twitch.TwitchChannelUpdateService;
@@ -54,26 +55,45 @@ public class Service {
 
     private void refreshList() {
         if (getChannels().getValue() != null) {
-            ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
-            obsChannels.addAll(getChannels().getValue());
-            SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
-            obsChannelsSorted.setComparator(comp);
-            getChannels().setValue(obsChannelsSorted);
+            if (this.getName().get().toLowerCase().contains("twitch")) {
+                ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
+                obsChannels.addAll(getChannels().getValue());
+                SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
+                obsChannelsSorted.setComparator(comp);
+                getChannels().setValue(obsChannelsSorted);
+            } else {
+                ObservableList<Channel> obsChannels = FXCollections.observableArrayList(GenericChannel.extractor());
+                obsChannels.addAll(getChannels().getValue());
+                SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
+                obsChannelsSorted.setComparator(comp);
+                getChannels().setValue(obsChannelsSorted);
+            }
         }
     }
 
     public void addChannel(final String name) {
         List<Channel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
-        Channel sm = new TwitchChannel(name);
-        channels.add(sm);
-        ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
-        obsChannels.addAll(channels);
-        SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
-        obsChannelsSorted.setComparator(comp);
-        getChannels().setValue(obsChannelsSorted);
-        final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
-        tcus.start();
-        UPDATESERVICES.put(sm, tcus);
+        if (this.getName().get().toLowerCase().contains("twitch")) {
+            Channel sm = new TwitchChannel(name);
+            channels.add(sm);
+            ObservableList<Channel> obsChannels = FXCollections.observableArrayList(TwitchChannel.extractor());
+            obsChannels.addAll(channels);
+            SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
+            obsChannelsSorted.setComparator(comp);
+            getChannels().setValue(obsChannelsSorted);
+            final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(sm);
+            tcus.start();
+            UPDATESERVICES.put(sm, tcus);
+        } else {
+            Channel sm = new GenericChannel(name);
+            channels.add(sm);
+            ObservableList<Channel> obsChannels = FXCollections.observableArrayList(GenericChannel.extractor());
+            obsChannels.addAll(channels);
+            SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
+            obsChannelsSorted.setComparator(comp);
+            getChannels().setValue(obsChannelsSorted);
+        }
+
     }
 
     public void removeSelectedChannel(final Channel selectedChannel) {
@@ -87,14 +107,16 @@ public class Service {
             SortedList<Channel> obsChannelsSorted = new SortedList<>(obsChannels);
             obsChannelsSorted.setComparator(comp);
             getChannels().setValue(obsChannelsSorted);
-            final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(selectedChannel);
-            tcus.cancel();
+            if (this.getUrl().get().toLowerCase().contains("twitch")) {
+                final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(selectedChannel);
+                tcus.cancel();
+            }
         }
     }
 
     public void addFollowedChannels(final String username) {
         LOGGER.debug("Import followed Streams for user {}", username);
-        Set<String> set = TwitchAPIClient.instance().getListOfFollowedStreams(username);
+        final Set<String> set = TwitchAPIClient.instance().getListOfFollowedStreams(username);
         for (String s : set) {
             addChannel(s);
         }
