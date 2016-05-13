@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import app.lsgui.gui.MainController;
 import app.lsgui.gui.MainWindow;
 import app.lsgui.gui.chat.ChatWindow;
-import app.lsgui.service.Settings;
+import app.lsgui.settings.Settings;
 import app.lsgui.utils.Utils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

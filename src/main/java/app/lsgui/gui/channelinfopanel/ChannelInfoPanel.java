@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import app.lsgui.gui.MainWindow;
 import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.model.IChannel;
-import app.lsgui.model.Service;
 import app.lsgui.model.twitch.TwitchChannel;
+import app.lsgui.service.IService;
 import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.Utils;
 import app.lsgui.utils.WrappedImageView;
@@ -36,7 +36,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     private static final String CHANNELINFOPANELFXML = "fxml/ChannelInfoPanel.fxml";
     private static FXMLLoader loader;
 
-    private ComboBox<Service> serviceComboBox;
+    private ComboBox<IService> serviceComboBox;
     private ComboBox<String> qualityComboBox;
 
     private ObjectProperty<IChannel> modelProperty;
@@ -60,7 +60,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     @FXML
     private ToolBar buttonBox;
 
-    public ChannelInfoPanel(ComboBox<Service> serviceComboBox, ComboBox<String> qualityComboBox) {
+    public ChannelInfoPanel(ComboBox<IService> serviceComboBox, ComboBox<String> qualityComboBox) {
         LOGGER.debug("Construct StreamInfoPanel");
         modelProperty = new SimpleObjectProperty<>();
 

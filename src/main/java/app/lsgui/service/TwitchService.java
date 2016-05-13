@@ -1,4 +1,4 @@
-package app.lsgui.model;
+package app.lsgui.service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -8,10 +8,11 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.lsgui.model.IChannel;
 import app.lsgui.model.generic.GenericChannel;
 import app.lsgui.model.twitch.TwitchChannel;
-import app.lsgui.service.twitch.TwitchAPIClient;
-import app.lsgui.service.twitch.TwitchChannelUpdateService;
+import app.lsgui.rest.twitch.TwitchAPIClient;
+import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
@@ -25,8 +26,8 @@ import javafx.collections.ObservableMap;
 import javafx.collections.transformation.SortedList;
 import javafx.util.Callback;
 
-public class Service implements IService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
+public class TwitchService implements IService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchService.class);
     public static final String TWITCH_ID = "twitch.tv";
 
     private StringProperty name;
@@ -38,7 +39,7 @@ public class Service implements IService {
     private static final ObservableMap<IChannel, TwitchChannelUpdateService> UPDATESERVICES = FXCollections
             .observableHashMap();
 
-    public Service(String name, String url) {
+    public TwitchService(String name, String url) {
         this.name = new SimpleStringProperty(name);
         this.url = new SimpleStringProperty(url);
         channelProperty = new SimpleListProperty<>();
@@ -96,21 +97,21 @@ public class Service implements IService {
     }
 
     @Override
-    public void removeChannel(final IChannel Channel) {
-        if (Channel != null) {
-            LOGGER.debug("Remove Channel {} from list", Channel.getName());
+    public void removeChannel(final IChannel channel) {
+        if (channel != null) {
+            LOGGER.debug("Remove Channel {} from list", channel.getName());
             final Callback<IChannel, Observable[]> extractor;
-            if (Channel.getClass().equals(TwitchChannel.class)
+            if (channel.getClass().equals(TwitchChannel.class)
                     && this.getUrl().get().toLowerCase().contains(TWITCH_ID)) {
                 extractor = TwitchChannel.extractor();
-                final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(Channel);
+                final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(channel);
                 tcus.cancel();
             } else {
                 extractor = GenericChannel.extractor();
             }
             List<IChannel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
-            channels.remove(Channel);
-            LOGGER.info("remove Channel {}", Channel.getName());
+            channels.remove(channel);
+            LOGGER.info("remove Channel {}", channel.getName());
             ObservableList<IChannel> obsChannels = FXCollections.observableArrayList(extractor);
             obsChannels.addAll(channels);
             SortedList<IChannel> obsChannelsSorted = new SortedList<>(obsChannels);
@@ -162,7 +163,7 @@ public class Service implements IService {
         return url;
     }
 
-    public static ObservableMap<IChannel, TwitchChannelUpdateService> getUpdateServices() {
+    public ObservableMap<IChannel, TwitchChannelUpdateService> getUpdateServices() {
         return UPDATESERVICES;
     }
 

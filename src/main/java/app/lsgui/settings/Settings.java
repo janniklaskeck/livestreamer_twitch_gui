@@ -1,4 +1,4 @@
-package app.lsgui.service;
+package app.lsgui.settings;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,7 +18,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 
 import app.lsgui.model.IChannel;
-import app.lsgui.model.Service;
+import app.lsgui.service.IService;
+import app.lsgui.service.TwitchService;
 import app.lsgui.utils.JSONUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -34,7 +35,7 @@ public class Settings {
 
     private static final String VERSION = "";
     private static final long TIMEOUT = 5000L;
-    private List<Service> services = new ArrayList<>();
+    private List<IService> services = new ArrayList<>();
     private BooleanProperty sortTwitch = new SimpleBooleanProperty();
     private boolean minimizeToTray = true;
     private String windowStyle = "LightStyle";
@@ -111,8 +112,8 @@ public class Settings {
                 JsonObject service = servicesArray.get(i).getAsJsonObject();
                 final String serviceName = service.get(SERVICENAME).getAsString();
                 final String serviceUrl = service.get(SERVICEURL).getAsString();
-                Service ss = new Service(serviceName, serviceUrl);
-                ss.bindSortProperty(sortTwitch);
+                IService ss = new TwitchService(serviceName, serviceUrl);
+                ((TwitchService) ss).bindSortProperty(sortTwitch);
 
                 JsonArray channels = service.get("channels").getAsJsonArray();
                 for (int e = 0; e < channels.size(); e++) {
@@ -165,7 +166,7 @@ public class Settings {
     }
 
     private void writeServices(JsonWriter w) throws IOException {
-        for (Service s : services) {
+        for (IService s : services) {
             w.beginObject();
             w.name(SERVICENAME).value(s.getName().get());
             w.name(SERVICEURL).value(s.getUrl().get());
@@ -181,11 +182,11 @@ public class Settings {
         }
     }
 
-    public List<Service> getStreamServices() {
+    public List<IService> getStreamServices() {
         return services;
     }
 
-    public ObservableList<Service> getStreamServicesObservable() {
+    public ObservableList<IService> getStreamServicesObservable() {
         return FXCollections.observableArrayList(services);
     }
 

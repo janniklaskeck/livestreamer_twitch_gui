@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.IChannel;
-import app.lsgui.model.Service;
-import app.lsgui.service.Settings;
-import app.lsgui.service.twitch.TwitchChannelUpdateService;
+import app.lsgui.rest.twitch.TwitchChannelUpdateService;
+import app.lsgui.service.TwitchService;
+import app.lsgui.settings.Settings;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -68,8 +68,8 @@ public class MainWindow extends Application {
 
         primaryStage.setOnCloseRequest(event -> {
             Settings.instance().saveSettings();
-            Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = Service.getUpdateServices().entrySet()
-                    .iterator();
+            Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = ((TwitchService) Settings.instance()
+                    .getStreamServices().get(0)).getUpdateServices().entrySet().iterator();
             while (it.hasNext()) {
                 it.next();
                 it.remove();
@@ -79,8 +79,8 @@ public class MainWindow extends Application {
 
         primaryStage.setOnHiding(event -> {
             Settings.instance().saveSettings();
-            Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = Service.getUpdateServices().entrySet()
-                    .iterator();
+            Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = ((TwitchService) Settings.instance()
+                    .getStreamServices().get(0)).getUpdateServices().entrySet().iterator();
             while (it.hasNext()) {
                 it.next();
                 it.remove();

@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.IChannel;
-import app.lsgui.service.twitch.TwitchChannelData;
+import app.lsgui.rest.twitch.TwitchChannelData;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;

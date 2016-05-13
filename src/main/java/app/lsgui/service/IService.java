@@ -1,5 +1,6 @@
-package app.lsgui.model;
+package app.lsgui.service;
 
+import app.lsgui.model.IChannel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.StringProperty;
 

@@ -10,10 +10,11 @@ import app.lsgui.gui.channellist.ChannelList;
 import app.lsgui.gui.settings.SettingsController;
 import app.lsgui.gui.settings.SettingsWindow;
 import app.lsgui.model.IChannel;
-import app.lsgui.model.Service;
-import app.lsgui.service.Settings;
-import app.lsgui.service.twitch.TwitchAPIClient;
-import app.lsgui.service.twitch.TwitchChannelUpdateService;
+import app.lsgui.rest.twitch.TwitchAPIClient;
+import app.lsgui.rest.twitch.TwitchChannelUpdateService;
+import app.lsgui.service.IService;
+import app.lsgui.service.TwitchService;
+import app.lsgui.settings.Settings;
 import app.lsgui.utils.Utils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -51,7 +52,7 @@ public class MainController {
     private ComboBox<String> qualityComboBox;
 
     @FXML
-    private ComboBox<Service> serviceComboBox;
+    private ComboBox<IService> serviceComboBox;
 
     @FXML
     private BorderPane contentBorderPane;
@@ -78,13 +79,13 @@ public class MainController {
 
     private void setupServiceComboBox() {
         if (Settings.instance().getStreamServices().isEmpty()) {
-            Settings.instance().getStreamServices().add(new Service("Twitch.tv", "http://twitch.tv/"));
+            Settings.instance().getStreamServices().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
         }
         serviceComboBox.getItems().addAll(Settings.instance().getStreamServices());
         serviceComboBox.setCellFactory(listView -> new ServiceCell());
-        serviceComboBox.setConverter(new StringConverter<Service>() {
+        serviceComboBox.setConverter(new StringConverter<IService>() {
             @Override
-            public String toString(Service service) {
+            public String toString(IService service) {
                 if (service == null) {
                     return null;
                 }
@@ -92,7 +93,7 @@ public class MainController {
             }
 
             @Override
-            public Service fromString(String string) {
+            public IService fromString(String string) {
                 return null;
             }
         });
@@ -165,7 +166,7 @@ public class MainController {
         toolBarTop.getItems().add(toolBarTop.getItems().size(), settingsButton);
     }
 
-    private void changeService(final Service newService) {
+    private void changeService(final IService newService) {
         LOGGER.debug("Change Service to {}", newService.getName().get());
         channelList.getStreams().bind(newService.getChannels());
     }
@@ -266,7 +267,7 @@ public class MainController {
     }
 
     private void addFollowedChannelsToCurrentService(final String channel) {
-        serviceComboBox.getSelectionModel().getSelectedItem().addFollowedChannels(channel);
+        ((TwitchService) serviceComboBox.getSelectionModel().getSelectedItem()).addFollowedChannels(channel);
     }
 
     private void removeChannelFromCurrentService(final IChannel channel) {
