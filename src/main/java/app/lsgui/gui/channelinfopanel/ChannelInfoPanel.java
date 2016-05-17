@@ -39,7 +39,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     private ComboBox<IService> serviceComboBox;
     private ComboBox<String> qualityComboBox;
 
-    private ObjectProperty<IChannel> modelProperty;
+    private ObjectProperty<IChannel> channelProperty;
 
     private WrappedImageView previewImageView;
 
@@ -61,8 +61,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     private ToolBar buttonBox;
 
     public ChannelInfoPanel(ComboBox<IService> serviceComboBox, ComboBox<String> qualityComboBox) {
-        LOGGER.debug("Construct StreamInfoPanel");
-        modelProperty = new SimpleObjectProperty<>();
+        channelProperty = new SimpleObjectProperty<>();
 
         this.serviceComboBox = serviceComboBox;
         this.qualityComboBox = qualityComboBox;
@@ -75,27 +74,27 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
             LOGGER.error("ERROR while loading ChannelInfoPanel FXML", e);
         }
         setupChannelInfoPanel();
-        setupModelListener();
+        setupChannelListener();
 
     }
 
-    private void setupModelListener() {
-        modelProperty.addListener((observable, oldValue, newValue) -> {
-            IChannel valueStreamModel = newValue == null ? oldValue : newValue;
-            if (valueStreamModel.getClass().equals(TwitchChannel.class)) {
-                previewImageView.imageProperty().bind(((TwitchChannel) valueStreamModel).getPreviewImage());
-                channelDescription.textProperty().bind(((TwitchChannel) valueStreamModel).getDescription());
-
-                channelUptime.textProperty().bind(((TwitchChannel) valueStreamModel).getUptimeString());
-                channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
-
-                channelViewers.textProperty().bind(((TwitchChannel) valueStreamModel).getViewersString());
-                channelViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
-
-                channelGame.textProperty().bind(((TwitchChannel) valueStreamModel).getGame());
-                channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
-            } else {
-                channelDescription.textProperty().bind(modelProperty.get().getName());
+    private void setupChannelListener() {
+        channelProperty.addListener((observable, oldValue, newValue) -> {
+            final IChannel selectedChannel = newValue;
+            if (selectedChannel != null) {
+                if (Utils.isTwitchChannel(selectedChannel)) {
+                    final TwitchChannel twitchChannel = (TwitchChannel) selectedChannel;
+                    previewImageView.imageProperty().bind((twitchChannel).getPreviewImage());
+                    channelDescription.textProperty().bind((twitchChannel).getDescription());
+                    channelUptime.textProperty().bind((twitchChannel).getUptimeString());
+                    channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
+                    channelViewers.textProperty().bind((twitchChannel).getViewersString());
+                    channelViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
+                    channelGame.textProperty().bind((twitchChannel).getGame());
+                    channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
+                } else {
+                    channelDescription.textProperty().bind(channelProperty.get().getName());
+                }
             }
         });
     }
@@ -133,23 +132,23 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         buttonBox.getItems().add(openBrowserButton);
     }
 
-    public void setStream(final IChannel model) {
-        modelProperty.setValue(model);
+    public void setStream(final IChannel channel) {
+        channelProperty.setValue(channel);
     }
 
     private void startStream() {
-        if (modelProperty.get() != null && modelProperty.get().isOnline().get()) {
+        if (channelProperty.get() != null && channelProperty.get().isOnline().get()) {
             final String url = buildURL();
-            final String quality = buildQuality();
+            final String quality = getQuality();
             LivestreamerUtils.startLivestreamer(url, quality);
         }
     }
 
     private void recordStream() {
-        if (modelProperty.get() != null && !"".equals(modelProperty.get().getName().get())
-                && modelProperty.get().isOnline().get()) {
+        if (channelProperty.get() != null && !"".equals(channelProperty.get().getName().get())
+                && channelProperty.get().isOnline().get()) {
             final String url = buildURL();
-            final String quality = buildQuality();
+            final String quality = getQuality();
 
             final FileChooser recordFileChooser = new FileChooser();
             recordFileChooser.setTitle("Choose Target file");
@@ -162,34 +161,35 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void openChat() {
-        if (modelProperty.get() != null && !"".equals(modelProperty.get().getName().get())) {
-            final String channel = modelProperty.get().getName().get();
+        if (channelProperty.get() != null && !"".equals(channelProperty.get().getName().get())
+                && Utils.isTwitchChannel(channelProperty.get())) {
+            final String channel = channelProperty.get().getName().get();
             ChatWindow cw = new ChatWindow(channel);
             cw.connect();
         }
     }
 
     private void openBrowser() {
-        if (modelProperty.get() != null && !"".equals(modelProperty.get().getName().get())) {
-            final String channel = modelProperty.get().getName().get();
+        if (channelProperty.get() != null && !"".equals(channelProperty.get().getName().get())) {
+            final String channel = channelProperty.get().getName().get();
             Utils.openURLInBrowser(serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get() + channel);
         }
     }
 
-    public ObjectProperty<IChannel> getModelProperty() {
-        return modelProperty;
+    public ObjectProperty<IChannel> getChannelProperty() {
+        return channelProperty;
     }
 
-    public void setModelProperty(ObjectProperty<IChannel> modelProperty) {
-        this.modelProperty = modelProperty;
+    public void setChannelProperty(ObjectProperty<IChannel> channelProperty) {
+        this.channelProperty = channelProperty;
     }
 
     private String buildURL() {
         return serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get()
-                + modelProperty.get().getName().get();
+                + channelProperty.get().getName().get();
     }
 
-    private String buildQuality() {
+    private String getQuality() {
         return qualityComboBox.getSelectionModel().getSelectedItem();
     }
 }

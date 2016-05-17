@@ -125,7 +125,7 @@ public class MainController {
 
     private void setupChannelInfoPanel() {
         channelInfoPanel = new ChannelInfoPanel(serviceComboBox, qualityComboBox);
-        channelInfoPanel.getModelProperty().bind(channelList.getModelProperty());
+        channelInfoPanel.getChannelProperty().bind(channelList.getSelectedChannelProperty());
         contentBorderPane.setCenter(channelInfoPanel);
     }
 

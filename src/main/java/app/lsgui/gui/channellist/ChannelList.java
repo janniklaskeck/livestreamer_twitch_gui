@@ -24,7 +24,7 @@ public class ChannelList extends AnchorPane {// NOSONAR
     private static FXMLLoader loader;
 
     private ListProperty<IChannel> channelListProperty;
-    private ObjectProperty<IChannel> channelProperty;
+    private ObjectProperty<IChannel> selectedChannelProperty;
 
     @FXML
     private ListView<IChannel> channelListView;
@@ -46,55 +46,34 @@ public class ChannelList extends AnchorPane {// NOSONAR
 
     private void setupChannelList() {
         channelListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        channelProperty = new SimpleObjectProperty<>();
+        selectedChannelProperty = new SimpleObjectProperty<>();
         channelListProperty = new SimpleListProperty<>();
-        channelProperty.bind(channelListView.getSelectionModel().selectedItemProperty());
+        selectedChannelProperty.bind(channelListView.getSelectionModel().selectedItemProperty());
         channelListView.itemsProperty().bind(channelListProperty);
         channelListView.setCellFactory(listView -> new ChannelCell());
     }
 
-    /**
-     * @return the streams
-     */
     public ListProperty<IChannel> getStreams() {
         return channelListProperty;
     }
 
-    /**
-     * @param streams
-     *            the streams to set
-     */
-    public void setStreams(List<IChannel> streams) {
-        channelListProperty.set(FXCollections.observableList(streams));
+    public void setChannels(List<IChannel> channels) {
+        channelListProperty.set(FXCollections.observableList(channels));
     }
 
-    /**
-     * @return the streamList
-     */
     public ListView<IChannel> getListView() {
         return channelListView;
     }
 
-    /**
-     * @param streamList
-     *            the streamList to set
-     */
-    public void setListView(ListView<IChannel> streamList) {
-        this.channelListView = streamList;
+    public void setListView(ListView<IChannel> channelList) {
+        this.channelListView = channelList;
     }
 
-    /**
-     * @return the modelProperty
-     */
-    public ObjectProperty<IChannel> getModelProperty() {
-        return channelProperty;
+    public ObjectProperty<IChannel> getSelectedChannelProperty() {
+        return selectedChannelProperty;
     }
 
-    /**
-     * @param modelProperty
-     *            the modelProperty to set
-     */
-    public void setModelProperty(ObjectProperty<IChannel> modelProperty) {
-        this.channelProperty = modelProperty;
+    public void setSelectedChannelProperty(ObjectProperty<IChannel> channelProperty) {
+        this.selectedChannelProperty = channelProperty;
     }
 }
