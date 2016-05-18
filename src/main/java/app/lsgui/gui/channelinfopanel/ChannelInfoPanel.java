@@ -88,29 +88,37 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
             final IChannel selectedChannel = newValue;
             if (selectedChannel != null) {
                 if (Utils.isTwitchChannel(selectedChannel)) {
-                    final TwitchChannel twitchChannel = (TwitchChannel) selectedChannel;
-                    previewImageView.imageProperty().bind((twitchChannel).getPreviewImage());
-                    channelDescription.textProperty().bind((twitchChannel).getDescription());
-                    channelUptime.textProperty().bind((twitchChannel).getUptimeString());
-                    channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
-                    channelViewers.textProperty().bind((twitchChannel).getViewersString());
-                    channelViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
-                    channelGame.textProperty().bind((twitchChannel).getGame());
-                    channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
-                    openChatButton.setDisable(false);
+                    bindToTwitchChannel(selectedChannel);
                 } else {
-                    channelDescription.textProperty().bind(channelProperty.get().getName());
-                    previewImageView.imageProperty().unbind();
-                    channelUptime.textProperty().unbind();
-                    channelUptime.setGraphic(null);
-                    channelViewers.textProperty().unbind();
-                    channelViewers.setGraphic(null);
-                    channelGame.textProperty().unbind();
-                    channelGame.setGraphic(null);
-                    openChatButton.setDisable(true);
+                    bindToGenericChannel(selectedChannel);
                 }
             }
         });
+    }
+
+    private void bindToTwitchChannel(final IChannel selectedChannel) {
+        final TwitchChannel twitchChannel = (TwitchChannel) selectedChannel;
+        previewImageView.imageProperty().bind((twitchChannel).getPreviewImage());
+        channelDescription.textProperty().bind((twitchChannel).getDescription());
+        channelUptime.textProperty().bind((twitchChannel).getUptimeString());
+        channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
+        channelViewers.textProperty().bind((twitchChannel).getViewersString());
+        channelViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
+        channelGame.textProperty().bind((twitchChannel).getGame());
+        channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
+        openChatButton.setDisable(false);
+    }
+
+    private void bindToGenericChannel(final IChannel channel) {
+        channelDescription.textProperty().bind(channel.getName());
+        previewImageView.imageProperty().unbind();
+        channelUptime.textProperty().unbind();
+        channelUptime.setGraphic(null);
+        channelViewers.textProperty().unbind();
+        channelViewers.setGraphic(null);
+        channelGame.textProperty().unbind();
+        channelGame.setGraphic(null);
+        openChatButton.setDisable(true);
     }
 
     private void setupChannelInfoPanel() {
