@@ -45,7 +45,6 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
         } else {
             setText(item.getName().get());
             online.bind(item.isOnline());
-            LOGGER.debug("{} {}", item.getName().get(), online.get());
         }
     }
 }
