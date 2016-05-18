@@ -1,4 +1,4 @@
-package app.lsgui.service;
+package app.lsgui.model.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.IChannel;
-import app.lsgui.model.generic.GenericChannel;
+import app.lsgui.model.channel.IChannel;
+import app.lsgui.model.channel.generic.GenericChannel;
 import javafx.beans.Observable;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -24,9 +24,9 @@ public class GenericService implements IService {
     private StringProperty url;
     private ListProperty<IChannel> channelProperty;
 
-    public GenericService() {
-        name = new SimpleStringProperty();
-        url = new SimpleStringProperty();
+    public GenericService(final String name, final String url) {
+        this.name = new SimpleStringProperty(name);
+        this.url = new SimpleStringProperty(url);
         channelProperty = new SimpleListProperty<>();
     }
 

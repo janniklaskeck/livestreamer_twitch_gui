@@ -1,4 +1,4 @@
-package app.lsgui.service;
+package app.lsgui.model.service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -8,9 +8,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.IChannel;
-import app.lsgui.model.generic.GenericChannel;
-import app.lsgui.model.twitch.TwitchChannel;
+import app.lsgui.model.channel.IChannel;
+import app.lsgui.model.channel.generic.GenericChannel;
+import app.lsgui.model.channel.twitch.TwitchChannel;
 import app.lsgui.rest.twitch.TwitchAPIClient;
 import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import javafx.beans.Observable;

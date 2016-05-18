@@ -1,4 +1,4 @@
-package app.lsgui.model.twitch;
+package app.lsgui.model.channel.twitch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.IChannel;
+import app.lsgui.model.channel.IChannel;
 import app.lsgui.rest.twitch.TwitchChannelData;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;

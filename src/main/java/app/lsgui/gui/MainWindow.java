@@ -7,9 +7,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.IChannel;
+import app.lsgui.model.channel.IChannel;
+import app.lsgui.model.service.TwitchService;
 import app.lsgui.rest.twitch.TwitchChannelUpdateService;
-import app.lsgui.service.TwitchService;
 import app.lsgui.settings.Settings;
 import javafx.application.Application;
 import javafx.application.Platform;

@@ -17,9 +17,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 
-import app.lsgui.model.IChannel;
-import app.lsgui.service.IService;
-import app.lsgui.service.TwitchService;
+import app.lsgui.model.channel.IChannel;
+import app.lsgui.model.service.GenericService;
+import app.lsgui.model.service.IService;
+import app.lsgui.model.service.TwitchService;
 import app.lsgui.utils.JSONUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -109,18 +110,23 @@ public class Settings {
 
             JsonArray servicesArray = jArray.get(1).getAsJsonArray();
             for (int i = 0; i < servicesArray.size(); i++) {
-                JsonObject service = servicesArray.get(i).getAsJsonObject();
-                final String serviceName = service.get(SERVICENAME).getAsString();
-                final String serviceUrl = service.get(SERVICEURL).getAsString();
-                IService ss = new TwitchService(serviceName, serviceUrl);
-                ((TwitchService) ss).bindSortProperty(sortTwitch);
+                JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
+                final String serviceName = serviceJson.get(SERVICENAME).getAsString();
+                final String serviceUrl = serviceJson.get(SERVICEURL).getAsString();
+                IService service;
+                if (serviceUrl.toLowerCase().contains("twitch")) {
+                    service = new TwitchService(serviceName, serviceUrl);
+                    ((TwitchService) service).bindSortProperty(sortTwitch);
+                } else {
+                    service = new GenericService(serviceName, serviceUrl);
+                }
 
-                JsonArray channels = service.get("channels").getAsJsonArray();
+                JsonArray channels = serviceJson.get("channels").getAsJsonArray();
                 for (int e = 0; e < channels.size(); e++) {
                     final String channel = channels.get(e).getAsString();
-                    ss.addChannel(channel);
+                    service.addChannel(channel);
                 }
-                services.add(ss);
+                services.add(service);
             }
             sortTwitch.setValue(JSONUtils.getBooleanSafe(settings.get(TWITCHSORT), false));
             minimizeToTray = JSONUtils.getBooleanSafe(settings.get(MINIMIZETOTRAYSTRING), false);
@@ -198,7 +204,7 @@ public class Settings {
         return currentService;
     }
 
-    public void setCurrentStreamService(String currentStreamService) {
+    public void setCurrentStreamService(final String currentStreamService) {
         this.currentService = currentStreamService;
     }
 
@@ -206,7 +212,7 @@ public class Settings {
         return twitchUser;
     }
 
-    public void setTwitchUser(String twitchUser) {
+    public void setTwitchUser(final String twitchUser) {
         this.twitchUser = twitchUser;
     }
 
@@ -214,7 +220,7 @@ public class Settings {
         return twitchOAuth;
     }
 
-    public void setTwitchOAuth(String twitchOAuth) {
+    public void setTwitchOAuth(final String twitchOAuth) {
         this.twitchOAuth = twitchOAuth;
     }
 
@@ -222,7 +228,7 @@ public class Settings {
         return maxGamesLoad;
     }
 
-    public void setMaxGamesLoad(int maxGamesLoad) {
+    public void setMaxGamesLoad(final int maxGamesLoad) {
         this.maxGamesLoad = maxGamesLoad;
     }
 
@@ -230,7 +236,7 @@ public class Settings {
         return maxChannelsLoad;
     }
 
-    public void setMaxChannelsLoad(int maxChannelsLoad) {
+    public void setMaxChannelsLoad(final int maxChannelsLoad) {
         this.maxChannelsLoad = maxChannelsLoad;
     }
 
@@ -246,7 +252,7 @@ public class Settings {
         return minimizeToTray;
     }
 
-    public void setMinimizeToTray(boolean minimizeToTray) {
+    public void setMinimizeToTray(final boolean minimizeToTray) {
         this.minimizeToTray = minimizeToTray;
     }
 
@@ -254,7 +260,7 @@ public class Settings {
         return windowStyle;
     }
 
-    public void setWindowStyle(String windowStyle) {
+    public void setWindowStyle(final String windowStyle) {
         this.windowStyle = windowStyle;
     }
 
@@ -270,7 +276,7 @@ public class Settings {
         return quality;
     }
 
-    public void setQuality(String quality) {
+    public void setQuality(final String quality) {
         this.quality = quality;
     }
 
@@ -278,7 +284,7 @@ public class Settings {
         return recordingPath;
     }
 
-    public void setRecordingPath(String recordingPath) {
+    public void setRecordingPath(final String recordingPath) {
         this.recordingPath = recordingPath;
     }
 }

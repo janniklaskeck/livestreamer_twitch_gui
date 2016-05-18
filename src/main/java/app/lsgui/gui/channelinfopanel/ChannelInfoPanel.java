@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.MainWindow;
 import app.lsgui.gui.chat.ChatWindow;
-import app.lsgui.model.IChannel;
-import app.lsgui.model.twitch.TwitchChannel;
-import app.lsgui.service.IService;
+import app.lsgui.model.channel.IChannel;
+import app.lsgui.model.channel.twitch.TwitchChannel;
+import app.lsgui.model.service.IService;
 import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.Utils;
 import app.lsgui.utils.WrappedImageView;
@@ -47,6 +47,11 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     private Label channelUptime;
     private Label channelViewers;
     private Label channelGame;
+
+    private Button openChatButton;
+    private Button startStreamButton;
+    private Button recordStreamButton;
+    private Button openInBrowserButton;
 
     @FXML
     private BorderPane rootBorderPane;
@@ -92,8 +97,17 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
                     channelViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
                     channelGame.textProperty().bind((twitchChannel).getGame());
                     channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
+                    openChatButton.setDisable(false);
                 } else {
                     channelDescription.textProperty().bind(channelProperty.get().getName());
+                    previewImageView.imageProperty().unbind();
+                    channelUptime.textProperty().unbind();
+                    channelUptime.setGraphic(null);
+                    channelViewers.textProperty().unbind();
+                    channelViewers.setGraphic(null);
+                    channelGame.textProperty().unbind();
+                    channelGame.setGraphic(null);
+                    openChatButton.setDisable(true);
                 }
             }
         });
@@ -114,22 +128,22 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         descriptionGrid.add(channelUptime, 0, 2, 1, 1);
         descriptionGrid.add(channelDescription, 0, 3, 1, 1);
 
-        final Button startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
+        startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
         startStreamButton.setOnAction(event -> startStream());
 
-        final Button recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
+        recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
         recordStreamButton.setOnAction(event -> recordStream());
 
-        final Button openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
+        openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
         openChatButton.setOnAction(event -> openChat());
 
-        final Button openBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
-        openBrowserButton.setOnAction(event -> openBrowser());
+        openInBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
+        openInBrowserButton.setOnAction(event -> openBrowser());
 
         buttonBox.getItems().add(startStreamButton);
         buttonBox.getItems().add(recordStreamButton);
         buttonBox.getItems().add(openChatButton);
-        buttonBox.getItems().add(openBrowserButton);
+        buttonBox.getItems().add(openInBrowserButton);
     }
 
     public void setStream(final IChannel channel) {
@@ -137,7 +151,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void startStream() {
-        if (channelProperty.get() != null && channelProperty.get().isOnline().get()) {
+        if (isThisChannelOnline()) {
             final String url = buildURL();
             final String quality = getQuality();
             LivestreamerUtils.startLivestreamer(url, quality);
@@ -145,8 +159,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void recordStream() {
-        if (channelProperty.get() != null && !"".equals(channelProperty.get().getName().get())
-                && channelProperty.get().isOnline().get()) {
+        if (isThisChannelOnline()) {
             final String url = buildURL();
             final String quality = getQuality();
 
@@ -161,8 +174,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void openChat() {
-        if (channelProperty.get() != null && !"".equals(channelProperty.get().getName().get())
-                && Utils.isTwitchChannel(channelProperty.get())) {
+        if (isThisChannelOnline() && Utils.isTwitchChannel(channelProperty.get())) {
             final String channel = channelProperty.get().getName().get();
             ChatWindow cw = new ChatWindow(channel);
             cw.connect();
@@ -170,9 +182,8 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void openBrowser() {
-        if (channelProperty.get() != null && !"".equals(channelProperty.get().getName().get())) {
-            final String channel = channelProperty.get().getName().get();
-            Utils.openURLInBrowser(serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get() + channel);
+        if (channelProperty.get() != null) {
+            Utils.openURLInBrowser(buildURL());
         }
     }
 
@@ -191,5 +202,16 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
 
     private String getQuality() {
         return qualityComboBox.getSelectionModel().getSelectedItem();
+    }
+
+    private boolean isThisChannelOnline() {
+        if (channelProperty.get() != null) {
+            if (Utils.isTwitchChannel(channelProperty.get())) {
+                return channelProperty.get().isOnline().get();
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 }

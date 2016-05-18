@@ -3,7 +3,7 @@ package app.lsgui.gui.channellist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.IChannel;
+import app.lsgui.model.channel.IChannel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.css.PseudoClass;
@@ -45,14 +45,7 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
         } else {
             setText(item.getName().get());
             online.bind(item.isOnline());
+            LOGGER.debug("{} {}", item.getName().get(), online.get());
         }
-    }
-
-    public boolean getIsOnline() {
-        return online.get();
-    }
-
-    public void setIsOnline(boolean isOnline) {
-        this.online.setValue(isOnline);
     }
 }

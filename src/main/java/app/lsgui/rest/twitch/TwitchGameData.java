@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.google.gson.JsonObject;
 
-import app.lsgui.model.twitch.TwitchGame;
+import app.lsgui.model.channel.twitch.TwitchGame;
 
 public class TwitchGameData {
 

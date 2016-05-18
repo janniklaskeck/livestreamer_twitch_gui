@@ -1,4 +1,4 @@
-package app.lsgui.model.twitch;
+package app.lsgui.model.channel.twitch;
 
 import com.google.gson.JsonObject;
 

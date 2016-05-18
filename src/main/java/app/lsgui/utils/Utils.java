@@ -12,8 +12,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
-import app.lsgui.model.IChannel;
-import app.lsgui.model.twitch.TwitchChannel;
+import app.lsgui.model.channel.IChannel;
+import app.lsgui.model.channel.twitch.TwitchChannel;
+import app.lsgui.model.service.IService;
+import app.lsgui.model.service.TwitchService;
 import javafx.stage.Stage;
 
 public class Utils {
@@ -102,9 +104,10 @@ public class Utils {
     }
 
     public static boolean isTwitchChannel(final IChannel channel) {
-        if (channel.getClass().equals(TwitchChannel.class)) {
-            return true;
-        }
-        return false;
+        return channel.getClass().equals(TwitchChannel.class);
+    }
+
+    public static boolean isTwitchService(final IService service) {
+        return service.getClass().equals(TwitchService.class);
     }
 }

@@ -1,9 +1,9 @@
-package app.lsgui.model.generic;
+package app.lsgui.model.channel.generic;
 
 import java.util.Arrays;
 import java.util.List;
 
-import app.lsgui.model.IChannel;
+import app.lsgui.model.channel.IChannel;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,7 +20,7 @@ public class GenericChannel implements IChannel {
         this.nameProperty = new SimpleStringProperty();
         this.onlineProperty = new SimpleBooleanProperty();
         this.nameProperty.setValue(name);
-        this.onlineProperty.setValue(true);
+        this.onlineProperty.setValue(false);
     }
 
     @Override

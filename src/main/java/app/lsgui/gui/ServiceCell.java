@@ -1,6 +1,6 @@
 package app.lsgui.gui;
 
-import app.lsgui.service.IService;
+import app.lsgui.model.service.IService;
 import javafx.scene.control.ListCell;
 
 public class ServiceCell extends ListCell<IService> {// NOSONAR
