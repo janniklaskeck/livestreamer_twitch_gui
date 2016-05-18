@@ -96,12 +96,9 @@ public class TwitchChannelData {
 
     private void calculateAndSetUptime() {
         try {
-            final ZonedDateTime nowDate = ZonedDateTime.now().withZoneSameLocal(GMT);
+            final ZonedDateTime nowDate = ZonedDateTime.now(GMT);
             ZonedDateTime startDate = ZonedDateTime.parse(getCreatedAt(), DTF);
             long time = startDate.until(nowDate, ChronoUnit.MILLIS);
-            // TODO don't correct manually
-            final long gmtCorrection = -7200000L;
-            time += gmtCorrection;
             setUptime(time);
         } catch (Exception e) {
             LOGGER.error("ERROR while parsing date", e);
