@@ -21,7 +21,7 @@ public class TwitchChannelData {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelData.class);
 
-    private static final ZoneOffset OFFSET = ZoneOffset.ofHours(-2);
+    private static final ZoneOffset OFFSET = ZoneOffset.ofHours(0);
     private static final String PREFIX = "GMT"; // Greenwich Mean Time
     private static final ZoneId GMT = ZoneId.ofOffset(PREFIX, OFFSET);
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(GMT);;
