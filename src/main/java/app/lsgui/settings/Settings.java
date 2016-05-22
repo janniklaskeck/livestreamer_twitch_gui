@@ -93,27 +93,27 @@ public class Settings {
 
     public void loadSettings(File file) {
         isLoading = true;
-        FileInputStream fis;
+        final FileInputStream fis;
         try {
             fis = new FileInputStream(file);
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader bufferedReader = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
+            final InputStreamReader isr = new InputStreamReader(fis);
+            final BufferedReader bufferedReader = new BufferedReader(isr);
+            final StringBuilder sb = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
             bufferedReader.close();
-            Gson g = new Gson();
-            JsonArray jArray = g.fromJson(sb.toString(), JsonArray.class);
-            JsonObject settings = jArray.get(0).getAsJsonObject();
+            final Gson g = new Gson();
+            final JsonArray jArray = g.fromJson(sb.toString(), JsonArray.class);
+            final JsonObject settings = jArray.get(0).getAsJsonObject();
 
             JsonArray servicesArray = jArray.get(1).getAsJsonArray();
             for (int i = 0; i < servicesArray.size(); i++) {
-                JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
+                final JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
                 final String serviceName = serviceJson.get(SERVICENAME).getAsString();
                 final String serviceUrl = serviceJson.get(SERVICEURL).getAsString();
-                IService service;
+                final IService service;
                 if (serviceUrl.toLowerCase().contains("twitch")) {
                     service = new TwitchService(serviceName, serviceUrl);
                     ((TwitchService) service).bindSortProperty(sortTwitch);
@@ -121,7 +121,7 @@ public class Settings {
                     service = new GenericService(serviceName, serviceUrl);
                 }
 
-                JsonArray channels = serviceJson.get("channels").getAsJsonArray();
+                final JsonArray channels = serviceJson.get("channels").getAsJsonArray();
                 for (int e = 0; e < channels.size(); e++) {
                     final String channel = channels.get(e).getAsString();
                     service.addChannel(channel);
