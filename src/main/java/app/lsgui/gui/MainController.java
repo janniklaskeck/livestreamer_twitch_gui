@@ -10,6 +10,7 @@ import app.lsgui.gui.channellist.ChannelList;
 import app.lsgui.gui.settings.SettingsController;
 import app.lsgui.gui.settings.SettingsWindow;
 import app.lsgui.model.channel.IChannel;
+import app.lsgui.model.service.GenericService;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
 import app.lsgui.rest.twitch.TwitchAPIClient;
@@ -188,43 +189,67 @@ public class MainController {
     }
 
     private void addAction() {
-        final Dialog<Boolean> dialog = new Dialog<>();
+        final Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Add Channel");
         final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
-        dialogStage.setMinWidth(300);
+        dialogStage.setMinWidth(350);
         final String style = SettingsController.class
                 .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm();
         Utils.addStyleSheetToStage(dialogStage, style);
         dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
-        final ButtonType bt = new ButtonType("Submit", ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
+        final ButtonType buttonChannel = new ButtonType("Add Channel", ButtonData.APPLY);
+        final ButtonType buttonService = new ButtonType("Add Service", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(buttonChannel, buttonService, ButtonType.CANCEL);
 
         final BorderPane ap = new BorderPane();
         final TextField tf = new TextField();
+        final Label description = new Label("To add a Channel, type in the channel name\n"
+                + "To add a Service type in: serviceName serviceUrl\n" + "Example: Twitch.tv http://twitch.tv/");
+        ap.setTop(description);
         ap.setCenter(tf);
         dialog.getDialogPane().setContent(ap);
+        final Node channelButton = dialog.getDialogPane().lookupButton(buttonChannel);
+        final Node serviceButton = dialog.getDialogPane().lookupButton(buttonService);
+        channelButton.setDisable(true);
+        serviceButton.setDisable(true);
 
-        final Node submitButton = dialog.getDialogPane().lookupButton(bt);
-        submitButton.setDisable(true);
-
-        tf.textProperty()
-                .addListener((observable, oldValue, newValue) -> submitButton.setDisable(newValue.trim().isEmpty()));
+        tf.textProperty().addListener((observable, oldValue, newValue) -> {
+            channelButton.setDisable(newValue.trim().isEmpty());
+            if (newValue.trim().split(" ").length > 1) {
+                serviceButton.setDisable(false);
+            } else {
+                serviceButton.setDisable(true);
+            }
+        });
 
         dialog.setResultConverter(button -> {
-            if ("".equals(tf.getText().trim()) || button.equals(ButtonType.CANCEL)) {
-                return false;
+            final String trimmed = tf.getText().trim();
+            if ("".equals(trimmed) || button.equals(ButtonType.CANCEL)) {
+                return "";
             }
-            if (TwitchAPIClient.instance().channelExists(tf.getText().trim())) {
-                return true;
+            if (button.getButtonData().equals(ButtonData.APPLY)) {
+                if (TwitchAPIClient.instance().channelExists(trimmed)) {
+                    return trimmed;
+                }
+            } else if (button.getButtonData().equals(ButtonData.OK_DONE)) {
+                return trimmed;
             }
-            return false;
+            return "";
         });
 
         tf.requestFocus();
 
-        final Optional<Boolean> result = dialog.showAndWait();
-        if (result.isPresent() && result.get()) {
-            addChannelToCurrentService(tf.getText().trim());
+        final Optional<String> result = dialog.showAndWait();
+        if (result.isPresent() && !"".equals(result.get())) {
+            final String[] isService = result.get().split(" ");
+            if (isService.length > 1) {
+                final String name = isService[0];
+                final String url = isService[0];
+
+                addService(name, url);
+            } else {
+                addChannelToCurrentService(result.get());
+            }
         }
     }
 
@@ -286,5 +311,14 @@ public class MainController {
 
     private void removeChannelFromCurrentService(final IChannel channel) {
         serviceComboBox.getSelectionModel().getSelectedItem().removeChannel(channel);
+    }
+
+    private void addService(final String serviceName, final String serviceUrl) {
+        LOGGER.debug("Add new Service {} with URL {}", serviceName, serviceUrl);
+        String correctedUrl = serviceUrl;
+        if (!serviceUrl.endsWith("/")) {
+            correctedUrl += "/";
+        }
+        Settings.instance().getStreamServices().add(new GenericService(serviceName, correctedUrl));
     }
 }
