@@ -34,7 +34,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelInfoPanel.class);
     private static final String CHANNELINFOPANELFXML = "fxml/ChannelInfoPanel.fxml";
-    private static FXMLLoader loader;
+    private FXMLLoader loader;
 
     private ComboBox<IService> serviceComboBox;
     private ComboBox<String> qualityComboBox;
