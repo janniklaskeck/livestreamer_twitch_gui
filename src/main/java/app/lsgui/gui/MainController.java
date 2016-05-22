@@ -49,6 +49,10 @@ public class MainController {
     private ChannelInfoPanel channelInfoPanel;
     private ProgressIndicator updateProgressIndicator;
 
+    private Button importButton;
+    private Button removeButton;
+    private Button addButton;
+
     @FXML
     private ComboBox<String> qualityComboBox;
 
@@ -131,11 +135,11 @@ public class MainController {
     }
 
     private void setupToolbar() {
-        Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS);
+        addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS);
         addButton.setOnAction(event -> addAction());
-        Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS);
+        removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS);
         removeButton.setOnAction(event -> removeAction());
-        Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
+        importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
         importButton.setOnAction(event -> importFollowedChannels());
 
         toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, addButton);
@@ -171,6 +175,11 @@ public class MainController {
     private void changeService(final IService newService) {
         LOGGER.debug("Change Service to {}", newService.getName().get());
         channelList.getStreams().bind(newService.getChannels());
+        if (Utils.isTwitchService(newService)) {
+            importButton.setDisable(false);
+        } else {
+            importButton.setDisable(true);
+        }
     }
 
     private void openSettings() {
