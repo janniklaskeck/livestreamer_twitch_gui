@@ -26,6 +26,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
@@ -144,6 +145,7 @@ public class MainController {
         toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, new Separator());
 
         updateProgressIndicator = new ProgressIndicator();
+        updateProgressIndicator.setVisible(false);
         TwitchChannelUpdateService.getActiveChannelServicesProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue.size() > 0) {
                 updateProgressIndicator.setVisible(true);
@@ -178,8 +180,9 @@ public class MainController {
 
     private void addAction() {
         final Dialog<Boolean> dialog = new Dialog<>();
-        dialog.setTitle("Add Channel to current Service");
-        Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        dialog.setTitle("Add Channel");
+        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        dialogStage.setMinWidth(300);
         final String style = SettingsController.class
                 .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm();
         Utils.addStyleSheetToStage(dialogStage, style);
@@ -223,18 +226,20 @@ public class MainController {
 
     private void importFollowedChannels() {
         final Dialog<Boolean> dialog = new Dialog<>();
-        Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        dialogStage.setMinWidth(300);
         final String style = SettingsController.class
                 .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm();
         Utils.addStyleSheetToStage(dialogStage, style);
         dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         dialog.setTitle("Import Twitch.tv followed Channels");
-        dialog.setContentText("Please enter your Twitch.tv Username:");
         final ButtonType bt = new ButtonType("Import", ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
 
         final BorderPane ap = new BorderPane();
         final TextField tf = new TextField();
+        final Label description = new Label("Please enter your Twitch.tv Username:");
+        ap.setTop(description);
         ap.setCenter(tf);
         dialog.getDialogPane().setContent(ap);
 
