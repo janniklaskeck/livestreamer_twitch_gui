@@ -17,11 +17,14 @@
 }
 
 .glyph-icon {
-    
+
 }
 
 .status-bar {
-    
+    -fx-padding: 4.0px;
+    -fx-pref-height: 30.0px;
+    -fx-background-color: -fx-body-color;
+    -fx-background-insets: 0.0, 1.0
 }
 
 .label {
@@ -30,27 +33,27 @@
 
 .list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused:selected {
     -fx-background-color: #c5c5c5;
-    -fx-border-color: lightgrey;
+    -fx-border-color: black;
     -fx-border-width: 1.0px;
     -fx-text-fill: #000000;
 }
 
 .list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:selected {
     -fx-background-color: #c5c5c5;
-    -fx-border-color: lightgrey;
+    -fx-border-color: black;
     -fx-border-width: 1.0px;
     -fx-text-fill: #000000;
 }
 
 .list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused:selected:online {
-    -fx-border-color: lightgrey;
+    -fx-border-color: black;
     -fx-border-width: 1.0px;
     -fx-text-fill: #000000;
     -fx-background-color: green;
 }
 
 .list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:selected:online {
-    -fx-border-color: lightgrey;
+    -fx-border-color: black;
     -fx-border-width: 1.0px;
     -fx-text-fill: #000000;
     -fx-background-color: green;
@@ -64,21 +67,21 @@
 .list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell {
     -fx-text-fill: #000000;
     -fx-font-size: 13.0px;
-    -fx-border-color: black;
+    -fx-border-color: grey;
     -fx-border-width: 1.0px;
 }
 
 .list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused {
     -fx-text-fill: #000000;
     -fx-font-size: 13.0px;
-    -fx-border-color: black;
+    -fx-border-color: grey;
     -fx-border-width: 1.0px;
 }
 
 .list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:online {
     -fx-text-fill: #000000;
     -fx-font-size: 13.0px;
-    -fx-border-color: black;
+    -fx-border-color: grey;
     -fx-border-width: 1.0px;
     -fx-background-color: green;
 }
@@ -86,7 +89,7 @@
 .list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused:online {
     -fx-text-fill: #000000;
     -fx-font-size: 13.0px;
-    -fx-border-color: black;
+    -fx-border-color: grey;
     -fx-border-width: 1.0px;
     -fx-background-color: green;
 }
