@@ -37,6 +37,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -45,6 +46,8 @@ public class MainController {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
     private static final String OFFLINEQUALITY = "Channel is offline";
+    private static final String CHANNEL = "channel";
+    private static final String SERVICE = "service";
 
     private ChannelList channelList;
     private ChannelInfoPanel channelInfoPanel;
@@ -190,65 +193,68 @@ public class MainController {
 
     private void addAction() {
         final Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Add Channel");
+        dialog.setTitle("Add Channel/Service");
         final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
         dialogStage.setMinWidth(350);
+        dialog.setWidth(350);
         final String style = SettingsController.class
                 .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm();
         Utils.addStyleSheetToStage(dialogStage, style);
         dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
-        final ButtonType buttonChannel = new ButtonType("Add Channel", ButtonData.APPLY);
-        final ButtonType buttonService = new ButtonType("Add Service", ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(buttonChannel, buttonService, ButtonType.CANCEL);
 
-        final BorderPane ap = new BorderPane();
-        final TextField tf = new TextField();
-        final Label description = new Label("To add a Channel, type in the channel name\n"
-                + "To add a Service type in: serviceName serviceUrl\n" + "Example: Twitch.tv http://twitch.tv/");
-        ap.setTop(description);
-        ap.setCenter(tf);
-        dialog.getDialogPane().setContent(ap);
-        final Node channelButton = dialog.getDialogPane().lookupButton(buttonChannel);
-        final Node serviceButton = dialog.getDialogPane().lookupButton(buttonService);
-        channelButton.setDisable(true);
-        serviceButton.setDisable(true);
+        final TextField nameTextField = new TextField();
+        final Label nameLabel = new Label("Name");
+        final TextField urlTextField = new TextField();
+        final Label urlLabel = new Label("URL");
+        final HBox nameBox = new HBox();
+        nameBox.getChildren().addAll(nameLabel, nameTextField);
+        final HBox urlBox = new HBox();
+        urlBox.getChildren().addAll(urlLabel, urlTextField);
+        final VBox serviceBox = new VBox();
+        serviceBox.getChildren().addAll(nameBox, urlBox);
 
-        tf.textProperty().addListener((observable, oldValue, newValue) -> {
-            channelButton.setDisable(newValue.trim().isEmpty());
-            if (newValue.trim().split(" ").length > 1) {
-                serviceButton.setDisable(false);
-            } else {
-                serviceButton.setDisable(true);
-            }
+        final BorderPane borderPane = new BorderPane();
+        final Button addChannel = new Button("Add Channel");
+        addChannel.setOnAction(event -> {
+            borderPane.setCenter(nameBox);
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
         });
+        final Button addService = new Button("Add Service");
+        addService.setOnAction(event -> {
+            borderPane.setCenter(serviceBox);
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        });
+        final HBox buttonBox = new HBox();
+        buttonBox.getChildren().add(addChannel);
+        buttonBox.getChildren().add(addService);
+
+        borderPane.setCenter(buttonBox);
+
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
+        dialog.getDialogPane().setContent(borderPane);
 
         dialog.setResultConverter(button -> {
-            final String trimmed = tf.getText().trim();
-            if ("".equals(trimmed) || button.equals(ButtonType.CANCEL)) {
-                return "";
-            }
-            if (button.getButtonData().equals(ButtonData.APPLY)) {
-                if (TwitchAPIClient.instance().channelExists(trimmed)) {
-                    return trimmed;
-                }
-            } else if (button.getButtonData().equals(ButtonData.OK_DONE)) {
-                return trimmed;
+            if (borderPane.getCenter().equals(serviceBox)) {
+                return SERVICE;
+            } else if (borderPane.getCenter().equals(nameBox)) {
+                return CHANNEL;
             }
             return "";
         });
 
-        tf.requestFocus();
-
         final Optional<String> result = dialog.showAndWait();
-        if (result.isPresent() && !"".equals(result.get())) {
-            final String[] isService = result.get().split(" ");
-            if (isService.length > 1) {
-                final String name = isService[0];
-                final String url = isService[0];
-
+        final String resultString = result.get().trim();
+        if (result.isPresent() && !"".equals(resultString)) {
+            if (resultString.equals(CHANNEL)) {
+                final String channel = nameTextField.getText().trim();
+                addChannelToCurrentService(channel);
+            } else if (resultString.equals(SERVICE)) {
+                final String name = nameTextField.getText().trim();
+                String url = urlTextField.getText().trim();
+                if (!url.endsWith("/")) {
+                    url += "/";
+                }
                 addService(name, url);
-            } else {
-                addChannelToCurrentService(result.get());
             }
         }
     }
