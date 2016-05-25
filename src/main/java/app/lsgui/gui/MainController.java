@@ -1,44 +1,31 @@
 package app.lsgui.gui;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.channelinfopanel.ChannelInfoPanel;
 import app.lsgui.gui.channellist.ChannelList;
-import app.lsgui.gui.settings.SettingsController;
 import app.lsgui.gui.settings.SettingsWindow;
 import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.service.GenericService;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
-import app.lsgui.rest.twitch.TwitchAPIClient;
 import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import app.lsgui.settings.Settings;
+import app.lsgui.utils.GuiUtils;
 import app.lsgui.utils.Utils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
-import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 public class MainController {
@@ -46,8 +33,6 @@ public class MainController {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
     private static final String OFFLINEQUALITY = "Channel is offline";
-    private static final String CHANNEL = "channel";
-    private static final String SERVICE = "service";
 
     private ChannelList channelList;
     private ChannelInfoPanel channelInfoPanel;
@@ -192,139 +177,18 @@ public class MainController {
     }
 
     private void addAction() {
-        final Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Add Channel/Service");
-        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
-        dialogStage.setMinWidth(350);
-        dialog.setWidth(350);
-        final String style = SettingsController.class
-                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm();
-        Utils.addStyleSheetToStage(dialogStage, style);
-        dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
-
-        final TextField nameTextField = new TextField();
-        final Label nameLabel = new Label("Name");
-        final TextField urlTextField = new TextField();
-        final Label urlLabel = new Label("URL");
-        final HBox nameBox = new HBox();
-        nameBox.getChildren().addAll(nameLabel, nameTextField);
-        final HBox urlBox = new HBox();
-        urlBox.getChildren().addAll(urlLabel, urlTextField);
-        final VBox serviceBox = new VBox();
-        serviceBox.getChildren().addAll(nameBox, urlBox);
-
-        final BorderPane borderPane = new BorderPane();
-        final Button addChannel = new Button("Add Channel");
-        addChannel.setOnAction(event -> {
-            borderPane.setCenter(nameBox);
-            dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        });
-        final Button addService = new Button("Add Service");
-        addService.setOnAction(event -> {
-            borderPane.setCenter(serviceBox);
-            dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        });
-        final HBox buttonBox = new HBox();
-        buttonBox.getChildren().add(addChannel);
-        buttonBox.getChildren().add(addService);
-
-        borderPane.setCenter(buttonBox);
-
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
-        dialog.getDialogPane().setContent(borderPane);
-
-        dialog.setResultConverter(button -> {
-            if (borderPane.getCenter().equals(serviceBox)) {
-                return SERVICE;
-            } else if (borderPane.getCenter().equals(nameBox)) {
-                return CHANNEL;
-            }
-            return "";
-        });
-
-        final Optional<String> result = dialog.showAndWait();
-        final String resultString = result.get().trim();
-        if (result.isPresent() && !"".equals(resultString)) {
-            if (resultString.equals(CHANNEL)) {
-                final String channel = nameTextField.getText().trim();
-                addChannelToCurrentService(channel);
-            } else if (resultString.equals(SERVICE)) {
-                final String name = nameTextField.getText().trim();
-                String url = urlTextField.getText().trim();
-                if (!url.endsWith("/")) {
-                    url += "/";
-                }
-                addService(name, url);
-            }
-        }
+        final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
+        GuiUtils.addAction(service);
     }
 
     private void removeAction() {
         final IChannel toRemove = channelList.getListView().getSelectionModel().getSelectedItem();
-        removeChannelFromCurrentService(toRemove);
+        final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
+        GuiUtils.removeAction(toRemove, service);
     }
 
     private void importFollowedChannels() {
-        final Dialog<Boolean> dialog = new Dialog<>();
-        final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
-        dialogStage.setMinWidth(300);
-        final String style = SettingsController.class
-                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm();
-        Utils.addStyleSheetToStage(dialogStage, style);
-        dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
-        dialog.setTitle("Import Twitch.tv followed Channels");
-        final ButtonType bt = new ButtonType("Import", ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
-
-        final BorderPane ap = new BorderPane();
-        final TextField tf = new TextField();
-        final Label description = new Label("Please enter your Twitch.tv Username:");
-        ap.setTop(description);
-        ap.setCenter(tf);
-        dialog.getDialogPane().setContent(ap);
-
-        final Node submitButton = dialog.getDialogPane().lookupButton(bt);
-        submitButton.setDisable(true);
-
-        tf.textProperty()
-                .addListener((observable, oldValue, newValue) -> submitButton.setDisable(newValue.trim().isEmpty()));
-
-        dialog.setResultConverter(button -> {
-            if ("".equals(tf.getText().trim()) || button.equals(ButtonType.CANCEL)) {
-                return false;
-            }
-            if (TwitchAPIClient.instance().channelExists(tf.getText().trim())) {
-                return true;
-            }
-            return false;
-        });
-
-        tf.requestFocus();
-
-        final Optional<Boolean> result = dialog.showAndWait();
-        if (result.isPresent() && result.get()) {
-            addFollowedChannelsToCurrentService(tf.getText().trim());
-        }
-    }
-
-    private void addChannelToCurrentService(final String channel) {
-        serviceComboBox.getSelectionModel().getSelectedItem().addChannel(channel);
-    }
-
-    private void addFollowedChannelsToCurrentService(final String channel) {
-        ((TwitchService) serviceComboBox.getSelectionModel().getSelectedItem()).addFollowedChannels(channel);
-    }
-
-    private void removeChannelFromCurrentService(final IChannel channel) {
-        serviceComboBox.getSelectionModel().getSelectedItem().removeChannel(channel);
-    }
-
-    private void addService(final String serviceName, final String serviceUrl) {
-        LOGGER.debug("Add new Service {} with URL {}", serviceName, serviceUrl);
-        String correctedUrl = serviceUrl;
-        if (!serviceUrl.endsWith("/")) {
-            correctedUrl += "/";
-        }
-        Settings.instance().getStreamServices().add(new GenericService(serviceName, correctedUrl));
+        final TwitchService service = (TwitchService) serviceComboBox.getSelectionModel().getSelectedItem();
+        GuiUtils.importFollowedChannels(service);
     }
 }
