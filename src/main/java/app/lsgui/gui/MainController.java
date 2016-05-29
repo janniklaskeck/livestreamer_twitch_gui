@@ -113,7 +113,9 @@ public class MainController {
                         qualityComboBox.getSelectionModel().select(0);
                     }
                 });
-        channelList.getStreams().bind(serviceComboBox.getSelectionModel().getSelectedItem().getChannels());
+        final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
+        channelList.getStreams().bind(service.getChannels());
+        channelList.getListView().setUserData(service);
         contentBorderPane.setLeft(channelList);
     }
 
@@ -164,6 +166,7 @@ public class MainController {
     private void changeService(final IService newService) {
         LOGGER.debug("Change Service to {}", newService.getName().get());
         channelList.getStreams().bind(newService.getChannels());
+        channelList.getListView().setUserData(newService);
         if (Utils.isTwitchService(newService)) {
             importButton.setDisable(false);
         } else {

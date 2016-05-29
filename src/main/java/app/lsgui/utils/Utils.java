@@ -14,8 +14,10 @@ import com.google.gson.JsonObject;
 
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.channel.twitch.TwitchChannel;
+import app.lsgui.model.service.GenericService;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
+import app.lsgui.settings.Settings;
 import javafx.stage.Stage;
 
 public class Utils {
@@ -109,5 +111,45 @@ public class Utils {
 
     public static boolean isTwitchService(final IService service) {
         return service.getClass().equals(TwitchService.class);
+    }
+
+    public static void addChannelToService(final String channel, final IService service) {
+        service.addChannel(channel);
+    }
+
+    public static void addFollowedChannelsToService(final String channel, final TwitchService service) {
+        service.addFollowedChannels(channel);
+    }
+
+    public static void removeChannelFromService(final IChannel channel, final IService service) {
+        service.removeChannel(channel);
+    }
+
+    public static void addService(final String serviceName, final String serviceUrl) {
+        LOGGER.debug("Add new Service {} with URL {}", serviceName, serviceUrl);
+        String correctedUrl = correctUrl(serviceUrl);
+        Settings.instance().getStreamServices().add(new GenericService(serviceName, correctedUrl));
+    }
+
+    private static String correctUrl(final String url) {
+        if (!url.endsWith("/")) {
+            return url + "/";
+        }
+        return url;
+    }
+
+    public static String buildUrl(final String serviceUrl, final String channelUrl) {
+        return serviceUrl + channelUrl;
+    }
+
+    public static boolean isChannelOnline(final IChannel channel) {
+        if (channel != null) {
+            if (Utils.isTwitchChannel(channel)) {
+                return channel.isOnline().get();
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 }

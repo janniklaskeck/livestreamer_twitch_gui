@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.service.GenericService;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
 import app.lsgui.rest.twitch.TwitchAPIClient;
@@ -35,6 +34,7 @@ public class GuiUtils {
     }
 
     public static void addAction(final IService service) {
+        LOGGER.info("Showing add Dialog");
         final Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Add Channel/Service");
         final Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
@@ -72,15 +72,16 @@ public class GuiUtils {
                     .addListener((obs, oldValue, newValue) -> okButton.setDisable("".equals(newValue)));
         });
         final Button addService = new Button("Add Service");
-        boolean validName = false;
-        boolean validUrl = false;
         addService.setOnAction(event -> {
             borderPane.setCenter(serviceBox);
             dialog.getDialogPane().getButtonTypes().add(okType);
             final Node okButton = dialog.getDialogPane().lookupButton(okType);
             okButton.setDisable(true);
-            nameTextField.textProperty()
-                    .addListener((obs, oldValue, newValue) -> okButton.setDisable("".equals(newValue)));
+            nameTextField.textProperty().addListener((obs, oldValue, newValue) -> {
+                if ("".equals(newValue) || "".equals(urlTextField.getText())) {
+                    okButton.setDisable("".equals(newValue));
+                }
+            });
             urlTextField.textProperty().addListener((obs, oldValue, newValue) -> {
                 if ("".equals(newValue) || "".equals(nameTextField.getText())) {
                     okButton.setDisable(true);
@@ -112,18 +113,18 @@ public class GuiUtils {
         if (result.isPresent() && !"".equals(resultString)) {
             if (resultString.equals(CHANNEL) && !"".equals(nameTextField.getText().trim())) {
                 final String channel = nameTextField.getText().trim();
-                addChannelToService(channel, service);
+                Utils.addChannelToService(channel, service);
             } else if (resultString.equals(SERVICE) && !"".equals(nameTextField.getText().trim())
                     && !"".equals(urlTextField.getText().trim())) {
                 final String name = nameTextField.getText().trim();
-                final String url = correctUrl(urlTextField.getText().trim());
-                addService(name, url);
+                final String url = urlTextField.getText().trim();
+                Utils.addService(name, url);
             }
         }
     }
 
     public static void removeAction(final IChannel channel, final IService service) {
-        removeChannelFromService(channel, service);
+        Utils.removeChannelFromService(channel, service);
     }
 
     public static void importFollowedChannels(final TwitchService service) {
@@ -167,35 +168,7 @@ public class GuiUtils {
         tf.requestFocus();
         final Optional<Boolean> result = dialog.showAndWait();
         if (result.isPresent() && result.get()) {
-            addFollowedChannelsToService(tf.getText().trim(), service);
+            Utils.addFollowedChannelsToService(tf.getText().trim(), service);
         }
-    }
-
-    private static void addChannelToService(final String channel, final IService service) {
-        service.addChannel(channel);
-    }
-
-    private static void addFollowedChannelsToService(final String channel, final TwitchService service) {
-        service.addFollowedChannels(channel);
-    }
-
-    private static void removeChannelFromService(final IChannel channel, final IService service) {
-        service.removeChannel(channel);
-    }
-
-    private static void addService(final String serviceName, final String serviceUrl) {
-        LOGGER.debug("Add new Service {} with URL {}", serviceName, serviceUrl);
-        String correctedUrl = serviceUrl;
-        if (!serviceUrl.endsWith("/")) {
-            correctedUrl += "/";
-        }
-        Settings.instance().getStreamServices().add(new GenericService(serviceName, correctedUrl));
-    }
-
-    private static String correctUrl(final String url) {
-        if (!url.endsWith("/")) {
-            return url + "/";
-        }
-        return url;
     }
 }

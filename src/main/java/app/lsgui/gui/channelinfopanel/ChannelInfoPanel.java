@@ -165,16 +165,16 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void startStream() {
-        if (isThisChannelOnline()) {
-            final String url = buildURL();
+        if (Utils.isChannelOnline(channelProperty.get())) {
+            final String url = buildUrl();
             final String quality = getQuality();
             LivestreamerUtils.startLivestreamer(url, quality);
         }
     }
 
     private void recordStream() {
-        if (isThisChannelOnline()) {
-            final String url = buildURL();
+        if (Utils.isChannelOnline(channelProperty.get())) {
+            final String url = buildUrl();
             final String quality = getQuality();
 
             final FileChooser recordFileChooser = new FileChooser();
@@ -188,7 +188,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void openChat() {
-        if (isThisChannelOnline() && Utils.isTwitchChannel(channelProperty.get())) {
+        if (Utils.isChannelOnline(channelProperty.get()) && Utils.isTwitchChannel(channelProperty.get())) {
             final String channel = channelProperty.get().getName().get();
             ChatWindow cw = new ChatWindow(channel);
             cw.connect();
@@ -197,7 +197,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
 
     private void openBrowser() {
         if (channelProperty.get() != null) {
-            Utils.openURLInBrowser(buildURL());
+            Utils.openURLInBrowser(buildUrl());
         }
     }
 
@@ -209,23 +209,13 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         this.channelProperty = channelProperty;
     }
 
-    private String buildURL() {
-        return serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get()
-                + channelProperty.get().getName().get();
-    }
-
     private String getQuality() {
         return qualityComboBox.getSelectionModel().getSelectedItem();
     }
 
-    private boolean isThisChannelOnline() {
-        if (channelProperty.get() != null) {
-            if (Utils.isTwitchChannel(channelProperty.get())) {
-                return channelProperty.get().isOnline().get();
-            } else {
-                return true;
-            }
-        }
-        return false;
+    private String buildUrl() {
+        final String serviceUrl = serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get();
+        final String channel = channelProperty.get().getName().get();
+        return Utils.buildUrl(serviceUrl, channel);
     }
 }
