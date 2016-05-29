@@ -44,101 +44,80 @@ public class GuiUtils {
                 .toExternalForm();
         Utils.addStyleSheetToStage(dialogStage, style);
         dialogStage.getIcons().add(new Image(GuiUtils.class.getResourceAsStream("/icon.jpg")));
-        configureDialog(DialogType.ADD, dialog, service);
+        configureAddDialog(dialog, service);
     }
 
-    @SuppressWarnings("rawtypes")
-    private static void configureDialog(final DialogType type, final Dialog dialog, final IService service) {
-        if (type.equals(DialogType.ADD)) {
-            final TextField nameTextField = new TextField();
-            final Label nameLabel = new Label("Name");
-            final TextField urlTextField = new TextField();
-            final Label urlLabel = new Label("URL");
-            final HBox nameBox = new HBox();
-            nameBox.getChildren().addAll(nameLabel, nameTextField);
-            final HBox urlBox = new HBox();
-            urlBox.getChildren().addAll(urlLabel, urlTextField);
-            final VBox serviceBox = new VBox();
-            serviceBox.getChildren().addAll(nameBox, urlBox);
+    private static void configureAddDialog(final Dialog<String> dialog, final IService service) {
+        final TextField nameTextField = new TextField();
+        final Label nameLabel = new Label("Name");
+        final TextField urlTextField = new TextField();
+        final Label urlLabel = new Label("URL");
+        final HBox nameBox = new HBox();
+        nameBox.getChildren().addAll(nameLabel, nameTextField);
+        final HBox urlBox = new HBox();
+        urlBox.getChildren().addAll(urlLabel, urlTextField);
+        final VBox serviceBox = new VBox();
+        serviceBox.getChildren().addAll(nameBox, urlBox);
 
-            final BorderPane borderPane = new BorderPane();
-            final Button addChannel = new Button("Add Channel");
-            addChannel.setOnAction(event -> {
-                borderPane.setCenter(nameBox);
-                dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        final ButtonType okType = ButtonType.OK;
+        final BorderPane borderPane = new BorderPane();
+        final Button addChannel = new Button("Add Channel");
+        addChannel.setOnAction(event -> {
+            borderPane.setCenter(nameBox);
+            dialog.getDialogPane().getButtonTypes().add(okType);
+            final Node okButton = dialog.getDialogPane().lookupButton(okType);
+            okButton.setDisable(true);
+
+            nameTextField.textProperty()
+                    .addListener((obs, oldValue, newValue) -> okButton.setDisable("".equals(newValue)));
+        });
+        final Button addService = new Button("Add Service");
+        boolean validName = false;
+        boolean validUrl = false;
+        addService.setOnAction(event -> {
+            borderPane.setCenter(serviceBox);
+            dialog.getDialogPane().getButtonTypes().add(okType);
+            final Node okButton = dialog.getDialogPane().lookupButton(okType);
+            okButton.setDisable(true);
+            nameTextField.textProperty()
+                    .addListener((obs, oldValue, newValue) -> okButton.setDisable("".equals(newValue)));
+            urlTextField.textProperty().addListener((obs, oldValue, newValue) -> {
+                if ("".equals(newValue) || "".equals(nameTextField.getText())) {
+                    okButton.setDisable(true);
+                }
             });
-            final Button addService = new Button("Add Service");
-            addService.setOnAction(event -> {
-                borderPane.setCenter(serviceBox);
-                dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-            });
-            final HBox buttonBox = new HBox();
-            buttonBox.getChildren().add(addChannel);
-            buttonBox.getChildren().add(addService);
+        });
+        final HBox buttonBox = new HBox();
+        buttonBox.getChildren().add(addChannel);
+        buttonBox.getChildren().add(addService);
 
-            borderPane.setCenter(buttonBox);
+        borderPane.setCenter(buttonBox);
 
-            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
-            dialog.getDialogPane().setContent(borderPane);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
+        dialog.getDialogPane().setContent(borderPane);
 
-            dialog.setResultConverter(button -> {
+        dialog.setResultConverter(button -> {
+            if (!button.equals(ButtonType.CANCEL)) {
                 if (borderPane.getCenter().equals(serviceBox)) {
                     return SERVICE;
                 } else if (borderPane.getCenter().equals(nameBox)) {
                     return CHANNEL;
                 }
-                return "";
-            });
-
-            final Optional<String> result = dialog.showAndWait();
-            final String resultString = result.get().trim();
-            if (result.isPresent() && !"".equals(resultString)) {
-                if (resultString.equals(CHANNEL)) {
-                    final String channel = nameTextField.getText().trim();
-                    addChannelToService(channel, service);
-                } else if (resultString.equals(SERVICE)) {
-                    final String name = nameTextField.getText().trim();
-                    String url = urlTextField.getText().trim();
-                    if (!url.endsWith("/")) {
-                        url += "/";
-                    }
-                    addService(name, url);
-                }
             }
+            return "";
+        });
 
-        } else if (type.equals(DialogType.REMOVE)) {
-            LOGGER.info("Remove not implemented!");
-        } else if (type.equals(DialogType.IMPORT)) {
-            final TwitchService twitchService = (TwitchService) service;
-            final ButtonType bt = new ButtonType("Import", ButtonData.OK_DONE);
-            dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
-
-            final BorderPane ap = new BorderPane();
-            final TextField tf = new TextField();
-            final Label description = new Label("Please enter your Twitch.tv Username:");
-            ap.setTop(description);
-            ap.setCenter(tf);
-            dialog.getDialogPane().setContent(ap);
-
-            final Node submitButton = dialog.getDialogPane().lookupButton(bt);
-            submitButton.setDisable(true);
-
-            tf.textProperty().addListener(
-                    (observable, oldValue, newValue) -> submitButton.setDisable(newValue.trim().isEmpty()));
-
-            dialog.setResultConverter(button -> {
-                if ("".equals(tf.getText().trim()) || button.equals(ButtonType.CANCEL)) {
-                    return false;
-                }
-                if (TwitchAPIClient.instance().channelExists(tf.getText().trim())) {
-                    return true;
-                }
-                return false;
-            });
-            tf.requestFocus();
-            final Optional<Boolean> result = dialog.showAndWait();
-            if (result.isPresent() && result.get()) {
-                addFollowedChannelsToService(tf.getText().trim(), twitchService);
+        final Optional<String> result = dialog.showAndWait();
+        final String resultString = result.get().trim();
+        if (result.isPresent() && !"".equals(resultString)) {
+            if (resultString.equals(CHANNEL) && !"".equals(nameTextField.getText().trim())) {
+                final String channel = nameTextField.getText().trim();
+                addChannelToService(channel, service);
+            } else if (resultString.equals(SERVICE) && !"".equals(nameTextField.getText().trim())
+                    && !"".equals(urlTextField.getText().trim())) {
+                final String name = nameTextField.getText().trim();
+                final String url = correctUrl(urlTextField.getText().trim());
+                addService(name, url);
             }
         }
     }
@@ -156,7 +135,40 @@ public class GuiUtils {
         Utils.addStyleSheetToStage(dialogStage, style);
         dialogStage.getIcons().add(new Image(GuiUtils.class.getResourceAsStream("/icon.jpg")));
         dialog.setTitle("Import Twitch.tv followed Channels");
-        configureDialog(DialogType.IMPORT, dialog, service);
+        configureImportDialog(dialog, service);
+    }
+
+    private static void configureImportDialog(final Dialog<Boolean> dialog, final TwitchService service) {
+        final ButtonType bt = new ButtonType("Import", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(bt, ButtonType.CANCEL);
+
+        final BorderPane ap = new BorderPane();
+        final TextField tf = new TextField();
+        final Label description = new Label("Please enter your Twitch.tv Username:");
+        ap.setTop(description);
+        ap.setCenter(tf);
+        dialog.getDialogPane().setContent(ap);
+
+        final Node submitButton = dialog.getDialogPane().lookupButton(bt);
+        submitButton.setDisable(true);
+
+        tf.textProperty()
+                .addListener((observable, oldValue, newValue) -> submitButton.setDisable(newValue.trim().isEmpty()));
+
+        dialog.setResultConverter(button -> {
+            if ("".equals(tf.getText().trim()) || button.equals(ButtonType.CANCEL)) {
+                return false;
+            }
+            if (TwitchAPIClient.instance().channelExists(tf.getText().trim())) {
+                return true;
+            }
+            return false;
+        });
+        tf.requestFocus();
+        final Optional<Boolean> result = dialog.showAndWait();
+        if (result.isPresent() && result.get()) {
+            addFollowedChannelsToService(tf.getText().trim(), service);
+        }
     }
 
     private static void addChannelToService(final String channel, final IService service) {
@@ -178,5 +190,12 @@ public class GuiUtils {
             correctedUrl += "/";
         }
         Settings.instance().getStreamServices().add(new GenericService(serviceName, correctedUrl));
+    }
+
+    private static String correctUrl(final String url) {
+        if (!url.endsWith("/")) {
+            return url + "/";
+        }
+        return url;
     }
 }
