@@ -42,6 +42,11 @@ public class LivestreamerUtils {
         return new JsonObject();
     }
 
+    public static void startLivestreamer(final String url) {
+        final String quality = Settings.instance().getQuality();
+        startLivestreamer(url, quality);
+    }
+    
     public static void startLivestreamer(final String url, final String quality) {
         LOGGER.info("Starting Stream {} with Quality {}", url, quality);
         Thread t = new Thread(() -> {

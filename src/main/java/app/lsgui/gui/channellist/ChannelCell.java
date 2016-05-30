@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.service.IService;
+import app.lsgui.settings.Settings;
 import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.Utils;
 import javafx.beans.property.BooleanProperty;
@@ -13,6 +14,7 @@ import javafx.css.PseudoClass;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 
 public class ChannelCell extends ListCell<IChannel> {// NOSONAR
 
@@ -75,10 +77,40 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
         startStream.setOnAction(event -> {
             final IService service = (IService) this.getListView().getUserData();
             final String url = Utils.buildUrl(service.getUrl().get(), channel.getName().get());
-            LivestreamerUtils.startLivestreamer(url, "best");
-            // TODO get right quality
+            final String quality = Settings.instance().getQuality();
+            LivestreamerUtils.startLivestreamer(url, quality);
             LOGGER.info("Starting Stream for {}", channel.getName().get());
         });
+        startStream.disableProperty().bind(channel.isOnline().not());
+
+        final MenuItem recordStream = new MenuItem();
+        recordStream.textProperty().set("Record Stream");
+        recordStream.setOnAction(event -> {
+            final IService service = (IService) this.getListView().getUserData();
+            Utils.recordStream(service, channel);
+        });
+        recordStream.disableProperty().bind(channel.isOnline().not());
+
+        final MenuItem openChat = new MenuItem();
+        openChat.textProperty().set("Open Twitch.tv Chat");
+        openChat.setOnAction(event -> {
+            Utils.openTwitchChat(channel);
+            LOGGER.debug("Opening Twitch Chat for {}", channel.getName().get());
+        });
+        openChat.setDisable(!Utils.isTwitchChannel(channel));
+        final MenuItem openBrowser = new MenuItem();
+        openBrowser.textProperty().set("Open in Browser");
+        openBrowser.setOnAction(event -> {
+            final IService service = (IService) this.getListView().getUserData();
+            final String url = Utils.buildUrl(service.getUrl().get(), channel.getName().get());
+            Utils.openURLInBrowser(url);
+        });
+        contextMenu.getItems().add(startStream);
+        contextMenu.getItems().add(recordStream);
+        contextMenu.getItems().add(new SeparatorMenuItem());
+        contextMenu.getItems().add(openChat);
+        contextMenu.getItems().add(openBrowser);
+        contextMenu.getItems().add(new SeparatorMenuItem());
         contextMenu.getItems().add(delete);
         return contextMenu;
     }

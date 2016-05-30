@@ -1,13 +1,10 @@
 package app.lsgui.gui.channelinfopanel;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.MainWindow;
-import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.channel.twitch.TwitchChannel;
 import app.lsgui.model.service.IService;
@@ -27,8 +24,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 
 public class ChannelInfoPanel extends BorderPane { // NOSONAR
 
@@ -173,26 +168,12 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void recordStream() {
-        if (Utils.isChannelOnline(channelProperty.get())) {
-            final String url = buildUrl();
-            final String quality = getQuality();
-
-            final FileChooser recordFileChooser = new FileChooser();
-            recordFileChooser.setTitle("Choose Target file");
-            recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
-            final File recordFile = recordFileChooser.showSaveDialog(MainWindow.getRootStage());
-            if (recordFile != null) {
-                LivestreamerUtils.recordLivestreamer(url, quality, recordFile);
-            }
-        }
+        final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
+        Utils.recordStream(service, channelProperty.get());
     }
 
     private void openChat() {
-        if (Utils.isChannelOnline(channelProperty.get()) && Utils.isTwitchChannel(channelProperty.get())) {
-            final String channel = channelProperty.get().getName().get();
-            ChatWindow cw = new ChatWindow(channel);
-            cw.connect();
-        }
+        Utils.openTwitchChat(channelProperty.get());
     }
 
     private void openBrowser() {

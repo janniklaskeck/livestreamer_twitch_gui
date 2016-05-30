@@ -1,6 +1,7 @@
 package app.lsgui.utils;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,13 +13,17 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
+import app.lsgui.gui.MainWindow;
+import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.channel.twitch.TwitchChannel;
 import app.lsgui.model.service.GenericService;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
 import app.lsgui.settings.Settings;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class Utils {
 
@@ -151,5 +156,28 @@ public class Utils {
             }
         }
         return false;
+    }
+
+    public static void recordStream(final IService service, final IChannel channel) {
+        if (Utils.isChannelOnline(channel)) {
+            final String url = buildUrl(service.getUrl().get(), channel.getName().get());
+            final String quality = Settings.instance().getQuality();
+
+            final FileChooser recordFileChooser = new FileChooser();
+            recordFileChooser.setTitle("Choose Target file");
+            recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
+            final File recordFile = recordFileChooser.showSaveDialog(MainWindow.getRootStage());
+            if (recordFile != null) {
+                LivestreamerUtils.recordLivestreamer(url, quality, recordFile);
+            }
+        }
+    }
+
+    public static void openTwitchChat(final IChannel channel) {
+        if (Utils.isChannelOnline(channel) && Utils.isTwitchChannel(channel)) {
+            final String channelName = channel.getName().get();
+            ChatWindow cw = new ChatWindow(channelName);
+            cw.connect();
+        }
     }
 }

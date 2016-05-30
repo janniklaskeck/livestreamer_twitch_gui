@@ -175,7 +175,7 @@ public class MainController {
     }
 
     private void openSettings() {
-        SettingsWindow sw = new SettingsWindow(contentBorderPane.getScene().getWindow());
+        final SettingsWindow sw = new SettingsWindow(contentBorderPane.getScene().getWindow());
         sw.showAndWait();
     }
 
