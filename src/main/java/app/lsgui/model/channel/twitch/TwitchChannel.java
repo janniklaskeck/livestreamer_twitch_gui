@@ -108,9 +108,14 @@ public class TwitchChannel implements IChannel {
     }
 
     private void showOnlineNotification() {
-        Notifications.create().title("Channel Update")
-                .text(name.get() + " just came online!\n The Game is " + game.get() + ".\n" + title.get()).darkStyle()
-                .showInformation();
+        final String name = this.name.get();
+        final String game = this.game.get();
+        final String title = this.title.get();
+        if (name != null && game != null && title != null) {
+            Notifications.create().title("Channel Update")
+                    .text(name + " just came online!\n The Game is " + game + ".\n" + title).darkStyle()
+                    .showInformation();
+        }
     }
 
     private String buildUptimeString() {
