@@ -27,6 +27,12 @@
     -fx-background-insets: 0.0, 1.0
 }
 
+.popover > .border {
+    -fx-stroke-width: 0.5;
+    -fx-fill: derive(-fx-background, 25.0%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,.2), 10.0, 0.5, 2.0, 2.0);
+}
+
 .label {
     -fx-text-fill: #bababa;
 }

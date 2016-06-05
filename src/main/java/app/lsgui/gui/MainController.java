@@ -1,5 +1,7 @@
 package app.lsgui.gui;
 
+import org.controlsfx.control.PopOver;
+import org.controlsfx.control.PopOver.ArrowLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,9 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
@@ -26,6 +31,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 public class MainController {
@@ -181,7 +187,58 @@ public class MainController {
 
     private void addAction() {
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
-        GuiUtils.addAction(service);
+        createAddDialog(service);
+    }
+
+    private void createAddDialog(final IService service) {
+        final PopOver popOver = new PopOver();
+        popOver.getRoot().getStylesheets().add(
+                getClass().getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+        final Scene scene = addButton.getScene();
+
+        final Point2D windowCoord = new Point2D(scene.getWindow().getX(), scene.getWindow().getY());
+        final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
+        final Point2D nodeCoord = addButton.localToScene(0.0, 25.0);
+        final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
+        final double clickY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
+
+        final Insets small = new Insets(3);
+        final Insets large = new Insets(8);
+
+        final VBox dialogBox = new VBox();
+        dialogBox.setPadding(large);
+
+        final HBox buttonBox = new HBox();
+        final Button submitButton = new Button("Submit");
+        final Button cancelButton = new Button("Cancel");
+        buttonBox.getChildren().add(submitButton);
+        buttonBox.getChildren().add(cancelButton);
+
+        final Button addChannelButton = new Button("Add Channel");
+        final Button addServiceButton = new Button("Add Service");
+        addChannelButton.setOnAction(event -> {
+            dialogBox.getChildren().clear();
+            dialogBox.getChildren().add(buttonBox);
+            VBox.setMargin(addChannelButton, null);
+            VBox.setMargin(addServiceButton, null);
+        });
+
+        addServiceButton.setOnAction(event -> {
+        });
+
+        addChannelButton.setPadding(small);
+        addServiceButton.setPadding(small);
+        VBox.setMargin(addChannelButton, small);
+        VBox.setMargin(addServiceButton, small);
+        dialogBox.getChildren().add(addChannelButton);
+        dialogBox.getChildren().add(addServiceButton);
+
+        popOver.setContentNode(dialogBox);
+        popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
+        popOver.setCornerRadius(4);
+        popOver.setTitle("Add new Channel or Service");
+        popOver.show(addButton.getParent(), clickX, clickY);
+
     }
 
     private void removeAction() {
