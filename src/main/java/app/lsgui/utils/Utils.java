@@ -20,10 +20,11 @@ import app.lsgui.model.channel.twitch.TwitchChannel;
 import app.lsgui.model.service.GenericService;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
+import app.lsgui.rest.twitch.TwitchAPIClient;
 import app.lsgui.settings.Settings;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 
 public class Utils {
 
@@ -54,7 +55,7 @@ public class Utils {
     }
 
     private static List<String> sortQualities(final List<String> qualities) {
-        List<String> sortedQualities = new ArrayList<>();
+        final List<String> sortedQualities = new ArrayList<>();
         qualities.forEach(s -> s = s.toLowerCase());
         if (qualities.contains("audio")) {
             sortedQualities.add("Audio");
@@ -82,24 +83,29 @@ public class Utils {
     }
 
     public static String getColorFromString(final String input) {
-        int hash = input.hashCode();
-        int r = (hash & 0xFF0000) >> 16;
-        if (r > 200) {
-            r = 200;
-        }
-        int g = (hash & 0x00FF00) >> 8;
-        if (g > 200) {
-            g = 200;
-        }
-        int b = hash & 0x0000FF;
-        if (b > 200) {
-            b = 200;
+        int r = 0;
+        int g = 0;
+        int b = 0;
+        if (!"".equals(input)) {
+            int hash = input.hashCode();
+            r = (hash & 0xFF0000) >> 16;
+            if (r > 200) {
+                r = 200;
+            }
+            g = (hash & 0x00FF00) >> 8;
+            if (g > 200) {
+                g = 200;
+            }
+            b = hash & 0x0000FF;
+            if (b > 200) {
+                b = 200;
+            }
         }
         return "rgb(" + r + "," + g + "," + b + ")";
     }
 
     public static void addStyleSheetToStage(final Stage stage, final String style) {
-        if (stage != null && !stage.getScene().getStylesheets().contains(style)) {
+        if (stage != null && !stage.getScene().getStylesheets().contains(style) && !"".equals(style)) {
             stage.getScene().getStylesheets().add(style);
         }
     }
@@ -119,11 +125,19 @@ public class Utils {
     }
 
     public static void addChannelToService(final String channel, final IService service) {
-        service.addChannel(channel);
+        if (isTwitchService(service) && !"".equals(channel)) {
+            if (TwitchAPIClient.instance().channelExists(channel)) {
+                service.addChannel(channel);
+            }
+        } else {
+            service.addChannel(channel);
+        }
     }
 
-    public static void addFollowedChannelsToService(final String channel, final TwitchService service) {
-        service.addFollowedChannels(channel);
+    public static void addFollowedChannelsToService(final String username, final TwitchService service) {
+        if (!"".equals(username)) {
+            service.addFollowedChannels(username);
+        }
     }
 
     public static void removeChannelFromService(final IChannel channel, final IService service) {
@@ -132,8 +146,10 @@ public class Utils {
 
     public static void addService(final String serviceName, final String serviceUrl) {
         LOGGER.debug("Add new Service {} with URL {}", serviceName, serviceUrl);
-        String correctedUrl = correctUrl(serviceUrl);
-        Settings.instance().getStreamServices().add(new GenericService(serviceName, correctedUrl));
+        if (!"".equals(serviceName) && !"".equals(serviceUrl)) {
+            String correctedUrl = correctUrl(serviceUrl);
+            Settings.instance().getStreamServices().add(new GenericService(serviceName, correctedUrl));
+        }
     }
 
     private static String correctUrl(final String url) {

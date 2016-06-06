@@ -13,10 +13,11 @@ import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
 import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import app.lsgui.settings.Settings;
-import app.lsgui.utils.GuiUtils;
 import app.lsgui.utils.Utils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -24,8 +25,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -47,6 +50,9 @@ public class MainController {
     private Button importButton;
     private Button removeButton;
     private Button addButton;
+
+    private BooleanProperty hasPopOver;
+    private PopOver popOver;
 
     @FXML
     private ComboBox<String> qualityComboBox;
@@ -167,6 +173,8 @@ public class MainController {
         Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
         settingsButton.setOnAction(event -> openSettings());
         toolBarTop.getItems().add(toolBarTop.getItems().size(), settingsButton);
+
+        hasPopOver = new SimpleBooleanProperty(false);
     }
 
     private void changeService(final IService newService) {
@@ -187,11 +195,17 @@ public class MainController {
 
     private void addAction() {
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
-        createAddDialog(service);
+        if (service != null) {
+            createAddDialog(service);
+        }
     }
 
     private void createAddDialog(final IService service) {
-        final PopOver popOver = new PopOver();
+        if (hasPopOver.get() && popOver != null) {
+            popOver.hide();
+        }
+        popOver = new PopOver();
+        hasPopOver.bind(popOver.showingProperty());
         popOver.getRoot().getStylesheets().add(
                 getClass().getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
         final Scene scene = addButton.getScene();
@@ -202,15 +216,27 @@ public class MainController {
         final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
         final double clickY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
 
-        final Insets small = new Insets(3);
-        final Insets large = new Insets(8);
+        final Insets inset = new Insets(8);
 
         final VBox dialogBox = new VBox();
-        dialogBox.setPadding(large);
+        dialogBox.setPadding(inset);
 
         final HBox buttonBox = new HBox();
         final Button submitButton = new Button("Submit");
         final Button cancelButton = new Button("Cancel");
+
+        final HBox nameBox = new HBox();
+        final Label nameLabel = new Label("Name ");
+        final TextField nameTextField = new TextField();
+        nameBox.getChildren().add(nameLabel);
+        nameBox.getChildren().add(nameTextField);
+
+        final HBox urlBox = new HBox();
+        final Label urlLabel = new Label("URL ");
+        final TextField urlTextField = new TextField();
+        urlBox.getChildren().add(urlLabel);
+        urlBox.getChildren().add(urlTextField);
+
         buttonBox.getChildren().add(submitButton);
         buttonBox.getChildren().add(cancelButton);
 
@@ -218,18 +244,30 @@ public class MainController {
         final Button addServiceButton = new Button("Add Service");
         addChannelButton.setOnAction(event -> {
             dialogBox.getChildren().clear();
+            dialogBox.getChildren().add(nameBox);
             dialogBox.getChildren().add(buttonBox);
-            VBox.setMargin(addChannelButton, null);
-            VBox.setMargin(addServiceButton, null);
         });
 
         addServiceButton.setOnAction(event -> {
+            dialogBox.getChildren().clear();
+            dialogBox.getChildren().add(nameBox);
+            dialogBox.getChildren().add(urlBox);
+            dialogBox.getChildren().add(buttonBox);
         });
 
-        addChannelButton.setPadding(small);
-        addServiceButton.setPadding(small);
-        VBox.setMargin(addChannelButton, small);
-        VBox.setMargin(addServiceButton, small);
+        submitButton.setOnAction(event -> {
+            if (dialogBox.getChildren().contains(urlTextField)) {
+                final String serviceName = nameTextField.getText();
+                final String serviceUrl = urlTextField.getText();
+                Utils.addService(serviceName, serviceUrl);
+            } else {
+                final String channelName = nameTextField.getText();
+                Utils.addChannelToService(channelName, service);
+            }
+            popOver.hide();
+        });
+
+        cancelButton.setOnAction(event -> popOver.hide());
         dialogBox.getChildren().add(addChannelButton);
         dialogBox.getChildren().add(addServiceButton);
 
@@ -238,17 +276,67 @@ public class MainController {
         popOver.setCornerRadius(4);
         popOver.setTitle("Add new Channel or Service");
         popOver.show(addButton.getParent(), clickX, clickY);
-
     }
 
     private void removeAction() {
         final IChannel toRemove = channelList.getListView().getSelectionModel().getSelectedItem();
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
-        GuiUtils.removeAction(toRemove, service);
+        if (toRemove != null && service != null) {
+            Utils.removeChannelFromService(toRemove, service);
+        }
     }
 
     private void importFollowedChannels() {
         final TwitchService service = (TwitchService) serviceComboBox.getSelectionModel().getSelectedItem();
-        GuiUtils.importFollowedChannels(service);
+        if (service != null) {
+            createImportPopOver(service);
+        }
+    }
+
+    private void createImportPopOver(final TwitchService service) {
+        if (hasPopOver.get() && popOver != null) {
+            popOver.hide();
+        }
+        popOver = new PopOver();
+        hasPopOver.bind(popOver.showingProperty());
+        popOver.getRoot().getStylesheets().add(
+                getClass().getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+        final Scene scene = importButton.getScene();
+
+        final Point2D windowCoord = new Point2D(scene.getWindow().getX(), scene.getWindow().getY());
+        final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
+        final Point2D nodeCoord = importButton.localToScene(0.0, 25.0);
+        final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
+        final double clickY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
+
+        final Insets inset = new Insets(8);
+
+        final VBox dialogBox = new VBox();
+        dialogBox.setPadding(inset);
+
+        final HBox buttonBox = new HBox();
+        final Button submitButton = new Button("Import");
+        final Button cancelButton = new Button("Cancel");
+        final TextField nameTextField = new TextField();
+
+        buttonBox.getChildren().add(submitButton);
+        buttonBox.getChildren().add(cancelButton);
+
+        dialogBox.getChildren().add(nameTextField);
+        dialogBox.getChildren().add(buttonBox);
+
+        submitButton.setOnAction(event -> {
+            final String username = nameTextField.getText();
+            Utils.addFollowedChannelsToService(username, service);
+            popOver.hide();
+        });
+
+        cancelButton.setOnAction(event -> popOver.hide());
+
+        popOver.setContentNode(dialogBox);
+        popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
+        popOver.setCornerRadius(4);
+        popOver.setTitle("Import followed Twitch.tv Channels");
+        popOver.show(importButton.getParent(), clickX, clickY);
     }
 }

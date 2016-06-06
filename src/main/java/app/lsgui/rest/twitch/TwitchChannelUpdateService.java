@@ -34,7 +34,8 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
                     }
                 }
                 synchronized (ACTIVELIST) {
-                    ObservableList<IChannel> activeChannelServices = FXCollections.observableArrayList(ACTIVELIST.get());
+                    ObservableList<IChannel> activeChannelServices = FXCollections
+                            .observableArrayList(ACTIVELIST.get());
                     activeChannelServices.remove(model);
                     ACTIVELIST.set(activeChannelServices);
                 }
@@ -50,7 +51,8 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
             @Override
             protected TwitchChannelData call() throws Exception {
                 synchronized (ACTIVELIST) {
-                    ObservableList<IChannel> activeChannelServices = FXCollections.observableArrayList(ACTIVELIST.get());
+                    ObservableList<IChannel> activeChannelServices = FXCollections
+                            .observableArrayList(ACTIVELIST.get());
                     activeChannelServices.add(model);
                     ACTIVELIST.set(activeChannelServices);
                 }
