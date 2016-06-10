@@ -17,6 +17,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
 
+/**
+ *
+ * @author Niklas 11.06.2016
+ *
+ */
 public class GenericService implements IService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericService.class);
 
@@ -24,51 +29,56 @@ public class GenericService implements IService {
     private StringProperty url;
     private ListProperty<IChannel> channelProperty;
 
+    /**
+     *
+     * @param name
+     * @param url
+     */
     public GenericService(final String name, final String url) {
-        this.name = new SimpleStringProperty(name);
-        this.url = new SimpleStringProperty(url);
-        channelProperty = new SimpleListProperty<>();
+	this.name = new SimpleStringProperty(name);
+	this.url = new SimpleStringProperty(url);
+	channelProperty = new SimpleListProperty<>();
     }
 
     @Override
     public StringProperty getName() {
-        return name;
+	return name;
     }
 
     @Override
     public StringProperty getUrl() {
-        return url;
+	return url;
     }
 
     @Override
     public ListProperty<IChannel> getChannels() {
-        return channelProperty;
+	return channelProperty;
     }
 
     @Override
     public void addChannel(final String channelName) {
-        List<IChannel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
-        final Callback<IChannel, Observable[]> extractor = GenericChannel.extractor();
-        final IChannel channelToAdd = new GenericChannel(channelName);
-        channels.add(channelToAdd);
-        ObservableList<IChannel> obsChannels = FXCollections.observableArrayList(extractor);
-        obsChannels.addAll(channels);
-        getChannels().setValue(obsChannels);
+	List<IChannel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
+	final Callback<IChannel, Observable[]> extractor = GenericChannel.extractor();
+	final IChannel channelToAdd = new GenericChannel(channelName);
+	channels.add(channelToAdd);
+	ObservableList<IChannel> obsChannels = FXCollections.observableArrayList(extractor);
+	obsChannels.addAll(channels);
+	getChannels().setValue(obsChannels);
     }
 
     @Override
     public void removeChannel(final IChannel channel) {
-        if (channel != null) {
-            LOGGER.debug("Remove Channel {} from list", channel.getName());
-            final Callback<IChannel, Observable[]> extractor = GenericChannel.extractor();
+	if (channel != null) {
+	    LOGGER.debug("Remove Channel {} from list", channel.getName());
+	    final Callback<IChannel, Observable[]> extractor = GenericChannel.extractor();
 
-            List<IChannel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
-            channels.remove(channel);
-            LOGGER.info("remove Channel {}", channel.getName());
-            ObservableList<IChannel> obsChannels = FXCollections.observableArrayList(extractor);
-            obsChannels.addAll(channels);
-            getChannels().setValue(obsChannels);
-        }
+	    List<IChannel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
+	    channels.remove(channel);
+	    LOGGER.info("remove Channel {}", channel.getName());
+	    ObservableList<IChannel> obsChannels = FXCollections.observableArrayList(extractor);
+	    obsChannels.addAll(channels);
+	    getChannels().setValue(obsChannels);
+	}
 
     }
 

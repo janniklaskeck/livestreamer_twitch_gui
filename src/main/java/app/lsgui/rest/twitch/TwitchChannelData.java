@@ -17,6 +17,11 @@ import app.lsgui.utils.JSONUtils;
 import app.lsgui.utils.Utils;
 import javafx.scene.image.Image;
 
+/**
+ *
+ * @author Niklas 11.06.2016
+ *
+ */
 public class TwitchChannelData {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelData.class);
@@ -24,7 +29,7 @@ public class TwitchChannelData {
     private static final ZoneOffset OFFSET = ZoneOffset.ofHours(0);
     private static final String PREFIX = "GMT"; // Greenwich Mean Time
     private static final ZoneId GMT = ZoneId.ofOffset(PREFIX, OFFSET);
-    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(GMT);;
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(GMT);
     private static final String STREAM = "stream";
 
     private boolean online = false;
@@ -41,173 +46,178 @@ public class TwitchChannelData {
     private Image logoImage;
     private List<String> qualities;
 
+    /**
+     *
+     * @param channelAPIResponse
+     * @param name
+     */
     public TwitchChannelData(final JsonObject channelAPIResponse, final String name) {
-        if (channelAPIResponse.get(STREAM) != null && !channelAPIResponse.get(STREAM).isJsonNull()) {
-            JsonObject streamObject = channelAPIResponse.get(STREAM).getAsJsonObject();
-            if (streamObject != null && !streamObject.get("channel").isJsonNull() && !streamObject.isJsonNull()) {
-                setData(streamObject, name);
-            }
-        } else {
-            setData(null, name);
-        }
+	if (channelAPIResponse.get(STREAM) != null && !channelAPIResponse.get(STREAM).isJsonNull()) {
+	    JsonObject streamObject = channelAPIResponse.get(STREAM).getAsJsonObject();
+	    if (streamObject != null && !streamObject.get("channel").isJsonNull() && !streamObject.isJsonNull()) {
+		setData(streamObject, name);
+	    }
+	} else {
+	    setData(null, name);
+	}
 
     }
 
     private void setData(final JsonObject channelObject, final String name) {
-        if (channelObject != null) {
-            setOnlineData(channelObject, name);
-        } else {
-            setOfflineData(name);
-        }
+	if (channelObject != null) {
+	    setOnlineData(channelObject, name);
+	} else {
+	    setOfflineData(name);
+	}
     }
 
     private void setOnlineData(final JsonObject channelObject, final String name) {
-        JsonObject channel = channelObject.get("channel").getAsJsonObject();
-        JsonObject preview = channelObject.get("preview").getAsJsonObject();
-        setName(name);
-        setTitle(JSONUtils.getStringIfNotNull("status", channel));
-        setGame(JSONUtils.getStringIfNotNull("game", channelObject));
-        setViewers(JSONUtils.getIntegerIfNotNull("viewers", channelObject));
-        setPreviewURL(JSONUtils.getStringIfNotNull("large", preview));
-        setCreatedAt(JSONUtils.getStringIfNotNull("created_at", channelObject));
-        setUpdatedAt(JSONUtils.getStringIfNotNull("updated_at", channel));
-        setLogoURL(JSONUtils.getStringIfNotNull("logo", channel));
-        setOnline(true);
-        calculateAndSetUptime();
-        setPreviewImage(new Image(getPreviewURL()));
-        setLogoImage(null);
-        setQualities(Utils.getAvailableQuality("http://twitch.tv/" + name));
+	JsonObject channel = channelObject.get("channel").getAsJsonObject();
+	JsonObject preview = channelObject.get("preview").getAsJsonObject();
+	setName(name);
+	setTitle(JSONUtils.getStringIfNotNull("status", channel));
+	setGame(JSONUtils.getStringIfNotNull("game", channelObject));
+	setViewers(JSONUtils.getIntegerIfNotNull("viewers", channelObject));
+	setPreviewURL(JSONUtils.getStringIfNotNull("large", preview));
+	setCreatedAt(JSONUtils.getStringIfNotNull("created_at", channelObject));
+	setUpdatedAt(JSONUtils.getStringIfNotNull("updated_at", channel));
+	setLogoURL(JSONUtils.getStringIfNotNull("logo", channel));
+	setOnline(true);
+	calculateAndSetUptime();
+	setPreviewImage(new Image(getPreviewURL()));
+	setLogoImage(null);
+	setQualities(Utils.getAvailableQuality("http://twitch.tv/" + name));
     }
 
     private void setOfflineData(final String name) {
-        setName(name);
-        setTitle("");
-        setGame("");
-        setViewers(0);
-        setPreviewURL("");
-        setCreatedAt("");
-        setUpdatedAt("");
-        setLogoURL("");
-        setOnline(false);
-        setQualities(new ArrayList<String>());
-        setPreviewImage(null);
-        setLogoImage(null);
+	setName(name);
+	setTitle("");
+	setGame("");
+	setViewers(0);
+	setPreviewURL("");
+	setCreatedAt("");
+	setUpdatedAt("");
+	setLogoURL("");
+	setOnline(false);
+	setQualities(new ArrayList<String>());
+	setPreviewImage(null);
+	setLogoImage(null);
     }
 
     private void calculateAndSetUptime() {
-        try {
-            final ZonedDateTime nowDate = ZonedDateTime.now(GMT);
-            ZonedDateTime startDate = ZonedDateTime.parse(getCreatedAt(), DTF);
-            long time = startDate.until(nowDate, ChronoUnit.MILLIS);
-            setUptime(time);
-        } catch (Exception e) {
-            LOGGER.error("ERROR while parsing date", e);
-            setUptime(0L);
-        }
+	try {
+	    final ZonedDateTime nowDate = ZonedDateTime.now(GMT);
+	    ZonedDateTime startDate = ZonedDateTime.parse(getCreatedAt(), DTF);
+	    long time = startDate.until(nowDate, ChronoUnit.MILLIS);
+	    setUptime(time);
+	} catch (Exception e) {
+	    LOGGER.error("ERROR while parsing date", e);
+	    setUptime(0L);
+	}
     }
 
     public boolean isOnline() {
-        return online;
+	return online;
     }
 
     private void setOnline(boolean online) {
-        this.online = online;
+	this.online = online;
     }
 
     public String getName() {
-        return name;
+	return name;
     }
 
     private void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public String getTitle() {
-        return title;
+	return title;
     }
 
     private void setTitle(String title) {
-        this.title = title;
+	this.title = title;
     }
 
     public int getViewers() {
-        return viewers;
+	return viewers;
     }
 
     private void setViewers(int viewers) {
-        this.viewers = viewers;
+	this.viewers = viewers;
     }
 
     public String getCreatedAt() {
-        return createdAt;
+	return createdAt;
     }
 
     private void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+	this.createdAt = createdAt;
     }
 
     public String getUpdatedAt() {
-        return updatedAt;
+	return updatedAt;
     }
 
     private void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
+	this.updatedAt = updatedAt;
     }
 
     public String getPreviewURL() {
-        return previewURL;
+	return previewURL;
     }
 
     private void setPreviewURL(String previewURL) {
-        this.previewURL = previewURL;
+	this.previewURL = previewURL;
     }
 
     public String getLogoURL() {
-        return logoURL;
+	return logoURL;
     }
 
     private void setLogoURL(String logoURL) {
-        this.logoURL = logoURL;
+	this.logoURL = logoURL;
     }
 
     public String getGame() {
-        return game;
+	return game;
     }
 
     private void setGame(String game) {
-        this.game = game;
+	this.game = game;
     }
 
     public long getUptime() {
-        return uptime;
+	return uptime;
     }
 
     private void setUptime(long uptime) {
-        this.uptime = uptime;
+	this.uptime = uptime;
     }
 
     public Image getLogoImage() {
-        return logoImage;
+	return logoImage;
     }
 
     private void setLogoImage(Image logoImage) {
-        this.logoImage = logoImage;
+	this.logoImage = logoImage;
     }
 
     public Image getPreviewImage() {
-        return previewImage;
+	return previewImage;
     }
 
     private void setPreviewImage(Image previewImage) {
-        this.previewImage = previewImage;
+	this.previewImage = previewImage;
     }
 
     public List<String> getQualities() {
-        return qualities;
+	return qualities;
     }
 
     private void setQualities(List<String> qualities) {
-        this.qualities = qualities;
+	this.qualities = qualities;
     }
 
 }

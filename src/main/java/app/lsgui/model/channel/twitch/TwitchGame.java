@@ -2,6 +2,11 @@ package app.lsgui.model.channel.twitch;
 
 import com.google.gson.JsonObject;
 
+/**
+ *
+ * @author Niklas 11.06.2016
+ *
+ */
 public class TwitchGame {
 
     private String name;
@@ -9,6 +14,10 @@ public class TwitchGame {
     private int viewers;
     private int channels;
 
+    /**
+     *
+     * @param jo
+     */
     public TwitchGame(JsonObject jo) {
 
     }
@@ -17,7 +26,7 @@ public class TwitchGame {
      * @return the name
      */
     public String getName() {
-        return name;
+	return name;
     }
 
     /**
@@ -25,14 +34,14 @@ public class TwitchGame {
      *            the name to set
      */
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     /**
      * @return the logoURL
      */
     public String getLogoURL() {
-        return logoURL;
+	return logoURL;
     }
 
     /**
@@ -40,14 +49,14 @@ public class TwitchGame {
      *            the logoURL to set
      */
     public void setLogoURL(String logoURL) {
-        this.logoURL = logoURL;
+	this.logoURL = logoURL;
     }
 
     /**
      * @return the viewers
      */
     public int getViewers() {
-        return viewers;
+	return viewers;
     }
 
     /**
@@ -55,14 +64,14 @@ public class TwitchGame {
      *            the viewers to set
      */
     public void setViewers(int viewers) {
-        this.viewers = viewers;
+	this.viewers = viewers;
     }
 
     /**
      * @return the channels
      */
     public int getChannels() {
-        return channels;
+	return channels;
     }
 
     /**
@@ -70,7 +79,7 @@ public class TwitchGame {
      *            the channels to set
      */
     public void setChannels(int channels) {
-        this.channels = channels;
+	this.channels = channels;
     }
 
 }

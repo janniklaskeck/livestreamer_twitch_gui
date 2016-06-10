@@ -7,21 +7,30 @@ import com.google.gson.JsonObject;
 
 import app.lsgui.model.channel.twitch.TwitchGame;
 
+/**
+ *
+ * @author Niklas 11.06.2016
+ *
+ */
 public class TwitchGameData {
 
     private Map<String, TwitchGame> gamesMap;
 
+    /**
+     *
+     * @param jo
+     */
     public TwitchGameData(JsonObject jo) {
-        gamesMap = new HashMap<>();
-        JsonObject joda = jo;
-        joda.isJsonArray();
+	gamesMap = new HashMap<>();
+	JsonObject joda = jo;
+	joda.isJsonArray();
     }
 
     /**
      * @return the gamesMap
      */
     public Map<String, TwitchGame> getGamesMap() {
-        return gamesMap;
+	return gamesMap;
     }
 
     /**
@@ -29,7 +38,7 @@ public class TwitchGameData {
      *            the gamesMap to set
      */
     public void setGamesMap(Map<String, TwitchGame> gamesMap) {
-        this.gamesMap = gamesMap;
+	this.gamesMap = gamesMap;
     }
 
 }

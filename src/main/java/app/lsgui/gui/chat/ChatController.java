@@ -20,6 +20,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+/**
+ *
+ * @author Niklas 11.06.2016
+ *
+ */
 public class ChatController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
@@ -38,85 +43,103 @@ public class ChatController {
     private BorderPane chatBorderPane;
 
     @FXML
-    public void initialize() {
-        LOGGER.info("SettingsController init");
+    public void initialize() { // NOSONAR
+	LOGGER.info("SettingsController init");
 
-        chatTextArea = new InlineCssTextArea();
-        chatTextArea.setWrapText(true);
+	chatTextArea = new InlineCssTextArea();
+	chatTextArea.setWrapText(true);
 
-        chatBorderPane.setCenter(chatTextArea);
+	chatBorderPane.setCenter(chatTextArea);
 
-        sendButton.setOnAction(event -> {
-            String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
-            pircBotX.send().message("#" + channel, inputTextField.getText());
-            final int start = chatTextArea.getText().length();
-            final int end = start + Settings.instance().getTwitchUser().length() + 1;
-            chatTextArea.appendText(Settings.instance().getTwitchUser() + ": " + inputTextField.getText() + "\n");
-            setColoredNickName(chatTextArea, start, end);
-            setChatMessageStyle(chatTextArea, end, end + inputTextField.getText().length() + 1);
-            inputTextField.setText("");
-        });
+	sendButton.setOnAction(event -> {
+	    String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
+	    pircBotX.send().message("#" + channel, inputTextField.getText());
+	    final int start = chatTextArea.getText().length();
+	    final int end = start + Settings.instance().getTwitchUser().length() + 1;
+	    chatTextArea.appendText(Settings.instance().getTwitchUser() + ": " + inputTextField.getText() + "\n");
+	    setColoredNickName(chatTextArea, start, end);
+	    setChatMessageStyle(chatTextArea, end, end + inputTextField.getText().length() + 1);
+	    inputTextField.setText("");
+	});
     }
 
+    /**
+     * Connect to IRC Server
+     */
     public void connect() {
-        String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
-        final Configuration cfg;
+	final String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
+	final Configuration cfg;
 
-        if (!"".equals(Settings.instance().getTwitchUser()) && !"".equals(Settings.instance().getTwitchOAuth())) {
+	if (!"".equals(Settings.instance().getTwitchUser()) && !"".equals(Settings.instance().getTwitchOAuth())) {
 
-            final String user = Settings.instance().getTwitchUser();
-            final String oauth = Settings.instance().getTwitchOAuth();
+	    final String user = Settings.instance().getTwitchUser();
+	    final String oauth = Settings.instance().getTwitchOAuth();
 
-            cfg = new Configuration.Builder().setName(user).setLogin(user).addAutoJoinChannel("#" + channel)
-                    .addListener(new ChatListener(chatTextArea)).setAutoNickChange(true)
-                    .buildForServer("irc.twitch.tv", 6667, oauth);
+	    cfg = new Configuration.Builder().setName(user).setLogin(user).addAutoJoinChannel("#" + channel)
+		    .addListener(new ChatListener(chatTextArea)).setAutoNickChange(true)
+		    .buildForServer("irc.twitch.tv", 6667, oauth);
 
-            LOGGER.info("DATA Login");
-        } else {
-            final String uuid = UUID.randomUUID().toString().replace("-", "");
+	    LOGGER.info("DATA Login");
+	} else {
+	    final String uuid = UUID.randomUUID().toString().replace("-", "");
 
-            cfg = new Configuration.Builder().setName("justinfan" + new BigInteger(uuid, 16))
-                    .setLogin("justinfan" + new BigInteger(uuid, 16)).addAutoJoinChannel("#" + channel)
-                    .setAutoNickChange(true).addListener(new ChatListener(chatTextArea))
-                    .buildForServer("irc.twitch.tv", 6667);
+	    cfg = new Configuration.Builder().setName("justinfan" + new BigInteger(uuid, 16))
+		    .setLogin("justinfan" + new BigInteger(uuid, 16)).addAutoJoinChannel("#" + channel)
+		    .setAutoNickChange(true).addListener(new ChatListener(chatTextArea))
+		    .buildForServer("irc.twitch.tv", 6667);
 
-            LOGGER.info("ANON Login");
-        }
+	    LOGGER.info("ANON Login");
+	}
 
-        pircBotX = new PircBotX(cfg);
+	pircBotX = new PircBotX(cfg);
 
-        LOGGER.info("CAP {}", pircBotX.getEnabledCapabilities());
-        Thread t = new Thread(() -> {
-            try {
-                pircBotX.startBot();
-            } catch (IOException | IrcException e) {
-                if (e.getClass().equals(UnknownHostException.class)) {
-                    LOGGER.error(
-                            "ERROR Unknown Hosts while trying to connecto to chat. Check your Internet Connection");
-                } else {
-                    LOGGER.error("ERROR while trying to connecto to chat", e);
-                }
-                sendButton.setDisable(true);
-            }
-        });
-        t.setDaemon(true);
-        t.start();
+	LOGGER.info("CAP {}", pircBotX.getEnabledCapabilities());
+	Thread t = new Thread(() -> {
+	    try {
+		pircBotX.startBot();
+	    } catch (IOException | IrcException e) {
+		if (e.getClass().equals(UnknownHostException.class)) {
+		    LOGGER.error(
+			    "ERROR Unknown Hosts while trying to connecto to chat. Check your Internet Connection");
+		} else {
+		    LOGGER.error("ERROR while trying to connecto to chat", e);
+		}
+		sendButton.setDisable(true);
+	    }
+	});
+	t.setDaemon(true);
+	t.start();
 
     }
 
+    /**
+     * Disconnect from IRC Server
+     */
     public void disconnect() {
-        if (pircBotX.isConnected()) {
-            pircBotX.sendIRC().quitServer();
-        }
+	if (pircBotX.isConnected()) {
+	    pircBotX.sendIRC().quitServer();
+	}
     }
 
+    /**
+     *
+     * @param cta
+     * @param start
+     * @param end
+     */
     public static void setColoredNickName(final InlineCssTextArea cta, final int start, final int end) {
-        cta.setStyle(start, end,
-                "-fx-fill: " + Utils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
+	cta.setStyle(start, end,
+		"-fx-fill: " + Utils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
 
     }
 
+    /**
+     *
+     * @param cta
+     * @param start
+     * @param end
+     */
     public static void setChatMessageStyle(final InlineCssTextArea cta, final int start, final int end) {
-        cta.setStyle(start, end, "-fx-font-size: 12pt");
+	cta.setStyle(start, end, "-fx-font-size: 12pt");
     }
 }
