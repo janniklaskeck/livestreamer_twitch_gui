@@ -6,8 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +21,10 @@ import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
 import app.lsgui.utils.JSONUtils;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public class Settings {
 
@@ -36,7 +35,7 @@ public class Settings {
 
     private static final String VERSION = "";
     private static final long TIMEOUT = 5000L;
-    private List<IService> services = new ArrayList<>();
+    private ListProperty<IService> services = new SimpleListProperty<>();
     private BooleanProperty sortTwitch = new SimpleBooleanProperty();
     private boolean minimizeToTray = true;
     private String windowStyle = "LightStyle";
@@ -108,7 +107,9 @@ public class Settings {
             final JsonArray jArray = g.fromJson(sb.toString(), JsonArray.class);
             final JsonObject settings = jArray.get(0).getAsJsonObject();
 
-            JsonArray servicesArray = jArray.get(1).getAsJsonArray();
+            services.set(FXCollections.observableArrayList());
+
+            final JsonArray servicesArray = jArray.get(1).getAsJsonArray();
             for (int i = 0; i < servicesArray.size(); i++) {
                 final JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
                 final String serviceName = serviceJson.get(SERVICENAME).getAsString();
@@ -126,7 +127,7 @@ public class Settings {
                     final String channel = channels.get(e).getAsString();
                     service.addChannel(channel);
                 }
-                services.add(service);
+                services.get().add(service);
             }
             sortTwitch.setValue(JSONUtils.getBooleanSafe(settings.get(TWITCHSORT), false));
             minimizeToTray = JSONUtils.getBooleanSafe(settings.get(MINIMIZETOTRAYSTRING), false);
@@ -143,7 +144,7 @@ public class Settings {
         }
     }
 
-    private void createSettingsJson(File file) {
+    private void createSettingsJson(final File file) {
         JsonWriter w;
         try {
             w = new JsonWriter(new FileWriter(file));
@@ -171,14 +172,15 @@ public class Settings {
         }
     }
 
-    private void writeServices(JsonWriter w) throws IOException {
-        for (IService s : services) {
+    private void writeServices(final JsonWriter w) throws IOException {
+        for (final IService s : services) {
+            LOGGER.debug("Creating JSON for Service {}", s.getName().get());
             w.beginObject();
             w.name(SERVICENAME).value(s.getName().get());
             w.name(SERVICEURL).value(s.getUrl().get());
             w.name("channels");
             w.beginArray();
-            for (IChannel channel : s.getChannels()) {
+            for (final IChannel channel : s.getChannels()) {
                 if (channel.getName().get() != null) {
                     w.value(channel.getName().get());
                 }
@@ -188,12 +190,8 @@ public class Settings {
         }
     }
 
-    public List<IService> getStreamServices() {
+    public ListProperty<IService> getStreamServices() {
         return services;
-    }
-
-    public ObservableList<IService> getStreamServicesObservable() {
-        return FXCollections.observableArrayList(services);
     }
 
     public BooleanProperty getSortTwitch() {

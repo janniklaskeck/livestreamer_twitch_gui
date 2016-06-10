@@ -196,4 +196,9 @@ public class Utils {
             cw.connect();
         }
     }
+
+    public static void removeService(final IService service) {
+        LOGGER.debug("Removing Service {}", service.getName().get());
+        Settings.instance().getStreamServices().remove(service);
+    }
 }

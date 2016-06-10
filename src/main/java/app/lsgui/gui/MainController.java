@@ -87,7 +87,7 @@ public class MainController {
         if (Settings.instance().getStreamServices().isEmpty()) {
             Settings.instance().getStreamServices().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
         }
-        serviceComboBox.getItems().addAll(Settings.instance().getStreamServices());
+        serviceComboBox.itemsProperty().bind(Settings.instance().getStreamServices());
         serviceComboBox.setCellFactory(listView -> new ServiceCell());
         serviceComboBox.setConverter(new StringConverter<IService>() {
             @Override
@@ -256,12 +256,14 @@ public class MainController {
         });
 
         submitButton.setOnAction(event -> {
-            if (dialogBox.getChildren().contains(urlTextField)) {
+            if (dialogBox.getChildren().contains(urlBox)) {
                 final String serviceName = nameTextField.getText();
                 final String serviceUrl = urlTextField.getText();
+                LOGGER.info("Adding service");
                 Utils.addService(serviceName, serviceUrl);
             } else {
                 final String channelName = nameTextField.getText();
+                LOGGER.info("Adding channel");
                 Utils.addChannelToService(channelName, service);
             }
             popOver.hide();
@@ -279,10 +281,13 @@ public class MainController {
     }
 
     private void removeAction() {
-        final IChannel toRemove = channelList.getListView().getSelectionModel().getSelectedItem();
+        final IChannel channel = channelList.getListView().getSelectionModel().getSelectedItem();
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
-        if (toRemove != null && service != null) {
-            Utils.removeChannelFromService(toRemove, service);
+        if (channel != null && service != null) {
+            Utils.removeChannelFromService(channel, service);
+        } else if (channel == null && service != null && serviceComboBox.getItems().size() > 1) {
+            serviceComboBox.getSelectionModel().select(0);
+            Utils.removeService(service);
         }
     }
 
