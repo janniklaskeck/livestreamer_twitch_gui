@@ -107,8 +107,8 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
 	channelGame.textProperty().bind((twitchChannel).getGame());
 	channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
 	openChatButton.setDisable(false);
-	startStreamButton.disableProperty().bind(twitchChannel.isOnline().not());
-	recordStreamButton.disableProperty().bind(twitchChannel.isOnline().not());
+	startStreamButton.disableProperty().bind(twitchChannel.isOnline().not().or(twitchChannel.getIsPlaylist()));
+	recordStreamButton.disableProperty().bind(twitchChannel.isOnline().not().or(twitchChannel.getIsPlaylist()));
     }
 
     private void bindToGenericChannel(final IChannel channel) {

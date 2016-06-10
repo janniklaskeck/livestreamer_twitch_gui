@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.channel.IChannel;
+import app.lsgui.model.channel.twitch.TwitchChannel;
 import app.lsgui.model.service.IService;
 import app.lsgui.settings.Settings;
 import app.lsgui.utils.LivestreamerUtils;
@@ -19,24 +20,43 @@ import javafx.scene.control.SeparatorMenuItem;
 public class ChannelCell extends ListCell<IChannel> {// NOSONAR
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class);
-    private static final PseudoClass ONLINEPSEUDOCLASS = PseudoClass.getPseudoClass("online");
+    private static final PseudoClass ONLINE_PSEUDOCLASS = PseudoClass.getPseudoClass("online");
+    private static final PseudoClass PLAYLIST_PSEUDOCLASS = PseudoClass.getPseudoClass("isPlaylist");
 
-    private BooleanProperty online;
+    private BooleanProperty isOnline;
+    private BooleanProperty isPlaylist;
     private ContextMenu menu;
 
     /**
      * Channelist ChannelCell
      */
     public ChannelCell() {
-	online = new BooleanPropertyBase() {
+	isOnline = new BooleanPropertyBase() {
 	    @Override
 	    public void invalidated() {
-		pseudoClassStateChanged(ONLINEPSEUDOCLASS, get());
+		pseudoClassStateChanged(ONLINE_PSEUDOCLASS, get());
 	    }
 
 	    @Override
 	    public String getName() {
 		return "online";
+	    }
+
+	    @Override
+	    public Object getBean() {
+		return ChannelCell.this;
+	    }
+	};
+	getStyleClass().add("channel-cell");
+	isPlaylist = new BooleanPropertyBase() {
+	    @Override
+	    public void invalidated() {
+		pseudoClassStateChanged(PLAYLIST_PSEUDOCLASS, get());
+	    }
+
+	    @Override
+	    public String getName() {
+		return "isPlaylist";
 	    }
 
 	    @Override
@@ -61,7 +81,11 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
 	    }
 	    setContextMenu(menu);
 	    textProperty().bind(item.getName());
-	    online.bind(item.isOnline());
+	    isOnline.bind(item.isOnline());
+	    if (Utils.isTwitchChannel(item)) {
+		final TwitchChannel twitchChannel = (TwitchChannel) item;
+		isPlaylist.bind(twitchChannel.getIsPlaylist());
+	    }
 	}
     }
 

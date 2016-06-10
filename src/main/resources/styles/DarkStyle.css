@@ -30,7 +30,7 @@
 .popover > .border {
     -fx-stroke-width: 0.5;
     -fx-fill: derive(-fx-background, 25.0%);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,.2), 10.0, 0.5, 2.0, 2.0);
+    -fx-effect: dropshadow(gaussian, rgba(0.0,0.0,0.0,0.2), 10.0, 0.5, 2.0, 2.0);
 }
 
 .label {
@@ -63,6 +63,20 @@
     -fx-border-width: 1.0px;
     -fx-text-fill: #000000;
     -fx-background-color: green;
+}
+
+.list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused:selected:isPlaylist {
+    -fx-border-color: lightgrey;
+    -fx-border-width: 1.0px;
+    -fx-text-fill: #000000;
+    -fx-background-color: yellow;
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:selected:isPlaylist {
+    -fx-border-color: lightgrey;
+    -fx-border-width: 1.0px;
+    -fx-text-fill: #000000;
+    -fx-background-color: yellow;
 }
 
 .list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:hover {
@@ -98,6 +112,22 @@
     -fx-border-color: black;
     -fx-border-width: 1.0px;
     -fx-background-color: green;
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:isPlaylist {
+    -fx-text-fill: #000000;
+    -fx-font-size: 13.0px;
+    -fx-border-color: black;
+    -fx-border-width: 1.0px;
+    -fx-background-color: yellow;
+}
+
+.list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused:isPlaylist {
+    -fx-text-fill: #000000;
+    -fx-font-size: 13.0px;
+    -fx-border-color: black;
+    -fx-border-width: 1.0px;
+    -fx-background-color: yellow;
 }
 
 .styled-text-area {

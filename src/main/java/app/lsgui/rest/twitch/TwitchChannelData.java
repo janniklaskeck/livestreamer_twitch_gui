@@ -33,6 +33,7 @@ public class TwitchChannelData {
     private static final String STREAM = "stream";
 
     private boolean online = false;
+    private boolean isPlaylist = false;
     private String name = "";
     private String title = "";
     private String createdAt = "";
@@ -83,6 +84,7 @@ public class TwitchChannelData {
 	setUpdatedAt(JSONUtils.getStringIfNotNull("updated_at", channel));
 	setLogoURL(JSONUtils.getStringIfNotNull("logo", channel));
 	setOnline(true);
+	setPlaylist(JSONUtils.getBooleanIfNotNull("is_playlist", channelObject));
 	calculateAndSetUptime();
 	setPreviewImage(new Image(getPreviewURL()));
 	setLogoImage(null);
@@ -99,6 +101,7 @@ public class TwitchChannelData {
 	setUpdatedAt("");
 	setLogoURL("");
 	setOnline(false);
+	setPlaylist(false);
 	setQualities(new ArrayList<String>());
 	setPreviewImage(null);
 	setLogoImage(null);
@@ -218,6 +221,21 @@ public class TwitchChannelData {
 
     private void setQualities(List<String> qualities) {
 	this.qualities = qualities;
+    }
+
+    /**
+     * @return the isPlaylist
+     */
+    public boolean isPlaylist() {
+	return isPlaylist;
+    }
+
+    /**
+     * @param isPlaylist
+     *            the isPlaylist to set
+     */
+    public void setPlaylist(boolean isPlaylist) {
+	this.isPlaylist = isPlaylist;
     }
 
 }

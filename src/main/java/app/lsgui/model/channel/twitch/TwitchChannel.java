@@ -48,6 +48,7 @@ public class TwitchChannel implements IChannel {
     private IntegerProperty viewers;
     private StringProperty viewersString;
     private BooleanProperty isOnline;
+    private BooleanProperty isPlaylist;
     private ObjectProperty<Image> previewImage;
     private List<String> availableQualities;
 
@@ -64,6 +65,7 @@ public class TwitchChannel implements IChannel {
 	this.uptime = new SimpleLongProperty(0L);
 	this.viewers = new SimpleIntegerProperty(0);
 	this.isOnline = new SimpleBooleanProperty(false);
+	this.isPlaylist = new SimpleBooleanProperty(false);
 	this.previewImage = new SimpleObjectProperty<>(null);
 	this.description = new SimpleStringProperty(CHANNEL_IS_OFFLINE);
 	this.availableQualities = new SimpleListProperty<>();
@@ -93,6 +95,7 @@ public class TwitchChannel implements IChannel {
 	uptime.setValue(null);
 	viewers.setValue(null);
 	isOnline.setValue(false);
+	isPlaylist.setValue(data.isPlaylist());
 	previewImage.setValue(defaultLogo);
 	description.setValue(CHANNEL_IS_OFFLINE);
 	availableQualities = new ArrayList<>();
@@ -116,6 +119,7 @@ public class TwitchChannel implements IChannel {
 	} else if (!data.isOnline() && isOnline.get()) {
 	    isOnline.setValue(false);
 	}
+	isPlaylist.setValue(data.isPlaylist());
 	previewImage.setValue(data.getPreviewImage());
 	description.setValue(getTitle().get());
 	availableQualities = new ArrayList<>(data.getQualities());
@@ -244,5 +248,20 @@ public class TwitchChannel implements IChannel {
      */
     public StringProperty getViewersString() {
 	return viewersString;
+    }
+
+    /**
+     * @return the isPlaylist
+     */
+    public BooleanProperty getIsPlaylist() {
+	return isPlaylist;
+    }
+
+    /**
+     * @param isPlaylist
+     *            the isPlaylist to set
+     */
+    public void setIsPlaylist(BooleanProperty isPlaylist) {
+	this.isPlaylist = isPlaylist;
     }
 }
