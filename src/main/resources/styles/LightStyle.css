@@ -1,0 +1,129 @@
+.root {
+    -fx-base: #e4e4e4;
+    -fx-background: #e4e4e4;
+    -fx-control-inner-background: derive(-fx-base, 10.0%);
+    -fx-control-inner-background-alt: derive(-fx-control-inner-background, -5.0%);
+
+    -fx-dark-text-color: #000000;
+    -fx-mid-text-color: #000000;
+    -fx-light-text-color: #000000;
+
+    -fx-accent: #dddddd;
+    -fx-default-button: #dddddd;
+    -fx-focus-color: #dddddd;
+
+    -fx-faint-focus-color: #dddddd;
+    -fx-color: -fx-base;
+}
+
+.glyph-icon {
+
+}
+
+.status-bar {
+    -fx-padding: 4.0px;
+    -fx-pref-height: 30.0px;
+    -fx-background-color: -fx-body-color;
+    -fx-background-insets: 0.0, 1.0
+}
+
+.label {
+    -fx-text-fill: #000000;
+}
+
+.list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused:selected {
+    -fx-background-color: #c5c5c5;
+    -fx-border-color: black;
+    -fx-border-width: 1.0px;
+    -fx-text-fill: #000000;
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:selected {
+    -fx-background-color: #c5c5c5;
+    -fx-border-color: black;
+    -fx-border-width: 1.0px;
+    -fx-text-fill: #000000;
+}
+
+.list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused:selected:online {
+    -fx-border-color: black;
+    -fx-border-width: 1.0px;
+    -fx-text-fill: #000000;
+    -fx-background-color: green;
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:selected:online {
+    -fx-border-color: black;
+    -fx-border-width: 1.0px;
+    -fx-text-fill: #000000;
+    -fx-background-color: green;
+}
+
+.list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused:selected:isPlaylist {
+    -fx-border-color: black;
+    -fx-border-width: 1.0px;
+    -fx-text-fill: #000000;
+    -fx-background-color: yellow;
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:selected:isPlaylist {
+    -fx-border-color: black;
+    -fx-border-width: 1.0px;
+    -fx-text-fill: #000000;
+    -fx-background-color: yellow;
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:hover {
+    -fx-text-fill: #000000;
+    -fx-background-color: derive(-fx-background, -15.0%);
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell {
+    -fx-text-fill: #000000;
+    -fx-font-size: 13.0px;
+    -fx-border-color: grey;
+    -fx-border-width: 1.0px;
+}
+
+.list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused {
+    -fx-text-fill: #000000;
+    -fx-font-size: 13.0px;
+    -fx-border-color: grey;
+    -fx-border-width: 1.0px;
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:online {
+    -fx-text-fill: #000000;
+    -fx-font-size: 13.0px;
+    -fx-border-color: grey;
+    -fx-border-width: 1.0px;
+    -fx-background-color: green;
+}
+
+.list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused:online {
+    -fx-text-fill: #000000;
+    -fx-font-size: 13.0px;
+    -fx-border-color: grey;
+    -fx-border-width: 1.0px;
+    -fx-background-color: green;
+}
+
+.list-view > .virtual-flow > .clipped-container > .sheet > .channel-cell:isPlaylist {
+    -fx-text-fill: #000000;
+    -fx-font-size: 13.0px;
+    -fx-border-color: grey;
+    -fx-border-width: 1.0px;
+    -fx-background-color: yellow;
+}
+
+.list-view:focused > .virtual-flow > .clipped-container > .sheet > .channel-cell:focused:isPlaylist {
+    -fx-text-fill: #000000;
+    -fx-font-size: 13.0px;
+    -fx-border-color: grey;
+    -fx-border-width: 1.0px;
+    -fx-background-color: yellow;
+}
+
+.styled-text-area {
+    -fx-background-color: #dddddd;
+}

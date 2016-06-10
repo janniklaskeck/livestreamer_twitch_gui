@@ -1,0 +1,29 @@
+<Configuration status="WARN" name="lsgui">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout
+                pattern="%d{HH:mm:ss.SSS} %-5p (%t) [%c{1}(%M)] %m%n" />
+        </Console>
+        <RollingFile name="RollingFile"
+            fileName="${sys:user.home}/.lsgui/lsgui.log" filePattern="${sys:user.home}/.lsgui/lsgui_%i.log">
+            <PatternLayout
+                pattern="%d{HH:mm:ss.SSS} %-5p (%t) [%c{1}(%M)] %m%n" />
+            <Policies>
+                <OnStartupTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy max="1" />
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="WARN">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Root>
+        <Logger name="app.lsgui" level="ALL" additivity="false">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Logger>
+    </Loggers>
+
+</Configuration>
