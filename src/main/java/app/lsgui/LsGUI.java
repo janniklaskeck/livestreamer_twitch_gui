@@ -3,7 +3,7 @@ package app.lsgui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.MainWindow;
+import app.lsgui.gui.LsGUIWindow;
 import javafx.application.Application;
 
 /**
@@ -11,11 +11,11 @@ import javafx.application.Application;
  * @author Niklas 11.06.2016
  *
  */
-public class Main {
+public class LsGUI {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LsGUI.class);
 
-    private Main() {
+    private LsGUI() {
     }
 
     /**
@@ -27,6 +27,6 @@ public class Main {
 
 	LOGGER.debug("Pre-Launch finished");
 
-	Application.launch(MainWindow.class, args);
+	Application.launch(LsGUIWindow.class, args);
     }
 }

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
-import app.lsgui.gui.MainWindow;
+import app.lsgui.gui.LsGUIWindow;
 import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.channel.twitch.TwitchChannel;
@@ -256,7 +256,7 @@ public class Utils {
 	    final FileChooser recordFileChooser = new FileChooser();
 	    recordFileChooser.setTitle("Choose Target file");
 	    recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
-	    final File recordFile = recordFileChooser.showSaveDialog(MainWindow.getRootStage());
+	    final File recordFile = recordFileChooser.showSaveDialog(LsGUIWindow.getRootStage());
 	    if (recordFile != null) {
 		LivestreamerUtils.recordLivestreamer(url, quality, recordFile);
 	    }

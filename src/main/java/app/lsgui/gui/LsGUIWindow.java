@@ -24,9 +24,9 @@ import javafx.stage.Stage;
  * @author Niklas 11.06.2016
  *
  */
-public class MainWindow extends Application {
+public class LsGUIWindow extends Application {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MainWindow.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LsGUIWindow.class);
     private static Stage rootstage;
 
     @Override
@@ -92,7 +92,7 @@ public class MainWindow extends Application {
 	    }
 	    Platform.exit();
 	});
-	MainWindow.getRootStage().getScene().getStylesheets().add(MainWindow.class
+	LsGUIWindow.getRootStage().getScene().getStylesheets().add(LsGUIWindow.class
 		.getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
     }
 
