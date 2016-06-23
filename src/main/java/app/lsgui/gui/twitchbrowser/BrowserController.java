@@ -1,5 +1,15 @@
 package app.lsgui.gui.twitchbrowser;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import app.lsgui.model.channel.twitch.TwitchGames;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.fxml.FXML;
@@ -25,6 +35,25 @@ public class BrowserController {
     @FXML
     public void initialize() {
         setupToolBar();
+
+        final FileInputStream fis;
+        try {
+            fis = new FileInputStream(
+                    new File(getClass().getClassLoader().getResource("gamesDump.json").getPath()));
+            final InputStreamReader isr = new InputStreamReader(fis);
+            final BufferedReader bufferedReader = new BufferedReader(isr);
+            final StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            bufferedReader.close();
+            final Gson g = new Gson();
+            final JsonObject data = g.fromJson(sb.toString(), JsonObject.class);
+            new TwitchGames(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupToolBar() {
@@ -35,7 +64,7 @@ public class BrowserController {
         final Separator secondSeparator = new Separator(Orientation.VERTICAL);
         final TextField searchTextField = new TextField();
         final Button searchButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
-        
+
         browserToolBar.getItems().add(homeButton);
         browserToolBar.getItems().add(firstSeparator);
         browserToolBar.getItems().add(backButton);

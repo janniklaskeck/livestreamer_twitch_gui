@@ -22,7 +22,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelUpdateService.class);
     private static final ListProperty<IChannel> ACTIVELIST = new SimpleListProperty<>(
-	    FXCollections.observableArrayList());
+            FXCollections.observableArrayList());
     private TwitchChannel model;
 
     /**
@@ -30,47 +30,47 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
      * @param model
      */
     public TwitchChannelUpdateService(final IChannel model) {
-	LOGGER.debug("Create UpdateService for {}", model.getName().get());
-	if (model.getClass().equals(TwitchChannel.class)) {
-	    this.model = (TwitchChannel) model;
-	    setPeriod(Duration.seconds(40));
-	    setRestartOnFailure(true);
-	    setOnSucceeded(event -> {
-		final TwitchChannelData updatedModel = (TwitchChannelData) event.getSource().getValue();
-		if (updatedModel != null) {
-		    synchronized (this.model) {
-			this.model.updateData(updatedModel);
-		    }
-		}
-		synchronized (ACTIVELIST) {
-		    ObservableList<IChannel> activeChannelServices = FXCollections
-			    .observableArrayList(ACTIVELIST.get());
-		    activeChannelServices.remove(model);
-		    ACTIVELIST.set(activeChannelServices);
-		}
-	    });
-	    setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
-	}
+        LOGGER.debug("Create UpdateService for {}", model.getName().get());
+        if (model.getClass().equals(TwitchChannel.class)) {
+            this.model = (TwitchChannel) model;
+            setPeriod(Duration.seconds(40));
+            setRestartOnFailure(true);
+            setOnSucceeded(event -> {
+                final TwitchChannelData updatedModel = (TwitchChannelData) event.getSource().getValue();
+                if (updatedModel != null) {
+                    synchronized (this.model) {
+                        this.model.updateData(updatedModel);
+                    }
+                }
+                synchronized (ACTIVELIST) {
+                    ObservableList<IChannel> activeChannelServices = FXCollections
+                            .observableArrayList(ACTIVELIST.get());
+                    activeChannelServices.remove(model);
+                    ACTIVELIST.set(activeChannelServices);
+                }
+            });
+            setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
+        }
 
     }
 
     @Override
     protected Task<TwitchChannelData> createTask() {
-	return new Task<TwitchChannelData>() {
-	    @Override
-	    protected TwitchChannelData call() throws Exception {
-		synchronized (ACTIVELIST) {
-		    ObservableList<IChannel> activeChannelServices = FXCollections
-			    .observableArrayList(ACTIVELIST.get());
-		    activeChannelServices.add(model);
-		    ACTIVELIST.set(activeChannelServices);
-		}
-		return TwitchAPIClient.instance().getStreamData(model.getName().get());
-	    }
-	};
+        return new Task<TwitchChannelData>() {
+            @Override
+            protected TwitchChannelData call() throws Exception {
+                synchronized (ACTIVELIST) {
+                    ObservableList<IChannel> activeChannelServices = FXCollections
+                            .observableArrayList(ACTIVELIST.get());
+                    activeChannelServices.add(model);
+                    ACTIVELIST.set(activeChannelServices);
+                }
+                return TwitchAPIClient.instance().getStreamData(model.getName().get());
+            }
+        };
     }
 
     public static ListProperty<IChannel> getActiveChannelServicesProperty() {
-	return ACTIVELIST;
+        return ACTIVELIST;
     }
 }

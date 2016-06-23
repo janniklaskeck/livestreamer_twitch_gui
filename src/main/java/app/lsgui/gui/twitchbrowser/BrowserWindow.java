@@ -5,6 +5,9 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+
+import app.lsgui.model.channel.twitch.TwitchGames;
 import app.lsgui.settings.Settings;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +28,6 @@ public class BrowserWindow {
         setBrowserStage(new Stage());
         Parent root = loadFXML();
         setupStage(root, browserStage, parentWindow);
-
     }
 
     private Parent loadFXML() {
