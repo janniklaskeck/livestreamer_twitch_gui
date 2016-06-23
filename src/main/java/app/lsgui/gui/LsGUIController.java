@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import app.lsgui.gui.channelinfopanel.ChannelInfoPanel;
 import app.lsgui.gui.channellist.ChannelList;
 import app.lsgui.gui.settings.SettingsWindow;
+import app.lsgui.gui.twitchbrowser.BrowserWindow;
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
@@ -151,6 +152,10 @@ public class LsGUIController {
         importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
         importButton.setOnAction(event -> importFollowedChannels());
         twitchBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
+        twitchBrowserButton.setOnAction(event -> {
+            final BrowserWindow browser = new BrowserWindow(twitchBrowserButton.getScene().getWindow());
+            browser.showAndWait();
+        });
 
         toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, addButton);
         toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, removeButton);
