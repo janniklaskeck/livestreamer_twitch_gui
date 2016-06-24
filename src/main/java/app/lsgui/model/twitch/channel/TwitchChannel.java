@@ -1,4 +1,4 @@
-package app.lsgui.model.channel.twitch;
+package app.lsgui.model.twitch.channel;
 
 import java.util.ArrayList;
 import java.util.List;

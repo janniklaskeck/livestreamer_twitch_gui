@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.channel.twitch.TwitchChannel;
-import app.lsgui.model.channel.twitch.TwitchGames;
+import app.lsgui.model.twitch.channel.TwitchChannel;
+import app.lsgui.model.twitch.game.TwitchGames;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;

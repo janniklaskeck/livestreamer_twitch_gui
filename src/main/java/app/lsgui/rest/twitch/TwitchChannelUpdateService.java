@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.channel.twitch.TwitchChannel;
+import app.lsgui.model.twitch.channel.TwitchChannel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;

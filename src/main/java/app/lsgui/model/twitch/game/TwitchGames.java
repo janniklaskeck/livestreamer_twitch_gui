@@ -1,7 +1,7 @@
-package app.lsgui.model.channel.twitch;
+package app.lsgui.model.twitch.game;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -17,7 +17,7 @@ import javafx.scene.image.Image;
 public class TwitchGames {
 
     private JsonObject jsonData;
-    private Map<String, Image> gamesMap;
+    private List<TwitchGame> games;
 
     /**
      *
@@ -25,26 +25,32 @@ public class TwitchGames {
      */
     public TwitchGames(final JsonObject jsonData) {
         this.jsonData = jsonData;
-        this.gamesMap = new LinkedHashMap<>();
-        this.addGamesToMap();
+        this.games = new ArrayList<>();
+        this.addGames();
     }
 
-    private void addGamesToMap() {
+    private void addGames() {
         final JsonArray top = this.jsonData.get("top").getAsJsonArray();
         for (final JsonElement element : top) {
             final JsonObject object = element.getAsJsonObject();
+            final int viewers = object.get("viewers").getAsInt();
             final JsonObject game = object.get("game").getAsJsonObject();
             final String gameName = game.get("name").getAsString();
             final JsonObject box = game.get("box").getAsJsonObject(); 
             final String imageUrl = box.get("medium").getAsString();
             final Image boxImage = new Image(imageUrl);
-            gamesMap.put(gameName, boxImage);
+            games.add(new TwitchGame(gameName, viewers, boxImage));
         }
         
     }
 
     public void updateData(final TwitchGames updatedGames) {
-
+        this.games.clear();
+        this.games.addAll(updatedGames.getGames());
     }
 
+    protected List<TwitchGame> getGames() {
+        return games;
+    }
+    
 }

@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.channel.twitch.TwitchChannel;
 import app.lsgui.model.service.IService;
+import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.Utils;
 import app.lsgui.utils.WrappedImageView;

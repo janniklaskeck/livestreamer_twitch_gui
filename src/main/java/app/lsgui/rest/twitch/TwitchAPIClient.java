@@ -23,7 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-import app.lsgui.model.channel.twitch.TwitchGames;
+import app.lsgui.model.twitch.game.TwitchGames;
 
 /**
  *

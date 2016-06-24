@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import app.lsgui.model.channel.twitch.TwitchGames;
+import app.lsgui.model.twitch.game.TwitchGames;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.fxml.FXML;

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
-import app.lsgui.model.channel.twitch.TwitchGames;
+import app.lsgui.model.twitch.game.TwitchGames;
 import app.lsgui.settings.Settings;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
