@@ -24,30 +24,30 @@ public class TwitchGamesUpdateService extends ScheduledService<TwitchGames> {
      * @param games
      */
     public TwitchGamesUpdateService(final TwitchGames games) {
-	LOGGER.debug("Create UpdateService for Twitch.tv Games");
-	this.games = games;
-	setPeriod(Duration.seconds(40));
-	setRestartOnFailure(true);
-	setOnSucceeded(event -> {
-	    final TwitchGames updatedGames = (TwitchGames) event.getSource().getValue();
-	    if (updatedGames != null) {
-		synchronized (this.games) {
-		    this.games.updateData(updatedGames);
-		}
-	    }
-	});
-	setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
+        LOGGER.debug("Create UpdateService for Twitch.tv Games");
+        this.games = games;
+        setPeriod(Duration.seconds(120));
+        setRestartOnFailure(true);
+        setOnSucceeded(event -> {
+            final TwitchGames updatedGames = (TwitchGames) event.getSource().getValue();
+            if (updatedGames != null) {
+                synchronized (this.games) {
+                    this.games.updateData(updatedGames);
+                }
+            }
+        });
+        setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
 
     }
 
     @Override
     protected Task<TwitchGames> createTask() {
-	return new Task<TwitchGames>() {
-	    @Override
-	    protected TwitchGames call() throws Exception {
-		return TwitchAPIClient.instance().getGameData();
-	    }
-	};
+        return new Task<TwitchGames>() {
+            @Override
+            protected TwitchGames call() throws Exception {
+                return TwitchAPIClient.instance().getGameData();
+            }
+        };
     }
 
 }

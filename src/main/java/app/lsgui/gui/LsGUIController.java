@@ -152,10 +152,7 @@ public class LsGUIController {
         importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
         importButton.setOnAction(event -> importFollowedChannels());
         twitchBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
-        twitchBrowserButton.setOnAction(event -> {
-            final BrowserWindow browser = new BrowserWindow(twitchBrowserButton.getScene().getWindow());
-            browser.showAndWait();
-        });
+        twitchBrowserButton.setOnAction(event -> openTwitchBrowser());
 
         toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, addButton);
         toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, removeButton);
@@ -357,5 +354,10 @@ public class LsGUIController {
         popOver.setCornerRadius(4);
         popOver.setTitle("Import followed Twitch.tv Channels");
         popOver.show(importButton.getParent(), clickX, clickY);
+    }
+
+    private void openTwitchBrowser() {
+        final BrowserWindow browser = new BrowserWindow(twitchBrowserButton.getScene().getWindow());
+        browser.showAndWait();
     }
 }
