@@ -36,12 +36,12 @@ public class TwitchGames {
             final int viewers = object.get("viewers").getAsInt();
             final JsonObject game = object.get("game").getAsJsonObject();
             final String gameName = game.get("name").getAsString();
-            final JsonObject box = game.get("box").getAsJsonObject(); 
-            final String imageUrl = box.get("medium").getAsString();
-            final Image boxImage = new Image(imageUrl);
+            final JsonObject box = game.get("box").getAsJsonObject();
+            final String imageUrl = box.get("large").getAsString();
+            final Image boxImage = new Image(imageUrl, true);
             games.add(new TwitchGame(gameName, viewers, boxImage));
         }
-        
+        System.out.println("done");
     }
 
     public void updateData(final TwitchGames updatedGames) {
@@ -49,8 +49,8 @@ public class TwitchGames {
         this.games.addAll(updatedGames.getGames());
     }
 
-    protected List<TwitchGame> getGames() {
+    public List<TwitchGame> getGames() {
         return games;
     }
-    
+
 }

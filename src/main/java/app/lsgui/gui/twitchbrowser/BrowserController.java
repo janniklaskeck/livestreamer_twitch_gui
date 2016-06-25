@@ -6,9 +6,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import app.lsgui.model.twitch.game.TwitchGame;
 import app.lsgui.model.twitch.game.TwitchGames;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -16,12 +20,20 @@ import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.GridPane;
 
+/**
+ *
+ * @author Niklas 25.06.2016
+ *
+ */
 public class BrowserController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BrowserController.class);
 
     @FXML
     private ToolBar browserToolBar;
@@ -30,16 +42,27 @@ public class BrowserController {
     private ProgressBar browserProgressBar;
 
     @FXML
-    private GridPane browserGridPane;
+    private ScrollPane browserScrollPane;
 
+    private GridPane browserGridPane;
+    private TwitchGames games;
+
+    /**
+     * Init method
+     */
     @FXML
     public void initialize() {
         setupToolBar();
 
+        loadExampleFile();
+        setupGrid();
+        browserScrollPane.setContent(browserGridPane);
+    }
+
+    private void loadExampleFile() {
         final FileInputStream fis;
         try {
-            fis = new FileInputStream(
-                    new File(getClass().getClassLoader().getResource("gamesDump.json").getPath()));
+            fis = new FileInputStream(new File(getClass().getClassLoader().getResource("gamesDump.json").getPath()));
             final InputStreamReader isr = new InputStreamReader(fis);
             final BufferedReader bufferedReader = new BufferedReader(isr);
             final StringBuilder sb = new StringBuilder();
@@ -50,10 +73,21 @@ public class BrowserController {
             bufferedReader.close();
             final Gson g = new Gson();
             final JsonObject data = g.fromJson(sb.toString(), JsonObject.class);
-            new TwitchGames(data);
+            games = new TwitchGames(data);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error loading json dumpfile", e);
         }
+    }
+
+    private void setupGrid() {
+        browserGridPane = new GridPane();
+        for (int i = 0; i < games.getGames().size(); i++) {
+            final TwitchGame game = games.getGames().get(i);
+            final int x = i % 5;
+            final int y = i / 5;
+            browserGridPane.add(new TwitchGamePane(game.getName(), game.getBoxImage()), x, y);
+        }
+
     }
 
     private void setupToolBar() {
