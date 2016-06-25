@@ -49,7 +49,10 @@ public class BrowserWindow {
     private void setupStage(final Parent root, final Stage browserStage, final Window parentWindow) {
         Scene scene = new Scene(root);
 
-        browserStage.setResizable(false);
+        browserStage.setMinHeight(600);
+        browserStage.setHeight(600);
+        browserStage.setMinWidth(800);
+        browserStage.setWidth(800);
 
         browserStage.setTitle("Livestreamer GUI v3.0 Twitch Browser");
         browserStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));

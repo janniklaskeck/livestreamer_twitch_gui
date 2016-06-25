@@ -1,8 +1,5 @@
 package app.lsgui.model.twitch.game;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +7,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
 /**
@@ -22,7 +21,7 @@ public class TwitchGames {
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchGames.class);
 
     private JsonObject jsonData;
-    private List<TwitchGame> games;
+    private ObservableList<TwitchGame> games;
 
     /**
      *
@@ -30,7 +29,7 @@ public class TwitchGames {
      */
     public TwitchGames(final JsonObject jsonData) {
         this.jsonData = jsonData;
-        this.games = new ArrayList<>();
+        this.games = FXCollections.observableArrayList();
         this.addGames();
     }
 
@@ -38,7 +37,7 @@ public class TwitchGames {
      * Empty Constructor
      */
     public TwitchGames() {
-        this.games = new ArrayList<>();
+        this.games = FXCollections.observableArrayList();
     }
 
     private void addGames() {
@@ -66,7 +65,7 @@ public class TwitchGames {
         this.games.addAll(updatedGames.getGames());
     }
 
-    public List<TwitchGame> getGames() {
+    public ObservableList<TwitchGame> getGames() {
         return games;
     }
 

@@ -1,5 +1,6 @@
 package app.lsgui.gui.twitchbrowser;
 
+import org.controlsfx.control.GridView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,11 +13,10 @@ import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.BorderPane;
 
 /**
  *
@@ -26,6 +26,7 @@ import javafx.scene.layout.GridPane;
 public class BrowserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrowserController.class);
+    private static boolean isInitialized = false;
 
     @FXML
     private ToolBar browserToolBar;
@@ -34,9 +35,10 @@ public class BrowserController {
     private ProgressBar browserProgressBar;
 
     @FXML
-    private ScrollPane browserScrollPane;
+    private BorderPane browserRootBorderPane;
 
-    private GridPane browserGridPane;
+    private GridView<TwitchGame> browserGridView;
+
     private TwitchGames games;
     private TwitchGamesUpdateService updaterServiceGames;
 
@@ -44,15 +46,12 @@ public class BrowserController {
      * Init method
      */
     @FXML
-    public void initialize() {
+    private void initialize() { // NOSONAR
         setupToolBar();
         startUpdateService();
         setupGrid();
-        setupScrollPane();
-    }
-
-    private void setupScrollPane() {
-        browserScrollPane.setContent(browserGridPane);
+        browserRootBorderPane.setCenter(browserGridView);
+        isInitialized = true;
     }
 
     private void setupToolBar() {
@@ -88,14 +87,7 @@ public class BrowserController {
 
     private void refreshBrowser() {
         LOGGER.debug("Refresh current page");
-        browserGridPane.getChildren().clear();
-        for (int i = 0; i < games.getGames().size(); i++) {
-            final TwitchGame game = games.getGames().get(i);
-            LOGGER.debug(games.getGames().get(i).getName());
-            final int x = i % 5;
-            final int y = i / 5;
-            browserGridPane.add(new TwitchGamePane(game.getName(), game.getBoxImage()), x, y);
-        }
+
     }
 
     private void backBrowser() {
@@ -117,14 +109,10 @@ public class BrowserController {
     }
 
     private void setupGrid() {
-        browserGridPane = new GridPane();
-        for (int i = 0; i < games.getGames().size(); i++) {
-            final TwitchGame game = games.getGames().get(i);
-            final int x = i % 5;
-            final int y = i / 5;
-            browserGridPane.add(new TwitchGamePane(game.getName(), game.getBoxImage()), x, y);
-        }
-
+        browserGridView = new GridView<>(games.getGames());
+        browserGridView.setCellFactory(param -> new TwitchGamePane());
+        browserGridView.setCellWidth(TwitchGamePane.WIDTH);
+        browserGridView.setCellHeight(TwitchGamePane.WIDTH * TwitchGamePane.RATIO + 50);
     }
 
 }
