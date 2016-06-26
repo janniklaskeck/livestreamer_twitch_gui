@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import app.lsgui.model.twitch.ITwitchItem;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
@@ -21,7 +22,7 @@ public class TwitchGames {
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchGames.class);
 
     private JsonObject jsonData;
-    private ObservableList<TwitchGame> games;
+    private ObservableList<ITwitchItem> games;
 
     /**
      *
@@ -65,7 +66,7 @@ public class TwitchGames {
         this.games.addAll(updatedGames.getGames());
     }
 
-    public ObservableList<TwitchGame> getGames() {
+    public ObservableList<ITwitchItem> getGames() {
         return games;
     }
 

@@ -4,9 +4,8 @@ import org.controlsfx.control.GridView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.twitch.game.TwitchGame;
-import app.lsgui.model.twitch.game.TwitchGames;
-import app.lsgui.rest.twitch.TwitchGamesUpdateService;
+import app.lsgui.browser.BrowserCore;
+import app.lsgui.model.twitch.ITwitchItem;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.fxml.FXML;
@@ -26,7 +25,6 @@ import javafx.scene.layout.BorderPane;
 public class BrowserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrowserController.class);
-    private static boolean isInitialized = false;
 
     @FXML
     private ToolBar browserToolBar;
@@ -37,21 +35,21 @@ public class BrowserController {
     @FXML
     private BorderPane browserRootBorderPane;
 
-    private GridView<TwitchGame> browserGridView;
+    private GridView<ITwitchItem> browserGridView;
 
-    private TwitchGames games;
-    private TwitchGamesUpdateService updaterServiceGames;
+    private BrowserCore browserCore;
 
     /**
      * Init method
      */
     @FXML
-    private void initialize() { // NOSONAR
+    public void initialize() {
+        browserCore = BrowserCore.getInstance();
         setupToolBar();
-        startUpdateService();
         setupGrid();
         browserRootBorderPane.setCenter(browserGridView);
-        isInitialized = true;
+        browserCore.setGridView(browserGridView);
+        browserCore.goToHome();
     }
 
     private void setupToolBar() {
@@ -83,36 +81,33 @@ public class BrowserController {
 
     private void goToHome() {
         LOGGER.debug("Go to home directory");
+        browserCore.goToHome();
     }
 
     private void refreshBrowser() {
         LOGGER.debug("Refresh current page");
-
+        browserCore.refresh();
     }
 
     private void backBrowser() {
         LOGGER.debug("Go back one page");
+        browserCore.backward();
     }
 
     private void forwardBrowser() {
         LOGGER.debug("Go one page forward");
+        browserCore.forward();
     }
 
     private void startSearch() {
         LOGGER.debug("Start search");
     }
 
-    private void startUpdateService() {
-        games = new TwitchGames();
-        updaterServiceGames = new TwitchGamesUpdateService(games);
-        updaterServiceGames.start();
-    }
-
     private void setupGrid() {
-        browserGridView = new GridView<>(games.getGames());
-        browserGridView.setCellFactory(param -> new TwitchGamePane());
-        browserGridView.setCellWidth(TwitchGamePane.WIDTH);
-        browserGridView.setCellHeight(TwitchGamePane.WIDTH * TwitchGamePane.RATIO + 50);
+        browserGridView = new GridView<>();
+        browserGridView.setCellFactory(param -> new TwitchItemPane());
+        browserGridView.setCellWidth(TwitchItemPane.WIDTH);
+        browserGridView.setCellHeight(TwitchItemPane.WIDTH * TwitchItemPane.RATIO + 50);
     }
 
 }

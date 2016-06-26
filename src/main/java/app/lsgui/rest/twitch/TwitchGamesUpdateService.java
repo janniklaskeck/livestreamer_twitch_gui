@@ -45,7 +45,7 @@ public class TwitchGamesUpdateService extends ScheduledService<TwitchGames> {
         return new Task<TwitchGames>() {
             @Override
             protected TwitchGames call() throws Exception {
-                return TwitchAPIClient.instance().getGameData();
+                return TwitchAPIClient.getInstance().getGamesData();
             }
         };
     }

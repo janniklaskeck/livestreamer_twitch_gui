@@ -142,7 +142,7 @@ public class TwitchService implements IService {
         LOGGER.info("Add followed Channels if it is a Twitch.tv Channel");
         if (this.getUrl().get().toLowerCase().contains(TWITCH_ID)) {
             LOGGER.debug("Import followed Streams for user {}", username);
-            final Set<String> set = TwitchAPIClient.instance().getListOfFollowedStreams(username);
+            final Set<String> set = TwitchAPIClient.getInstance().getListOfFollowedStreams(username);
             for (final String s : set) {
                 addChannel(s);
             }

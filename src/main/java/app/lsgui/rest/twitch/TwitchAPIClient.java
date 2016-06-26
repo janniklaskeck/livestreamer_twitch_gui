@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+import app.lsgui.model.twitch.channel.TwitchChannels;
 import app.lsgui.model.twitch.game.TwitchGames;
 
 /**
@@ -49,7 +50,7 @@ public class TwitchAPIClient {
      *
      * @return
      */
-    public static synchronized TwitchAPIClient instance() {
+    public static synchronized TwitchAPIClient getInstance() {
         if (instance == null) {
             instance = new TwitchAPIClient();
         }
@@ -75,7 +76,20 @@ public class TwitchAPIClient {
         return null;
     }
 
-    public TwitchGames getGameData() {
+    /**
+     *
+     * @param game
+     * @return
+     */
+    public TwitchChannels getGameData(final String game) {
+        LOGGER.debug("Load game Data");
+        final String gameName = game.replace(" ", "+");
+        final JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCH_BASE_URL + "streams/?game=" + gameName))
+                .getAsJsonObject();
+        return new TwitchChannels(jo);
+    }
+
+    public TwitchGames getGamesData() {
         LOGGER.debug("Load gamesData");
         LOGGER.debug("gamestoload not implemented");
         final JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCH_BASE_URL + "games/top?limit=" + 100 + "&offset=0"))

@@ -6,7 +6,7 @@ import app.lsgui.rest.twitch.TwitchAPIClient;
 
 public class RemoteTestTwitch {
 
-    TwitchAPIClient tp = TwitchAPIClient.instance();
+    TwitchAPIClient tp = TwitchAPIClient.getInstance();
 
     @Test
     public void test() {

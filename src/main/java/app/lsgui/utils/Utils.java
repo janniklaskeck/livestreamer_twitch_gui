@@ -169,7 +169,7 @@ public class Utils {
      */
     public static void addChannelToService(final String channel, final IService service) {
 	if (isTwitchService(service) && !"".equals(channel)) {
-	    if (TwitchAPIClient.instance().channelExists(channel)) {
+	    if (TwitchAPIClient.getInstance().channelExists(channel)) {
 		service.addChannel(channel);
 	    }
 	} else {

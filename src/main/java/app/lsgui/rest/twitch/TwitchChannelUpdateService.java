@@ -65,7 +65,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
                     activeChannelServices.add(model);
                     ACTIVELIST.set(activeChannelServices);
                 }
-                return TwitchAPIClient.instance().getStreamData(model.getName().get());
+                return TwitchAPIClient.getInstance().getStreamData(model.getName().get());
             }
         };
     }
