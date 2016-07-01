@@ -24,19 +24,19 @@ public class ChatListener extends ListenerAdapter {
      * @param chatTextArea
      */
     public ChatListener(final InlineCssTextArea chatTextArea) {
-	cta = chatTextArea;
-	LOGGER.info("ChatClient init");
+        cta = chatTextArea;
+        LOGGER.info("ChatClient init");
     }
 
     @Override
     public void onGenericMessage(GenericMessageEvent event) throws Exception {
-	Platform.runLater(() -> {
-	    final int start = cta.getText().length();
-	    final int end = start + event.getUser().getNick().length() + 1;
-	    cta.appendText(event.getUser().getNick() + ": " + event.getMessage() + "\n");
-	    ChatController.setColoredNickName(cta, start, end);
-	    ChatController.setChatMessageStyle(cta, end, end + event.getMessage().length() + 1);
-	});
+        Platform.runLater(() -> {
+            final int start = cta.getText().length();
+            final int end = start + event.getUser().getNick().length() + 1;
+            cta.appendText(event.getUser().getNick() + ": " + event.getMessage() + "\n");
+            ChatController.setColoredNickName(cta, start, end);
+            ChatController.setChatMessageStyle(cta, end, end + event.getMessage().length() + 1);
+        });
     }
 
 }
