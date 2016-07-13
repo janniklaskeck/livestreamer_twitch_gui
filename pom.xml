@@ -145,6 +145,19 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.gorkwobble.logmanager.LogManager</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>${shadeplugin.version}</version>
                 <executions>
@@ -159,7 +172,7 @@
                                 <transformer
                                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>app.lsgui.Main</Main-Class>
+                                        <Main-Class>app.lsgui.LsGUI</Main-Class>
                                         <LsGUI-Version>${project.name}-${project.version}</LsGUI-Version>
                                         <LsGUI-Build>${buildNumber}</LsGUI-Build>
                                         <LsGUI-Timestamp>${timestamp}</LsGUI-Timestamp>
