@@ -1,4 +1,4 @@
-package app.lsgui.model.channel.generic;
+package app.lsgui.model.generic.channel;
 
 import java.util.Arrays;
 import java.util.List;

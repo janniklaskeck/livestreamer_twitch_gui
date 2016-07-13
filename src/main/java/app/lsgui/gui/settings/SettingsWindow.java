@@ -32,49 +32,49 @@ public class SettingsWindow extends AnchorPane { // NOSONAR
      * @param parentWindow
      */
     public SettingsWindow(final Window parentWindow) {
-	setSettingsStage(new Stage());
-	Parent root = loadFXML();
-	setupStage(root, settingsStage, parentWindow);
+        setSettingsStage(new Stage());
+        Parent root = loadFXML();
+        setupStage(root, settingsStage, parentWindow);
 
     }
 
     private Parent loadFXML() {
-	try {
-	    return FXMLLoader.load(getClass().getClassLoader().getResource(SETTINGSFXML));
-	} catch (IOException e) {
-	    LOGGER.error("ERROR while load settings fxml", e);
-	    Platform.exit();
-	    return null;
-	}
+        try {
+            return FXMLLoader.load(getClass().getClassLoader().getResource(SETTINGSFXML));
+        } catch (IOException e) {
+            LOGGER.error("ERROR while load settings fxml", e);
+            Platform.exit();
+            return null;
+        }
     }
 
     private void setupStage(final Parent root, final Stage settingsStage, final Window parentWindow) {
-	Scene scene = new Scene(root);
+        Scene scene = new Scene(root);
 
-	settingsStage.setResizable(false);
+        settingsStage.setResizable(false);
 
-	settingsStage.setTitle("Livestreamer GUI v3.0 Settings");
-	settingsStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
-	settingsStage.setScene(scene);
-	settingsStage.initModality(Modality.APPLICATION_MODAL);
-	settingsStage.initOwner(parentWindow);
-	SettingsWindow.getSettingsStage().getScene().getStylesheets().add(SettingsWindow.class
-		.getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
-	settingsStage.setOnCloseRequest(event -> setSettingsStage(null));
+        settingsStage.setTitle("Livestreamer GUI v3.0 Settings");
+        settingsStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
+        settingsStage.setScene(scene);
+        settingsStage.initModality(Modality.APPLICATION_MODAL);
+        settingsStage.initOwner(parentWindow);
+        SettingsWindow.getSettingsStage().getScene().getStylesheets().add(SettingsWindow.class
+                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+        settingsStage.setOnCloseRequest(event -> setSettingsStage(null));
     }
 
     private static void setSettingsStage(final Stage stage) {
-	settingsStage = stage;
+        settingsStage = stage;
     }
 
     public static Stage getSettingsStage() {
-	return settingsStage;
+        return settingsStage;
     }
 
     /**
      * Show Settings Stage
      */
     public void showAndWait() {
-	settingsStage.showAndWait();
+        settingsStage.showAndWait();
     }
 }

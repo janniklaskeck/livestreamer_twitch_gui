@@ -5,8 +5,8 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.MainController;
-import app.lsgui.gui.MainWindow;
+import app.lsgui.gui.LsGUIController;
+import app.lsgui.gui.LsGUIWindow;
 import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.settings.Settings;
 import app.lsgui.utils.Utils;
@@ -25,7 +25,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
  */
 public class SettingsController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LsGUIController.class);
 
     @FXML
     private CheckBox sortCheckBox;
@@ -59,11 +59,11 @@ public class SettingsController {
 	    st.setWindowStyle(newValue);
 	    final String style = SettingsController.class.getResource("/styles/" + newValue + ".css").toExternalForm();
 
-	    Utils.clearStyleSheetsFromStage(MainWindow.getRootStage());
+	    Utils.clearStyleSheetsFromStage(LsGUIWindow.getRootStage());
 	    Utils.clearStyleSheetsFromStage(SettingsWindow.getSettingsStage());
 	    Utils.clearStyleSheetsFromStage(ChatWindow.getChatStage());
 
-	    Utils.addStyleSheetToStage(MainWindow.getRootStage(), style);
+	    Utils.addStyleSheetToStage(LsGUIWindow.getRootStage(), style);
 	    Utils.addStyleSheetToStage(SettingsWindow.getSettingsStage(), style);
 	    Utils.addStyleSheetToStage(ChatWindow.getChatStage(), style);
 	});
@@ -72,7 +72,7 @@ public class SettingsController {
 	    final FileChooser exeFileChooser = new FileChooser();
 	    exeFileChooser.setTitle("Choose Livestreamer.exe file");
 	    exeFileChooser.getExtensionFilters().add(new ExtensionFilter("EXE", "*.exe"));
-	    final File exeFile = exeFileChooser.showOpenDialog(MainWindow.getRootStage());
+	    final File exeFile = exeFileChooser.showOpenDialog(LsGUIWindow.getRootStage());
 	    if (exeFile != null) {
 		Settings.instance().setLivestreamerExePath(exeFile.getAbsolutePath());
 	    }
