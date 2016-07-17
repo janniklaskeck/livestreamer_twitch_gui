@@ -37,7 +37,7 @@ public class TwitchGamesUpdateService extends ScheduledService<TwitchGames> {
             }
         });
         setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
-
+        
     }
 
     @Override
@@ -45,6 +45,7 @@ public class TwitchGamesUpdateService extends ScheduledService<TwitchGames> {
         return new Task<TwitchGames>() {
             @Override
             protected TwitchGames call() throws Exception {
+                LOGGER.debug("Progress: {}", getProgress());
                 return TwitchAPIClient.getInstance().getGamesData();
             }
         };

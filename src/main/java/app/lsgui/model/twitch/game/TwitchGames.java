@@ -42,17 +42,19 @@ public class TwitchGames {
     }
 
     private void addGames() {
-        final JsonArray top = this.jsonData.get("top").getAsJsonArray();
-        LOGGER.debug("Update {} games", top.size());
-        for (final JsonElement element : top) {
-            final JsonObject object = element.getAsJsonObject();
-            final int viewers = object.get("viewers").getAsInt();
-            final JsonObject game = object.get("game").getAsJsonObject();
-            final String gameName = game.get("name").getAsString();
-            final JsonObject box = game.get("box").getAsJsonObject();
-            final String imageUrl = box.get("large").getAsString();
-            final Image boxImage = new Image(imageUrl, true);
-            games.add(new TwitchGame(gameName, viewers, boxImage));
+        if (this.jsonData.get("top") != null) {
+            final JsonArray top = this.jsonData.get("top").getAsJsonArray();
+            LOGGER.debug("Update {} games", top.size());
+            for (final JsonElement element : top) {
+                final JsonObject object = element.getAsJsonObject();
+                final int viewers = object.get("viewers").getAsInt();
+                final JsonObject game = object.get("game").getAsJsonObject();
+                final String gameName = game.get("name").getAsString();
+                final JsonObject box = game.get("box").getAsJsonObject();
+                final String imageUrl = box.get("large").getAsString();
+                final Image boxImage = new Image(imageUrl, true);
+                games.add(new TwitchGame(gameName, viewers, boxImage));
+            }
         }
     }
 
