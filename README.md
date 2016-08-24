@@ -16,7 +16,8 @@ Its intended use is for twitch.tv but there is rudimentary support for other ser
  - Current Java 8 JRE
 
 #Download
-You can find the download links over at the <a href src="http://github.com/westerwave/livestreamer_twitch_gui/releases">Releases</a> section.
+You can find the download links over at the <a href src="">Releases</a> section.
+http://github.com/westerwave/livestreamer_twitch_gui/releases
 
 #Preview
 ![lightscreen](https://cloud.githubusercontent.com/assets/1731203/15981648/b4d03d80-2f78-11e6-929f-038a112af26e.png)
