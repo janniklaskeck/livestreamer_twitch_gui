@@ -1,12 +1,21 @@
 package app.lsgui.browser;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.controlsfx.control.GridView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.game.TwitchGames;
+import javafx.collections.FXCollections;
 
 /**
  *
@@ -48,8 +57,25 @@ public class BrowserCore {
      * Go to main directory page
      */
     public void goToHome() {
-        final TwitchGames games = new TwitchGames();
-        gridView.setItems(games.getGames());
+        final FileInputStream fis;
+        try {
+            fis = new FileInputStream(new File(getClass().getClassLoader().getResource("gamesDump.json").getPath()));
+            final InputStreamReader isr = new InputStreamReader(fis);
+            final BufferedReader bufferedReader = new BufferedReader(isr);
+            final StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            bufferedReader.close();
+            final Gson g = new Gson();
+            final JsonObject jo = g.fromJson(sb.toString(), JsonObject.class);
+            final TwitchGames games = new TwitchGames(jo);
+            //new TwitchGamesUpdateService(games).start();
+            gridView.setItems(games.getGames());
+        } catch (IOException e) {
+
+        }
     }
 
     /**
@@ -76,6 +102,10 @@ public class BrowserCore {
         if (current.hasPrevious()) {
             current.previous();
         }
+    }
+
+    public void openGame(final String name) {
+        gridView.setItems(FXCollections.observableArrayList());
     }
 
 }

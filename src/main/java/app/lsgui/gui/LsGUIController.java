@@ -153,7 +153,6 @@ public class LsGUIController {
         importButton.setOnAction(event -> importFollowedChannels());
         twitchBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
         twitchBrowserButton.setOnAction(event -> openTwitchBrowser());
-        twitchBrowserButton.setDisable(true);
 
         toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, addButton);
         toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, removeButton);
@@ -193,7 +192,7 @@ public class LsGUIController {
         channelList.getListView().setUserData(newService);
         if (Utils.isTwitchService(newService)) {
             importButton.setDisable(false);
-            twitchBrowserButton.setDisable(true);
+            twitchBrowserButton.setDisable(false);
         } else {
             importButton.setDisable(true);
             twitchBrowserButton.setDisable(true);
