@@ -1,0 +1,72 @@
+apply plugin: "java"
+apply plugin: "distribution"
+apply plugin: "eclipse"
+
+group = 'app.lsgui'
+version = '3.1.0-SNAPSHOT'
+
+description = "LivestreamerGUI"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+     mavenCentral()
+}
+
+ext {
+
+	mainClass = "app.lsgui.LsGUI"
+
+	// Versionumbers
+	pircbotxVersion = "2.1"
+	richtextfxVersion = "0.6.10"
+	fontawesomefxVersion = "8.9"
+	controlsfxVersion = "8.40.11"
+	gsonVersion = "2.7"
+	httpclientVersion = "4.5.2"
+	slf4jVersion = "1.7.21"
+	log4jVersion = "2.6.2"
+	junitVersion = "4.12"
+}
+
+dependencies {
+    compile "org.pircbotx:pircbotx:$pircbotxVersion"
+    compile "org.fxmisc.richtext:richtextfx:$richtextfxVersion"
+    compile "de.jensd:fontawesomefx:$fontawesomefxVersion"
+    compile "org.controlsfx:controlsfx:$controlsfxVersion"
+    compile "com.google.code.gson:gson:$gsonVersion"
+    compile "org.apache.httpcomponents:httpclient:$httpclientVersion"
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-jul:$log4jVersion"
+    testCompile "junit:junit:$junitVersion"
+}
+
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'LivestreamerGUI FatJar',  
+        	'Implementation-Version': version,
+        	'Main-Class': "$mainClass"
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+jar {
+	appendix = "nolib"
+}
+
+distributions {
+	main {
+		contents {
+			from fatJar
+		}
+	}
+}
+
+eclipse.project {
+  	natures 'org.springsource.ide.eclipse.gradle.core.nature'
+}
