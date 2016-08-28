@@ -25,33 +25,50 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
             FXCollections.observableArrayList());
     private TwitchChannel model;
 
-    /**
-     *
-     * @param model
-     */
-    public TwitchChannelUpdateService(final IChannel model) {
+    public TwitchChannelUpdateService(final IChannel model, final boolean runOnce) {
         LOGGER.debug("Create UpdateService for {}", model.getName().get());
         if (model.getClass().equals(TwitchChannel.class)) {
             this.model = (TwitchChannel) model;
-            setPeriod(Duration.seconds(40));
-            setRestartOnFailure(true);
-            setOnSucceeded(event -> {
-                final TwitchChannelData updatedModel = (TwitchChannelData) event.getSource().getValue();
-                if (updatedModel != null) {
-                    synchronized (this.model) {
-                        this.model.updateData(updatedModel);
-                    }
-                }
-                synchronized (ACTIVELIST) {
-                    ObservableList<IChannel> activeChannelServices = FXCollections
-                            .observableArrayList(ACTIVELIST.get());
-                    activeChannelServices.remove(model);
-                    ACTIVELIST.set(activeChannelServices);
-                }
-            });
-            setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
+            if (runOnce) {
+                setUpSingle();
+            } else {
+                setUpConstant();
+            }
         }
+    }
 
+    public void setUpSingle() {
+        setPeriod(Duration.seconds(40));
+        setRestartOnFailure(true);
+        setOnSucceeded(event -> {
+            final TwitchChannelData updatedModel = (TwitchChannelData) event.getSource().getValue();
+            if (updatedModel != null) {
+                synchronized (this.model) {
+                    this.model.updateData(updatedModel);
+                }
+            }
+            this.cancel();
+        });
+        setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
+    }
+
+    public void setUpConstant() {
+        setPeriod(Duration.seconds(40));
+        setRestartOnFailure(true);
+        setOnSucceeded(event -> {
+            final TwitchChannelData updatedModel = (TwitchChannelData) event.getSource().getValue();
+            if (updatedModel != null) {
+                synchronized (this.model) {
+                    this.model.updateData(updatedModel);
+                }
+            }
+            synchronized (ACTIVELIST) {
+                ObservableList<IChannel> activeChannelServices = FXCollections.observableArrayList(ACTIVELIST.get());
+                activeChannelServices.remove(model);
+                ACTIVELIST.set(activeChannelServices);
+            }
+        });
+        setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
     }
 
     @Override

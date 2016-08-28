@@ -47,8 +47,8 @@ public class Settings {
     private String currentService = "twitch.tv";
     private String twitchUser = "";
     private String twitchOAuth = "";
-    private int maxGamesLoad = 20;
-    private int maxChannelsLoad = 20;
+    private int maxGamesLoad = 100;
+    private int maxChannelsLoad = 100;
     private String liveStreamerExePath = "";
     private String quality = "Best";
     private String recordingPath;
@@ -93,9 +93,9 @@ public class Settings {
         File settings = null;
         try {
             settings = new File(FILEPATH);
-
             settings.getParentFile().mkdirs();
-            settings.createNewFile();
+            final boolean result = settings.createNewFile();
+            LOGGER.debug("Settings file was created? {}", result);
         } catch (IOException e) {
             LOGGER.error("ERROR while creaing Settings file", e);
         }
@@ -155,6 +155,7 @@ public class Settings {
             maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMESSLOAD), 20);
             quality = JSONUtils.getStringSafe(settings.get(QUALITYSTRING), "Best");
             setRecordingPath(JSONUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home")));
+            fis.close();
         } catch (IOException e) {
             LOGGER.error("ERROR while reading Settings file", e);
         }
@@ -163,7 +164,8 @@ public class Settings {
     private void createSettingsJson(final File file) {
         JsonWriter w;
         try {
-            w = new JsonWriter(new FileWriter(file));
+            final FileWriter writer = new FileWriter(file);
+            w = new JsonWriter(writer);
             w.setIndent("  ");
             w.beginArray();
             w.beginObject();
@@ -183,6 +185,7 @@ public class Settings {
             w.endArray();
             w.endArray();
             w.close();
+            writer.close();
         } catch (IOException e) {
             LOGGER.error("ERROR while writing to Settings file", e);
         }

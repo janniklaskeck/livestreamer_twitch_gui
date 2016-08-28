@@ -95,7 +95,7 @@ public class TwitchService implements IService {
         if (this.getUrl().get().toLowerCase().contains(TWITCH_ID)) {
             channelToAdd = new TwitchChannel(name);
             extractor = TwitchChannel.extractor();
-            final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
+            final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd, false);
             tcus.start();
             UPDATESERVICES.put(channelToAdd, tcus);
         } else {

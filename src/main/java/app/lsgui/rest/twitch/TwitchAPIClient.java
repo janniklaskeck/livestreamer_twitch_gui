@@ -25,6 +25,7 @@ import com.google.gson.JsonSyntaxException;
 
 import app.lsgui.model.twitch.channel.TwitchChannels;
 import app.lsgui.model.twitch.game.TwitchGames;
+import app.lsgui.settings.Settings;
 
 /**
  *
@@ -84,16 +85,18 @@ public class TwitchAPIClient {
     public TwitchChannels getGameData(final String game) {
         LOGGER.debug("Load game Data");
         final String gameName = game.replace(" ", "+");
-        final JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCH_BASE_URL + "streams/?game=" + gameName))
-                .getAsJsonObject();
+        final int maxChannelsToLoad = Settings.instance().getMaxChannelsLoad();
+        final String response = getAPIResponse(
+                TWITCH_BASE_URL + "streams/?game=" + gameName + "&offset=0&limit=" + maxChannelsToLoad);
+        final JsonObject jo = JSONPARSER.parse(response).getAsJsonObject();
         return new TwitchChannels(jo);
     }
 
     public TwitchGames getGamesData() {
         LOGGER.debug("Load gamesData");
-        LOGGER.debug("gamestoload not implemented");
-        final JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCH_BASE_URL + "games/top?limit=" + 100 + "&offset=0"))
-                .getAsJsonObject();
+        final int maxGamesToLoad = Settings.instance().getMaxGamesLoad();
+        final String response = getAPIResponse(TWITCH_BASE_URL + "games/top?offset=0&limit=" + maxGamesToLoad);
+        final JsonObject jo = JSONPARSER.parse(response).getAsJsonObject();
         return new TwitchGames(jo);
     }
 
@@ -149,6 +152,7 @@ public class TwitchAPIClient {
     }
 
     private String getAPIResponse(final String apiUrl) {
+        LOGGER.debug("Send Request to API URL '{}'", apiUrl);
         try {
             final URI url = new URI(apiUrl);
             final HttpGet request = new HttpGet(url);

@@ -1,21 +1,16 @@
 package app.lsgui.browser;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.controlsfx.control.GridView;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.twitch.ITwitchItem;
+import app.lsgui.model.twitch.channel.TwitchChannels;
 import app.lsgui.model.twitch.game.TwitchGames;
-import javafx.collections.FXCollections;
+import app.lsgui.rest.twitch.TwitchAPIClient;
 
 /**
  *
@@ -24,9 +19,11 @@ import javafx.collections.FXCollections;
  */
 public class BrowserCore {
 
-    private static BrowserCore instance;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BrowserCore.class);
 
     private static final LinkedList<String> history = new LinkedList<>();
+    private static BrowserCore instance;
+
     private ListIterator<String> current = history.listIterator();
     private String home = "";
     private GridView<ITwitchItem> gridView;
@@ -57,33 +54,16 @@ public class BrowserCore {
      * Go to main directory page
      */
     public void goToHome() {
-        final FileInputStream fis;
-        try {
-            fis = new FileInputStream(new File(getClass().getClassLoader().getResource("gamesDump.json").getPath()));
-            final InputStreamReader isr = new InputStreamReader(fis);
-            final BufferedReader bufferedReader = new BufferedReader(isr);
-            final StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-            bufferedReader.close();
-            final Gson g = new Gson();
-            final JsonObject jo = g.fromJson(sb.toString(), JsonObject.class);
-            final TwitchGames games = new TwitchGames(jo);
-            //new TwitchGamesUpdateService(games).start();
-            gridView.setItems(games.getGames());
-        } catch (IOException e) {
-
-        }
+        final TwitchGames games = TwitchAPIClient.getInstance().getGamesData();
+        gridView.setItems(games.getGames());
     }
 
     /**
      * Refresh the current Page
      */
     public void refresh() {
-        gridView.setItems(null);
-
+        LOGGER.debug("Refresh: redirect to home page");
+        goToHome();
     }
 
     /**
@@ -105,7 +85,9 @@ public class BrowserCore {
     }
 
     public void openGame(final String name) {
-        gridView.setItems(FXCollections.observableArrayList());
+        LOGGER.debug("Open Data for Game '{}'", name);
+        final TwitchChannels channels = TwitchAPIClient.getInstance().getGameData(name);
+        gridView.setItems(channels.getChannels());
     }
 
 }

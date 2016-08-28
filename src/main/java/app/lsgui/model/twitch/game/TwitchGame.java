@@ -1,6 +1,8 @@
 package app.lsgui.model.twitch.game;
 
 import app.lsgui.model.twitch.ITwitchItem;
+import app.lsgui.model.twitch.channel.TwitchChannels;
+import app.lsgui.rest.twitch.TwitchAPIClient;
 import javafx.scene.image.Image;
 
 /**
@@ -12,18 +14,24 @@ public class TwitchGame implements ITwitchItem {
 
     private String name;
     private int viewers;
+    private int channelCount;
     private Image boxImage;
 
-    /**
-     *
-     * @param name
-     * @param viewers
-     * @param boxImage
-     */
-    public TwitchGame(final String name, final int viewers, final Image boxImage) {
+    private TwitchChannels channels;
+
+    public TwitchGame(final String name, final int viewers, final int channelCount, final Image boxImage) {
         this.name = name;
         this.viewers = viewers;
         this.boxImage = boxImage;
+        this.channelCount = channelCount;
+    }
+
+    public void loadChannelData() {
+        channels = TwitchAPIClient.getInstance().getGameData(getName());
+    }
+
+    public TwitchChannels getChannels() {
+        return channels;
     }
 
     public String getName() {
@@ -32,6 +40,10 @@ public class TwitchGame implements ITwitchItem {
 
     public int getViewers() {
         return viewers;
+    }
+
+    public int getChannelCount() {
+        return channelCount;
     }
 
     public Image getBoxImage() {

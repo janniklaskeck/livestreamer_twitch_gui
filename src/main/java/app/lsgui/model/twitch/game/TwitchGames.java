@@ -22,7 +22,7 @@ public class TwitchGames {
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchGames.class);
 
     private JsonObject jsonData;
-    private ObservableList<ITwitchItem> games;
+    private ObservableList<ITwitchItem> games = FXCollections.observableArrayList();
 
     /**
      *
@@ -34,13 +34,6 @@ public class TwitchGames {
         this.addGames();
     }
 
-    /**
-     * Empty Constructor
-     */
-    public TwitchGames() {
-        this.games = FXCollections.observableArrayList();
-    }
-
     private void addGames() {
         if (this.jsonData.get("top") != null) {
             final JsonArray top = this.jsonData.get("top").getAsJsonArray();
@@ -48,12 +41,16 @@ public class TwitchGames {
             for (final JsonElement element : top) {
                 final JsonObject object = element.getAsJsonObject();
                 final int viewers = object.get("viewers").getAsInt();
+                final int channels = object.get("channels").getAsInt();
+
                 final JsonObject game = object.get("game").getAsJsonObject();
                 final String gameName = game.get("name").getAsString();
+
                 final JsonObject box = game.get("box").getAsJsonObject();
                 final String imageUrl = box.get("large").getAsString();
                 final Image boxImage = new Image(imageUrl, true);
-                games.add(new TwitchGame(gameName, viewers, boxImage));
+
+                games.add(new TwitchGame(gameName, viewers, channels, boxImage));
             }
         }
     }
