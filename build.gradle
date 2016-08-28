@@ -76,16 +76,5 @@ eclipse {
 	classpath {
 		downloadSources = true
 		downloadJavadoc = true
-		file {
-			whenMerged { classpath ->
-				classpath.entries.removeAll { entry ->
-					entry.kind == 'lib'
-				}
-			}
-			withXml {
-                def node = it.asNode()
-                node.appendNode('classpathentry', [kind: 'con', path: 'org.eclipse.buildship.core.gradleclasspathcontainer'])
-            }
-		}
 	}
 }
