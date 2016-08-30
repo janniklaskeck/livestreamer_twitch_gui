@@ -39,18 +39,18 @@ public class LivestreamerUtils {
      * @return
      */
     public static JsonObject getQualityJsonFromLivestreamer(final String url) {
-	try {
-	    final String livestreamerExec = LIVESTREAMERCMD;
-	    final Process process = new ProcessBuilder(livestreamerExec, "-j", url).redirectErrorStream(true).start();
-	    JsonObject jsonQualities = PARSER
-		    .parse(new JsonReader(new BufferedReader(new InputStreamReader(process.getInputStream()))))
-		    .getAsJsonObject();
-	    process.waitFor();
-	    return jsonQualities;
-	} catch (IOException | InterruptedException e) {
-	    LOGGER.error("failed to retrieve stream qualites for " + url + "," + " reason: " + e.getMessage(), e);
-	}
-	return new JsonObject();
+        try {
+            final String livestreamerExec = LIVESTREAMERCMD;
+            final Process process = new ProcessBuilder(livestreamerExec, "-j", url).redirectErrorStream(true).start();
+            JsonObject jsonQualities = PARSER
+                    .parse(new JsonReader(new BufferedReader(new InputStreamReader(process.getInputStream()))))
+                    .getAsJsonObject();
+            process.waitFor();
+            return jsonQualities;
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error("failed to retrieve stream qualites for " + url + "," + " reason: " + e.getMessage(), e);
+        }
+        return new JsonObject();
     }
 
     /**
@@ -58,8 +58,8 @@ public class LivestreamerUtils {
      * @param url
      */
     public static void startLivestreamer(final String url) {
-	final String quality = Settings.instance().getQuality();
-	startLivestreamer(url, quality);
+        final String quality = Settings.instance().getQuality();
+        startLivestreamer(url, quality);
     }
 
     /**
@@ -68,20 +68,20 @@ public class LivestreamerUtils {
      * @param quality
      */
     public static void startLivestreamer(final String url, final String quality) {
-	LOGGER.info("Starting Stream {} with Quality {}", url, quality);
-	Thread t = new Thread(() -> {
-	    try {
-		ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), url, quality));
-		pb.redirectOutput(Redirect.INHERIT);
-		pb.redirectError(Redirect.INHERIT);
-		Process prc = pb.start();
-		prc.waitFor();
-	    } catch (IOException | InterruptedException e) {
-		LOGGER.error("ERROR while running livestreamer", e);
-	    }
-	});
-	t.setDaemon(true);
-	t.start();
+        LOGGER.info("Starting Stream {} with Quality {}", url, quality);
+        Thread t = new Thread(() -> {
+            try {
+                ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), url, quality));
+                pb.redirectOutput(Redirect.INHERIT);
+                pb.redirectError(Redirect.INHERIT);
+                Process prc = pb.start();
+                prc.waitFor();
+            } catch (IOException | InterruptedException e) {
+                LOGGER.error("ERROR while running livestreamer", e);
+            }
+        });
+        t.setDaemon(true);
+        t.start();
     }
 
     /**
@@ -91,45 +91,45 @@ public class LivestreamerUtils {
      * @param filePath
      */
     public static void recordLivestreamer(final String url, final String quality, final File filePath) {
-	LOGGER.info("Record Stream {} with Quality {} to file {}", url, quality, filePath);
-	Thread t = new Thread(() -> {
-	    try {
-		String path = "\"" + filePath.getAbsolutePath() + "\"";
-		path = path.replace("\\", "/");
-		Settings.instance().setRecordingPath(path);
-		ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), "-o", path, url, quality));
-		pb.redirectOutput(Redirect.INHERIT);
-		pb.redirectError(Redirect.INHERIT);
-		Process prc = pb.start();
-		prc.waitFor();
-	    } catch (IOException | InterruptedException e) {
-		LOGGER.error("ERROR while recording", e);
-	    }
-	});
-	t.setDaemon(true);
-	t.start();
+        LOGGER.info("Record Stream {} with Quality {} to file {}", url, quality, filePath);
+        Thread t = new Thread(() -> {
+            try {
+                String path = "\"" + filePath.getAbsolutePath() + "\"";
+                path = path.replace("\\", "/");
+                Settings.instance().setRecordingPath(path);
+                ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), "-o", path, url, quality));
+                pb.redirectOutput(Redirect.INHERIT);
+                pb.redirectError(Redirect.INHERIT);
+                Process prc = pb.start();
+                prc.waitFor();
+            } catch (IOException | InterruptedException e) {
+                LOGGER.error("ERROR while recording", e);
+            }
+        });
+        t.setDaemon(true);
+        t.start();
     }
 
     private static String getLivestreamerExe() {
-	if ("".equals(Settings.instance().getLivestreamerExePath())) {
-	    if (!checkForLivestreamerOnPath()) {
-		Platform.runLater(() -> Notifications.create().title("Livestreamer GUI Warning")
-			.text("Check for livestreamer on path").darkStyle().showInformation());
-		return "";
-	    }
-	    return LIVESTREAMERCMD;
-	} else {
-	    return Settings.instance().getLivestreamerExePath();
-	}
+        if ("".equals(Settings.instance().getLivestreamerExePath())) {
+            if (!checkForLivestreamerOnPath()) {
+                Platform.runLater(() -> Notifications.create().title("Livestreamer GUI Warning")
+                        .text("Check for livestreamer on path").darkStyle().showInformation());
+                return "";
+            }
+            return LIVESTREAMERCMD;
+        } else {
+            return Settings.instance().getLivestreamerExePath();
+        }
     }
 
     private static boolean checkForLivestreamerOnPath() {
-	Map<String, String> env = System.getenv();
-	final String windowsPath = env.get("Path");
-	if (windowsPath.toLowerCase().contains(LIVESTREAMERCMD)) {
-	    return true;
-	}
-	return false;
+        Map<String, String> env = System.getenv();
+        final String windowsPath = env.get("Path");
+        if (windowsPath.toLowerCase().contains(LIVESTREAMERCMD)) {
+            return true;
+        }
+        return false;
     }
 
 }

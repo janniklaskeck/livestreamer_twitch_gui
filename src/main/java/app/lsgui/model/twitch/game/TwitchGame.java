@@ -3,6 +3,10 @@ package app.lsgui.model.twitch.game;
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.channel.TwitchChannels;
 import app.lsgui.rest.twitch.TwitchAPIClient;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 
 /**
@@ -12,41 +16,41 @@ import javafx.scene.image.Image;
  */
 public class TwitchGame implements ITwitchItem {
 
-    private String name;
-    private int viewers;
-    private int channelCount;
-    private Image boxImage;
+    private StringProperty name;
+    private StringProperty viewers;
+    private StringProperty channelCount;
+    private ObjectProperty<Image> boxImage;
 
     private TwitchChannels channels;
 
     public TwitchGame(final String name, final int viewers, final int channelCount, final Image boxImage) {
-        this.name = name;
-        this.viewers = viewers;
-        this.boxImage = boxImage;
-        this.channelCount = channelCount;
+        this.name = new SimpleStringProperty(name);
+        this.viewers = new SimpleStringProperty(Integer.toString(viewers));
+        this.boxImage = new SimpleObjectProperty<>(boxImage);
+        this.channelCount = new SimpleStringProperty(Integer.toString(channelCount));
     }
 
     public void loadChannelData() {
-        channels = TwitchAPIClient.getInstance().getGameData(getName());
+        channels = TwitchAPIClient.getInstance().getGameData(getName().get());
     }
 
     public TwitchChannels getChannels() {
         return channels;
     }
 
-    public String getName() {
+    public StringProperty getName() {
         return name;
     }
 
-    public int getViewers() {
+    public StringProperty getViewers() {
         return viewers;
     }
 
-    public int getChannelCount() {
+    public StringProperty getChannelCount() {
         return channelCount;
     }
 
-    public Image getBoxImage() {
+    public ObjectProperty<Image> getBoxImage() {
         return boxImage;
     }
 

@@ -44,7 +44,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
             final TwitchChannelData updatedModel = (TwitchChannelData) event.getSource().getValue();
             if (updatedModel != null) {
                 synchronized (this.model) {
-                    this.model.updateData(updatedModel);
+                    this.model.updateData(updatedModel, false);
                 }
             }
             this.cancel();
@@ -59,7 +59,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
             final TwitchChannelData updatedModel = (TwitchChannelData) event.getSource().getValue();
             if (updatedModel != null) {
                 synchronized (this.model) {
-                    this.model.updateData(updatedModel);
+                    this.model.updateData(updatedModel, true);
                 }
             }
             synchronized (ACTIVELIST) {

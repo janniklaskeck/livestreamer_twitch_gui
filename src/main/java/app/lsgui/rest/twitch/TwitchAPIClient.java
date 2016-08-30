@@ -77,11 +77,6 @@ public class TwitchAPIClient {
         return null;
     }
 
-    /**
-     *
-     * @param game
-     * @return
-     */
     public TwitchChannels getGameData(final String game) {
         LOGGER.debug("Load game Data");
         final String gameName = game.replace(" ", "+");

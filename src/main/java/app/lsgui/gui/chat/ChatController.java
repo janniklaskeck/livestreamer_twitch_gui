@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.settings.Settings;
-import app.lsgui.utils.Utils;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -143,7 +143,7 @@ public class ChatController {
      */
     public static void setColoredNickName(final InlineCssTextArea cta, final int start, final int end) {
         cta.setStyle(start, end,
-                "-fx-fill: " + Utils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
+                "-fx-fill: " + LsGuiUtils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
 
     }
 

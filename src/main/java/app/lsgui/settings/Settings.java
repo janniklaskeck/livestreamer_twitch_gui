@@ -71,7 +71,7 @@ public class Settings {
     private Settings() {
         File settings = new File(FILEPATH);
         if (settings.exists() && settings.isFile() && !isLoading) {
-            loadSettings(settings);
+            loadSettingsFromFile(settings);
         }
     }
 
@@ -106,11 +106,9 @@ public class Settings {
      *
      * @param file
      */
-    public void loadSettings(final File file) {
+    public void loadSettingsFromFile(final File file) {
         isLoading = true;
-        final FileInputStream fis;
-        try {
-            fis = new FileInputStream(file);
+        try (final FileInputStream fis = new FileInputStream(file);) {
             final InputStreamReader isr = new InputStreamReader(fis);
             final BufferedReader bufferedReader = new BufferedReader(isr);
             final StringBuilder sb = new StringBuilder();
@@ -118,53 +116,58 @@ public class Settings {
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
+            isr.close();
             bufferedReader.close();
             final Gson g = new Gson();
             final JsonArray jArray = g.fromJson(sb.toString(), JsonArray.class);
-            final JsonObject settings = jArray.get(0).getAsJsonObject();
-
-            services.set(FXCollections.observableArrayList());
-
-            final JsonArray servicesArray = jArray.get(1).getAsJsonArray();
-            for (int i = 0; i < servicesArray.size(); i++) {
-                final JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
-                final String serviceName = serviceJson.get(SERVICENAME).getAsString();
-                final String serviceUrl = serviceJson.get(SERVICEURL).getAsString();
-                final IService service;
-                if (serviceUrl.toLowerCase().contains("twitch")) {
-                    service = new TwitchService(serviceName, serviceUrl);
-                    ((TwitchService) service).bindSortProperty(sortTwitch);
-                } else {
-                    service = new GenericService(serviceName, serviceUrl);
-                }
-
-                final JsonArray channels = serviceJson.get("channels").getAsJsonArray();
-                for (int e = 0; e < channels.size(); e++) {
-                    final String channel = channels.get(e).getAsString();
-                    service.addChannel(channel);
-                }
-                services.get().add(service);
-            }
-            sortTwitch.setValue(JSONUtils.getBooleanSafe(settings.get(TWITCHSORT), false));
-            minimizeToTray = JSONUtils.getBooleanSafe(settings.get(MINIMIZETOTRAYSTRING), false);
-            twitchUser = JSONUtils.getStringSafe(settings.get(TWITCHUSERSTRING), "");
-            twitchOAuth = JSONUtils.getStringSafe(settings.get(TWITCHOAUTHSTRING), "");
-            windowStyle = JSONUtils.getStringSafe(settings.get(WINDOWSTYLESTRING), "LightStyle");
-            liveStreamerExePath = JSONUtils.getStringSafe(settings.get(EXEPATHSTRING), "");
-            maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELSLOAD), 20);
-            maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMESSLOAD), 20);
-            quality = JSONUtils.getStringSafe(settings.get(QUALITYSTRING), "Best");
-            setRecordingPath(JSONUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home")));
-            fis.close();
+            loadSettings(jArray);
+            loadServices(jArray);
         } catch (IOException e) {
             LOGGER.error("ERROR while reading Settings file", e);
         }
     }
 
+    private void loadSettings(final JsonArray jArray) {
+        final JsonObject settings = jArray.get(0).getAsJsonObject();
+        sortTwitch.setValue(JSONUtils.getBooleanSafe(settings.get(TWITCHSORT), false));
+        minimizeToTray = JSONUtils.getBooleanSafe(settings.get(MINIMIZETOTRAYSTRING), false);
+        twitchUser = JSONUtils.getStringSafe(settings.get(TWITCHUSERSTRING), "");
+        twitchOAuth = JSONUtils.getStringSafe(settings.get(TWITCHOAUTHSTRING), "");
+        windowStyle = JSONUtils.getStringSafe(settings.get(WINDOWSTYLESTRING), "LightStyle");
+        liveStreamerExePath = JSONUtils.getStringSafe(settings.get(EXEPATHSTRING), "");
+        maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELSLOAD), 20);
+        maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMESSLOAD), 20);
+        quality = JSONUtils.getStringSafe(settings.get(QUALITYSTRING), "Best");
+        setRecordingPath(JSONUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home")));
+    }
+
+    private void loadServices(final JsonArray jArray) {
+        services.set(FXCollections.observableArrayList());
+        final JsonArray servicesArray = jArray.get(1).getAsJsonArray();
+        for (int i = 0; i < servicesArray.size(); i++) {
+            final JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
+            final String serviceName = serviceJson.get(SERVICENAME).getAsString();
+            final String serviceUrl = serviceJson.get(SERVICEURL).getAsString();
+            final IService service;
+            if (serviceUrl.toLowerCase().contains("twitch")) {
+                service = new TwitchService(serviceName, serviceUrl);
+                ((TwitchService) service).bindSortProperty(sortTwitch);
+            } else {
+                service = new GenericService(serviceName, serviceUrl);
+            }
+
+            final JsonArray channels = serviceJson.get("channels").getAsJsonArray();
+            for (int e = 0; e < channels.size(); e++) {
+                final String channel = channels.get(e).getAsString();
+                service.addChannel(channel);
+            }
+            services.get().add(service);
+        }
+    }
+
     private void createSettingsJson(final File file) {
         JsonWriter w;
-        try {
-            final FileWriter writer = new FileWriter(file);
+        try (final FileWriter writer = new FileWriter(file)) {
             w = new JsonWriter(writer);
             w.setIndent("  ");
             w.beginArray();
@@ -185,7 +188,6 @@ public class Settings {
             w.endArray();
             w.endArray();
             w.close();
-            writer.close();
         } catch (IOException e) {
             LOGGER.error("ERROR while writing to Settings file", e);
         }

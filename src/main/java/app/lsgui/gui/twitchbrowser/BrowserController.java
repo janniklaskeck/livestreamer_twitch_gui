@@ -108,7 +108,7 @@ public class BrowserController {
         browserGridView.setUserData(browserCore);
         browserGridView.setCellFactory(param -> new TwitchItemPane());
         browserGridView.setCellWidth(TwitchItemPane.WIDTH);
-        browserGridView.setCellHeight(TwitchItemPane.WIDTH * TwitchItemPane.RATIO + 50);
+        browserGridView.cellHeightProperty().bind(TwitchItemPane.HEIGHT_PROPERTY);
     }
 
 }

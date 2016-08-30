@@ -9,7 +9,7 @@ import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.utils.LivestreamerUtils;
-import app.lsgui.utils.Utils;
+import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.WrappedImageView;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -87,7 +87,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         channelProperty.addListener((observable, oldValue, newValue) -> {
             final IChannel selectedChannel = newValue;
             if (selectedChannel != null) {
-                if (Utils.isTwitchChannel(selectedChannel)) {
+                if (LsGuiUtils.isTwitchChannel(selectedChannel)) {
                     bindToTwitchChannel(selectedChannel);
                 } else {
                     bindToGenericChannel(selectedChannel);
@@ -165,7 +165,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     }
 
     private void startStream() {
-        if (Utils.isChannelOnline(channelProperty.get())) {
+        if (LsGuiUtils.isChannelOnline(channelProperty.get())) {
             final String url = buildUrl();
             final String quality = getQuality();
             LivestreamerUtils.startLivestreamer(url, quality);
@@ -174,16 +174,16 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
 
     private void recordStream() {
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
-        Utils.recordStream(service, channelProperty.get());
+        LsGuiUtils.recordStream(service, channelProperty.get());
     }
 
     private void openChat() {
-        Utils.openTwitchChat(channelProperty.get());
+        LsGuiUtils.openTwitchChat(channelProperty.get());
     }
 
     private void openBrowser() {
         if (channelProperty.get() != null) {
-            Utils.openURLInBrowser(buildUrl());
+            LsGuiUtils.openURLInBrowser(buildUrl());
         }
     }
 
@@ -202,6 +202,6 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     private String buildUrl() {
         final String serviceUrl = serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get();
         final String channel = channelProperty.get().getName().get();
-        return Utils.buildUrl(serviceUrl, channel);
+        return LsGuiUtils.buildUrl(serviceUrl, channel);
     }
 }

@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.lsgui.gui.settings.SettingsController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.lsgui.gui.settings.SettingsController">
   <columnConstraints>
     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
@@ -32,12 +36,12 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
       </TextField>
-      <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <ChoiceBox fx:id="gamesToLoadChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
       </ChoiceBox>
-      <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <ChoiceBox fx:id="channelsToLoadChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
@@ -50,8 +54,8 @@
       <CheckBox fx:id="sortCheckBox" mnemonicParsing="false" text="Sort Channels after Online Status" GridPane.columnSpan="2" />
       <Label text="Twitch.tv Username" GridPane.rowIndex="1" />
       <Label text="Twitch.tv OAuth Key" GridPane.rowIndex="2" />
-      <Label text="Placeholder" GridPane.rowIndex="3" />
-      <Label text="Placeholder" GridPane.rowIndex="4" />
+      <Label text="Games to load" GridPane.rowIndex="3" />
+      <Label text="Channels to load" GridPane.rowIndex="4" />
       <Button mnemonicParsing="false" onAction="#saveSettingsAction" text="Save &amp; Close" GridPane.rowIndex="7">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 import app.lsgui.utils.JSONUtils;
-import app.lsgui.utils.Utils;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.scene.image.Image;
 
 /**
@@ -88,7 +88,7 @@ public class TwitchChannelData {
         calculateAndSetUptime();
         setPreviewImage(new Image(getPreviewURL(), true));
         setLogoImage(null);
-        setQualities(Utils.getAvailableQuality("http://twitch.tv/" + name));
+        setQualities(LsGuiUtils.getAvailableQuality("http://twitch.tv/" + name));
     }
 
     private void setOfflineData(final String name) {
