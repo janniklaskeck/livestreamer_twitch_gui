@@ -113,14 +113,18 @@ public class LivestreamerUtils {
     private static String getLivestreamerExe() {
         if ("".equals(Settings.instance().getLivestreamerExePath())) {
             if (!checkForLivestreamerOnPath()) {
-                Platform.runLater(() -> Notifications.create().title("Livestreamer GUI Warning")
-                        .text("Check for livestreamer on path").darkStyle().showInformation());
+                Platform.runLater(LivestreamerUtils::showLivestreamerPathWarning);
                 return "";
             }
             return LIVESTREAMERCMD;
         } else {
             return Settings.instance().getLivestreamerExePath();
         }
+    }
+
+    private static void showLivestreamerPathWarning() {
+        Notifications.create().title("Livestreamer GUI Warning").text("Check for livestreamer on path").darkStyle()
+                .showWarning();
     }
 
     private static boolean checkForLivestreamerOnPath() {

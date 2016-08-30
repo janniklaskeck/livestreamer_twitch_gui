@@ -76,14 +76,10 @@ public class SettingsController {
         });
 
         gamesToLoadChoiceBox.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    st.setMaxGamesLoad(newValue);
-                });
+                .addListener((observable, oldValue, newValue) -> st.setMaxGamesLoad(newValue));
 
         channelsToLoadChoiceBox.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    st.setMaxChannelsLoad(newValue);
-                });
+                .addListener((observable, oldValue, newValue) -> st.setMaxChannelsLoad(newValue));
 
         exeBrowseButton.setOnAction(event -> {
             final FileChooser exeFileChooser = new FileChooser();
@@ -101,8 +97,8 @@ public class SettingsController {
             gamesToLoadChoiceBox.getItems().add(i);
             channelsToLoadChoiceBox.getItems().add(i);
         }
-        gamesToLoadChoiceBox.getSelectionModel().select(new Integer(Settings.instance().getMaxGamesLoad()));
-        channelsToLoadChoiceBox.getSelectionModel().select(new Integer(Settings.instance().getMaxChannelsLoad()));
+        gamesToLoadChoiceBox.getSelectionModel().select(Integer.valueOf(Settings.instance().getMaxGamesLoad()));
+        channelsToLoadChoiceBox.getSelectionModel().select(Integer.valueOf(Settings.instance().getMaxChannelsLoad()));
     }
 
     private void setupStyleChoiceBox() {
