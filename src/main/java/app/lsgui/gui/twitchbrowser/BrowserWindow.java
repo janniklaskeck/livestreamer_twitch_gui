@@ -49,8 +49,8 @@ public class BrowserWindow {
     private void setupStage(final Parent root, final Stage browserStage, final Window parentWindow) {
         Scene scene = new Scene(root);
 
-        browserStage.setMinHeight(600);
-        browserStage.setHeight(600);
+        browserStage.setMinHeight(800);
+        browserStage.setHeight(800);
         browserStage.setMinWidth(800);
         browserStage.setWidth(800);
 

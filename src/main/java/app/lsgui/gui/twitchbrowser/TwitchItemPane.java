@@ -3,10 +3,13 @@ package app.lsgui.gui.twitchbrowser;
 import org.controlsfx.control.GridCell;
 
 import app.lsgui.browser.BrowserCore;
+import app.lsgui.model.service.IService;
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.model.twitch.game.TwitchGame;
+import app.lsgui.settings.Settings;
 import app.lsgui.utils.LivestreamerUtils;
+import app.lsgui.utils.LsGuiUtils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;
@@ -15,9 +18,12 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -98,7 +104,20 @@ public class TwitchItemPane extends GridCell<ITwitchItem> { // NOSONAR
         contentBorderPane.setCenter(channelImage);
         contentBorderPane.setBottom(textBox);
         contentBorderPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            LivestreamerUtils.startLivestreamer("twitch.tv/" + name.get(), "source");
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                LivestreamerUtils.startLivestreamer("twitch.tv/" + name.get(), "source");
+            } else if (event.getButton().equals(MouseButton.SECONDARY)) {
+                final ContextMenu contextMenu = new ContextMenu();
+                final MenuItem startStream = new MenuItem("Start Stream");
+                startStream.setOnAction(
+                        eventStartContext -> LivestreamerUtils.startLivestreamer("twitch.tv/" + name.get(), "source"));
+                final MenuItem addToList = new MenuItem("Add Stream To Favourites");
+                final IService twitchService = Settings.instance().getTwitchService();
+                addToList.setOnAction(eventAddContext -> LsGuiUtils.addChannelToService(name.get(), twitchService));
+                contextMenu.getItems().add(startStream);
+                contextMenu.getItems().add(addToList);
+                this.contextMenuProperty().set(contextMenu);
+            }
             event.consume();
         });
         return contentBorderPane;

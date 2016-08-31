@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.BorderPane?>
 
@@ -8,7 +7,4 @@
    <top>
       <ToolBar fx:id="browserToolBar" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </top>
-   <bottom>
-      <ProgressBar fx:id="browserProgressBar" prefWidth="200.0" progress="0.0" BorderPane.alignment="CENTER" />
-   </bottom>
 </BorderPane>

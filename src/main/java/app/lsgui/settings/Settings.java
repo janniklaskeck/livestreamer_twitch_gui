@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import app.lsgui.model.service.GenericService;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
 import app.lsgui.utils.JSONUtils;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -305,5 +308,15 @@ public class Settings {
 
     public void setRecordingPath(final String recordingPath) {
         this.recordingPath = recordingPath;
+    }
+
+    public IService getTwitchService() {
+        final List<IService> servicesAsList = getStreamServices().get();
+        final Optional<IService> serviceOptional = servicesAsList.stream().filter(LsGuiUtils::isTwitchService)
+                .findFirst();
+        if (serviceOptional.isPresent()) {
+            return serviceOptional.get();
+        }
+        return null;
     }
 }
