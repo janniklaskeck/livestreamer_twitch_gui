@@ -84,7 +84,7 @@ public class LsGUIController {
 
     private void setupQualityComboBox() {
         qualityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null && !newValue.equals(OFFLINEQUALITY)) {
+            if (!OFFLINEQUALITY.equals(newValue)) {
                 Settings.instance().setQuality(newValue);
             }
         });

@@ -1,10 +1,10 @@
 package app.lsgui.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -42,9 +42,9 @@ public class LivestreamerUtils {
         try {
             final String livestreamerExec = LIVESTREAMERCMD;
             final Process process = new ProcessBuilder(livestreamerExec, "-j", url).redirectErrorStream(true).start();
-            JsonObject jsonQualities = PARSER
-                    .parse(new JsonReader(new BufferedReader(new InputStreamReader(process.getInputStream()))))
-                    .getAsJsonObject();
+            final InputStreamReader isr = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
+            final JsonReader jr = new JsonReader(isr);
+            JsonObject jsonQualities = PARSER.parse(jr).getAsJsonObject();
             process.waitFor();
             return jsonQualities;
         } catch (IOException | InterruptedException e) {

@@ -21,7 +21,6 @@ import javafx.scene.layout.AnchorPane;
 public class ChannelList extends AnchorPane {// NOSONAR
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelList.class);
     private static final String CHANNELLISTFXML = "fxml/ChannelList.fxml";
-    private static FXMLLoader loader;
 
     private ListProperty<IChannel> channelListProperty;
     private ObjectProperty<IChannel> selectedChannelProperty;
@@ -34,7 +33,7 @@ public class ChannelList extends AnchorPane {// NOSONAR
      */
     public ChannelList() {
         LOGGER.debug("Construct StreamList");
-
+        final FXMLLoader loader;
         loader = new FXMLLoader();
         loader.setRoot(this);
         loader.setController(this);

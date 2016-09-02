@@ -1,11 +1,14 @@
 package app.lsgui.settings;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,9 +95,9 @@ public class Settings {
         File settings = null;
         try {
             settings = new File(FILEPATH);
-            settings.getParentFile().mkdirs();
+            final boolean createdDirs = settings.getParentFile().mkdirs();
             final boolean result = settings.createNewFile();
-            LOGGER.debug("Settings file was created? {}", result);
+            LOGGER.debug("Settings Dir created? {}. Settings file was created? {}", createdDirs, result);
         } catch (IOException e) {
             LOGGER.error("ERROR while creaing Settings file", e);
         }
@@ -103,16 +106,13 @@ public class Settings {
 
     private void loadSettingsFromFile(final File file) {
         isLoading = true;
-        try (final FileInputStream fis = new FileInputStream(file);) {
-            final InputStreamReader isr = new InputStreamReader(fis);
-            final BufferedReader bufferedReader = new BufferedReader(isr);
+        try (final BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             final StringBuilder sb = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
-            isr.close();
-            bufferedReader.close();
             final Gson g = new Gson();
             final JsonArray jArray = g.fromJson(sb.toString(), JsonArray.class);
             loadSettings(jArray);
@@ -162,7 +162,8 @@ public class Settings {
 
     private void createSettingsJson(final File file) {
         JsonWriter w;
-        try (final FileWriter writer = new FileWriter(file)) {
+        try (final BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
             w = new JsonWriter(writer);
             w.setIndent("  ");
             w.beginArray();
