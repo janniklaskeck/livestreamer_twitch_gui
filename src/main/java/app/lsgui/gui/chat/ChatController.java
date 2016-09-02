@@ -68,9 +68,10 @@ public class ChatController {
         if (!"".equals(message)) {
             String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
             pircBotX.send().message("#" + channel, message);
+            final String twitchUsername = Settings.instance().getTwitchUser();
             final int start = chatTextArea.getText().length();
-            final int end = start + Settings.instance().getTwitchUser().length() + 1;
-            chatTextArea.appendText(Settings.instance().getTwitchUser() + ": " + message + "\n");
+            final int end = start + twitchUsername.length() + 1;
+            chatTextArea.appendText(twitchUsername + ": " + message + "\n");
             setColoredNickName(chatTextArea, start, end);
             setChatMessageStyle(chatTextArea, end, end + message.length() + 1);
             inputTextField.clear();

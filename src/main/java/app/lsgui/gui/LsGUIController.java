@@ -133,7 +133,7 @@ public class LsGUIController {
                     }
                 });
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
-        channelList.getStreams().bind(service.getChannels());
+        channelList.getStreams().bind(service.getChannelProperty());
         channelList.getListView().setUserData(service);
         contentBorderPane.setLeft(channelList);
     }
@@ -188,7 +188,7 @@ public class LsGUIController {
 
     private void changeService(final IService newService) {
         LOGGER.debug("Change Service to {}", newService.getName().get());
-        channelList.getStreams().bind(newService.getChannels());
+        channelList.getStreams().bind(newService.getChannelProperty());
         channelList.getListView().setUserData(newService);
         if (LsGuiUtils.isTwitchService(newService)) {
             importButton.setDisable(false);

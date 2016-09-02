@@ -1,6 +1,9 @@
-apply plugin: "java"
-apply plugin: "distribution"
-apply plugin: "eclipse"
+plugins {
+    id "java"
+    id "distribution"
+    id "eclipse"
+    id "org.sonarqube" version "2.1-rc2"
+}
 
 group = 'app.lsgui'
 version = '3.1.0-SNAPSHOT'
@@ -15,18 +18,18 @@ repositories {
 }
 
 ext {
-	mainClass = "app.lsgui.LsGUI"
+  mainClass = "app.lsgui.LsGUI"
 
-	// Versionumbers
-	pircbotxVersion = "2.1"
-	richtextfxVersion = "0.6.10"
-	fontawesomefxVersion = "8.9"
-	controlsfxVersion = "8.40.11"
-	gsonVersion = "2.7"
-	httpclientVersion = "4.5.2"
-	slf4jVersion = "1.7.21"
-	log4jVersion = "2.6.2"
-	junitVersion = "4.12"
+  // Versionumbers
+  pircbotxVersion = "2.1"
+  richtextfxVersion = "0.6.10"
+  fontawesomefxVersion = "8.9"
+  controlsfxVersion = "8.40.11"
+  gsonVersion = "2.7"
+  httpclientVersion = "4.5.2"
+  slf4jVersion = "1.7.21"
+  log4jVersion = "2.6.2"
+  junitVersion = "4.12"
 }
 
 dependencies {
@@ -45,36 +48,36 @@ dependencies {
 }
 
 task fatJar(type: Jar) {
-	manifest {
-        attributes 'Implementation-Title': 'LivestreamerGUI FatJar',  
-        	'Implementation-Version': version,
-        	'Main-Class': "$mainClass"
+  manifest {
+        attributes 'Implementation-Title': 'LivestreamerGUI FatJar',
+          'Implementation-Version': version,
+          'Main-Class': "$mainClass"
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
 
 jar {
-	appendix = "nolib"
+  appendix = "nolib"
 }
 
 distributions {
-	main {
-		contents {
-			from fatJar
-		}
-	}
+  main {
+    contents {
+      from fatJar
+    }
+  }
 }
 
 eclipse {
-	project {
-		natures 'org.springsource.ide.eclipse.gradle.core.nature', 'org.eclipse.jdt.core.javanature'
-		buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
-		
-	}
+  project {
+    natures 'org.springsource.ide.eclipse.gradle.core.nature', 'org.eclipse.jdt.core.javanature'
+    buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
 
-	classpath {
-		downloadSources = true
-		downloadJavadoc = true
-	}
+  }
+
+  classpath {
+    downloadSources = true
+    downloadJavadoc = true
+  }
 }

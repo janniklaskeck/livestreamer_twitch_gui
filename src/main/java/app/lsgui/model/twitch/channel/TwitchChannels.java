@@ -8,7 +8,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import app.lsgui.model.twitch.ITwitchItem;
-import app.lsgui.model.twitch.game.TwitchGames;
 import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,7 +18,7 @@ import javafx.collections.ObservableList;
  *
  */
 public class TwitchChannels {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchGames.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannels.class);
 
     private JsonObject jsonData;
     private ObservableList<ITwitchItem> channels;

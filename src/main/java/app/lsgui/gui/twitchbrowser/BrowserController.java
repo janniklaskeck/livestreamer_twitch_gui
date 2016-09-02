@@ -118,12 +118,10 @@ public class BrowserController {
 
     private void backBrowser() {
         LOGGER.debug("Go back one page");
-        browserCore.backward();
     }
 
     private void forwardBrowser() {
         LOGGER.debug("Go one page forward");
-        browserCore.forward();
     }
 
     private void startSearch() {

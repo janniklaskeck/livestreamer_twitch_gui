@@ -15,9 +15,9 @@ import app.lsgui.rest.twitch.TwitchAPIClient;
 import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -37,29 +37,20 @@ public class TwitchService implements IService {
 
     private StringProperty name;
     private StringProperty url;
-    private ListProperty<IChannel> channelProperty;
+    private ObjectProperty<SortedList<IChannel>> channelProperty;
     private BooleanProperty sortChannels;
     private Comparator<IChannel> comp;
 
     private static final ObservableMap<IChannel, TwitchChannelUpdateService> UPDATESERVICES = FXCollections
             .observableHashMap();
 
-    /**
-     *
-     * @param name
-     * @param url
-     */
-    public TwitchService(String name, String url) {
+    public TwitchService(final String name, final String url) {
         this.name = new SimpleStringProperty(name);
         this.url = new SimpleStringProperty(url);
-        channelProperty = new SimpleListProperty<>();
+        channelProperty = new SimpleObjectProperty<>(new SortedList<>(FXCollections.observableArrayList()));
         sortChannels = new SimpleBooleanProperty();
     }
 
-    /**
-     *
-     * @param property
-     */
     public void bindSortProperty(final BooleanProperty property) {
         if (!sortChannels.isBound()) {
             sortChannels.bind(property);
@@ -72,24 +63,15 @@ public class TwitchService implements IService {
     }
 
     private void refreshList() {
-        if (getChannels().getValue() != null) {
-            final Callback<IChannel, Observable[]> extractor;
-            if (this.getUrl().get().toLowerCase().contains(TWITCH_ID)) {
-                extractor = TwitchChannel.extractor();
-            } else {
-                extractor = GenericChannel.extractor();
-            }
-            ObservableList<IChannel> obsChannels = FXCollections.observableArrayList(extractor);
-            obsChannels.addAll(getChannels().getValue());
-            SortedList<IChannel> obsChannelsSorted = new SortedList<>(obsChannels);
-            obsChannelsSorted.setComparator(comp);
-            getChannels().setValue(obsChannelsSorted);
+        if (getChannelProperty().getValue() != null) {
+            getChannelProperty().get().setComparator(comp);
         }
     }
 
     @Override
     public void addChannel(final String name) {
-        List<IChannel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
+        final List<IChannel> channels = new ArrayList<>(
+                getChannelProperty().get().subList(0, getChannelProperty().get().size()));
         final IChannel channelToAdd;
         final Callback<IChannel, Observable[]> extractor;
         if (this.getUrl().get().toLowerCase().contains(TWITCH_ID)) {
@@ -107,7 +89,7 @@ public class TwitchService implements IService {
         obsChannels.addAll(channels);
         SortedList<IChannel> obsChannelsSorted = new SortedList<>(obsChannels);
         obsChannelsSorted.setComparator(comp);
-        getChannels().setValue(obsChannelsSorted);
+        getChannelProperty().setValue(obsChannelsSorted);
     }
 
     @Override
@@ -123,21 +105,18 @@ public class TwitchService implements IService {
             } else {
                 extractor = GenericChannel.extractor();
             }
-            List<IChannel> channels = new ArrayList<>(getChannels().subList(0, getChannels().getSize()));
+            final List<IChannel> channels = new ArrayList<>(
+                    getChannelProperty().get().subList(0, getChannelProperty().get().size()));
             channels.remove(channel);
             LOGGER.info("remove Channel {}", channel.getName());
             ObservableList<IChannel> obsChannels = FXCollections.observableArrayList(extractor);
             obsChannels.addAll(channels);
             SortedList<IChannel> obsChannelsSorted = new SortedList<>(obsChannels);
             obsChannelsSorted.setComparator(comp);
-            getChannels().setValue(obsChannelsSorted);
+            getChannelProperty().setValue(obsChannelsSorted);
         }
     }
 
-    /**
-     *
-     * @param username
-     */
     public void addFollowedChannels(final String username) {
         LOGGER.info("Add followed Channels if it is a Twitch.tv Channel");
         if (this.getUrl().get().toLowerCase().contains(TWITCH_ID)) {
@@ -151,7 +130,7 @@ public class TwitchService implements IService {
         }
     }
 
-    private void changeComparator(boolean doSorting) {
+    private void changeComparator(final boolean doSorting) {
         if (!doSorting) {
             comp = (ch1, ch2) -> ch1.getName().get().compareTo(ch2.getName().get());
         } else {
@@ -167,7 +146,7 @@ public class TwitchService implements IService {
     }
 
     @Override
-    public ListProperty<IChannel> getChannels() {
+    public ObjectProperty<SortedList<IChannel>> getChannelProperty() {
         return channelProperty;
     }
 

@@ -41,7 +41,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
         }
     }
 
-    public void setUpSingle() {
+    public final void setUpSingle() {
         setPeriod(Duration.seconds(40));
         setRestartOnFailure(true);
         setOnSucceeded(event -> {
@@ -62,7 +62,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
         setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
     }
 
-    public void setUpConstant() {
+    public final void setUpConstant() {
         setPeriod(Duration.seconds(40));
         setRestartOnFailure(true);
         setOnSucceeded(event -> {

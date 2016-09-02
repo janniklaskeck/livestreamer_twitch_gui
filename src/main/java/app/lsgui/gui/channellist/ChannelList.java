@@ -33,50 +33,50 @@ public class ChannelList extends AnchorPane {// NOSONAR
      * ChannelList
      */
     public ChannelList() {
-	LOGGER.debug("Construct StreamList");
+        LOGGER.debug("Construct StreamList");
 
-	loader = new FXMLLoader();
-	loader.setRoot(this);
-	loader.setController(this);
+        loader = new FXMLLoader();
+        loader.setRoot(this);
+        loader.setController(this);
 
-	try {
-	    loader.load(getClass().getClassLoader().getResourceAsStream(CHANNELLISTFXML));
-	} catch (IOException e) {
-	    LOGGER.error("ERROR while loading streamlist fxml", e);
-	}
-	setupChannelList();
+        try {
+            loader.load(getClass().getClassLoader().getResourceAsStream(CHANNELLISTFXML));
+        } catch (IOException e) {
+            LOGGER.error("ERROR while loading streamlist fxml", e);
+        }
+        setupChannelList();
     }
 
     private void setupChannelList() {
-	channelListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-	selectedChannelProperty = new SimpleObjectProperty<>();
-	channelListProperty = new SimpleListProperty<>();
-	selectedChannelProperty.bind(channelListView.getSelectionModel().selectedItemProperty());
-	channelListView.itemsProperty().bind(channelListProperty);
-	channelListView.setCellFactory(listView -> new ChannelCell());
+        channelListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        selectedChannelProperty = new SimpleObjectProperty<>();
+        channelListProperty = new SimpleListProperty<>();
+        selectedChannelProperty.bind(channelListView.getSelectionModel().selectedItemProperty());
+        channelListView.itemsProperty().bind(channelListProperty);
+        channelListView.setCellFactory(listView -> new ChannelCell());
     }
 
     public ListProperty<IChannel> getStreams() {
-	return channelListProperty;
+        return channelListProperty;
     }
 
     public void setChannels(List<IChannel> channels) {
-	channelListProperty.set(FXCollections.observableList(channels));
+        channelListProperty.set(FXCollections.observableList(channels));
     }
 
     public ListView<IChannel> getListView() {
-	return channelListView;
+        return channelListView;
     }
 
     public void setListView(ListView<IChannel> channelList) {
-	this.channelListView = channelList;
+        this.channelListView = channelList;
     }
 
     public ObjectProperty<IChannel> getSelectedChannelProperty() {
-	return selectedChannelProperty;
+        return selectedChannelProperty;
     }
 
     public void setSelectedChannelProperty(ObjectProperty<IChannel> channelProperty) {
-	this.selectedChannelProperty = channelProperty;
+        this.selectedChannelProperty = channelProperty;
     }
 }

@@ -72,17 +72,13 @@ public class Settings {
     private static final String QUALITYSTRING = "quality";
 
     private Settings() {
-        File settings = new File(FILEPATH);
-        if (settings.exists() && settings.isFile() && !isLoading) {
+        final File settings = new File(FILEPATH);
+        if (!isLoading && settings.exists() && settings.isFile()) {
             loadSettingsFromFile(settings);
         }
     }
 
-    /**
-     *
-     * @return
-     */
-    public static Settings instance() {
+    public static synchronized Settings instance() {
         if (instance == null) {
             instance = new Settings();
         }
@@ -105,11 +101,7 @@ public class Settings {
         createSettingsJson(settings);
     }
 
-    /**
-     *
-     * @param file
-     */
-    public void loadSettingsFromFile(final File file) {
+    private void loadSettingsFromFile(final File file) {
         isLoading = true;
         try (final FileInputStream fis = new FileInputStream(file);) {
             final InputStreamReader isr = new InputStreamReader(fis);
@@ -204,7 +196,7 @@ public class Settings {
             w.name(SERVICEURL).value(s.getUrl().get());
             w.name("channels");
             w.beginArray();
-            for (final IChannel channel : s.getChannels()) {
+            for (final IChannel channel : s.getChannelProperty().get()) {
                 if (channel.getName().get() != null) {
                     w.value(channel.getName().get());
                 }

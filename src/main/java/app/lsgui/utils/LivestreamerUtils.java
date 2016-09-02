@@ -95,7 +95,7 @@ public class LivestreamerUtils {
         Thread t = new Thread(() -> {
             try {
                 String path = "\"" + filePath.getAbsolutePath() + "\"";
-                path = path.replace("\\", "/");
+                path = path.replace('\\', '/');
                 Settings.instance().setRecordingPath(path);
                 ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), "-o", path, url, quality));
                 pb.redirectOutput(Redirect.INHERIT);

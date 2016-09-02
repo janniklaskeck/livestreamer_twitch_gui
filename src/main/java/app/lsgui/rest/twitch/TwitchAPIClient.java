@@ -7,11 +7,11 @@ import java.net.UnknownHostException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class TwitchAPIClient {
     private static final String TWITCH_BASE_URL = "https://api.twitch.tv/kraken/";
     private static final String LSGUI_CLIENT_ID = "rfpepzumaxd1iija3ip3fixao6z13pj";
     private static final int CONNECTION_COUNT = 100;
-    private static final HttpClient HTTP_CLIENT;
+    private static final CloseableHttpClient HTTP_CLIENT;
 
     private static TwitchAPIClient instance = null;
 
@@ -47,10 +47,6 @@ public class TwitchAPIClient {
         LOGGER.debug("TwitchProcessor constructed");
     }
 
-    /**
-     *
-     * @return
-     */
     public static synchronized TwitchAPIClient getInstance() {
         if (instance == null) {
             instance = new TwitchAPIClient();
@@ -58,16 +54,11 @@ public class TwitchAPIClient {
         return instance;
     }
 
-    /**
-     *
-     * @param channelName
-     * @return
-     */
     public TwitchChannelData getStreamData(final String channelName) {
         if (!"".equals(channelName)) {
             try {
-                JsonObject jo = JSONPARSER.parse(getAPIResponse(TWITCH_BASE_URL + "streams/" + channelName))
-                        .getAsJsonObject();
+                final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channelName);
+                final JsonObject jo = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
                 return new TwitchChannelData(jo, channelName);
             } catch (JsonSyntaxException e) {
                 LOGGER.error("ERROR while loading channel data. Return empty channel", e);
@@ -79,10 +70,11 @@ public class TwitchAPIClient {
 
     public TwitchChannels getGameData(final String game) {
         LOGGER.debug("Load game Data");
-        final String gameName = game.replace(" ", "+");
+        final String gameName = game.replace(' ', '+');
         final int maxChannelsToLoad = Settings.instance().getMaxChannelsLoad();
-        final String response = getAPIResponse(
+        final URI uri = convertToURI(
                 TWITCH_BASE_URL + "streams/?game=" + gameName + "&offset=0&limit=" + maxChannelsToLoad);
+        final String response = getAPIResponse(uri);
         final JsonObject jo = JSONPARSER.parse(response).getAsJsonObject();
         return new TwitchChannels(jo);
     }
@@ -90,22 +82,17 @@ public class TwitchAPIClient {
     public TwitchGames getGamesData() {
         LOGGER.debug("Load gamesData");
         final int maxGamesToLoad = Settings.instance().getMaxGamesLoad();
-        final String response = getAPIResponse(TWITCH_BASE_URL + "games/top?offset=0&limit=" + maxGamesToLoad);
+        final URI uri = convertToURI(TWITCH_BASE_URL + "games/top?offset=0&limit=" + maxGamesToLoad);
+        final String response = getAPIResponse(uri);
         final JsonObject jo = JSONPARSER.parse(response).getAsJsonObject();
         return new TwitchGames(jo);
     }
 
-    /**
-     *
-     * @param userName
-     * @return
-     */
     public Set<String> getListOfFollowedStreams(final String userName) {
         final Set<String> followedStreams = new TreeSet<>();
         if (!"".equals(userName) && channelExists(userName)) {
-            JsonObject jo = JSONPARSER
-                    .parse(getAPIResponse("https://api.twitch.tv/kraken/users/" + userName + "/follows/channels"))
-                    .getAsJsonObject();
+            final URI uri = convertToURI("https://api.twitch.tv/kraken/users/" + userName + "/follows/channels");
+            JsonObject jo = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
 
             final int total = jo.get("_total").getAsInt();
             JsonArray streams = jo.getAsJsonArray("follows");
@@ -120,25 +107,21 @@ public class TwitchAPIClient {
                     final String name = channel.get("name").getAsString();
                     followedStreams.add(name);
                 }
-                jo = JSONPARSER.parse(getAPIResponse(next)).getAsJsonObject();
+                jo = JSONPARSER.parse(getAPIResponse(convertToURI(next))).getAsJsonObject();
                 streams = jo.getAsJsonArray("follows");
                 links = jo.get("_links").getAsJsonObject();
                 self = links.get("self").getAsString();
                 next = links.get("next").getAsString();
-                offset = Integer.valueOf(self.split("&")[2].split("=")[1]);
+                offset = Integer.parseInt(self.split("&")[2].split("=")[1]);
             }
         }
         return followedStreams;
     }
 
-    /**
-     *
-     * @param channel
-     * @return
-     */
     public boolean channelExists(final String channel) {
         LOGGER.debug("Checking if {} is a twitch channel", channel);
-        if ("{}".equals(getAPIResponse(TWITCH_BASE_URL + "streams/" + channel)) || "".equals(channel)) {
+        final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channel);
+        if ("{}".equals(getAPIResponse(uri)) || "".equals(channel)) {
             LOGGER.debug("{} is no twitch channel", channel);
             return false;
         }
@@ -146,17 +129,12 @@ public class TwitchAPIClient {
         return true;
     }
 
-    private String getAPIResponse(final String apiUrl) {
+    private String getAPIResponse(final URI apiUrl) {
         LOGGER.debug("Send Request to API URL '{}'", apiUrl);
-        try {
-            final URI url = new URI(apiUrl);
-            final HttpGet request = new HttpGet(url);
-            request.setHeader("Client-ID", LSGUI_CLIENT_ID);
-            final HttpResponse response = HTTP_CLIENT.execute(request);
+        final HttpGet request = new HttpGet(apiUrl);
+        request.setHeader("Client-ID", LSGUI_CLIENT_ID);
+        try (CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {
             return new BasicResponseHandler().handleResponse(response);
-        } catch (URISyntaxException e) {
-            LOGGER.error("URL syntax Error. Please message developer", e);
-            return "";
         } catch (IOException e) {
             if (e.getClass().equals(UnknownHostException.class)) {
                 LOGGER.error("Twitch is not reachable. Check your Internet Connection");
@@ -166,8 +144,19 @@ public class TwitchAPIClient {
             } else {
                 LOGGER.error("Error when fetching twitch api response", e);
             }
-            return "{}";
+        } finally {
+            request.reset();
         }
+        return "{}";
+    }
+
+    private static URI convertToURI(final String url) {
+        try {
+            return new URI(url);
+        } catch (URISyntaxException e) {
+            LOGGER.error("Could not convert String to URI", e);
+        }
+        return null;
     }
 
     static {

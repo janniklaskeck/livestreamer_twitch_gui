@@ -35,10 +35,11 @@ public class TwitchGames {
     }
 
     private void addGames() {
-        if (this.jsonData.get("top") != null) {
-            final JsonArray top = this.jsonData.get("top").getAsJsonArray();
-            LOGGER.debug("Update {} games", top.size());
-            for (final JsonElement element : top) {
+        final JsonElement topElement = this.jsonData.get("top");
+        if (topElement != null) {
+            final JsonArray topArray = topElement.getAsJsonArray();
+            LOGGER.debug("Update {} games", topArray.size());
+            for (final JsonElement element : topArray) {
                 final JsonObject object = element.getAsJsonObject();
                 final int viewers = object.get("viewers").getAsInt();
                 final int channels = object.get("channels").getAsInt();

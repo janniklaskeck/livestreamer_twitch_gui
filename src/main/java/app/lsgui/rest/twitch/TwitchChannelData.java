@@ -11,6 +11,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import app.lsgui.utils.JSONUtils;
@@ -53,8 +54,9 @@ public class TwitchChannelData {
      * @param name
      */
     public TwitchChannelData(final JsonObject channelAPIResponse, final String name) {
-        if (channelAPIResponse.get(STREAM) != null && !channelAPIResponse.get(STREAM).isJsonNull()) {
-            JsonObject streamObject = channelAPIResponse.get(STREAM).getAsJsonObject();
+        final JsonElement streamElement = channelAPIResponse.get(STREAM);
+        if (channelAPIResponse.get(STREAM) != null && !streamElement.isJsonNull()) {
+            JsonObject streamObject = streamElement.getAsJsonObject();
             if (streamObject != null && !streamObject.get("channel").isJsonNull() && !streamObject.isJsonNull()) {
                 setData(streamObject, name);
             }

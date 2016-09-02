@@ -5,7 +5,6 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.LsGUIController;
 import app.lsgui.gui.LsGUIWindow;
 import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.settings.Settings;
@@ -25,7 +24,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
  */
 public class SettingsController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LsGUIController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettingsController.class);
 
     @FXML
     private CheckBox sortCheckBox;
@@ -97,8 +96,11 @@ public class SettingsController {
             gamesToLoadChoiceBox.getItems().add(i);
             channelsToLoadChoiceBox.getItems().add(i);
         }
-        gamesToLoadChoiceBox.getSelectionModel().select(Integer.valueOf(Settings.instance().getMaxGamesLoad()));
-        channelsToLoadChoiceBox.getSelectionModel().select(Integer.valueOf(Settings.instance().getMaxChannelsLoad()));
+        final Settings settings = Settings.instance();
+        final int maxGamesToLoad = Integer.valueOf(settings.getMaxGamesLoad());
+        final int maxChannelsToLoad = Integer.valueOf(settings.getMaxChannelsLoad());
+        gamesToLoadChoiceBox.getSelectionModel().select(maxGamesToLoad);
+        channelsToLoadChoiceBox.getSelectionModel().select(maxChannelsToLoad);
     }
 
     private void setupStyleChoiceBox() {
