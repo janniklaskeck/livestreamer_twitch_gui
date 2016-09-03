@@ -28,7 +28,7 @@ public class TwitchChannelData {
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelData.class);
 
     private static final ZoneOffset OFFSET = ZoneOffset.ofHours(0);
-    private static final String PREFIX = "GMT"; // Greenwich Mean Time
+    private static final String PREFIX = "GMT";
     private static final ZoneId GMT = ZoneId.ofOffset(PREFIX, OFFSET);
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(GMT);
     private static final String STREAM = "stream";
@@ -75,8 +75,8 @@ public class TwitchChannelData {
     }
 
     private void setOnlineData(final JsonObject channelObject, final String name) {
-        JsonObject channel = channelObject.get("channel").getAsJsonObject();
-        JsonObject preview = channelObject.get("preview").getAsJsonObject();
+        final JsonObject channel = channelObject.get("channel").getAsJsonObject();
+        final JsonObject preview = channelObject.get("preview").getAsJsonObject();
         setName(name);
         setTitle(JSONUtils.getStringIfNotNull("status", channel));
         setGame(JSONUtils.getStringIfNotNull("game", channelObject));
@@ -112,7 +112,7 @@ public class TwitchChannelData {
     private void calculateAndSetUptime() {
         try {
             final ZonedDateTime nowDate = ZonedDateTime.now(GMT);
-            ZonedDateTime startDate = ZonedDateTime.parse(getCreatedAt(), DTF);
+            final ZonedDateTime startDate = ZonedDateTime.parse(getCreatedAt(), DTF);
             long time = startDate.until(nowDate, ChronoUnit.MILLIS);
             setUptime(time);
         } catch (Exception e) {

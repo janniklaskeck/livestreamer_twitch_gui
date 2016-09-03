@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'app.lsgui'
-version = '3.1.0-SNAPSHOT'
+loadVersion()
 
 description = "LivestreamerGUI"
 
@@ -81,3 +81,11 @@ eclipse {
     downloadJavadoc = true
   }
 }
+
+def loadVersion() {
+    Properties props = new Properties()
+    props.load(new FileInputStream("$project.rootDir/src/main/resources/version.properties"))
+    def versionNumber = props.getProperty("versionNumber")
+    version = versionNumber
+}
+

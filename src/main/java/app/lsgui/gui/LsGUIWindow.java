@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.service.TwitchService;
+import app.lsgui.rest.GithubUpdateService;
 import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import app.lsgui.settings.Settings;
 import javafx.application.Application;
@@ -44,6 +45,7 @@ public class LsGUIWindow extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = loadFXML();
         setupStage(root, primaryStage);
+        GithubUpdateService.checkForUpdate();
     }
 
     private Parent loadFXML() {

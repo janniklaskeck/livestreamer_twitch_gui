@@ -44,8 +44,6 @@ public class Settings {
 
     private static Settings instance;
 
-    private static final String VERSION = "";
-    private static final long TIMEOUT = 5000L;
     private static ListProperty<IService> services = new SimpleListProperty<>();
     private static BooleanProperty sortTwitch = new SimpleBooleanProperty();
     private static boolean minimizeToTray = true;
@@ -58,21 +56,22 @@ public class Settings {
     private static String liveStreamerExePath = "";
     private static String quality = "Best";
     private static String recordingPath;
-
     private static boolean isLoading = false;
 
-    private static final String TWITCHUSERSTRING = "twitchusername";
-    private static final String TWITCHOAUTHSTRING = "twitchoauth";
-    private static final String TWITCHSORT = "twitchsorting";
+    private static final long TIMEOUT = 5000L;
+
+    private static final String TWITCH_USER_STRING = "twitchusername";
+    private static final String TWITCH_OAUTH_STRING = "twitchoauth";
+    private static final String TWITCH_SORT = "twitchsorting";
     private static final String PATH = "recordingpath";
-    private static final String CHANNELSLOAD = "load_max_channels";
-    private static final String GAMESSLOAD = "load_max_games";
-    private static final String SERVICENAME = "serviceName";
-    private static final String SERVICEURL = "serviceURL";
-    private static final String MINIMIZETOTRAYSTRING = "minimizetotray";
-    private static final String WINDOWSTYLESTRING = "windowstyle";
-    private static final String EXEPATHSTRING = "livestreamerexe";
-    private static final String QUALITYSTRING = "quality";
+    private static final String CHANNELS_LOAD = "load_max_channels";
+    private static final String GAMES_LOAD = "load_max_games";
+    private static final String SERVICE_NAME = "serviceName";
+    private static final String SERVICE_URL = "serviceURL";
+    private static final String MINIMIZE_TO_TRAY_STRING = "minimizetotray";
+    private static final String WINDOWSTYLE_STRING = "windowstyle";
+    private static final String EXEPATH_STRING = "livestreamerexe";
+    private static final String QUALITY_STRING = "quality";
 
     public static synchronized Settings instance() {
         if (instance == null) {
@@ -121,15 +120,15 @@ public class Settings {
 
     private static void loadSettings(final JsonArray jArray) {
         final JsonObject settings = jArray.get(0).getAsJsonObject();
-        sortTwitch.setValue(JSONUtils.getBooleanSafe(settings.get(TWITCHSORT), false));
-        minimizeToTray = JSONUtils.getBooleanSafe(settings.get(MINIMIZETOTRAYSTRING), false);
-        twitchUser = JSONUtils.getStringSafe(settings.get(TWITCHUSERSTRING), "");
-        twitchOAuth = JSONUtils.getStringSafe(settings.get(TWITCHOAUTHSTRING), "");
-        windowStyle = JSONUtils.getStringSafe(settings.get(WINDOWSTYLESTRING), "LightStyle");
-        liveStreamerExePath = JSONUtils.getStringSafe(settings.get(EXEPATHSTRING), "");
-        maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELSLOAD), 20);
-        maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMESSLOAD), 20);
-        quality = JSONUtils.getStringSafe(settings.get(QUALITYSTRING), "Best");
+        sortTwitch.setValue(JSONUtils.getBooleanSafe(settings.get(TWITCH_SORT), false));
+        minimizeToTray = JSONUtils.getBooleanSafe(settings.get(MINIMIZE_TO_TRAY_STRING), false);
+        twitchUser = JSONUtils.getStringSafe(settings.get(TWITCH_USER_STRING), "");
+        twitchOAuth = JSONUtils.getStringSafe(settings.get(TWITCH_OAUTH_STRING), "");
+        windowStyle = JSONUtils.getStringSafe(settings.get(WINDOWSTYLE_STRING), "LightStyle");
+        liveStreamerExePath = JSONUtils.getStringSafe(settings.get(EXEPATH_STRING), "");
+        maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELS_LOAD), 20);
+        maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMES_LOAD), 20);
+        quality = JSONUtils.getStringSafe(settings.get(QUALITY_STRING), "Best");
         recordingPath = JSONUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home"));
     }
 
@@ -138,8 +137,8 @@ public class Settings {
         final JsonArray servicesArray = jArray.get(1).getAsJsonArray();
         for (int i = 0; i < servicesArray.size(); i++) {
             final JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
-            final String serviceName = serviceJson.get(SERVICENAME).getAsString();
-            final String serviceUrl = serviceJson.get(SERVICEURL).getAsString();
+            final String serviceName = serviceJson.get(SERVICE_NAME).getAsString();
+            final String serviceUrl = serviceJson.get(SERVICE_URL).getAsString();
             final IService service;
             if (serviceUrl.toLowerCase().contains("twitch")) {
                 service = new TwitchService(serviceName, serviceUrl);
@@ -164,16 +163,16 @@ public class Settings {
             w.setIndent("  ");
             w.beginArray();
             w.beginObject();
-            w.name(TWITCHUSERSTRING).value(twitchUser);
-            w.name(TWITCHOAUTHSTRING).value(twitchOAuth);
-            w.name(TWITCHSORT).value(sortTwitch.get());
-            w.name(QUALITYSTRING).value(quality);
+            w.name(TWITCH_USER_STRING).value(twitchUser);
+            w.name(TWITCH_OAUTH_STRING).value(twitchOAuth);
+            w.name(TWITCH_SORT).value(sortTwitch.get());
+            w.name(QUALITY_STRING).value(quality);
             w.name(PATH).value(getRecordingPath());
-            w.name(CHANNELSLOAD).value(maxChannelsLoad);
-            w.name(GAMESSLOAD).value(maxGamesLoad);
-            w.name(MINIMIZETOTRAYSTRING).value(minimizeToTray);
-            w.name(WINDOWSTYLESTRING).value(windowStyle);
-            w.name(EXEPATHSTRING).value(liveStreamerExePath);
+            w.name(CHANNELS_LOAD).value(maxChannelsLoad);
+            w.name(GAMES_LOAD).value(maxGamesLoad);
+            w.name(MINIMIZE_TO_TRAY_STRING).value(minimizeToTray);
+            w.name(WINDOWSTYLE_STRING).value(windowStyle);
+            w.name(EXEPATH_STRING).value(liveStreamerExePath);
             w.endObject();
             w.beginArray();
             writeServices(w);
@@ -189,8 +188,8 @@ public class Settings {
         for (final IService s : services) {
             LOGGER.debug("Creating JSON for Service {}", s.getName().get());
             w.beginObject();
-            w.name(SERVICENAME).value(s.getName().get());
-            w.name(SERVICEURL).value(s.getUrl().get());
+            w.name(SERVICE_NAME).value(s.getName().get());
+            w.name(SERVICE_URL).value(s.getUrl().get());
             w.name("channels");
             w.beginArray();
             for (final IChannel channel : s.getChannelProperty().get()) {
@@ -249,10 +248,6 @@ public class Settings {
 
     public void setMaxChannelsLoad(final int maxChannelsLoad) {
         Settings.maxChannelsLoad = maxChannelsLoad;
-    }
-
-    public String getVERSION() {
-        return VERSION;
     }
 
     public long getTimeout() {

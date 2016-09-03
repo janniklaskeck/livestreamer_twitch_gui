@@ -43,6 +43,13 @@ public class TwitchAPIClient {
 
     private static TwitchAPIClient instance = null;
 
+    static {
+        final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+        cm.setMaxTotal(CONNECTION_COUNT);
+        cm.setDefaultMaxPerRoute(CONNECTION_COUNT);
+        HTTP_CLIENT = HttpClients.createMinimal(cm);
+    }
+
     private TwitchAPIClient() {
         LOGGER.debug("TwitchProcessor constructed");
     }
@@ -159,10 +166,4 @@ public class TwitchAPIClient {
         return null;
     }
 
-    static {
-        final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-        cm.setMaxTotal(CONNECTION_COUNT);
-        cm.setDefaultMaxPerRoute(CONNECTION_COUNT);
-        HTTP_CLIENT = HttpClients.createMinimal(cm);
-    }
 }

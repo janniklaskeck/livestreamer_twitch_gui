@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +24,12 @@ import app.lsgui.model.service.TwitchService;
 import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.rest.twitch.TwitchAPIClient;
 import app.lsgui.settings.Settings;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
@@ -217,5 +221,14 @@ public class LsGuiUtils {
             final String text = nameString + " just came online!\n The Game is " + gameString + ".\n" + titleString;
             Notifications.create().title(title).text(text).darkStyle().showInformation();
         }
+    }
+
+    public static void showUpdateNotification(final String version, final ZonedDateTime date,
+            final EventHandler<ActionEvent> action) {
+        final String title = "Update available!";
+        final String updateMessage = "Version " + version + " is available! Released at " + date
+                + ". Click this or check Settings for a Link.";
+        Notifications.create().title(title).text(updateMessage).onAction(action).hideAfter(Duration.seconds(10))
+                .darkStyle().showInformation();
     }
 }
