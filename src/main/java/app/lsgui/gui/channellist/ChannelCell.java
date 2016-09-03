@@ -8,7 +8,7 @@ import app.lsgui.model.service.IService;
 import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.settings.Settings;
 import app.lsgui.utils.LivestreamerUtils;
-import app.lsgui.utils.Utils;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.css.PseudoClass;
@@ -87,7 +87,7 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
             });
             textProperty().bind(item.getName());
             isOnline.bind(item.isOnline());
-            if (Utils.isTwitchChannel(item)) {
+            if (LsGuiUtils.isTwitchChannel(item)) {
                 final TwitchChannel twitchChannel = (TwitchChannel) item;
                 isPlaylist.bind(twitchChannel.getIsPlaylist());
             }
@@ -101,7 +101,7 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
         delete.textProperty().set("Delete " + channel.getName().get());
         delete.setOnAction(event -> {
             final IService service = (IService) this.getListView().getUserData();
-            Utils.removeChannelFromService(channel, service);
+            LsGuiUtils.removeChannelFromService(channel, service);
             LOGGER.info("Deleting {}", channel.getName().get());
         });
         final MenuItem startStream = new MenuItem();
@@ -113,23 +113,23 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
         recordStream.textProperty().set("Record Stream");
         recordStream.setOnAction(event -> {
             final IService service = (IService) this.getListView().getUserData();
-            Utils.recordStream(service, channel);
+            LsGuiUtils.recordStream(service, channel);
         });
         recordStream.disableProperty().bind(channel.isOnline().not());
 
         final MenuItem openChat = new MenuItem();
         openChat.textProperty().set("Open Twitch.tv Chat");
         openChat.setOnAction(event -> {
-            Utils.openTwitchChat(channel);
+            LsGuiUtils.openTwitchChat(channel);
             LOGGER.debug("Opening Twitch Chat for {}", channel.getName().get());
         });
-        openChat.setDisable(!Utils.isTwitchChannel(channel));
+        openChat.setDisable(!LsGuiUtils.isTwitchChannel(channel));
         final MenuItem openBrowser = new MenuItem();
         openBrowser.textProperty().set("Open in Browser");
         openBrowser.setOnAction(event -> {
             final IService service = (IService) this.getListView().getUserData();
-            final String url = Utils.buildUrl(service.getUrl().get(), channel.getName().get());
-            Utils.openURLInBrowser(url);
+            final String url = LsGuiUtils.buildUrl(service.getUrl().get(), channel.getName().get());
+            LsGuiUtils.openURLInBrowser(url);
         });
         contextMenu.getItems().add(startStream);
         contextMenu.getItems().add(recordStream);
@@ -143,7 +143,7 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
 
     private void startLivestreamerStream(final IChannel channel) {
         final IService service = (IService) this.getListView().getUserData();
-        final String url = Utils.buildUrl(service.getUrl().get(), channel.getName().get());
+        final String url = LsGuiUtils.buildUrl(service.getUrl().get(), channel.getName().get());
         final String quality = Settings.instance().getQuality();
         LivestreamerUtils.startLivestreamer(url, quality);
         LOGGER.info("Starting Stream for {}", channel.getName().get());

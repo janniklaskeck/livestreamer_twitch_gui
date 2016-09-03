@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,26 +24,25 @@ import app.lsgui.model.service.TwitchService;
 import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.rest.twitch.TwitchAPIClient;
 import app.lsgui.settings.Settings;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
  * @author Niklas 11.06.2016
  *
  */
-public class Utils {
+public class LsGuiUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LsGuiUtils.class);
 
-    private Utils() {
+    private LsGuiUtils() {
     }
 
-    /**
-     *
-     * @param url
-     */
     public static void openURLInBrowser(final String url) {
         LOGGER.info("Open Browser URL {}", url);
         try {
@@ -52,11 +53,6 @@ public class Utils {
         }
     }
 
-    /**
-     *
-     * @param url
-     * @return
-     */
     public static List<String> getAvailableQuality(final String url) {
         final List<String> qualities = new ArrayList<>();
         final JsonObject qualitiesJson = LivestreamerUtils.getQualityJsonFromLivestreamer(url);
@@ -96,11 +92,6 @@ public class Utils {
         return sortedQualities;
     }
 
-    /**
-     *
-     * @param input
-     * @return
-     */
     public static String getColorFromString(final String input) {
         int r = 0;
         int g = 0;
@@ -123,50 +114,26 @@ public class Utils {
         return "rgb(" + r + "," + g + "," + b + ")";
     }
 
-    /**
-     *
-     * @param stage
-     * @param style
-     */
     public static void addStyleSheetToStage(final Stage stage, final String style) {
         if (stage != null && !stage.getScene().getStylesheets().contains(style) && !"".equals(style)) {
             stage.getScene().getStylesheets().add(style);
         }
     }
 
-    /**
-     *
-     * @param stage
-     */
     public static void clearStyleSheetsFromStage(final Stage stage) {
         if (stage != null) {
             stage.getScene().getStylesheets().clear();
         }
     }
 
-    /**
-     *
-     * @param channel
-     * @return
-     */
     public static boolean isTwitchChannel(final IChannel channel) {
         return channel.getClass().equals(TwitchChannel.class);
     }
 
-    /**
-     *
-     * @param service
-     * @return
-     */
     public static boolean isTwitchService(final IService service) {
         return service.getClass().equals(TwitchService.class);
     }
 
-    /**
-     *
-     * @param channel
-     * @param service
-     */
     public static void addChannelToService(final String channel, final IService service) {
         if (isTwitchService(service) && !"".equals(channel)) {
             if (TwitchAPIClient.getInstance().channelExists(channel)) {
@@ -177,31 +144,16 @@ public class Utils {
         }
     }
 
-    /**
-     *
-     * @param username
-     * @param service
-     */
     public static void addFollowedChannelsToService(final String username, final TwitchService service) {
         if (!"".equals(username)) {
             service.addFollowedChannels(username);
         }
     }
 
-    /**
-     *
-     * @param channel
-     * @param service
-     */
     public static void removeChannelFromService(final IChannel channel, final IService service) {
         service.removeChannel(channel);
     }
 
-    /**
-     *
-     * @param serviceName
-     * @param serviceUrl
-     */
     public static void addService(final String serviceName, final String serviceUrl) {
         LOGGER.debug("Add new Service {} with URL {}", serviceName, serviceUrl);
         if (!"".equals(serviceName) && !"".equals(serviceUrl)) {
@@ -217,24 +169,13 @@ public class Utils {
         return url;
     }
 
-    /**
-     *
-     * @param serviceUrl
-     * @param channelUrl
-     * @return
-     */
     public static String buildUrl(final String serviceUrl, final String channelUrl) {
         return serviceUrl + channelUrl;
     }
 
-    /**
-     *
-     * @param channel
-     * @return
-     */
     public static boolean isChannelOnline(final IChannel channel) {
         if (channel != null) {
-            if (Utils.isTwitchChannel(channel)) {
+            if (LsGuiUtils.isTwitchChannel(channel)) {
                 return channel.isOnline().get();
             } else {
                 return true;
@@ -243,13 +184,8 @@ public class Utils {
         return false;
     }
 
-    /**
-     *
-     * @param service
-     * @param channel
-     */
     public static void recordStream(final IService service, final IChannel channel) {
-        if (Utils.isChannelOnline(channel)) {
+        if (LsGuiUtils.isChannelOnline(channel)) {
             final String url = buildUrl(service.getUrl().get(), channel.getName().get());
             final String quality = Settings.instance().getQuality();
 
@@ -263,24 +199,36 @@ public class Utils {
         }
     }
 
-    /**
-     *
-     * @param channel
-     */
     public static void openTwitchChat(final IChannel channel) {
-        if (Utils.isTwitchChannel(channel)) {
+        if (LsGuiUtils.isTwitchChannel(channel)) {
             final String channelName = channel.getName().get();
             ChatWindow cw = new ChatWindow(channelName);
             cw.connect();
         }
     }
 
-    /**
-     *
-     * @param service
-     */
     public static void removeService(final IService service) {
         LOGGER.debug("Removing Service {}", service.getName().get());
         Settings.instance().getStreamServices().remove(service);
+    }
+
+    public static void showOnlineNotification(final TwitchChannel channel) {
+        final String nameString = channel.getName().get();
+        final String gameString = channel.getGame().get();
+        final String titleString = channel.getTitle().get();
+        if (nameString != null && gameString != null && titleString != null) {
+            final String title = "Channel Update";
+            final String text = nameString + " just came online!\n The Game is " + gameString + ".\n" + titleString;
+            Notifications.create().title(title).text(text).darkStyle().showInformation();
+        }
+    }
+
+    public static void showUpdateNotification(final String version, final ZonedDateTime date,
+            final EventHandler<ActionEvent> action) {
+        final String title = "Update available!";
+        final String updateMessage = "Version " + version + " is available! Released at " + date
+                + ". Click this or check Settings for a Link.";
+        Notifications.create().title(title).text(updateMessage).onAction(action).hideAfter(Duration.seconds(10))
+                .darkStyle().showInformation();
     }
 }

@@ -14,7 +14,7 @@ import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
 import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import app.lsgui.settings.Settings;
-import app.lsgui.utils.Utils;
+import app.lsgui.utils.LsGuiUtils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.BooleanProperty;
@@ -84,7 +84,7 @@ public class LsGUIController {
 
     private void setupQualityComboBox() {
         qualityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null && !newValue.equals(OFFLINEQUALITY)) {
+            if (!OFFLINEQUALITY.equals(newValue)) {
                 Settings.instance().setQuality(newValue);
             }
         });
@@ -133,7 +133,7 @@ public class LsGUIController {
                     }
                 });
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
-        channelList.getStreams().bind(service.getChannels());
+        channelList.getStreams().bind(service.getChannelProperty());
         channelList.getListView().setUserData(service);
         contentBorderPane.setLeft(channelList);
     }
@@ -188,9 +188,9 @@ public class LsGUIController {
 
     private void changeService(final IService newService) {
         LOGGER.debug("Change Service to {}", newService.getName().get());
-        channelList.getStreams().bind(newService.getChannels());
+        channelList.getStreams().bind(newService.getChannelProperty());
         channelList.getListView().setUserData(newService);
-        if (Utils.isTwitchService(newService)) {
+        if (LsGuiUtils.isTwitchService(newService)) {
             importButton.setDisable(false);
             twitchBrowserButton.setDisable(false);
         } else {
@@ -271,11 +271,11 @@ public class LsGUIController {
                 final String serviceName = nameTextField.getText();
                 final String serviceUrl = urlTextField.getText();
                 LOGGER.info("Adding service");
-                Utils.addService(serviceName, serviceUrl);
+                LsGuiUtils.addService(serviceName, serviceUrl);
             } else {
                 final String channelName = nameTextField.getText();
                 LOGGER.info("Adding channel");
-                Utils.addChannelToService(channelName, service);
+                LsGuiUtils.addChannelToService(channelName, service);
             }
             popOver.hide();
         });
@@ -295,10 +295,10 @@ public class LsGUIController {
         final IChannel channel = channelList.getListView().getSelectionModel().getSelectedItem();
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
         if (channel != null && service != null) {
-            Utils.removeChannelFromService(channel, service);
+            LsGuiUtils.removeChannelFromService(channel, service);
         } else if (channel == null && service != null && serviceComboBox.getItems().size() > 1) {
             serviceComboBox.getSelectionModel().select(0);
-            Utils.removeService(service);
+            LsGuiUtils.removeService(service);
         }
     }
 
@@ -343,7 +343,7 @@ public class LsGUIController {
 
         submitButton.setOnAction(event -> {
             final String username = nameTextField.getText();
-            Utils.addFollowedChannelsToService(username, service);
+            LsGuiUtils.addFollowedChannelsToService(username, service);
             popOver.hide();
         });
 

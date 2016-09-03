@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.settings.Settings;
-import app.lsgui.utils.Utils;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -68,9 +68,10 @@ public class ChatController {
         if (!"".equals(message)) {
             String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
             pircBotX.send().message("#" + channel, message);
+            final String twitchUsername = Settings.instance().getTwitchUser();
             final int start = chatTextArea.getText().length();
-            final int end = start + Settings.instance().getTwitchUser().length() + 1;
-            chatTextArea.appendText(Settings.instance().getTwitchUser() + ": " + message + "\n");
+            final int end = start + twitchUsername.length() + 1;
+            chatTextArea.appendText(twitchUsername + ": " + message + "\n");
             setColoredNickName(chatTextArea, start, end);
             setChatMessageStyle(chatTextArea, end, end + message.length() + 1);
             inputTextField.clear();
@@ -143,7 +144,7 @@ public class ChatController {
      */
     public static void setColoredNickName(final InlineCssTextArea cta, final int start, final int end) {
         cta.setStyle(start, end,
-                "-fx-fill: " + Utils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
+                "-fx-fill: " + LsGuiUtils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
 
     }
 

@@ -6,8 +6,11 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.browser.BrowserCore;
 import app.lsgui.model.twitch.ITwitchItem;
+import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
@@ -16,6 +19,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -29,7 +33,6 @@ public class BrowserController {
     @FXML
     private ToolBar browserToolBar;
 
-    @FXML
     private ProgressBar browserProgressBar;
 
     @FXML
@@ -46,10 +49,34 @@ public class BrowserController {
     public void initialize() {
         browserCore = BrowserCore.getInstance();
         setupToolBar();
+        setupProgressBar();
         setupGrid();
         browserRootBorderPane.setCenter(browserGridView);
         browserCore.setGridView(browserGridView);
         browserCore.goToHome();
+    }
+
+    private void setupProgressBar() {
+        final VBox vbox = new VBox();
+        browserProgressBar = new ProgressBar();
+        browserProgressBar.setVisible(false);
+        browserProgressBar.setMinHeight(20);
+        browserProgressBar.setMaxWidth(Double.MAX_VALUE);
+        vbox.getChildren().add(browserProgressBar);
+        browserRootBorderPane.setBottom(vbox);
+        final DoubleProperty progress = new SimpleDoubleProperty();
+        TwitchChannelUpdateService.getActiveSingleChannelServicesProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    final int size = observable.getValue().size();
+                    if (size == 0) {
+                        progress.set(1.0D);
+                        browserProgressBar.setVisible(false);
+                    } else {
+                        browserProgressBar.setVisible(true);
+                        progress.set(1.0D / observable.getValue().size());
+                    }
+                });
+        browserProgressBar.progressProperty().bind(progress);
     }
 
     private void setupToolBar() {
@@ -91,12 +118,10 @@ public class BrowserController {
 
     private void backBrowser() {
         LOGGER.debug("Go back one page");
-        browserCore.backward();
     }
 
     private void forwardBrowser() {
         LOGGER.debug("Go one page forward");
-        browserCore.forward();
     }
 
     private void startSearch() {
@@ -108,7 +133,7 @@ public class BrowserController {
         browserGridView.setUserData(browserCore);
         browserGridView.setCellFactory(param -> new TwitchItemPane());
         browserGridView.setCellWidth(TwitchItemPane.WIDTH);
-        browserGridView.setCellHeight(TwitchItemPane.WIDTH * TwitchItemPane.RATIO + 50);
+        browserGridView.cellHeightProperty().bind(TwitchItemPane.HEIGHT_PROPERTY);
     }
 
 }

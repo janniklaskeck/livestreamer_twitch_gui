@@ -26,32 +26,26 @@ public class GenericChannel implements IChannel {
      * @param name
      */
     public GenericChannel(final String name) {
-	this.nameProperty = new SimpleStringProperty();
-	this.onlineProperty = new SimpleBooleanProperty();
-	this.nameProperty.setValue(name);
-	this.onlineProperty.setValue(false);
+        this.nameProperty = new SimpleStringProperty(name);
+        this.onlineProperty = new SimpleBooleanProperty(false);
     }
 
     @Override
     public StringProperty getName() {
-	return nameProperty;
+        return nameProperty;
     }
 
     @Override
     public BooleanProperty isOnline() {
-	return onlineProperty;
+        return onlineProperty;
     }
 
     @Override
     public List<String> getAvailableQualities() {
-	return Arrays.asList("Worst", "Best");
+        return Arrays.asList("Worst", "Best");
     }
 
-    /**
-     *
-     * @return
-     */
     public static Callback<IChannel, Observable[]> extractor() {
-	return (IChannel sm) -> new Observable[] { ((GenericChannel) sm).getName(), ((GenericChannel) sm).isOnline() };
+        return (IChannel sm) -> new Observable[] { ((GenericChannel) sm).getName(), ((GenericChannel) sm).isOnline() };
     }
 }

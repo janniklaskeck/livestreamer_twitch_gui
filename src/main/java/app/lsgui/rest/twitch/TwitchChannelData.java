@@ -11,10 +11,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import app.lsgui.utils.JSONUtils;
-import app.lsgui.utils.Utils;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.scene.image.Image;
 
 /**
@@ -27,7 +28,7 @@ public class TwitchChannelData {
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelData.class);
 
     private static final ZoneOffset OFFSET = ZoneOffset.ofHours(0);
-    private static final String PREFIX = "GMT"; // Greenwich Mean Time
+    private static final String PREFIX = "GMT";
     private static final ZoneId GMT = ZoneId.ofOffset(PREFIX, OFFSET);
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(GMT);
     private static final String STREAM = "stream";
@@ -53,8 +54,9 @@ public class TwitchChannelData {
      * @param name
      */
     public TwitchChannelData(final JsonObject channelAPIResponse, final String name) {
-        if (channelAPIResponse.get(STREAM) != null && !channelAPIResponse.get(STREAM).isJsonNull()) {
-            JsonObject streamObject = channelAPIResponse.get(STREAM).getAsJsonObject();
+        final JsonElement streamElement = channelAPIResponse.get(STREAM);
+        if (channelAPIResponse.get(STREAM) != null && !streamElement.isJsonNull()) {
+            JsonObject streamObject = streamElement.getAsJsonObject();
             if (streamObject != null && !streamObject.get("channel").isJsonNull() && !streamObject.isJsonNull()) {
                 setData(streamObject, name);
             }
@@ -73,8 +75,8 @@ public class TwitchChannelData {
     }
 
     private void setOnlineData(final JsonObject channelObject, final String name) {
-        JsonObject channel = channelObject.get("channel").getAsJsonObject();
-        JsonObject preview = channelObject.get("preview").getAsJsonObject();
+        final JsonObject channel = channelObject.get("channel").getAsJsonObject();
+        final JsonObject preview = channelObject.get("preview").getAsJsonObject();
         setName(name);
         setTitle(JSONUtils.getStringIfNotNull("status", channel));
         setGame(JSONUtils.getStringIfNotNull("game", channelObject));
@@ -88,7 +90,7 @@ public class TwitchChannelData {
         calculateAndSetUptime();
         setPreviewImage(new Image(getPreviewURL(), true));
         setLogoImage(null);
-        setQualities(Utils.getAvailableQuality("http://twitch.tv/" + name));
+        setQualities(LsGuiUtils.getAvailableQuality("http://twitch.tv/" + name));
     }
 
     private void setOfflineData(final String name) {
@@ -110,7 +112,7 @@ public class TwitchChannelData {
     private void calculateAndSetUptime() {
         try {
             final ZonedDateTime nowDate = ZonedDateTime.now(GMT);
-            ZonedDateTime startDate = ZonedDateTime.parse(getCreatedAt(), DTF);
+            final ZonedDateTime startDate = ZonedDateTime.parse(getCreatedAt(), DTF);
             long time = startDate.until(nowDate, ChronoUnit.MILLIS);
             setUptime(time);
         } catch (Exception e) {

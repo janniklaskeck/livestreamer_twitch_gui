@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.settings.SettingsWindow;
 import app.lsgui.settings.Settings;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -22,15 +21,11 @@ import javafx.stage.Stage;
  */
 public class ChatWindow {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SettingsWindow.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChatWindow.class);
     private static Stage chatStage;
     private String channel;
     private FXMLLoader loader;
 
-    /**
-     *
-     * @param channel
-     */
     public ChatWindow(final String channel) {
         this.channel = channel;
         setChatStage(new Stage());

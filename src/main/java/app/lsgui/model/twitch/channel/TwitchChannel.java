@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.rest.twitch.TwitchChannelData;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -53,10 +53,8 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     private ObjectProperty<Image> previewImage;
     private List<String> availableQualities;
 
-    /**
-     *
-     * @param name
-     */
+    private boolean cameOnline = false;
+
     public TwitchChannel(final String name) {
         this.name = new SimpleStringProperty(name);
         this.logoURL = new SimpleStringProperty("");
@@ -75,15 +73,15 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         this.availableQualities = new ArrayList<>();
     }
 
-    /**
-     *
-     * @param data
-     */
-    public void updateData(final TwitchChannelData data) {
+    public void updateData(final TwitchChannelData data, final boolean notify) {
         if (data != null && data.isOnline()) {
             setOnline(data);
         } else if (data != null && !data.isOnline()) {
             setOffline(data);
+        }
+        if (cameOnline && notify) {
+            LsGuiUtils.showOnlineNotification(this);
+            cameOnline = false;
         }
     }
 
@@ -95,7 +93,7 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         title.setValue(null);
         uptime.setValue(null);
         viewers.setValue(null);
-        isOnline.setValue(false);
+        isOnline.set(false);
         isPlaylist.setValue(data.isPlaylist());
         previewImage.setValue(defaultLogo);
         description.setValue(CHANNEL_IS_OFFLINE);
@@ -103,52 +101,37 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     }
 
     private void setOnline(final TwitchChannelData data) {
-        LOGGER.info("update {} with data {}", data.getName(), data.isOnline());
+        LOGGER.debug("update {} with data {}", data.getName(), data.isOnline());
         name.setValue(data.getName());
         logoURL.setValue(data.getLogoURL());
         previewURL.setValue(data.getPreviewURL());
         game.setValue(data.getGame());
         title.setValue(data.getTitle());
         uptime.setValue(data.getUptime());
-        String upTimeStringValue = buildUptimeString();
-        uptimeString.setValue(upTimeStringValue);
+        uptimeString.setValue(buildUptimeString());
         viewers.setValue(data.getViewers());
         viewersString.setValue(Integer.toString(getViewers().get()));
         if (data.isOnline() && !isOnline.get()) {
-            isOnline.setValue(true);
-            showOnlineNotification();
-        } else if (!data.isOnline() && isOnline.get()) {
-            isOnline.setValue(false);
+            isOnline.set(true);
+            cameOnline = true;
+        } else if (!data.isOnline()) {
+            isOnline.set(false);
         }
         isPlaylist.setValue(data.isPlaylist());
         previewImage.setValue(data.getPreviewImage());
-        description.setValue(getTitle().get());
+        description.bind(title);
         availableQualities = new ArrayList<>(data.getQualities());
     }
 
-    private void showOnlineNotification() {
-        final String nameString = this.name.get();
-        final String gameString = this.game.get();
-        final String titleString = this.title.get();
-        if (nameString != null && gameString != null && titleString != null) {
-            Notifications.create().title("Channel Update")
-                    .text(nameString + " just came online!\n The Game is " + gameString + ".\n" + titleString)
-                    .darkStyle().showInformation();
-        }
-    }
-
     private String buildUptimeString() {
-        return String.format("%02d:%02d:%02d Uptime", TimeUnit.MILLISECONDS.toHours(uptime.get()),
-                TimeUnit.MILLISECONDS.toMinutes(uptime.get())
-                        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(uptime.get())),
-                TimeUnit.MILLISECONDS.toSeconds(uptime.get())
-                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime.get())));
+        final long hours = TimeUnit.MILLISECONDS.toHours(uptime.get());
+        final long minutes = TimeUnit.MILLISECONDS.toMinutes(uptime.get())
+                - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(uptime.get()));
+        final long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime.get())
+                - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime.get()));
+        return String.format("%02d:%02d:%02d Uptime", hours, minutes, seconds);
     }
 
-    /**
-     *
-     * @return
-     */
     public static Callback<IChannel, Observable[]> extractor() {
         return (IChannel sm) -> new Observable[] { ((TwitchChannel) sm).getName(), ((TwitchChannel) sm).getGame(),
                 ((TwitchChannel) sm).isOnline(), ((TwitchChannel) sm).getTitle(), ((TwitchChannel) sm).getDescription(),
@@ -157,67 +140,40 @@ public class TwitchChannel implements IChannel, ITwitchItem {
                 ((TwitchChannel) sm).getViewers() };
     }
 
-    /**
-     * @return the name
-     */
     @Override
     public StringProperty getName() {
         return name;
     }
 
-    /**
-     * @return the logoURL
-     */
     public StringProperty getLogoURL() {
         return logoURL;
     }
 
-    /**
-     * @return the previewURL
-     */
     public StringProperty getPreviewURL() {
         return previewURL;
     }
 
-    /**
-     * @return the game
-     */
     public StringProperty getGame() {
         return game;
     }
 
-    /**
-     * @return the title
-     */
     public StringProperty getTitle() {
         return title;
     }
 
-    /**
-     * @return the uptime
-     */
     public LongProperty getUptime() {
         return uptime;
     }
 
-    /**
-     * @return the viewers
-     */
     public IntegerProperty getViewers() {
         return viewers;
     }
 
-    /**
-     * @return the online
-     */
     @Override
     public BooleanProperty isOnline() {
         return isOnline;
     }
 
-    /**
-     * @return the previewImage
-     */
     public ObjectProperty<Image> getPreviewImage() {
         return previewImage;
     }
@@ -226,9 +182,6 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         return description;
     }
 
-    /**
-     * @return the availableQualities
-     */
     @Override
     public List<String> getAvailableQualities() {
         if (availableQualities.isEmpty()) {
@@ -237,31 +190,18 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         return availableQualities;
     }
 
-    /**
-     * @return the uptimeString
-     */
     public StringProperty getUptimeString() {
         return uptimeString;
     }
 
-    /**
-     * @return the viewersString
-     */
     public StringProperty getViewersString() {
         return viewersString;
     }
 
-    /**
-     * @return the isPlaylist
-     */
     public BooleanProperty getIsPlaylist() {
         return isPlaylist;
     }
 
-    /**
-     * @param isPlaylist
-     *            the isPlaylist to set
-     */
     public void setIsPlaylist(BooleanProperty isPlaylist) {
         this.isPlaylist = isPlaylist;
     }

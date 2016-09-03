@@ -7,9 +7,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import app.lsgui.model.twitch.game.TwitchGames;
-import app.lsgui.rest.twitch.TwitchAPIClient;
-import app.lsgui.rest.twitch.TwitchChannelData;
+import app.lsgui.model.twitch.ITwitchItem;
+import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -19,10 +18,10 @@ import javafx.collections.ObservableList;
  *
  */
 public class TwitchChannels {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchGames.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannels.class);
 
     private JsonObject jsonData;
-    private ObservableList<TwitchChannel> channels;
+    private ObservableList<ITwitchItem> channels;
 
     /**
      *
@@ -50,9 +49,9 @@ public class TwitchChannels {
             final JsonObject channelObject = object.get("channel").getAsJsonObject();
             final String name = channelObject.get("name").getAsString();
 
-            final TwitchChannelData channelData = TwitchAPIClient.getInstance().getStreamData(name);
             final TwitchChannel channel = new TwitchChannel(name);
-            channel.updateData(channelData);
+            final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channel, true);
+            tcus.start();
             channels.add(channel);
         }
     }
@@ -67,7 +66,7 @@ public class TwitchChannels {
         this.channels.addAll(updatedGames.getChannels());
     }
 
-    public ObservableList<TwitchChannel> getChannels() {
+    public ObservableList<ITwitchItem> getChannels() {
         return channels;
     }
 

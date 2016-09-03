@@ -1,8 +1,9 @@
 package app.lsgui.model.service;
 
 import app.lsgui.model.channel.IChannel;
-import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.transformation.SortedList;
 
 /**
  *
@@ -27,7 +28,7 @@ public interface IService {
      *
      * @return
      */
-    public ListProperty<IChannel> getChannels();
+    public ObjectProperty<SortedList<IChannel>> getChannelProperty();
 
     /**
      *

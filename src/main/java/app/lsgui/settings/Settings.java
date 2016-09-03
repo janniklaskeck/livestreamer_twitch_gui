@@ -1,11 +1,16 @@
 package app.lsgui.settings;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +25,13 @@ import app.lsgui.model.service.GenericService;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
 import app.lsgui.utils.JSONUtils;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
 /**
@@ -38,50 +46,43 @@ public class Settings {
 
     private static Settings instance;
 
-    private static final String VERSION = "";
+    private static ListProperty<IService> services = new SimpleListProperty<>();
+    private static BooleanProperty sortTwitch = new SimpleBooleanProperty();
+    private static boolean minimizeToTray = true;
+    private static String windowStyle = "LightStyle";
+    private static String currentService = "twitch.tv";
+    private static String twitchUser = "";
+    private static String twitchOAuth = "";
+    private static int maxGamesLoad = 100;
+    private static int maxChannelsLoad = 100;
+    private static String liveStreamerExePath = "";
+    private static String quality = "Best";
+    private static String recordingPath;
+    private static boolean isLoading = false;
+    private static StringProperty updateLink = new SimpleStringProperty("");
+
     private static final long TIMEOUT = 5000L;
-    private ListProperty<IService> services = new SimpleListProperty<>();
-    private BooleanProperty sortTwitch = new SimpleBooleanProperty();
-    private boolean minimizeToTray = true;
-    private String windowStyle = "LightStyle";
-    private String currentService = "twitch.tv";
-    private String twitchUser = "";
-    private String twitchOAuth = "";
-    private int maxGamesLoad = 20;
-    private int maxChannelsLoad = 20;
-    private String liveStreamerExePath = "";
-    private String quality = "Best";
-    private String recordingPath;
 
-    private boolean isLoading = false;
-
-    private static final String TWITCHUSERSTRING = "twitchusername";
-    private static final String TWITCHOAUTHSTRING = "twitchoauth";
-    private static final String TWITCHSORT = "twitchsorting";
+    private static final String TWITCH_USER_STRING = "twitchusername";
+    private static final String TWITCH_OAUTH_STRING = "twitchoauth";
+    private static final String TWITCH_SORT = "twitchsorting";
     private static final String PATH = "recordingpath";
-    private static final String CHANNELSLOAD = "load_max_channels";
-    private static final String GAMESSLOAD = "load_max_games";
-    private static final String SERVICENAME = "serviceName";
-    private static final String SERVICEURL = "serviceURL";
-    private static final String MINIMIZETOTRAYSTRING = "minimizetotray";
-    private static final String WINDOWSTYLESTRING = "windowstyle";
-    private static final String EXEPATHSTRING = "livestreamerexe";
-    private static final String QUALITYSTRING = "quality";
+    private static final String CHANNELS_LOAD = "load_max_channels";
+    private static final String GAMES_LOAD = "load_max_games";
+    private static final String SERVICE_NAME = "serviceName";
+    private static final String SERVICE_URL = "serviceURL";
+    private static final String MINIMIZE_TO_TRAY_STRING = "minimizetotray";
+    private static final String WINDOWSTYLE_STRING = "windowstyle";
+    private static final String EXEPATH_STRING = "livestreamerexe";
+    private static final String QUALITY_STRING = "quality";
 
-    private Settings() {
-        File settings = new File(FILEPATH);
-        if (settings.exists() && settings.isFile() && !isLoading) {
-            loadSettings(settings);
-        }
-    }
-
-    /**
-     *
-     * @return
-     */
-    public static Settings instance() {
+    public static synchronized Settings instance() {
         if (instance == null) {
             instance = new Settings();
+            final File settings = new File(FILEPATH);
+            if (!isLoading && settings.exists() && settings.isFile()) {
+                loadSettingsFromFile(settings);
+            }
         }
         return instance;
     }
@@ -93,90 +94,88 @@ public class Settings {
         File settings = null;
         try {
             settings = new File(FILEPATH);
-
-            settings.getParentFile().mkdirs();
-            settings.createNewFile();
+            final boolean createdDirs = settings.getParentFile().mkdirs();
+            final boolean result = settings.createNewFile();
+            LOGGER.debug("Settings Dir created? {}. Settings file was created? {}", createdDirs, result);
         } catch (IOException e) {
             LOGGER.error("ERROR while creaing Settings file", e);
         }
         createSettingsJson(settings);
     }
 
-    /**
-     *
-     * @param file
-     */
-    public void loadSettings(final File file) {
+    private static void loadSettingsFromFile(final File file) {
         isLoading = true;
-        final FileInputStream fis;
-        try {
-            fis = new FileInputStream(file);
-            final InputStreamReader isr = new InputStreamReader(fis);
-            final BufferedReader bufferedReader = new BufferedReader(isr);
+        try (final BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             final StringBuilder sb = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
-            bufferedReader.close();
             final Gson g = new Gson();
             final JsonArray jArray = g.fromJson(sb.toString(), JsonArray.class);
-            final JsonObject settings = jArray.get(0).getAsJsonObject();
-
-            services.set(FXCollections.observableArrayList());
-
-            final JsonArray servicesArray = jArray.get(1).getAsJsonArray();
-            for (int i = 0; i < servicesArray.size(); i++) {
-                final JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
-                final String serviceName = serviceJson.get(SERVICENAME).getAsString();
-                final String serviceUrl = serviceJson.get(SERVICEURL).getAsString();
-                final IService service;
-                if (serviceUrl.toLowerCase().contains("twitch")) {
-                    service = new TwitchService(serviceName, serviceUrl);
-                    ((TwitchService) service).bindSortProperty(sortTwitch);
-                } else {
-                    service = new GenericService(serviceName, serviceUrl);
-                }
-
-                final JsonArray channels = serviceJson.get("channels").getAsJsonArray();
-                for (int e = 0; e < channels.size(); e++) {
-                    final String channel = channels.get(e).getAsString();
-                    service.addChannel(channel);
-                }
-                services.get().add(service);
-            }
-            sortTwitch.setValue(JSONUtils.getBooleanSafe(settings.get(TWITCHSORT), false));
-            minimizeToTray = JSONUtils.getBooleanSafe(settings.get(MINIMIZETOTRAYSTRING), false);
-            twitchUser = JSONUtils.getStringSafe(settings.get(TWITCHUSERSTRING), "");
-            twitchOAuth = JSONUtils.getStringSafe(settings.get(TWITCHOAUTHSTRING), "");
-            windowStyle = JSONUtils.getStringSafe(settings.get(WINDOWSTYLESTRING), "LightStyle");
-            liveStreamerExePath = JSONUtils.getStringSafe(settings.get(EXEPATHSTRING), "");
-            maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELSLOAD), 20);
-            maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMESSLOAD), 20);
-            quality = JSONUtils.getStringSafe(settings.get(QUALITYSTRING), "Best");
-            setRecordingPath(JSONUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home")));
+            loadSettings(jArray);
+            loadServices(jArray);
         } catch (IOException e) {
             LOGGER.error("ERROR while reading Settings file", e);
         }
     }
 
+    private static void loadSettings(final JsonArray jArray) {
+        final JsonObject settings = jArray.get(0).getAsJsonObject();
+        sortTwitch.setValue(JSONUtils.getBooleanSafe(settings.get(TWITCH_SORT), false));
+        minimizeToTray = JSONUtils.getBooleanSafe(settings.get(MINIMIZE_TO_TRAY_STRING), false);
+        twitchUser = JSONUtils.getStringSafe(settings.get(TWITCH_USER_STRING), "");
+        twitchOAuth = JSONUtils.getStringSafe(settings.get(TWITCH_OAUTH_STRING), "");
+        windowStyle = JSONUtils.getStringSafe(settings.get(WINDOWSTYLE_STRING), "LightStyle");
+        liveStreamerExePath = JSONUtils.getStringSafe(settings.get(EXEPATH_STRING), "");
+        maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELS_LOAD), 20);
+        maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMES_LOAD), 20);
+        quality = JSONUtils.getStringSafe(settings.get(QUALITY_STRING), "Best");
+        recordingPath = JSONUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home"));
+    }
+
+    private static void loadServices(final JsonArray jArray) {
+        services.set(FXCollections.observableArrayList());
+        final JsonArray servicesArray = jArray.get(1).getAsJsonArray();
+        for (int i = 0; i < servicesArray.size(); i++) {
+            final JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
+            final String serviceName = serviceJson.get(SERVICE_NAME).getAsString();
+            final String serviceUrl = serviceJson.get(SERVICE_URL).getAsString();
+            final IService service;
+            if (serviceUrl.toLowerCase().contains("twitch")) {
+                service = new TwitchService(serviceName, serviceUrl);
+            } else {
+                service = new GenericService(serviceName, serviceUrl);
+            }
+
+            final JsonArray channels = serviceJson.get("channels").getAsJsonArray();
+            for (int e = 0; e < channels.size(); e++) {
+                final String channel = channels.get(e).getAsString();
+                service.addChannel(channel);
+            }
+            services.get().add(service);
+        }
+    }
+
     private void createSettingsJson(final File file) {
         JsonWriter w;
-        try {
-            w = new JsonWriter(new FileWriter(file));
+        try (final BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            w = new JsonWriter(writer);
             w.setIndent("  ");
             w.beginArray();
             w.beginObject();
-            w.name(TWITCHUSERSTRING).value(twitchUser);
-            w.name(TWITCHOAUTHSTRING).value(twitchOAuth);
-            w.name(TWITCHSORT).value(sortTwitch.get());
-            w.name(QUALITYSTRING).value(quality);
+            w.name(TWITCH_USER_STRING).value(twitchUser);
+            w.name(TWITCH_OAUTH_STRING).value(twitchOAuth);
+            w.name(TWITCH_SORT).value(sortTwitch.get());
+            w.name(QUALITY_STRING).value(quality);
             w.name(PATH).value(getRecordingPath());
-            w.name(CHANNELSLOAD).value(maxChannelsLoad);
-            w.name(GAMESSLOAD).value(maxGamesLoad);
-            w.name(MINIMIZETOTRAYSTRING).value(minimizeToTray);
-            w.name(WINDOWSTYLESTRING).value(windowStyle);
-            w.name(EXEPATHSTRING).value(liveStreamerExePath);
+            w.name(CHANNELS_LOAD).value(maxChannelsLoad);
+            w.name(GAMES_LOAD).value(maxGamesLoad);
+            w.name(MINIMIZE_TO_TRAY_STRING).value(minimizeToTray);
+            w.name(WINDOWSTYLE_STRING).value(windowStyle);
+            w.name(EXEPATH_STRING).value(liveStreamerExePath);
             w.endObject();
             w.beginArray();
             writeServices(w);
@@ -192,11 +191,11 @@ public class Settings {
         for (final IService s : services) {
             LOGGER.debug("Creating JSON for Service {}", s.getName().get());
             w.beginObject();
-            w.name(SERVICENAME).value(s.getName().get());
-            w.name(SERVICEURL).value(s.getUrl().get());
+            w.name(SERVICE_NAME).value(s.getName().get());
+            w.name(SERVICE_URL).value(s.getUrl().get());
             w.name("channels");
             w.beginArray();
-            for (final IChannel channel : s.getChannels()) {
+            for (final IChannel channel : s.getChannelProperty().get()) {
                 if (channel.getName().get() != null) {
                     w.value(channel.getName().get());
                 }
@@ -219,7 +218,7 @@ public class Settings {
     }
 
     public void setCurrentStreamService(final String currentStreamService) {
-        this.currentService = currentStreamService;
+        Settings.currentService = currentStreamService;
     }
 
     public String getTwitchUser() {
@@ -227,7 +226,7 @@ public class Settings {
     }
 
     public void setTwitchUser(final String twitchUser) {
-        this.twitchUser = twitchUser;
+        Settings.twitchUser = twitchUser;
     }
 
     public String getTwitchOAuth() {
@@ -235,7 +234,7 @@ public class Settings {
     }
 
     public void setTwitchOAuth(final String twitchOAuth) {
-        this.twitchOAuth = twitchOAuth;
+        Settings.twitchOAuth = twitchOAuth;
     }
 
     public int getMaxGamesLoad() {
@@ -243,7 +242,7 @@ public class Settings {
     }
 
     public void setMaxGamesLoad(final int maxGamesLoad) {
-        this.maxGamesLoad = maxGamesLoad;
+        Settings.maxGamesLoad = maxGamesLoad;
     }
 
     public int getMaxChannelsLoad() {
@@ -251,11 +250,7 @@ public class Settings {
     }
 
     public void setMaxChannelsLoad(final int maxChannelsLoad) {
-        this.maxChannelsLoad = maxChannelsLoad;
-    }
-
-    public String getVERSION() {
-        return VERSION;
+        Settings.maxChannelsLoad = maxChannelsLoad;
     }
 
     public long getTimeout() {
@@ -267,7 +262,7 @@ public class Settings {
     }
 
     public void setMinimizeToTray(final boolean minimizeToTray) {
-        this.minimizeToTray = minimizeToTray;
+        Settings.minimizeToTray = minimizeToTray;
     }
 
     public String getWindowStyle() {
@@ -275,15 +270,15 @@ public class Settings {
     }
 
     public void setWindowStyle(final String windowStyle) {
-        this.windowStyle = windowStyle;
+        Settings.windowStyle = windowStyle;
     }
 
     public void setLivestreamerExePath(final String absolutePath) {
-        this.liveStreamerExePath = absolutePath;
+        Settings.liveStreamerExePath = absolutePath;
     }
 
     public String getLivestreamerExePath() {
-        return this.liveStreamerExePath;
+        return Settings.liveStreamerExePath;
     }
 
     public String getQuality() {
@@ -291,7 +286,7 @@ public class Settings {
     }
 
     public void setQuality(final String quality) {
-        this.quality = quality;
+        Settings.quality = quality;
     }
 
     public String getRecordingPath() {
@@ -299,6 +294,24 @@ public class Settings {
     }
 
     public void setRecordingPath(final String recordingPath) {
-        this.recordingPath = recordingPath;
+        Settings.recordingPath = recordingPath;
+    }
+
+    public IService getTwitchService() {
+        final List<IService> servicesAsList = getStreamServices().get();
+        final Optional<IService> serviceOptional = servicesAsList.stream().filter(LsGuiUtils::isTwitchService)
+                .findFirst();
+        if (serviceOptional.isPresent()) {
+            return serviceOptional.get();
+        }
+        return null;
+    }
+
+    public StringProperty getUpdateLink() {
+        return updateLink;
+    }
+
+    public void setUpdateLink(final String updateLink) {
+        Settings.updateLink.setValue(updateLink);
     }
 }
