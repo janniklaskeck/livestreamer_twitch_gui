@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -48,21 +49,26 @@ public class SettingsController {
     private Button exeBrowseButton;
 
     @FXML
+    private Hyperlink updateLink;
+
+    @FXML
     public void initialize() {// NOSONAR
         LOGGER.info("SettingsController init");
         setupStyleChoiceBox();
         setupLoadChoiceBoxes();
-        final Settings st = Settings.instance();
+        final Settings settings = Settings.instance();
 
-        sortCheckBox.setSelected(st.getSortTwitch().get());
-        oauthTextField.setText(st.getTwitchOAuth());
-        usernameTextField.setText(st.getTwitchUser());
+        sortCheckBox.setSelected(settings.getSortTwitch().get());
+        oauthTextField.setText(settings.getTwitchOAuth());
+        usernameTextField.setText(settings.getTwitchUser());
 
-        sortCheckBox.setOnAction(event -> st.getSortTwitch().setValue(sortCheckBox.isSelected()));
-        usernameTextField.textProperty().addListener((observable, oldValue, newValue) -> st.setTwitchUser(newValue));
-        oauthTextField.textProperty().addListener((observable, oldValue, newValue) -> st.setTwitchOAuth(newValue));
+        sortCheckBox.setOnAction(event -> settings.getSortTwitch().setValue(sortCheckBox.isSelected()));
+        usernameTextField.textProperty()
+                .addListener((observable, oldValue, newValue) -> settings.setTwitchUser(newValue));
+        oauthTextField.textProperty()
+                .addListener((observable, oldValue, newValue) -> settings.setTwitchOAuth(newValue));
         styleChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            st.setWindowStyle(newValue);
+            settings.setWindowStyle(newValue);
             final String style = SettingsController.class.getResource("/styles/" + newValue + ".css").toExternalForm();
 
             LsGuiUtils.clearStyleSheetsFromStage(LsGUIWindow.getRootStage());
@@ -75,10 +81,10 @@ public class SettingsController {
         });
 
         gamesToLoadChoiceBox.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> st.setMaxGamesLoad(newValue));
+                .addListener((observable, oldValue, newValue) -> settings.setMaxGamesLoad(newValue));
 
         channelsToLoadChoiceBox.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> st.setMaxChannelsLoad(newValue));
+                .addListener((observable, oldValue, newValue) -> settings.setMaxChannelsLoad(newValue));
 
         exeBrowseButton.setOnAction(event -> {
             final FileChooser exeFileChooser = new FileChooser();
@@ -89,6 +95,13 @@ public class SettingsController {
                 Settings.instance().setLivestreamerExePath(exeFile.getAbsolutePath());
             }
         });
+        if (!"".equals(settings.getUpdateLink().get())) {
+            updateLink.setText("New Version available!");
+            updateLink.setOnAction(event -> LsGuiUtils.openURLInBrowser(settings.getUpdateLink().get()));
+        } else {
+            updateLink.setDisable(true);
+        }
+
     }
 
     private void setupLoadChoiceBoxes() {

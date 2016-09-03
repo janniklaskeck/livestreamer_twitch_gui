@@ -30,6 +30,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
 /**
@@ -57,6 +59,7 @@ public class Settings {
     private static String quality = "Best";
     private static String recordingPath;
     private static boolean isLoading = false;
+    private static StringProperty updateLink = new SimpleStringProperty("");
 
     private static final long TIMEOUT = 5000L;
 
@@ -302,5 +305,13 @@ public class Settings {
             return serviceOptional.get();
         }
         return null;
+    }
+
+    public StringProperty getUpdateLink() {
+        return updateLink;
+    }
+
+    public void setUpdateLink(final String updateLink) {
+        Settings.updateLink.setValue(updateLink);
     }
 }
