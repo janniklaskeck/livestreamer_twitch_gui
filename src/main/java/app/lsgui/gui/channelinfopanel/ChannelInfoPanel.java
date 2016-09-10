@@ -96,7 +96,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
 
     private void bindToTwitchChannel(final TwitchChannel selectedChannel) {
         previewImageView.imageProperty().bind((selectedChannel).getPreviewImage());
-        channelDescription.textProperty().bind((selectedChannel).getDescription());
+        channelDescription.textProperty().bind((selectedChannel).getTitle());
         channelUptime.textProperty().bind((selectedChannel).getUptimeString());
         channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
         channelViewers.textProperty().bind((selectedChannel).getViewersString());

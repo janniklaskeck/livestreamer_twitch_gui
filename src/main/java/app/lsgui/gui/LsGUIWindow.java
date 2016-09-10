@@ -68,7 +68,7 @@ public class LsGUIWindow extends Application {
         primaryStage.setMinWidth(650);
         primaryStage.setWidth(750);
 
-        primaryStage.setTitle("Livestreamer GUI v3.0");
+        primaryStage.setTitle("Livestreamer GUI v3");
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         primaryStage.setScene(scene);
         primaryStage.show();

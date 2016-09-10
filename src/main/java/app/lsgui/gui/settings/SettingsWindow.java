@@ -53,7 +53,7 @@ public class SettingsWindow extends AnchorPane { // NOSONAR
 
         settingsStage.setResizable(false);
 
-        settingsStage.setTitle("Livestreamer GUI v3.0 Settings");
+        settingsStage.setTitle("Livestreamer GUI v3 Settings");
         settingsStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         settingsStage.setScene(scene);
         settingsStage.initModality(Modality.APPLICATION_MODAL);

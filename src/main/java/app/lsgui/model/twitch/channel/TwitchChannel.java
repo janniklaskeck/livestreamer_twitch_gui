@@ -43,7 +43,6 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     private StringProperty previewURL;
     private StringProperty game;
     private StringProperty title;
-    private StringProperty description;
     private LongProperty uptime;
     private StringProperty uptimeString;
     private IntegerProperty viewers;
@@ -60,13 +59,12 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         this.logoURL = new SimpleStringProperty("");
         this.previewURL = new SimpleStringProperty("");
         this.game = new SimpleStringProperty("");
-        this.title = new SimpleStringProperty("");
+        this.title = new SimpleStringProperty(CHANNEL_IS_OFFLINE);
         this.uptime = new SimpleLongProperty(0L);
         this.viewers = new SimpleIntegerProperty(0);
         this.isOnline = new SimpleBooleanProperty(false);
         this.isPlaylist = new SimpleBooleanProperty(false);
         this.previewImage = new SimpleObjectProperty<>(null);
-        this.description = new SimpleStringProperty(CHANNEL_IS_OFFLINE);
         this.availableQualities = new SimpleListProperty<>();
         this.uptimeString = new SimpleStringProperty("");
         this.viewersString = new SimpleStringProperty("");
@@ -90,13 +88,12 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         logoURL.setValue(null);
         previewURL.setValue(null);
         game.setValue(null);
-        title.setValue(null);
+        title.setValue(CHANNEL_IS_OFFLINE);
         uptime.setValue(null);
         viewers.setValue(null);
         isOnline.set(false);
         isPlaylist.setValue(data.isPlaylist());
         previewImage.setValue(defaultLogo);
-        description.setValue(CHANNEL_IS_OFFLINE);
         availableQualities = new ArrayList<>();
     }
 
@@ -119,7 +116,6 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         }
         isPlaylist.setValue(data.isPlaylist());
         previewImage.setValue(data.getPreviewImage());
-        description.bind(title);
         availableQualities = new ArrayList<>(data.getQualities());
     }
 
@@ -134,10 +130,9 @@ public class TwitchChannel implements IChannel, ITwitchItem {
 
     public static Callback<IChannel, Observable[]> extractor() {
         return (IChannel sm) -> new Observable[] { ((TwitchChannel) sm).getName(), ((TwitchChannel) sm).getGame(),
-                ((TwitchChannel) sm).isOnline(), ((TwitchChannel) sm).getTitle(), ((TwitchChannel) sm).getDescription(),
-                ((TwitchChannel) sm).getLogoURL(), ((TwitchChannel) sm).getPreviewImage(),
-                ((TwitchChannel) sm).getPreviewURL(), ((TwitchChannel) sm).getUptime(),
-                ((TwitchChannel) sm).getViewers() };
+                ((TwitchChannel) sm).isOnline(), ((TwitchChannel) sm).getTitle(), ((TwitchChannel) sm).getLogoURL(),
+                ((TwitchChannel) sm).getPreviewImage(), ((TwitchChannel) sm).getPreviewURL(),
+                ((TwitchChannel) sm).getUptime(), ((TwitchChannel) sm).getViewers() };
     }
 
     @Override
@@ -176,10 +171,6 @@ public class TwitchChannel implements IChannel, ITwitchItem {
 
     public ObjectProperty<Image> getPreviewImage() {
         return previewImage;
-    }
-
-    public StringProperty getDescription() {
-        return description;
     }
 
     @Override

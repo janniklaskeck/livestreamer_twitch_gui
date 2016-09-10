@@ -8,6 +8,7 @@ import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.channel.TwitchChannels;
 import app.lsgui.model.twitch.game.TwitchGames;
 import app.lsgui.rest.twitch.TwitchAPIClient;
+import javafx.scene.control.ScrollBar;
 
 /**
  *
@@ -35,17 +36,12 @@ public class BrowserCore {
         gridView = displayGridView;
     }
 
-    /**
-     * Go to main directory page
-     */
     public void goToHome() {
         final TwitchGames games = TwitchAPIClient.getInstance().getGamesData();
         gridView.setItems(games.getGames());
+        scrollToTop();
     }
 
-    /**
-     * Refresh the current Page
-     */
     public void refresh() {
         LOGGER.debug("Refresh: redirect to home page");
         goToHome();
@@ -55,6 +51,16 @@ public class BrowserCore {
         LOGGER.debug("Open Data for Game '{}'", name);
         final TwitchChannels channels = TwitchAPIClient.getInstance().getGameData(name);
         gridView.setItems(channels.getChannels());
+        scrollToTop();
+
+    }
+
+    private void scrollToTop() {
+        final ScrollBar vBar = (ScrollBar) gridView.lookup(".scroll-bar:vertical");
+        if (vBar != null) {
+            vBar.setValue(0.0D);
+            vBar.setVisible(true);
+        }
     }
 
 }

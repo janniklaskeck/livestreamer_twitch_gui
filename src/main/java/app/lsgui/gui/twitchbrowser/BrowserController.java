@@ -42,9 +42,6 @@ public class BrowserController {
 
     private BrowserCore browserCore;
 
-    /**
-     * Init method
-     */
     @FXML
     public void initialize() {
         browserCore = BrowserCore.getInstance();
