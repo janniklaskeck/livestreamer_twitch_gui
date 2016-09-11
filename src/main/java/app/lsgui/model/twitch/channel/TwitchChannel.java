@@ -68,7 +68,7 @@ public class TwitchChannel implements IChannel, ITwitchItem {
 
     public TwitchChannel(final JsonObject channelAPIResponse, final String name) {
         final JsonElement streamElement = channelAPIResponse.get(STREAM);
-        if (channelAPIResponse.get(STREAM) != null && !streamElement.isJsonNull()) {
+        if (streamElement != null && !streamElement.isJsonNull()) {
             final JsonObject streamObject = streamElement.getAsJsonObject();
             if (isStreamObjectValid(streamObject)) {
                 setData(streamObject, name);
@@ -139,15 +139,15 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     }
 
     private void setOffline(final String name) {
-        this.name.setValue(name);
-        this.logoURL.setValue(null);
-        this.previewURL.setValue(null);
-        this.game.setValue(null);
-        this.title.setValue(CHANNEL_IS_OFFLINE);
-        this.uptime.setValue(null);
-        this.viewers.setValue(null);
+        this.name.set(name);
+        this.logoURL.set("");
+        this.previewURL.set("");
+        this.game.set("");
+        this.title.set(CHANNEL_IS_OFFLINE);
+        this.uptime.set(0);
+        this.viewers.set(0);
         this.isOnline.set(false);
-        this.isPlaylist.setValue(false);
+        this.isPlaylist.set(false);
         this.previewImage.setValue(defaultLogo);
         this.availableQualities = new ArrayList<>();
     }

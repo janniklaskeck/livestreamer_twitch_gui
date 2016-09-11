@@ -21,10 +21,6 @@ public class GenericChannel implements IChannel {
     private StringProperty nameProperty;
     private BooleanProperty onlineProperty;
 
-    /**
-     *
-     * @param name
-     */
     public GenericChannel(final String name) {
         this.nameProperty = new SimpleStringProperty(name);
         this.onlineProperty = new SimpleBooleanProperty(false);

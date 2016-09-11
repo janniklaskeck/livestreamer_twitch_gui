@@ -21,7 +21,7 @@ import javafx.stage.Window;
  * @author Niklas 11.06.2016
  *
  */
-public class SettingsWindow extends AnchorPane { // NOSONAR
+public class SettingsWindow extends AnchorPane {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsWindow.class);
     private static final String SETTINGSFXML = "fxml/SettingsWindow.fxml";

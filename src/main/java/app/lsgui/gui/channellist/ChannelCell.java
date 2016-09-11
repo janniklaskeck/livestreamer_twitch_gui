@@ -18,7 +18,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseButton;
 
-public class ChannelCell extends ListCell<IChannel> {// NOSONAR
+public class ChannelCell extends ListCell<IChannel> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class);
     private static final PseudoClass ONLINE_PSEUDOCLASS = PseudoClass.getPseudoClass("online");

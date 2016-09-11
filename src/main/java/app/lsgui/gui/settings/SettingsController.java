@@ -110,8 +110,8 @@ public class SettingsController {
             channelsToLoadChoiceBox.getItems().add(i);
         }
         final Settings settings = Settings.instance();
-        final int maxGamesToLoad = Integer.valueOf(settings.getMaxGamesLoad());
-        final int maxChannelsToLoad = Integer.valueOf(settings.getMaxChannelsLoad());
+        final int maxGamesToLoad = settings.getMaxGamesLoad();
+        final int maxChannelsToLoad = settings.getMaxChannelsLoad();
         gamesToLoadChoiceBox.getSelectionModel().select(maxGamesToLoad);
         channelsToLoadChoiceBox.getSelectionModel().select(maxChannelsToLoad);
     }

@@ -71,8 +71,8 @@ public class TwitchService implements IService {
 
     @Override
     public void removeChannel(final IChannel channel) {
-        LOGGER.debug("Remove Channel {} from Service {}", channel.getName(), this.getName().get());
-        if (channel != null && channel instanceof TwitchChannel) {
+        if (channel instanceof TwitchChannel) {
+            LOGGER.debug("Remove Channel {} from Service {}", channel.getName(), this.getName().get());
             final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(channel);
             tcus.cancel();
             channelList.remove(channel);

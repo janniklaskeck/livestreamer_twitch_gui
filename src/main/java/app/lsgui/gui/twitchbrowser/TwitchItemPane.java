@@ -25,7 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-public class TwitchItemPane extends GridCell<ITwitchItem> { // NOSONAR
+public class TwitchItemPane extends GridCell<ITwitchItem> {
 
     public static final float RATIO_GAME = 1.4f;
     public static final float RATIO_CHANNEL = 0.5625f;

@@ -25,7 +25,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
-public class ChannelInfoPanel extends BorderPane { // NOSONAR
+public class ChannelInfoPanel extends BorderPane {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelInfoPanel.class);
     private static final String CHANNELINFOPANELFXML = "fxml/ChannelInfoPanel.fxml";
@@ -94,36 +94,6 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         });
     }
 
-    private void bindToTwitchChannel(final TwitchChannel selectedChannel) {
-        previewImageView.imageProperty().bind((selectedChannel).getPreviewImage());
-        channelDescription.textProperty().bind((selectedChannel).getTitle());
-        channelUptime.textProperty().bind((selectedChannel).getUptimeString());
-        channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
-        channelViewers.textProperty().bind((selectedChannel).getViewersString());
-        channelViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
-        channelGame.textProperty().bind((selectedChannel).getGame());
-        channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
-        openChatButton.setDisable(false);
-        startStreamButton.disableProperty().bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
-        recordStreamButton.disableProperty().bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
-    }
-
-    private void bindToGenericChannel(final IChannel channel) {
-        channelDescription.textProperty().bind(channel.getName());
-        previewImageView.imageProperty().unbind();
-        channelUptime.textProperty().unbind();
-        channelUptime.setGraphic(null);
-        channelViewers.textProperty().unbind();
-        channelViewers.setGraphic(null);
-        channelGame.textProperty().unbind();
-        channelGame.setGraphic(null);
-        openChatButton.setDisable(true);
-        startStreamButton.disableProperty().unbind();
-        recordStreamButton.disableProperty().unbind();
-        startStreamButton.setDisable(false);
-        recordStreamButton.setDisable(false);
-    }
-
     private void setupChannelInfoPanel() {
         previewImageView = new WrappedImageView(null);
         rootBorderPane.setCenter(previewImageView);
@@ -154,6 +124,36 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         buttonBox.getItems().add(recordStreamButton);
         buttonBox.getItems().add(openChatButton);
         buttonBox.getItems().add(openInBrowserButton);
+    }
+
+    private void bindToTwitchChannel(final TwitchChannel selectedChannel) {
+        previewImageView.imageProperty().bind((selectedChannel).getPreviewImage());
+        channelDescription.textProperty().bind((selectedChannel).getTitle());
+        channelUptime.textProperty().bind((selectedChannel).getUptimeString());
+        channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
+        channelViewers.textProperty().bind((selectedChannel).getViewersString());
+        channelViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
+        channelGame.textProperty().bind((selectedChannel).getGame());
+        channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
+        openChatButton.setDisable(false);
+        startStreamButton.disableProperty().bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
+        recordStreamButton.disableProperty().bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
+    }
+
+    private void bindToGenericChannel(final IChannel channel) {
+        channelDescription.textProperty().bind(channel.getName());
+        previewImageView.imageProperty().unbind();
+        channelUptime.textProperty().unbind();
+        channelUptime.setGraphic(null);
+        channelViewers.textProperty().unbind();
+        channelViewers.setGraphic(null);
+        channelGame.textProperty().unbind();
+        channelGame.setGraphic(null);
+        openChatButton.setDisable(true);
+        startStreamButton.disableProperty().unbind();
+        recordStreamButton.disableProperty().unbind();
+        startStreamButton.setDisable(false);
+        recordStreamButton.setDisable(false);
     }
 
     public void setStream(final IChannel channel) {
