@@ -4,3 +4,4 @@ build/
 bin/
 .settings/
 /buildDist.sh
+/buildDist.bat
