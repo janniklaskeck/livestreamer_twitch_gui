@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.browser.BrowserCore;
 import app.lsgui.model.twitch.ITwitchItem;
-import app.lsgui.rest.twitch.TwitchChannelUpdateService;
+import app.lsgui.rest.twitch.TwitchBrowserUpdateService;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;
@@ -62,17 +62,16 @@ public class BrowserController {
         vbox.getChildren().add(browserProgressBar);
         browserRootBorderPane.setBottom(vbox);
         final DoubleProperty progress = new SimpleDoubleProperty();
-        TwitchChannelUpdateService.getActiveSingleChannelServicesProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    final int size = observable.getValue().size();
-                    if (size == 0) {
-                        progress.set(1.0D);
-                        browserProgressBar.setVisible(false);
-                    } else {
-                        browserProgressBar.setVisible(true);
-                        progress.set(1.0D / observable.getValue().size());
-                    }
-                });
+        TwitchBrowserUpdateService.getActiveChannelServicesProperty().addListener((observable, oldValue, newValue) -> {
+            final int size = observable.getValue().size();
+            if (size == 0) {
+                progress.set(1.0D);
+                browserProgressBar.setVisible(false);
+            } else {
+                browserProgressBar.setVisible(true);
+                progress.set(1.0D / observable.getValue().size());
+            }
+        });
         browserProgressBar.progressProperty().bind(progress);
     }
 

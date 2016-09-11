@@ -8,7 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import app.lsgui.model.twitch.ITwitchItem;
-import app.lsgui.rest.twitch.TwitchChannelUpdateService;
+import app.lsgui.rest.twitch.TwitchBrowserUpdateService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -49,8 +49,8 @@ public class TwitchChannels {
             final JsonObject channelObject = object.get("channel").getAsJsonObject();
             final String name = channelObject.get("name").getAsString();
 
-            final TwitchChannel channel = new TwitchChannel(name);
-            final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channel, true);
+            final TwitchChannel channel = new TwitchChannel(new JsonObject(), name);
+            final TwitchBrowserUpdateService tcus = new TwitchBrowserUpdateService(channel);
             tcus.start();
             channels.add(channel);
         }

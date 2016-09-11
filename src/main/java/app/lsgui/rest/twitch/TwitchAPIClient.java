@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.model.twitch.channel.TwitchChannels;
 import app.lsgui.model.twitch.game.TwitchGames;
 import app.lsgui.settings.Settings;
@@ -61,15 +62,15 @@ public class TwitchAPIClient {
         return instance;
     }
 
-    public TwitchChannelData getStreamData(final String channelName) {
+    public TwitchChannel getStreamData(final String channelName) {
         if (!"".equals(channelName)) {
             try {
                 final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channelName);
                 final JsonObject jo = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
-                return new TwitchChannelData(jo, channelName);
+                return new TwitchChannel(jo, channelName);
             } catch (JsonSyntaxException e) {
                 LOGGER.error("ERROR while loading channel data. Return empty channel", e);
-                return new TwitchChannelData(new JsonObject(), channelName);
+                return new TwitchChannel(new JsonObject(), channelName);
             }
         }
         return null;

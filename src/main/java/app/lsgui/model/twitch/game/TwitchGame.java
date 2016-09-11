@@ -54,4 +54,12 @@ public class TwitchGame implements ITwitchItem {
         return boxImage;
     }
 
+    public void updateData(final TwitchGame updatedGame) {
+        this.name = new SimpleStringProperty(updatedGame.getName().get());
+        this.viewers = new SimpleStringProperty(updatedGame.getViewers().get());
+        this.boxImage = new SimpleObjectProperty<>(updatedGame.getBoxImage().get());
+        this.channelCount = new SimpleStringProperty(updatedGame.getChannelCount().get());
+        loadChannelData();
+    }
+
 }

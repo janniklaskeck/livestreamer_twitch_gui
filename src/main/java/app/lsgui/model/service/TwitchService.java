@@ -6,6 +6,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.rest.twitch.TwitchAPIClient;
@@ -60,8 +62,8 @@ public class TwitchService implements IService {
     @Override
     public void addChannel(final String name) {
         LOGGER.debug("Add Channel {} to {} Service", name, this.getName().get());
-        final IChannel channelToAdd = new TwitchChannel(name);
-        final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd, false);
+        final TwitchChannel channelToAdd = new TwitchChannel(new JsonObject(), name);
+        final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
         tcus.start();
         UPDATESERVICES.put(channelToAdd, tcus);
         channelList.add(channelToAdd);
