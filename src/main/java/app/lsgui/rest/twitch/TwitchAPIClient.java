@@ -63,17 +63,17 @@ public class TwitchAPIClient {
     }
 
     public TwitchChannel getStreamData(final String channelName) {
+        TwitchChannel channel = new TwitchChannel(new JsonObject(), channelName);
         if (!"".equals(channelName)) {
             try {
                 final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channelName);
                 final JsonObject jo = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
-                return new TwitchChannel(jo, channelName);
+                channel = new TwitchChannel(jo, channelName);
             } catch (JsonSyntaxException e) {
                 LOGGER.error("ERROR while loading channel data. Return empty channel", e);
-                return new TwitchChannel(new JsonObject(), channelName);
             }
         }
-        return null;
+        return channel;
     }
 
     public TwitchChannels getGameData(final String game) {
@@ -138,7 +138,7 @@ public class TwitchAPIClient {
     }
 
     private String getAPIResponse(final URI apiUrl) {
-        LOGGER.debug("Send Request to API URL '{}'", apiUrl);
+        LOGGER.trace("Send Request to API URL '{}'", apiUrl);
         final HttpGet request = new HttpGet(apiUrl);
         request.setHeader("Client-ID", LSGUI_CLIENT_ID);
         try (CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {
