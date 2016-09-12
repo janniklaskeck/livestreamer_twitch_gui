@@ -56,7 +56,7 @@ public class LsGuiUtils {
     public static List<String> getAvailableQuality(final String url) {
         final List<String> qualities = new ArrayList<>();
         final JsonObject qualitiesJson = LivestreamerUtils.getQualityJsonFromLivestreamer(url);
-        if (qualitiesJson.get("error") != null) {
+        if (qualitiesJson.get("error") == null) {
             final JsonObject jsonQualitiyList = qualitiesJson.get("streams").getAsJsonObject();
             jsonQualitiyList.entrySet().forEach(entry -> qualities.add(entry.getKey()));
             return sortQualities(qualities);
