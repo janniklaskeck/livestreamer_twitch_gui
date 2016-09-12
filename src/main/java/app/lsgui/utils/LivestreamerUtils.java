@@ -39,18 +39,20 @@ public class LivestreamerUtils {
      * @return
      */
     public static JsonObject getQualityJsonFromLivestreamer(final String url) {
+        LOGGER.debug("Get available quality options for {}", url);
+        JsonObject jsonQualities = new JsonObject();
         try {
             final String livestreamerExec = LIVESTREAMERCMD;
             final Process process = new ProcessBuilder(livestreamerExec, "-j", url).redirectErrorStream(true).start();
             final InputStreamReader isr = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
             final JsonReader jr = new JsonReader(isr);
-            JsonObject jsonQualities = PARSER.parse(jr).getAsJsonObject();
+            jsonQualities = PARSER.parse(jr).getAsJsonObject();
             process.waitFor();
-            return jsonQualities;
         } catch (IOException | InterruptedException e) {
             LOGGER.error("failed to retrieve stream qualites for " + url + "," + " reason: " + e.getMessage(), e);
         }
-        return new JsonObject();
+        LOGGER.trace("Return {}", jsonQualities);
+        return jsonQualities;
     }
 
     /**
