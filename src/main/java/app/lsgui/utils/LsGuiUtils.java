@@ -223,6 +223,17 @@ public class LsGuiUtils {
         }
     }
 
+    public static void showReminderNotification(final TwitchChannel twitchChannel) {
+        final String nameString = twitchChannel.getName().get();
+        final String gameString = twitchChannel.getGame().get();
+        final String titleString = twitchChannel.getTitle().get();
+        if (nameString != null && gameString != null && titleString != null) {
+            final String title = "Channel Online Reminder!";
+            final String text = nameString + " just came online!\n The Game is " + gameString + ".\n" + titleString;
+            Notifications.create().title(title).text(text).darkStyle().hideAfter(Duration.INDEFINITE).showInformation();
+        }
+    }
+
     public static void showUpdateNotification(final String version, final ZonedDateTime date,
             final EventHandler<ActionEvent> action) {
         final String title = "Update available!";
@@ -231,4 +242,5 @@ public class LsGuiUtils {
         Notifications.create().title(title).text(updateMessage).onAction(action).hideAfter(Duration.seconds(10))
                 .darkStyle().showInformation();
     }
+
 }

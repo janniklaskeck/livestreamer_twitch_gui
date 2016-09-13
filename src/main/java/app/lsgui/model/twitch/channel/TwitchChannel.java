@@ -63,6 +63,7 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     private BooleanProperty isPlaylist = new SimpleBooleanProperty();
     private ObjectProperty<Image> previewImage = new SimpleObjectProperty<>();
     private List<String> availableQualities = new ArrayList<>();
+    private BooleanProperty hasReminder = new SimpleBooleanProperty();
 
     private boolean cameOnline = false;
 
@@ -134,8 +135,11 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         } else if (data != null && !data.isOnline().get()) {
             setOffline(data.getName().get());
         }
-        if (this.cameOnline && notify) {
+        if (this.cameOnline && notify && !hasReminder.get()) {
             LsGuiUtils.showOnlineNotification(this);
+            this.cameOnline = false;
+        } else if (this.cameOnline && notify && hasReminder.get()) {
+            LsGuiUtils.showReminderNotification(this);
             this.cameOnline = false;
         }
     }
@@ -252,5 +256,16 @@ public class TwitchChannel implements IChannel, ITwitchItem {
 
     public void setIsPlaylist(BooleanProperty isPlaylist) {
         this.isPlaylist = isPlaylist;
+    }
+
+    @Override
+    public BooleanProperty hasReminder() {
+        return hasReminder;
+    }
+
+    @Override
+    public void setReminder(final boolean hasReminder) {
+        this.hasReminder.set(hasReminder);
+        LOGGER.debug("{} {}", this.name.get(), hasReminder);
     }
 }

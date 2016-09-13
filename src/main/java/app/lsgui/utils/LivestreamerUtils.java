@@ -33,13 +33,8 @@ public class LivestreamerUtils {
     private LivestreamerUtils() {
     }
 
-    /**
-     *
-     * @param url
-     * @return
-     */
     public static JsonObject getQualityJsonFromLivestreamer(final String url) {
-        LOGGER.debug("Get available quality options for {}", url);
+        LOGGER.trace("Get available quality options for {}", url);
         JsonObject jsonQualities = new JsonObject();
         try {
             final String livestreamerExec = LIVESTREAMERCMD;
@@ -55,20 +50,11 @@ public class LivestreamerUtils {
         return jsonQualities;
     }
 
-    /**
-     *
-     * @param url
-     */
     public static void startLivestreamer(final String url) {
         final String quality = Settings.instance().getQuality();
         startLivestreamer(url, quality);
     }
 
-    /**
-     *
-     * @param url
-     * @param quality
-     */
     public static void startLivestreamer(final String url, final String quality) {
         LOGGER.info("Starting Stream {} with Quality {}", url, quality);
         Thread t = new Thread(() -> {
@@ -86,12 +72,6 @@ public class LivestreamerUtils {
         t.start();
     }
 
-    /**
-     *
-     * @param url
-     * @param quality
-     * @param filePath
-     */
     public static void recordLivestreamer(final String url, final String quality, final File filePath) {
         LOGGER.info("Record Stream {} with Quality {} to file {}", url, quality, filePath);
         Thread t = new Thread(() -> {
