@@ -110,9 +110,9 @@ public class TwitchItemPane extends GridCell<ITwitchItem> {
         final Node node = contentBorderPane;
         Tooltip.install(node, titleTooltip);
         contentBorderPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            if (event.getButton().equals(MouseButton.PRIMARY)) {
+            if (event.getButton() == MouseButton.PRIMARY) {
                 LivestreamerUtils.startLivestreamer("twitch.tv/" + channel.getName().get(), "source");
-            } else if (event.getButton().equals(MouseButton.SECONDARY)) {
+            } else if (event.getButton() == MouseButton.SECONDARY) {
                 final ContextMenu contextMenu = new ContextMenu();
                 final MenuItem startStream = new MenuItem("Start Stream");
                 startStream.setOnAction(eventStartContext -> LivestreamerUtils

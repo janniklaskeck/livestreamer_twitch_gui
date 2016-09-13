@@ -36,6 +36,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 /**
@@ -221,7 +222,8 @@ public class LsGUIController {
                 getClass().getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
         final Scene scene = addButton.getScene();
 
-        final Point2D windowCoord = new Point2D(scene.getWindow().getX(), scene.getWindow().getY());
+        final Window sceneWindow = scene.getWindow();
+        final Point2D windowCoord = new Point2D(sceneWindow.getX(), sceneWindow.getY());
         final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
         final Point2D nodeCoord = addButton.localToScene(0.0, 25.0);
         final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
@@ -319,7 +321,8 @@ public class LsGUIController {
                 getClass().getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
         final Scene scene = importButton.getScene();
 
-        final Point2D windowCoord = new Point2D(scene.getWindow().getX(), scene.getWindow().getY());
+        final Window sceneWindow = scene.getWindow();
+        final Point2D windowCoord = new Point2D(sceneWindow.getX(), sceneWindow.getY());
         final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
         final Point2D nodeCoord = importButton.localToScene(0.0, 25.0);
         final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());

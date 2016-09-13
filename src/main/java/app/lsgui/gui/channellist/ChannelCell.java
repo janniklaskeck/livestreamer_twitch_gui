@@ -85,7 +85,7 @@ public class ChannelCell extends ListCell<IChannel> {
             setContextMenu(createContextMenu(channel));
             textProperty().bind(channel.getName());
             setOnMouseClicked(mouseEvent -> {
-                if (mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
+                if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
                     startLivestreamerStream(channel);
                 }
             });
@@ -101,8 +101,9 @@ public class ChannelCell extends ListCell<IChannel> {
 
     private CheckBox createReminderCheckBox(final IChannel channel) {
         final CheckBox checkBox = new CheckBox();
-        checkBox.selectedProperty().set(channel.hasReminder().get());
-        checkBox.selectedProperty().addListener((obs, oldValue, newValue) -> {
+        final BooleanProperty selectedProperty = checkBox.selectedProperty();
+        selectedProperty.set(channel.hasReminder().get());
+        selectedProperty.addListener((obs, oldValue, newValue) -> {
             channel.setReminder(newValue);
         });
         return checkBox;
