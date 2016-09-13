@@ -15,7 +15,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-     mavenCentral()
+    mavenCentral()
 }
 
 ext {
@@ -34,6 +34,7 @@ ext {
 }
 
 dependencies {
+    compile files(System.getProperty("java.home") + "/lib/ext/jfxrt.jar" )
     compile "org.pircbotx:pircbotx:$pircbotxVersion"
     compile "org.fxmisc.richtext:richtextfx:$richtextfxVersion"
     compile "de.jensd:fontawesomefx:$fontawesomefxVersion"
