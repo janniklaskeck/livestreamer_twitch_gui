@@ -61,6 +61,8 @@ public class SettingsController {
         sortCheckBox.setSelected(settings.getSortTwitch().get());
         oauthTextField.setText(settings.getTwitchOAuth());
         usernameTextField.setText(settings.getTwitchUser());
+        gamesToLoadChoiceBox.getSelectionModel().select(new Integer(settings.getMaxGamesLoad()));
+        channelsToLoadChoiceBox.getSelectionModel().select(new Integer(settings.getMaxChannelsLoad()));
 
         sortCheckBox.setOnAction(event -> settings.getSortTwitch().setValue(sortCheckBox.isSelected()));
         usernameTextField.textProperty()
