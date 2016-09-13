@@ -62,7 +62,7 @@ public class TwitchService implements IService {
     @Override
     public void addChannel(final String name) {
         LOGGER.debug("Add Channel {} to {} Service", name, this.getName().get());
-        final TwitchChannel channelToAdd = new TwitchChannel(new JsonObject(), name);
+        final TwitchChannel channelToAdd = new TwitchChannel(new JsonObject(), name, false);
         final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
         tcus.start();
         UPDATESERVICES.put(channelToAdd, tcus);

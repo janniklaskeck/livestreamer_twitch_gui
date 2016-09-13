@@ -49,7 +49,7 @@ public class TwitchChannels {
             final JsonObject channelObject = object.get("channel").getAsJsonObject();
             final String name = channelObject.get("name").getAsString();
 
-            final TwitchChannel channel = new TwitchChannel(new JsonObject(), name);
+            final TwitchChannel channel = new TwitchChannel(new JsonObject(), name, true);
             final TwitchBrowserUpdateService tcus = new TwitchBrowserUpdateService(channel);
             tcus.start();
             channels.add(channel);

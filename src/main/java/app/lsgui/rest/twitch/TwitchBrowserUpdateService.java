@@ -49,7 +49,7 @@ public class TwitchBrowserUpdateService extends Service<TwitchChannel> {
                 synchronized (ACTIVE_LIST) {
                     ACTIVE_LIST.set(addAndGetChannelToList(channel, ACTIVE_LIST));
                 }
-                return TwitchAPIClient.getInstance().getStreamData(channel.getName().get());
+                return TwitchAPIClient.getInstance().getStreamData(channel.getName().get(), true);
             }
         };
     }

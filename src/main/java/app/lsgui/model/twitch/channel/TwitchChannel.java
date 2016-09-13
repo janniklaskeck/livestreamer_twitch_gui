@@ -66,15 +66,15 @@ public class TwitchChannel implements IChannel, ITwitchItem {
 
     private boolean cameOnline = false;
 
-    public TwitchChannel(final JsonObject channelAPIResponse, final String name) {
+    public TwitchChannel(final JsonObject channelAPIResponse, final String name, final boolean isBrowser) {
         final JsonElement streamElement = channelAPIResponse.get(STREAM);
         if (streamElement != null && !streamElement.isJsonNull()) {
             final JsonObject streamObject = streamElement.getAsJsonObject();
             if (isStreamObjectValid(streamObject)) {
-                setData(streamObject, name);
+                setData(streamObject, name, isBrowser);
             }
         } else {
-            setData(new JsonObject(), name);
+            setData(new JsonObject(), name, isBrowser);
         }
     }
 
@@ -83,15 +83,15 @@ public class TwitchChannel implements IChannel, ITwitchItem {
                 && !streamObject.get("preview").isJsonNull() && !streamObject.isJsonNull();
     }
 
-    private void setData(final JsonObject channelObject, final String name) {
+    private void setData(final JsonObject channelObject, final String name, final boolean isBrowser) {
         if (!channelObject.equals(new JsonObject())) {
-            setOnlineData(channelObject);
+            setOnlineData(channelObject, isBrowser);
         } else {
             setOffline(name);
         }
     }
 
-    private void setOnlineData(final JsonObject channelObject) {
+    private void setOnlineData(final JsonObject channelObject, final boolean isBrowser) {
         final JsonObject channel = channelObject.get("channel").getAsJsonObject();
         final JsonObject preview = channelObject.get("preview").getAsJsonObject();
 
@@ -110,7 +110,9 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         this.uptimeString.set(buildUptimeString());
         this.viewersString.set(Integer.toString(this.viewers.get()));
         this.availableQualities.clear();
-        this.availableQualities.addAll(LsGuiUtils.getAvailableQuality("http://twitch.tv/" + this.name.get()));
+        if (!isBrowser) {
+            this.availableQualities.addAll(LsGuiUtils.getAvailableQuality("http://twitch.tv/" + this.name.get()));
+        }
     }
 
     private long calculateUptime(final String createdAt) {
