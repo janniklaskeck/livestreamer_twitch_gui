@@ -806,18 +806,6 @@ public abstract class PircBot implements ReplyConstants {
     }
 
     /**
-     * Receives a file that is being sent to us by a DCC SEND request. Please
-     * use the onIncomingFileTransfer method to receive files.
-     *
-     * @deprecated As of PircBot 1.2.0, use
-     *             {@link #onIncomingFileTransfer(DccFileTransfer)}
-     */
-    @Deprecated
-    protected final void dccReceiveFile(File file, long address, int port, int size) {
-        throw new RuntimeException("dccReceiveFile is deprecated, please use sendFile");
-    }
-
-    /**
      * Attempts to establish a DCC CHAT session with a client. This method
      * issues the connection request to the client and then waits for the client
      * to respond. If the connection is successfully made, then a DccChat object
@@ -890,18 +878,6 @@ public abstract class PircBot implements ReplyConstants {
             // Do nothing.
         }
         return chat;
-    }
-
-    /**
-     * Attempts to accept a DCC CHAT request by a client. Please use the
-     * onIncomingChatRequest method to receive files.
-     *
-     * @deprecated As of PircBot 1.2.0, use
-     *             {@link #onIncomingChatRequest(DccChat)}
-     */
-    @Deprecated
-    protected final DccChat dccAcceptChatRequest(String sourceNick, long address, int port) {
-        throw new RuntimeException("dccAcceptChatRequest is deprecated, please use onIncomingChatRequest");
     }
 
     /**
@@ -2288,19 +2264,6 @@ public abstract class PircBot implements ReplyConstants {
     @Deprecated
     protected void onDccSendRequest(String sourceNick, String sourceLogin, String sourceHostname, String filename,
             long address, int port, int size) {
-    }
-
-    /**
-     * This method used to be called when a DCC CHAT request was sent to the
-     * PircBot. Please use the onIncomingChatRequest method to accept chats, as
-     * it has better functionality.
-     *
-     * @deprecated As of PircBot 1.2.0, use
-     *             {@link #onIncomingChatRequest(DccChat)}
-     */
-    @Deprecated
-    protected void onDccChatRequest(String sourceNick, String sourceLogin, String sourceHostname, long address,
-            int port) {
     }
 
     /**
