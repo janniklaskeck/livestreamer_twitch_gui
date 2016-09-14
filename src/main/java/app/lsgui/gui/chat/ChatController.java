@@ -2,18 +2,14 @@ package app.lsgui.gui.chat;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.fxmisc.richtext.InlineCssTextArea;
-import org.pircbotx.Configuration;
-import org.pircbotx.PircBotX;
-import org.pircbotx.cap.EnableCapHandler;
-import org.pircbotx.exception.IrcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.lsgui.irc.pircbot.IrcClient;
+import app.lsgui.irc.pircbot.IrcException;
 import app.lsgui.settings.Settings;
 import app.lsgui.utils.LsGuiUtils;
 import javafx.fxml.FXML;
@@ -32,9 +28,7 @@ import javafx.stage.Stage;
 public class ChatController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
-
-    private PircBotX pircBotX;
-
+    private IrcClient client;
     private InlineCssTextArea chatTextArea;
 
     @FXML
@@ -49,7 +43,7 @@ public class ChatController {
     @FXML
     public void initialize() {
         LOGGER.info("SettingsController init");
-
+        client = new IrcClient();
         chatTextArea = new InlineCssTextArea();
         chatTextArea.setWrapText(true);
         chatTextArea.setFont(new Font(20));
@@ -68,7 +62,7 @@ public class ChatController {
     private void sendMessage(final String message) {
         if (!"".equals(message)) {
             String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
-            pircBotX.send().message("#" + channel, message);
+            client.joinChannel("#cirno_tv");
             final String twitchUsername = Settings.instance().getTwitchUser();
             final int start = chatTextArea.getText().length();
             final int end = start + twitchUsername.length() + 1;
@@ -83,46 +77,42 @@ public class ChatController {
         final String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
 
         final ChatListener listener = new ChatListener(chatTextArea);
-        final EnableCapHandler capHandler = new EnableCapHandler("twitch.tv/membership");
+        // final EnableCapHandler capHandler = new
+        // EnableCapHandler("twitch.tv/membership");
         final String twitchIrc = "irc.twitch.tv";
         final String channelToJoin = "#" + channel;
-        final Configuration.Builder cfgBuilder = new Configuration.Builder().addAutoJoinChannel(channelToJoin)
-                .addListener(listener).setAutoNickChange(false).setOnJoinWhoEnabled(false).setCapEnabled(true)
-                .addCapHandler(capHandler).setEncoding(StandardCharsets.UTF_8).addServer(twitchIrc);
-        final Configuration cfg;
+        // final Configuration.Builder cfgBuilder = new
+        // Configuration.Builder().addAutoJoinChannel(channelToJoin)
+        // .addListener(listener).setAutoNickChange(false).setOnJoinWhoEnabled(false).setCapEnabled(true)
+        // .addCapHandler(capHandler).setEncoding(StandardCharsets.UTF_8).addServer(twitchIrc);
+        // final Configuration cfg;
         if (!"".equals(Settings.instance().getTwitchUser()) && !"".equals(Settings.instance().getTwitchOAuth())) {
             final String user = Settings.instance().getTwitchUser();
             final String oauth = Settings.instance().getTwitchOAuth();
-            cfg = cfgBuilder.setName(user).setLogin(user).setServerPassword(oauth).buildConfiguration();
+
+            client.setUserName(user);
+            client.setVerbose(true);
+            clientConnect(twitchIrc, oauth);
             LOGGER.info("DATA Login");
         } else {
             final String uuid = UUID.randomUUID().toString().replace("-", "");
             final String name = "justinfan" + new BigInteger(uuid, 16);
-            cfg = cfgBuilder.setName(name).setLogin(name).buildConfiguration();
             LOGGER.info("ANON Login");
         }
-        pircBotX = new PircBotX(cfg);
-        Thread t = new Thread(() -> {
-            try {
-                pircBotX.startBot();
-            } catch (IOException | IrcException e) {
-                if (e.getClass().equals(UnknownHostException.class)) {
-                    LOGGER.error(
-                            "ERROR Unknown Hosts while trying to connecto to chat. Check your Internet Connection");
-                } else {
-                    LOGGER.error("ERROR while trying to connecto to chat", e);
-                }
-                sendButton.setDisable(true);
-            }
-        });
-        t.setDaemon(true);
-        t.start();
+
+    }
+
+    public void clientConnect(String twitchIrc, String oauth) {
+        try {
+            client.connect(twitchIrc, 6667, oauth);
+        } catch (IOException | IrcException e) {
+            e.printStackTrace();
+        }
     }
 
     public void disconnect() {
-        if (pircBotX.isConnected()) {
-            pircBotX.sendIRC().quitServer();
-        }
+        client.disconnect();
+        client.dispose();
     }
 
     public static void setColoredNickName(final InlineCssTextArea cta, final int start, final int end) {
