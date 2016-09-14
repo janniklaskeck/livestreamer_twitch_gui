@@ -1,5 +1,3 @@
-package app.lsgui.irc.pircbot;
-
 /*
 Copyright Paul James Mutton, 2001-2009, http://www.jibble.org/
 
@@ -12,8 +10,10 @@ a commercial license is also provided. Full license information can be
 found at http://www.jibble.org/licenses/
 
 */
+
+package app.lsgui.irc.pircbot;
+
 import java.io.BufferedWriter;
-import java.io.IOException;
 
 /**
  * A Thread which is responsible for sending messages to the IRC server.
@@ -26,8 +26,6 @@ import java.io.IOException;
  * @version 1.5.0 (Build time: Mon Dec 14 20:07:17 2009)
  */
 public class OutputThread extends Thread {
-    private PircBot bot;
-    private Queue outQueue;
 
     /**
      * Constructs an OutputThread for the underlying PircBot. All messages sent
@@ -40,9 +38,9 @@ public class OutputThread extends Thread {
      * @param outQueue
      *            The Queue from which we will obtain our messages.
      */
-    OutputThread(final PircBot bot, final Queue outQueue) {
-        this.bot = bot;
-        this.outQueue = outQueue;
+    OutputThread(PircBot bot, Queue outQueue) {
+        _bot = bot;
+        _outQueue = outQueue;
         this.setName(this.getClass() + "-Thread");
     }
 
@@ -54,22 +52,21 @@ public class OutputThread extends Thread {
      *            The underlying PircBot instance.
      * @param out
      *            The BufferedOutputStream to write to.
-     * @param lineToSend
+     * @param line
      *            The line to be written. "\r\n" is appended to the end.
      * @param encoding
      *            The charset to use when encoing this string into a byte array.
      */
-    static void sendRawLine(final PircBot bot, final BufferedWriter bwriter, final String lineToSend) {
-        String line = "";
-        if (lineToSend.length() > bot.getMaxLineLength() - 2) {
-            line = lineToSend.substring(0, bot.getMaxLineLength() - 2);
+    static void sendRawLine(PircBot bot, BufferedWriter bwriter, String line) {
+        if (line.length() > bot.getMaxLineLength() - 2) {
+            line = line.substring(0, bot.getMaxLineLength() - 2);
         }
         synchronized (bwriter) {
             try {
                 bwriter.write(line + "\r\n");
                 bwriter.flush();
                 bot.log(">>>" + line);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // Silent response - just lose the line.
             }
         }
@@ -85,11 +82,11 @@ public class OutputThread extends Thread {
             boolean running = true;
             while (running) {
                 // Small delay to prevent spamming of the channel
-                Thread.sleep(bot.getMessageDelay());
+                Thread.sleep(_bot.getMessageDelay());
 
-                final String line = (String) outQueue.next();
+                String line = (String) _outQueue.next();
                 if (line != null) {
-                    bot.sendRawLine(line);
+                    _bot.sendRawLine(line);
                 } else {
                     running = false;
                 }
@@ -98,5 +95,8 @@ public class OutputThread extends Thread {
             // Just let the method return naturally...
         }
     }
+
+    private PircBot _bot = null;
+    private Queue _outQueue = null;
 
 }
