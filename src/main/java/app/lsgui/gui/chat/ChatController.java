@@ -18,7 +18,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 /**
  *
@@ -28,8 +27,10 @@ import javafx.stage.Stage;
 public class ChatController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
+
     private IrcClient client;
     private InlineCssTextArea chatTextArea;
+    private String channel;
 
     @FXML
     private TextField inputTextField;
@@ -61,8 +62,7 @@ public class ChatController {
 
     private void sendMessage(final String message) {
         if (!"".equals(message)) {
-            String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
-            client.joinChannel("#cirno_tv");
+            client.joinChannel("#" + this.channel);
             final String twitchUsername = Settings.instance().getTwitchUser();
             final int start = chatTextArea.getText().length();
             final int end = start + twitchUsername.length() + 1;
@@ -73,9 +73,8 @@ public class ChatController {
         }
     }
 
-    public void connect() {
-        final String channel = (String) ((Stage) chatTextArea.getScene().getWindow()).getProperties().get("channel");
-
+    public void connect(final String channel) {
+        this.channel = channel;
         final ChatListener listener = new ChatListener(chatTextArea);
         // final EnableCapHandler capHandler = new
         // EnableCapHandler("twitch.tv/membership");
@@ -91,7 +90,6 @@ public class ChatController {
             final String oauth = Settings.instance().getTwitchOAuth();
 
             client.setUserName(user);
-            client.setVerbose(true);
             clientConnect(twitchIrc, oauth);
             LOGGER.info("DATA Login");
         } else {

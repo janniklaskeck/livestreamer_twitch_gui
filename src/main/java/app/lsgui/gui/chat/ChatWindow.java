@@ -53,7 +53,6 @@ public class ChatWindow {
         stage.setMinHeight(400.0);
         stage.setMinWidth(600.0);
 
-        stage.getProperties().put("channel", channel);
         stage.setTitle(channel + " - Livestreamer GUI v3.0 Chat");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         stage.setScene(scene);
@@ -70,7 +69,7 @@ public class ChatWindow {
      * Start Connecting to IRC Server
      */
     public void connect() {
-        loader.<ChatController> getController().connect();
+        loader.<ChatController> getController().connect(channel);
     }
 
     public static Stage getChatStage() {
