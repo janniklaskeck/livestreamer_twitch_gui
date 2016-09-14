@@ -30,7 +30,6 @@ public class ChatController {
 
     private IrcClient client;
     private InlineCssTextArea chatTextArea;
-    private String channel;
 
     @FXML
     private TextField inputTextField;
@@ -74,17 +73,7 @@ public class ChatController {
     }
 
     public void connect(final String channel) {
-        this.channel = channel;
-        final ChatListener listener = new ChatListener(chatTextArea);
-        // final EnableCapHandler capHandler = new
-        // EnableCapHandler("twitch.tv/membership");
         final String twitchIrc = "irc.chat.twitch.tv";
-        final String channelToJoin = "#" + channel;
-        // final Configuration.Builder cfgBuilder = new
-        // Configuration.Builder().addAutoJoinChannel(channelToJoin)
-        // .addListener(listener).setAutoNickChange(false).setOnJoinWhoEnabled(false).setCapEnabled(true)
-        // .addCapHandler(capHandler).setEncoding(StandardCharsets.UTF_8).addServer(twitchIrc);
-        // final Configuration cfg;
         if (!"".equals(Settings.instance().getTwitchUser()) && !"".equals(Settings.instance().getTwitchOAuth())) {
             final String user = Settings.instance().getTwitchUser();
             final String oauth = Settings.instance().getTwitchOAuth();

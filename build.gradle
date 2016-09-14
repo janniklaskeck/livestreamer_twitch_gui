@@ -34,9 +34,7 @@ ext {
 }
 
 dependencies {
-compile group: 'pircbot', name: 'pircbot', version: '1.5.0'
     compile files(System.getProperty("java.home") + "/lib/ext/jfxrt.jar" )
-    compile "org.pircbotx:pircbotx:$pircbotxVersion"
     compile "org.fxmisc.richtext:richtextfx:$richtextfxVersion"
     compile "de.jensd:fontawesomefx:$fontawesomefxVersion"
     compile "org.controlsfx:controlsfx:$controlsfxVersion"
