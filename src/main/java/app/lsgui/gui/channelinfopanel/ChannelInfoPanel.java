@@ -45,6 +45,7 @@ public class ChannelInfoPanel extends BorderPane {
     private Button openChatButton;
     private Button startStreamButton;
     private Button recordStreamButton;
+    private Button openInBrowserButton;
 
     @FXML
     private BorderPane rootBorderPane;
@@ -111,14 +112,16 @@ public class ChannelInfoPanel extends BorderPane {
 
         startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
         startStreamButton.setOnAction(event -> startStream());
-
+        startStreamButton.setDisable(true);
         recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
         recordStreamButton.setOnAction(event -> recordStream());
-
+        recordStreamButton.setDisable(true);
         openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
         openChatButton.setOnAction(event -> openChat());
-        final Button openInBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
+        openChatButton.setDisable(true);
+        openInBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
         openInBrowserButton.setOnAction(event -> openBrowser());
+        openInBrowserButton.setDisable(true);
 
         buttonBox.getItems().add(startStreamButton);
         buttonBox.getItems().add(recordStreamButton);
@@ -136,6 +139,7 @@ public class ChannelInfoPanel extends BorderPane {
         channelGame.textProperty().bind((selectedChannel).getGame());
         channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
         openChatButton.setDisable(false);
+        openInBrowserButton.setDisable(false);
         startStreamButton.disableProperty().bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
         recordStreamButton.disableProperty().bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
     }
@@ -154,6 +158,7 @@ public class ChannelInfoPanel extends BorderPane {
         recordStreamButton.disableProperty().unbind();
         startStreamButton.setDisable(false);
         recordStreamButton.setDisable(false);
+        openInBrowserButton.setDisable(false);
     }
 
     public void setStream(final IChannel channel) {
