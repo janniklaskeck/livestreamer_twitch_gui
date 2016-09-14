@@ -20,6 +20,9 @@ import java.io.StringWriter;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A Thread which reads lines from the IRC server. It then passes these lines to
  * the PircBot without changing them. This running Thread also detects
@@ -32,6 +35,7 @@ import java.util.StringTokenizer;
  */
 public class InputThread extends Thread {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(InputThread.class);
     public static final int MAX_LINE_LENGTH = 512;
 
     private PircBot bot;
@@ -111,13 +115,13 @@ public class InputThread extends Thread {
                             pw.flush();
                             final StringTokenizer tokenizer = new StringTokenizer(sw.toString(), "\r\n");
                             synchronized (bot) {
-                                bot.log("### Your implementation of PircBot is faulty and you have");
-                                bot.log("### allowed an uncaught Exception or Error to propagate in your");
-                                bot.log("### code. It may be possible for PircBot to continue operating");
-                                bot.log("### normally. Here is the stack trace that was produced: -");
-                                bot.log("### ");
+                                LOGGER.debug("### Your implementation of PircBot is faulty and you have");
+                                LOGGER.debug("### allowed an uncaught Exception or Error to propagate in your");
+                                LOGGER.debug("### code. It may be possible for PircBot to continue operating");
+                                LOGGER.debug("### normally. Here is the stack trace that was produced: -");
+                                LOGGER.debug("### ");
                                 while (tokenizer.hasMoreTokens()) {
-                                    bot.log("### " + tokenizer.nextToken());
+                                    LOGGER.debug("### {}", tokenizer.nextToken());
                                 }
                             }
                         }
@@ -147,7 +151,7 @@ public class InputThread extends Thread {
         }
 
         if (!disposed) {
-            bot.log("*** Disconnected.");
+            LOGGER.debug("*** Disconnected.");
             isConnected = false;
             bot.onDisconnect();
         }

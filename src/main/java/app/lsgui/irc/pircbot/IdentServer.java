@@ -20,6 +20,9 @@ found at http://www.jibble.org/licenses/
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A simple IdentServer (also know as "The Identification Protocol"). An ident
  * server provides a means to determine the identity of a user of a particular
@@ -45,7 +48,8 @@ import java.net.Socket;
  * @version 1.5.0 (Build time: Mon Dec 14 20:07:17 2009)
  */
 public class IdentServer extends Thread {
-    private PircBot bot;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IdentServer.class);
     private String login;
     private ServerSocket serverSocket;
 
@@ -64,19 +68,18 @@ public class IdentServer extends Thread {
      * @param login
      *            The login that the ident server will respond with.
      */
-    IdentServer(final PircBot bot, final String login) {
-        this.bot = bot;
+    IdentServer(final String login) {
         this.login = login;
 
         try {
             this.serverSocket = new ServerSocket(113);
             this.serverSocket.setSoTimeout(60000);
         } catch (Exception e) {
-            this.bot.log("*** Could not start the ident server on port 113.");
+            LOGGER.debug("*** Could not start the ident server on port 113.");
             return;
         }
 
-        this.bot.log("*** Ident server running on port 113 for the next 60 seconds...");
+        LOGGER.debug("*** Ident server running on port 113 for the next 60 seconds...");
         this.setName(this.getClass() + "-Thread");
         this.start();
     }
@@ -97,24 +100,24 @@ public class IdentServer extends Thread {
 
             String line = reader.readLine();
             if (line != null) {
-                bot.log("*** Ident request received: " + line);
+                LOGGER.debug("*** Ident request received: {}", line);
                 line = line + " : USERID : UNIX : " + login;
                 writer.write(line + "\r\n");
                 writer.flush();
-                bot.log("*** Ident reply sent: " + line);
+                LOGGER.debug("*** Ident reply sent: {}", line);
                 writer.close();
             }
         } catch (IOException e) {
-            // We're not really concerned with what went wrong, are we?
+            LOGGER.error("Could not write to BufferedWriter", e);
         }
 
         try {
             serverSocket.close();
         } catch (IOException e) {
-            // Doesn't really matter...
+            LOGGER.error("Could not close Ident server socket", e);
         }
 
-        bot.log("*** The Ident server has been shut down.");
+        LOGGER.debug("*** The Ident server has been shut down.");
     }
 
 }

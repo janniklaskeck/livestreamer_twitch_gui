@@ -14,6 +14,10 @@ found at http://www.jibble.org/licenses/
 package app.lsgui.irc.pircbot;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Thread which is responsible for sending messages to the IRC server.
@@ -27,6 +31,11 @@ import java.io.BufferedWriter;
  */
 public class OutputThread extends Thread {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(OutputThread.class);
+
+    private PircBot bot = null;
+    private Queue outQueue = null;
+
     /**
      * Constructs an OutputThread for the underlying PircBot. All messages sent
      * to the IRC server are sent by this OutputThread to avoid hammering the
@@ -38,9 +47,9 @@ public class OutputThread extends Thread {
      * @param outQueue
      *            The Queue from which we will obtain our messages.
      */
-    OutputThread(PircBot bot, Queue outQueue) {
-        _bot = bot;
-        _outQueue = outQueue;
+    OutputThread(final PircBot bot, final Queue outQueue) {
+        this.bot = bot;
+        this.outQueue = outQueue;
         this.setName(this.getClass() + "-Thread");
     }
 
@@ -65,8 +74,8 @@ public class OutputThread extends Thread {
             try {
                 bwriter.write(line + "\r\n");
                 bwriter.flush();
-                bot.log(">>>" + line);
-            } catch (Exception e) {
+                LOGGER.debug(">>>{}", line);
+            } catch (IOException e) {
                 // Silent response - just lose the line.
             }
         }
@@ -82,11 +91,11 @@ public class OutputThread extends Thread {
             boolean running = true;
             while (running) {
                 // Small delay to prevent spamming of the channel
-                Thread.sleep(_bot.getMessageDelay());
+                Thread.sleep(bot.getMessageDelay());
 
-                String line = (String) _outQueue.next();
+                final String line = (String) outQueue.next();
                 if (line != null) {
-                    _bot.sendRawLine(line);
+                    bot.sendRawLine(line);
                 } else {
                     running = false;
                 }
@@ -95,8 +104,5 @@ public class OutputThread extends Thread {
             // Just let the method return naturally...
         }
     }
-
-    private PircBot _bot = null;
-    private Queue _outQueue = null;
 
 }
