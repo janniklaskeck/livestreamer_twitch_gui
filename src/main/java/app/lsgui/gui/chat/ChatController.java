@@ -44,7 +44,6 @@ public class ChatController {
     @FXML
     public void initialize() {
         LOGGER.info("SettingsController init");
-        client = new IrcClient();
         chatTextArea = new InlineCssTextArea();
         chatTextArea.setWrapText(true);
         chatTextArea.setFont(new Font(20));
@@ -58,11 +57,12 @@ public class ChatController {
         });
 
         sendButton.setOnAction(event -> sendMessage(inputTextField.getText()));
+        client = new IrcClient(chatTextArea);
     }
 
     private void sendMessage(final String message) {
         if (!"".equals(message)) {
-            client.joinChannel("#" + this.channel);
+
             final String twitchUsername = Settings.instance().getTwitchUser();
             final int start = chatTextArea.getText().length();
             final int end = start + twitchUsername.length() + 1;
@@ -78,7 +78,7 @@ public class ChatController {
         final ChatListener listener = new ChatListener(chatTextArea);
         // final EnableCapHandler capHandler = new
         // EnableCapHandler("twitch.tv/membership");
-        final String twitchIrc = "irc.twitch.tv";
+        final String twitchIrc = "irc.chat.twitch.tv";
         final String channelToJoin = "#" + channel;
         // final Configuration.Builder cfgBuilder = new
         // Configuration.Builder().addAutoJoinChannel(channelToJoin)
@@ -90,6 +90,7 @@ public class ChatController {
             final String oauth = Settings.instance().getTwitchOAuth();
 
             client.setUserName(user);
+            client.setChannel(channel);
             clientConnect(twitchIrc, oauth);
             LOGGER.info("DATA Login");
         } else {
