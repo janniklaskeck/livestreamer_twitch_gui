@@ -97,7 +97,8 @@ public class SettingsController {
                 Settings.getInstance().setLivestreamerExePath(exeFile.getAbsolutePath());
             }
         });
-        if (!"".equals(settings.getUpdateLink().get())) {
+        final String updateLinkString = settings.getUpdateLink().get();
+        if (updateLinkString != null && !"".equals(updateLinkString)) {
             updateLink.setText("New Version available!");
             updateLink.setOnAction(event -> LsGuiUtils.openURLInBrowser(settings.getUpdateLink().get()));
         } else {

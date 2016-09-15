@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.browser.BrowserCore;
 import app.lsgui.model.twitch.ITwitchItem;
+import app.lsgui.model.twitch.channel.TwitchChannel;
+import app.lsgui.model.twitch.game.TwitchGame;
 import app.lsgui.rest.twitch.TwitchBrowserUpdateService;
 import app.lsgui.settings.Settings;
 import de.jensd.fx.glyphs.GlyphsDude;
@@ -13,10 +15,13 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
@@ -46,12 +51,11 @@ public class BrowserController {
 
     @FXML
     public void initialize() {
-        browserCore = BrowserCore.getInstance();
         setupToolBar();
         setupProgressBar();
         setupGrid();
+        browserCore = BrowserCore.getInstance(browserGridView);
         browserRootBorderPane.setCenter(browserGridView);
-        browserCore.setGridView(browserGridView);
         browserCore.goToHome();
     }
 
@@ -83,8 +87,22 @@ public class BrowserController {
         final Button refreshButton = GlyphsDude.createIconButton(FontAwesomeIcon.REFRESH);
         refreshButton.setOnAction(event -> refreshBrowser());
         final TextField searchTextField = new TextField();
-        final Button searchButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
-        searchButton.setOnAction(event -> startSearch());
+        searchTextField.textProperty().addListener((obs, oldValue, newValue) -> {
+            final ObservableList<ITwitchItem> observableItems = browserCore.getItems().get();
+            final FilteredList<ITwitchItem> filteredItems = new FilteredList<>(observableItems);
+            filteredItems.setPredicate(item -> {
+                if (item instanceof TwitchGame) {
+                    final TwitchGame game = (TwitchGame) item;
+                    return game.getName().get().toLowerCase().contains(newValue);
+                } else if (item instanceof TwitchChannel) {
+                    final TwitchChannel channel = (TwitchChannel) item;
+                    return channel.getName().get().toLowerCase().contains(newValue);
+                }
+                return true;
+            });
+            browserGridView.setItems(filteredItems);
+        });
+        final Label searchLabel = new Label("Filter");
 
         favouriteGameComboBox = new ComboBox<>();
         final ListProperty<String> favouriteGames = Settings.getInstance().getFavouriteGames();
@@ -99,8 +117,8 @@ public class BrowserController {
         browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
         browserToolBar.getItems().add(refreshButton);
         browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
+        browserToolBar.getItems().add(searchLabel);
         browserToolBar.getItems().add(searchTextField);
-        browserToolBar.getItems().add(searchButton);
         browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
         browserToolBar.getItems().add(favouriteGameComboBox);
     }
@@ -115,13 +133,8 @@ public class BrowserController {
         browserCore.refresh();
     }
 
-    private void startSearch() {
-        LOGGER.debug("Start search");
-    }
-
     private void setupGrid() {
         browserGridView = new GridView<>();
-        browserGridView.setUserData(browserCore);
         browserGridView.setCellFactory(param -> new TwitchItemPane());
         browserGridView.setCellWidth(TwitchItemPane.WIDTH);
         browserGridView.cellHeightProperty().bind(TwitchItemPane.HEIGHT_PROPERTY);

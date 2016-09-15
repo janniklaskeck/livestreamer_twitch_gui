@@ -103,6 +103,7 @@ public class GithubUpdateService {
         if (currentVersionTag.endsWith("-SNAPSHOT")) {
             currentVersionTag = currentVersionTag.replace("-SNAPSHOT", "");
             LOGGER.info("Running development version!");
+            return false;
         }
         final int newVersion = calcVersionSum(realVersionTag);
         final int currentVersion = calcVersionSum(currentVersionTag);
@@ -128,8 +129,8 @@ public class GithubUpdateService {
         final String[] versionSplit = version.split("\\.");
         int sum = 0;
         // TODO such a bad system
-        sum += Integer.parseInt(versionSplit[0]) * 10;
-        sum += Integer.parseInt(versionSplit[1]) * 5;
+        sum += Integer.parseInt(versionSplit[0]) * 1000;
+        sum += Integer.parseInt(versionSplit[1]) * 10;
         sum += Integer.parseInt(versionSplit[2]);
         return sum;
     }
