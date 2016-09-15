@@ -1,4 +1,4 @@
-package app.lsgui.browser;
+package app.lsgui.utils;
 
 import org.controlsfx.control.GridView;
 import org.slf4j.Logger;
@@ -46,6 +46,7 @@ public class BrowserCore {
     }
 
     public void goToHome() {
+        LOGGER.debug("Go to home");
         final TwitchGames games = TwitchAPIClient.getInstance().getGamesData();
         items.set(games.getGames());
         gridView.setItems(items.get());

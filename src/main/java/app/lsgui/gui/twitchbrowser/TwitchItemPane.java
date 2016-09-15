@@ -2,12 +2,12 @@ package app.lsgui.gui.twitchbrowser;
 
 import org.controlsfx.control.GridCell;
 
-import app.lsgui.browser.BrowserCore;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.model.twitch.game.TwitchGame;
 import app.lsgui.settings.Settings;
+import app.lsgui.utils.BrowserCore;
 import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.LsGuiUtils;
 import de.jensd.fx.glyphs.GlyphsDude;

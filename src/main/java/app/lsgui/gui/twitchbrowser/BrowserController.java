@@ -4,12 +4,12 @@ import org.controlsfx.control.GridView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.browser.BrowserCore;
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.model.twitch.game.TwitchGame;
 import app.lsgui.rest.twitch.TwitchBrowserUpdateService;
 import app.lsgui.settings.Settings;
+import app.lsgui.utils.BrowserCore;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;
@@ -88,19 +88,21 @@ public class BrowserController {
         refreshButton.setOnAction(event -> refreshBrowser());
         final TextField searchTextField = new TextField();
         searchTextField.textProperty().addListener((obs, oldValue, newValue) -> {
-            final ObservableList<ITwitchItem> observableItems = browserCore.getItems().get();
-            final FilteredList<ITwitchItem> filteredItems = new FilteredList<>(observableItems);
-            filteredItems.setPredicate(item -> {
-                if (item instanceof TwitchGame) {
-                    final TwitchGame game = (TwitchGame) item;
-                    return game.getName().get().toLowerCase().contains(newValue);
-                } else if (item instanceof TwitchChannel) {
-                    final TwitchChannel channel = (TwitchChannel) item;
-                    return channel.getName().get().toLowerCase().contains(newValue);
-                }
-                return true;
-            });
-            browserGridView.setItems(filteredItems);
+            if (!"".equals(newValue)) {
+                final ObservableList<ITwitchItem> observableItems = browserCore.getItems().get();
+                final FilteredList<ITwitchItem> filteredItems = new FilteredList<>(observableItems);
+                filteredItems.setPredicate(item -> {
+                    if (item instanceof TwitchGame) {
+                        final TwitchGame game = (TwitchGame) item;
+                        return game.getName().get().toLowerCase().contains(newValue);
+                    } else if (item instanceof TwitchChannel) {
+                        final TwitchChannel channel = (TwitchChannel) item;
+                        return channel.getName().get().toLowerCase().contains(newValue);
+                    }
+                    return true;
+                });
+                browserGridView.setItems(filteredItems);
+            }
         });
         final Label searchLabel = new Label("Filter");
 

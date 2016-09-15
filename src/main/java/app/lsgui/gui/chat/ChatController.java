@@ -7,8 +7,8 @@ import org.jibble.pircbot.IrcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.irc.pircbot.IrcClient;
 import app.lsgui.settings.Settings;
+import app.lsgui.utils.IrcClient;
 import app.lsgui.utils.LsGuiUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

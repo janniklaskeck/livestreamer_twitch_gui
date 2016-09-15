@@ -1,4 +1,4 @@
-package app.lsgui.irc.pircbot;
+package app.lsgui.utils;
 
 import java.util.Locale;
 
