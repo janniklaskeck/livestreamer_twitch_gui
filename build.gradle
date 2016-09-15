@@ -19,22 +19,22 @@ repositories {
 }
 
 ext {
-  mainClass = "app.lsgui.LsGUI"
+    mainClass = "app.lsgui.LsGUI"
 
-  // Versionumbers
-  pircbotxVersion = "2.1"
-  richtextfxVersion = "0.6.10"
-  fontawesomefxVersion = "8.9"
-  controlsfxVersion = "8.40.11"
-  gsonVersion = "2.7"
-  httpclientVersion = "4.5.2"
-  slf4jVersion = "1.7.21"
-  log4jVersion = "2.6.2"
-  junitVersion = "4.12"
+    // Versionumbers
+    pircbotVersion = "1.5.0"
+    richtextfxVersion = "0.6.10"
+    fontawesomefxVersion = "8.9"
+    controlsfxVersion = "8.40.11"
+    gsonVersion = "2.7"
+    httpclientVersion = "4.5.2"
+    slf4jVersion = "1.7.21"
+    log4jVersion = "2.6.2"
+    junitVersion = "4.12"
 }
 
 dependencies {
-    compile files(System.getProperty("java.home") + "/lib/ext/jfxrt.jar" )
+    compile "pircbot:pircbot:$pircbotVersion"
     compile "org.fxmisc.richtext:richtextfx:$richtextfxVersion"
     compile "de.jensd:fontawesomefx:$fontawesomefxVersion"
     compile "org.controlsfx:controlsfx:$controlsfxVersion"
@@ -45,6 +45,7 @@ dependencies {
     compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
     compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
     compile "org.apache.logging.log4j:log4j-jul:$log4jVersion"
+    testCompile files(System.getProperty("java.home") + "/lib/ext/jfxrt.jar" )
     testCompile "junit:junit:$junitVersion"
 }
 
@@ -58,22 +59,22 @@ jar {
 }
 
 distributions {
-  main {
-    contents {
-      from shadowJar
+    main {
+        contents {
+            from shadowJar
+        }
     }
-  }
 }
 
 eclipse {
-  project {
-    natures 'org.springsource.ide.eclipse.gradle.core.nature', 'org.eclipse.jdt.core.javanature'
-    buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
-  }
-  classpath {
-    downloadSources = true
-    downloadJavadoc = true
-  }
+    project {
+        natures 'org.springsource.ide.eclipse.gradle.core.nature', 'org.eclipse.jdt.core.javanature'
+        buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
+    }
+    classpath {
+        downloadSources = true
+        downloadJavadoc = true
+    }
 }
 
 launch4j {

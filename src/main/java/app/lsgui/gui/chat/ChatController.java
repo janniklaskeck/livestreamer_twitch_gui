@@ -1,15 +1,13 @@
 package app.lsgui.gui.chat;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.UUID;
 
 import org.fxmisc.richtext.InlineCssTextArea;
+import org.jibble.pircbot.IrcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.irc.pircbot.IrcClient;
-import app.lsgui.irc.pircbot.IrcException;
 import app.lsgui.settings.Settings;
 import app.lsgui.utils.LsGuiUtils;
 import javafx.fxml.FXML;
@@ -82,12 +80,7 @@ public class ChatController {
             client.setChannel(channel);
             clientConnect(twitchIrc, oauth);
             LOGGER.info("DATA Login");
-        } else {
-            final String uuid = UUID.randomUUID().toString().replace("-", "");
-            final String name = "justinfan" + new BigInteger(uuid, 16);
-            LOGGER.info("ANON Login");
         }
-
     }
 
     public void clientConnect(String twitchIrc, String oauth) {

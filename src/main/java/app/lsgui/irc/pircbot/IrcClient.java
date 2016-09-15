@@ -3,6 +3,8 @@ package app.lsgui.irc.pircbot;
 import java.util.Locale;
 
 import org.fxmisc.richtext.InlineCssTextArea;
+import org.jibble.pircbot.PircBot;
+import org.jibble.pircbot.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
