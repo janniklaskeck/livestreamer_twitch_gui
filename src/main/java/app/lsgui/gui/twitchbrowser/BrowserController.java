@@ -5,18 +5,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.twitch.ITwitchItem;
-import app.lsgui.model.twitch.channel.TwitchChannel;
-import app.lsgui.model.twitch.game.TwitchGame;
 import app.lsgui.rest.twitch.TwitchBrowserUpdateService;
 import app.lsgui.settings.Settings;
 import app.lsgui.utils.BrowserCore;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
@@ -56,7 +53,7 @@ public class BrowserController {
         setupGrid();
         browserCore = BrowserCore.getInstance(browserGridView);
         browserRootBorderPane.setCenter(browserGridView);
-        browserCore.goToHome();
+        Platform.runLater(() -> browserCore.goToHome());
     }
 
     private void setupProgressBar() {
@@ -89,23 +86,10 @@ public class BrowserController {
         final TextField searchTextField = new TextField();
         searchTextField.textProperty().addListener((obs, oldValue, newValue) -> {
             if (!"".equals(newValue)) {
-                final ObservableList<ITwitchItem> observableItems = browserCore.getItems().get();
-                final FilteredList<ITwitchItem> filteredItems = new FilteredList<>(observableItems);
-                filteredItems.setPredicate(item -> {
-                    if (item instanceof TwitchGame) {
-                        final TwitchGame game = (TwitchGame) item;
-                        return game.getName().get().toLowerCase().contains(newValue);
-                    } else if (item instanceof TwitchChannel) {
-                        final TwitchChannel channel = (TwitchChannel) item;
-                        return channel.getName().get().toLowerCase().contains(newValue);
-                    }
-                    return true;
-                });
-                browserGridView.setItems(filteredItems);
+                browserCore.filter(newValue);
             }
         });
         final Label searchLabel = new Label("Filter");
-
         favouriteGameComboBox = new ComboBox<>();
         final ListProperty<String> favouriteGames = Settings.getInstance().getFavouriteGames();
         favouriteGameComboBox.itemsProperty().bind(favouriteGames);
