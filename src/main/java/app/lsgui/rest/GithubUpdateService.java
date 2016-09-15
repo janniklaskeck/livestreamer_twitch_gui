@@ -92,7 +92,7 @@ public class GithubUpdateService {
             if (!isPreRelease && isVersionNewer(tag)) {
                 final ZonedDateTime publishedDate = convertPublishedDate(publishedAt);
                 LsGuiUtils.showUpdateNotification(tag, publishedDate, event -> LsGuiUtils.openURLInBrowser(htmlUrl));
-                Settings.instance().setUpdateLink(htmlUrl);
+                Settings.getInstance().setUpdateLink(htmlUrl);
             }
         }
     }

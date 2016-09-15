@@ -7,13 +7,16 @@ import org.slf4j.LoggerFactory;
 import app.lsgui.browser.BrowserCore;
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.rest.twitch.TwitchBrowserUpdateService;
+import app.lsgui.settings.Settings;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
@@ -33,13 +36,12 @@ public class BrowserController {
     @FXML
     private ToolBar browserToolBar;
 
-    private ProgressBar browserProgressBar;
-
     @FXML
     private BorderPane browserRootBorderPane;
 
+    private ComboBox<String> favouriteGameComboBox;
+    private ProgressBar browserProgressBar;
     private GridView<ITwitchItem> browserGridView;
-
     private BrowserCore browserCore;
 
     @FXML
@@ -78,28 +80,29 @@ public class BrowserController {
     private void setupToolBar() {
         final Button homeButton = GlyphsDude.createIconButton(FontAwesomeIcon.HOME);
         homeButton.setOnAction(event -> goToHome());
-        final Separator firstSeparator = new Separator(Orientation.VERTICAL);
         final Button refreshButton = GlyphsDude.createIconButton(FontAwesomeIcon.REFRESH);
         refreshButton.setOnAction(event -> refreshBrowser());
-        final Separator secondSeparator = new Separator(Orientation.VERTICAL);
-        final Button backButton = GlyphsDude.createIconButton(FontAwesomeIcon.ARROW_LEFT);
-        backButton.setOnAction(event -> backBrowser());
-        final Button forwardButton = GlyphsDude.createIconButton(FontAwesomeIcon.ARROW_RIGHT);
-        forwardButton.setOnAction(event -> forwardBrowser());
-        final Separator thirdSeparator = new Separator(Orientation.VERTICAL);
         final TextField searchTextField = new TextField();
         final Button searchButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
         searchButton.setOnAction(event -> startSearch());
 
+        favouriteGameComboBox = new ComboBox<>();
+        final ListProperty<String> favouriteGames = Settings.getInstance().getFavouriteGames();
+        favouriteGameComboBox.itemsProperty().bind(favouriteGames);
+        favouriteGameComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                browserCore.openGame(newValue);
+            }
+        });
+
         browserToolBar.getItems().add(homeButton);
-        browserToolBar.getItems().add(firstSeparator);
+        browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
         browserToolBar.getItems().add(refreshButton);
-        browserToolBar.getItems().add(secondSeparator);
-        browserToolBar.getItems().add(backButton);
-        browserToolBar.getItems().add(forwardButton);
-        browserToolBar.getItems().add(thirdSeparator);
+        browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
         browserToolBar.getItems().add(searchTextField);
         browserToolBar.getItems().add(searchButton);
+        browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
+        browserToolBar.getItems().add(favouriteGameComboBox);
     }
 
     private void goToHome() {
@@ -110,14 +113,6 @@ public class BrowserController {
     private void refreshBrowser() {
         LOGGER.debug("Refresh current page");
         browserCore.refresh();
-    }
-
-    private void backBrowser() {
-        LOGGER.debug("Go back one page");
-    }
-
-    private void forwardBrowser() {
-        LOGGER.debug("Go one page forward");
     }
 
     private void startSearch() {

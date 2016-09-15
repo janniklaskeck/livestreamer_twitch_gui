@@ -1,7 +1,9 @@
 package app.lsgui.utils;
 
 import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -158,7 +160,7 @@ public class LsGuiUtils {
         LOGGER.debug("Add new Service {} with URL {}", serviceName, serviceUrl);
         if (!"".equals(serviceName) && !"".equals(serviceUrl)) {
             String correctedUrl = correctUrl(serviceUrl);
-            Settings.instance().getStreamServices().add(new GenericService(serviceName, correctedUrl));
+            Settings.getInstance().getStreamServices().add(new GenericService(serviceName, correctedUrl));
         }
     }
 
@@ -187,7 +189,7 @@ public class LsGuiUtils {
     public static void recordStream(final IService service, final IChannel channel) {
         if (LsGuiUtils.isChannelOnline(channel)) {
             final String url = buildUrl(service.getUrl().get(), channel.getName().get());
-            final String quality = Settings.instance().getQuality();
+            final String quality = Settings.getInstance().getQuality();
 
             final FileChooser recordFileChooser = new FileChooser();
             recordFileChooser.setTitle("Choose Target file");
@@ -209,7 +211,7 @@ public class LsGuiUtils {
 
     public static void removeService(final IService service) {
         LOGGER.debug("Removing Service {}", service.getName().get());
-        Settings.instance().getStreamServices().remove(service);
+        Settings.getInstance().getStreamServices().remove(service);
     }
 
     public static void showOnlineNotification(final TwitchChannel channel) {
@@ -241,6 +243,18 @@ public class LsGuiUtils {
                 + ". Click this or check Settings for a Link.";
         Notifications.create().title(title).text(updateMessage).onAction(action).hideAfter(Duration.seconds(10))
                 .darkStyle().showInformation();
+    }
+
+    public static boolean isFileEmpty(final File file) {
+        boolean result = true;
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            result = br.readLine() == null;
+        } catch (IOException e) {
+            LOGGER.error("Could not read from Settings file.", e);
+        }
+        return result;
     }
 
 }

@@ -56,7 +56,7 @@ public class SettingsController {
         LOGGER.info("SettingsController init");
         setupStyleChoiceBox();
         setupLoadChoiceBoxes();
-        final Settings settings = Settings.instance();
+        final Settings settings = Settings.getInstance();
 
         sortCheckBox.setSelected(settings.getSortTwitch().get());
         oauthTextField.setText(settings.getTwitchOAuth());
@@ -94,7 +94,7 @@ public class SettingsController {
             exeFileChooser.getExtensionFilters().add(new ExtensionFilter("EXE", "*.exe"));
             final File exeFile = exeFileChooser.showOpenDialog(LsGUIWindow.getRootStage());
             if (exeFile != null) {
-                Settings.instance().setLivestreamerExePath(exeFile.getAbsolutePath());
+                Settings.getInstance().setLivestreamerExePath(exeFile.getAbsolutePath());
             }
         });
         if (!"".equals(settings.getUpdateLink().get())) {
@@ -111,7 +111,7 @@ public class SettingsController {
             gamesToLoadChoiceBox.getItems().add(i);
             channelsToLoadChoiceBox.getItems().add(i);
         }
-        final Settings settings = Settings.instance();
+        final Settings settings = Settings.getInstance();
         final int maxGamesToLoad = settings.getMaxGamesLoad();
         final int maxChannelsToLoad = settings.getMaxChannelsLoad();
         gamesToLoadChoiceBox.getSelectionModel().select(maxGamesToLoad);
@@ -121,7 +121,7 @@ public class SettingsController {
     private void setupStyleChoiceBox() {
         styleChoiceBox.getItems().add("DarkStyle");
         styleChoiceBox.getItems().add("LightStyle");
-        styleChoiceBox.getSelectionModel().select(Settings.instance().getWindowStyle());
+        styleChoiceBox.getSelectionModel().select(Settings.getInstance().getWindowStyle());
     }
 
     @FXML
@@ -132,7 +132,7 @@ public class SettingsController {
 
     @FXML
     protected void saveSettingsAction() {
-        Settings.instance().saveSettings();
+        Settings.getInstance().saveSettings();
         SettingsWindow.getSettingsStage().hide();
         SettingsWindow.getSettingsStage().close();
     }

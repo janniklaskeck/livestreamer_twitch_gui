@@ -78,7 +78,23 @@ public class TwitchItemPane extends GridCell<ITwitchItem> {
         contentBorderPane.setCenter(gameImage);
         contentBorderPane.setBottom(textBox);
         contentBorderPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            BrowserCore.getInstance().openGame(game.getName().get());
+            if (event.getButton() == MouseButton.PRIMARY) {
+                BrowserCore.getInstance().openGame(game.getName().get());
+            } else if (event.getButton() == MouseButton.SECONDARY) {
+                final ContextMenu contextMenu = new ContextMenu();
+                if (!Settings.getInstance().getFavouriteGames().contains(game.getName().get())) {
+                    final MenuItem addToFavourites = new MenuItem("Add to Favourites");
+                    addToFavourites.setOnAction(
+                            eventStartContext -> Settings.getInstance().addFavouriteGame(game.getName().get()));
+                    contextMenu.getItems().add(addToFavourites);
+                } else {
+                    final MenuItem removeFromFavourites = new MenuItem("Remove from Favourites");
+                    removeFromFavourites.setOnAction(
+                            eventStartContext -> Settings.getInstance().removeFavouriteGame(game.getName().get()));
+                    contextMenu.getItems().add(removeFromFavourites);
+                }
+                this.contextMenuProperty().set(contextMenu);
+            }
             event.consume();
         });
         return contentBorderPane;
@@ -87,7 +103,7 @@ public class TwitchItemPane extends GridCell<ITwitchItem> {
     private BorderPane createChannelBorderPane() {
         final BorderPane contentBorderPane = new BorderPane();
         final ImageView channelImage = new ImageView();
-        channelImage.imageProperty().bind(channel.getPreviewImage());
+        channelImage.imageProperty().bind(channel.getPreviewImageMedium());
         channelImage.setFitWidth(WIDTH);
         channelImage.setFitHeight(HEIGHT_CHANNEL);
         final Label nameLabel = new Label();
@@ -118,7 +134,7 @@ public class TwitchItemPane extends GridCell<ITwitchItem> {
                 startStream.setOnAction(eventStartContext -> LivestreamerUtils
                         .startLivestreamer("twitch.tv/" + channel.getName().get(), "source"));
                 final MenuItem addToList = new MenuItem("Add Stream To Favourites");
-                final IService twitchService = Settings.instance().getTwitchService();
+                final IService twitchService = Settings.getInstance().getTwitchService();
                 addToList.setOnAction(
                         eventAddContext -> LsGuiUtils.addChannelToService(channel.getName().get(), twitchService));
                 contextMenu.getItems().add(startStream);

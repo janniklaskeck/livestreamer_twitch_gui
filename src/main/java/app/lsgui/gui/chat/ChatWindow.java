@@ -48,7 +48,7 @@ public class ChatWindow {
     private void setupStage(final Parent root, final Stage stage) {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ChatWindow.class
-                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
 
         stage.setMinHeight(400.0);
         stage.setMinWidth(600.0);

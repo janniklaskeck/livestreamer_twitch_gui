@@ -21,6 +21,7 @@ public class BrowserCore {
 
     private static BrowserCore instance;
     private GridView<ITwitchItem> gridView;
+    private String currentGame = "";
 
     private BrowserCore() {
     }
@@ -44,15 +45,19 @@ public class BrowserCore {
 
     public void refresh() {
         LOGGER.debug("Refresh: redirect to home page");
-        goToHome();
+        if ("".equals(currentGame)) {
+            goToHome();
+        } else {
+            openGame(currentGame);
+        }
     }
 
-    public void openGame(final String name) {
-        LOGGER.debug("Open Data for Game '{}'", name);
-        final TwitchChannels channels = TwitchAPIClient.getInstance().getGameData(name);
+    public void openGame(final String game) {
+        LOGGER.debug("Open Data for Game '{}'", game);
+        final TwitchChannels channels = TwitchAPIClient.getInstance().getGameData(game);
         gridView.setItems(channels.getChannels());
         scrollToTop();
-
+        currentGame = game;
     }
 
     private void scrollToTop() {

@@ -60,7 +60,7 @@ public class BrowserWindow {
         browserStage.initModality(Modality.APPLICATION_MODAL);
         browserStage.initOwner(parentWindow);
         BrowserWindow.getBrowserStage().getScene().getStylesheets().add(BrowserWindow.class
-                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
         browserStage.setOnCloseRequest(event -> setBrowserStage(null));
     }
 

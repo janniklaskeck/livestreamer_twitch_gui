@@ -130,7 +130,7 @@ public class ChannelInfoPanel extends BorderPane {
     }
 
     private void bindToTwitchChannel(final TwitchChannel selectedChannel) {
-        previewImageView.imageProperty().bind((selectedChannel).getPreviewImage());
+        previewImageView.imageProperty().bind((selectedChannel).getPreviewImageLarge());
         channelDescription.textProperty().bind((selectedChannel).getTitle());
         channelUptime.textProperty().bind((selectedChannel).getUptimeString());
         channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));

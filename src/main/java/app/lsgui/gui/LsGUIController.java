@@ -86,16 +86,16 @@ public class LsGUIController {
     private void setupQualityComboBox() {
         qualityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (!OFFLINEQUALITY.equals(newValue)) {
-                Settings.instance().setQuality(newValue);
+                Settings.getInstance().setQuality(newValue);
             }
         });
     }
 
     private void setupServiceComboBox() {
-        if (Settings.instance().getStreamServices().isEmpty()) {
-            Settings.instance().getStreamServices().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
+        if (Settings.getInstance().getStreamServices().isEmpty()) {
+            Settings.getInstance().getStreamServices().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
         }
-        serviceComboBox.itemsProperty().bind(Settings.instance().getStreamServices());
+        serviceComboBox.itemsProperty().bind(Settings.getInstance().getStreamServices());
         serviceComboBox.setCellFactory(listView -> new ServiceCell());
         serviceComboBox.setConverter(new StringConverter<IService>() {
             @Override
@@ -123,7 +123,7 @@ public class LsGUIController {
                     IChannel value = newValue == null ? oldValue : newValue;
                     qualityComboBox.setItems(FXCollections.observableArrayList(value.getAvailableQualities()));
                     if (qualityComboBox.getItems().size() > 1) {
-                        final String quality = Settings.instance().getQuality();
+                        final String quality = Settings.getInstance().getQuality();
                         if (qualityComboBox.getItems().contains(quality)) {
                             qualityComboBox.getSelectionModel().select(quality);
                         } else {
@@ -219,7 +219,7 @@ public class LsGUIController {
         popOver = new PopOver();
         hasPopOver.bind(popOver.showingProperty());
         popOver.getRoot().getStylesheets().add(
-                getClass().getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+                getClass().getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
         final Scene scene = addButton.getScene();
 
         final Window sceneWindow = scene.getWindow();
@@ -318,7 +318,7 @@ public class LsGUIController {
         popOver = new PopOver();
         hasPopOver.bind(popOver.showingProperty());
         popOver.getRoot().getStylesheets().add(
-                getClass().getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+                getClass().getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
         final Scene scene = importButton.getScene();
 
         final Window sceneWindow = scene.getWindow();

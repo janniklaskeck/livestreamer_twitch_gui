@@ -79,7 +79,7 @@ public class TwitchAPIClient {
     public TwitchChannels getGameData(final String game) {
         LOGGER.debug("Load game Data");
         final String gameName = game.replace(' ', '+');
-        final int maxChannelsToLoad = Settings.instance().getMaxChannelsLoad();
+        final int maxChannelsToLoad = Settings.getInstance().getMaxChannelsLoad();
         final URI uri = convertToURI(
                 TWITCH_BASE_URL + "streams/?game=" + gameName + "&offset=0&limit=" + maxChannelsToLoad);
         final String response = getAPIResponse(uri);
@@ -89,7 +89,7 @@ public class TwitchAPIClient {
 
     public TwitchGames getGamesData() {
         LOGGER.debug("Load gamesData");
-        final int maxGamesToLoad = Settings.instance().getMaxGamesLoad();
+        final int maxGamesToLoad = Settings.getInstance().getMaxGamesLoad();
         final URI uri = convertToURI(TWITCH_BASE_URL + "games/top?offset=0&limit=" + maxGamesToLoad);
         final String response = getAPIResponse(uri);
         final JsonObject jo = JSONPARSER.parse(response).getAsJsonObject();

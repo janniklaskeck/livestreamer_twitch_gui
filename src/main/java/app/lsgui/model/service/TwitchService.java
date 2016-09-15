@@ -48,7 +48,7 @@ public class TwitchService implements IService {
         this.url = new SimpleStringProperty(url);
         channelProperty = new SimpleObjectProperty<>(new SortedList<>(channelList));
         sortChannels = new SimpleBooleanProperty();
-        sortChannels.bind(Settings.instance().getSortTwitch());
+        sortChannels.bind(Settings.getInstance().getSortTwitch());
         sortChannels.addListener((observable, oldValue, newVale) -> changeComparator(newVale));
         channelProperty.get().addListener(new ListChangeListener<IChannel>() {
             @Override

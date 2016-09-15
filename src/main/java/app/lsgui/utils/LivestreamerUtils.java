@@ -51,7 +51,7 @@ public class LivestreamerUtils {
     }
 
     public static void startLivestreamer(final String url) {
-        final String quality = Settings.instance().getQuality();
+        final String quality = Settings.getInstance().getQuality();
         startLivestreamer(url, quality);
     }
 
@@ -78,7 +78,7 @@ public class LivestreamerUtils {
             try {
                 String path = "\"" + filePath.getAbsolutePath() + "\"";
                 path = path.replace('\\', '/');
-                Settings.instance().setRecordingPath(path);
+                Settings.getInstance().setRecordingPath(path);
                 ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), "-o", path, url, quality));
                 pb.redirectOutput(Redirect.INHERIT);
                 pb.redirectError(Redirect.INHERIT);
@@ -93,14 +93,14 @@ public class LivestreamerUtils {
     }
 
     private static String getLivestreamerExe() {
-        if ("".equals(Settings.instance().getLivestreamerExePath())) {
+        if ("".equals(Settings.getInstance().getLivestreamerExePath())) {
             if (!checkForLivestreamerOnPath()) {
                 Platform.runLater(LivestreamerUtils::showLivestreamerPathWarning);
                 return "";
             }
             return LIVESTREAMERCMD;
         } else {
-            return Settings.instance().getLivestreamerExePath();
+            return Settings.getInstance().getLivestreamerExePath();
         }
     }
 

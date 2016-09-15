@@ -52,7 +52,8 @@ public class TwitchChannel implements IChannel, ITwitchItem {
 
     private StringProperty name = new SimpleStringProperty();
     private StringProperty logoURL = new SimpleStringProperty();
-    private StringProperty previewURL = new SimpleStringProperty();
+    private StringProperty previewUrlLarge = new SimpleStringProperty();
+    private StringProperty previewUrlMedium = new SimpleStringProperty();
     private StringProperty game = new SimpleStringProperty();
     private StringProperty title = new SimpleStringProperty();
     private LongProperty uptime = new SimpleLongProperty();
@@ -61,7 +62,8 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     private StringProperty viewersString = new SimpleStringProperty();
     private BooleanProperty isOnline = new SimpleBooleanProperty();
     private BooleanProperty isPlaylist = new SimpleBooleanProperty();
-    private ObjectProperty<Image> previewImage = new SimpleObjectProperty<>();
+    private ObjectProperty<Image> previewImageLarge = new SimpleObjectProperty<>();
+    private ObjectProperty<Image> previewImageMedium = new SimpleObjectProperty<>();
     private List<String> availableQualities = new ArrayList<>();
     private BooleanProperty hasReminder = new SimpleBooleanProperty();
 
@@ -98,7 +100,8 @@ public class TwitchChannel implements IChannel, ITwitchItem {
 
         this.name.set(JSONUtils.getStringIfNotNull("display_name", channel));
         this.logoURL.set(JSONUtils.getStringIfNotNull("logo", channel));
-        this.previewURL.set(JSONUtils.getStringIfNotNull("large", preview));
+        this.previewUrlLarge.set(JSONUtils.getStringIfNotNull("large", preview));
+        this.previewUrlMedium.set(JSONUtils.getStringIfNotNull("medium", preview));
         this.game.set(JSONUtils.getStringIfNotNull("game", channelObject));
         this.title.set(JSONUtils.getStringIfNotNull("status", channel));
         final String createdAt = JSONUtils.getStringIfNotNull("created_at", channelObject);
@@ -106,7 +109,8 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         this.viewers.set(JSONUtils.getIntegerIfNotNull("viewers", channelObject));
         this.isOnline.set(true);
         this.isPlaylist.set(JSONUtils.getBooleanIfNotNull("is_playlist", channelObject));
-        this.previewImage.set(new Image(getPreviewURL().get(), true));
+        this.previewImageLarge.set(new Image(getPreviewUrlLarge().get(), true));
+        this.previewImageMedium.set(new Image(getPreviewUrlMedium().get(), true));
         this.availableQualities = new ArrayList<>();
         this.uptimeString.set(buildUptimeString());
         this.viewersString.set(Integer.toString(this.viewers.get()));
@@ -147,14 +151,14 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     private void setOffline(final String name) {
         this.name.set(name);
         this.logoURL.set("");
-        this.previewURL.set("");
+        this.previewUrlLarge.set("");
         this.game.set("");
         this.title.set(CHANNEL_IS_OFFLINE);
         this.uptime.set(0);
         this.viewers.set(0);
         this.isOnline.set(false);
         this.isPlaylist.set(false);
-        this.previewImage.setValue(defaultLogo);
+        this.previewImageLarge.setValue(defaultLogo);
         this.availableQualities = new ArrayList<>();
     }
 
@@ -162,7 +166,8 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         LOGGER.trace("update {} with data {}", data.getName(), data.isOnline());
         this.name.setValue(data.getName().get());
         this.logoURL.setValue(data.getLogoURL().get());
-        this.previewURL.setValue(data.getPreviewURL().get());
+        this.previewUrlLarge.setValue(data.getPreviewUrlLarge().get());
+        this.previewUrlMedium.setValue(data.getPreviewUrlMedium().get());
         this.game.setValue(data.getGame().get());
         this.title.setValue(data.getTitle().get());
         this.uptime.setValue(data.getUptime().get());
@@ -176,7 +181,8 @@ public class TwitchChannel implements IChannel, ITwitchItem {
             this.isOnline.set(false);
         }
         this.isPlaylist.setValue(data.getIsPlaylist().get());
-        this.previewImage.setValue(data.getPreviewImage().get());
+        this.previewImageLarge.setValue(data.getPreviewImageLarge().get());
+        this.previewImageMedium.setValue(data.getPreviewImageMedium().get());
         this.availableQualities = new ArrayList<>(data.getAvailableQualities());
     }
 
@@ -192,8 +198,9 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     public static Callback<IChannel, Observable[]> extractor() {
         return (IChannel sm) -> new Observable[] { ((TwitchChannel) sm).getName(), ((TwitchChannel) sm).getGame(),
                 ((TwitchChannel) sm).isOnline(), ((TwitchChannel) sm).getTitle(), ((TwitchChannel) sm).getLogoURL(),
-                ((TwitchChannel) sm).getPreviewImage(), ((TwitchChannel) sm).getPreviewURL(),
-                ((TwitchChannel) sm).getUptime(), ((TwitchChannel) sm).getViewers() };
+                ((TwitchChannel) sm).getPreviewImageLarge(), ((TwitchChannel) sm).getPreviewUrlLarge(),
+                ((TwitchChannel) sm).getPreviewUrlMedium(), ((TwitchChannel) sm).getUptime(),
+                ((TwitchChannel) sm).getViewers() };
     }
 
     @Override
@@ -205,8 +212,12 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         return logoURL;
     }
 
-    public StringProperty getPreviewURL() {
-        return previewURL;
+    public StringProperty getPreviewUrlLarge() {
+        return previewUrlLarge;
+    }
+
+    public StringProperty getPreviewUrlMedium() {
+        return previewUrlMedium;
     }
 
     public StringProperty getGame() {
@@ -230,8 +241,12 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         return isOnline;
     }
 
-    public ObjectProperty<Image> getPreviewImage() {
-        return previewImage;
+    public ObjectProperty<Image> getPreviewImageLarge() {
+        return previewImageLarge;
+    }
+
+    public ObjectProperty<Image> getPreviewImageMedium() {
+        return previewImageMedium;
     }
 
     @Override
