@@ -34,24 +34,19 @@ public class BrowserCore {
     private ObjectProperty<ObservableList<ITwitchItem>> activeItems = new SimpleObjectProperty<>(
             FXCollections.observableArrayList());
 
-    private BrowserCore(final GridView<ITwitchItem> displayGridView) {
+    private BrowserCore() {
+    }
+
+    public static synchronized BrowserCore getInstance() {
+        if (instance == null) {
+            instance = new BrowserCore();
+        }
+        return instance;
+    }
+
+    public void setGridView(final GridView<ITwitchItem> displayGridView) {
         browserGridView = displayGridView;
         browserGridView.itemsProperty().bind(activeItems);
-        // TODO fix display bug after opening browser a second time
-    }
-
-    public static BrowserCore getInstance(final GridView<ITwitchItem> displayGridView) {
-        if (instance == null) {
-            instance = new BrowserCore(displayGridView);
-        }
-        return instance;
-    }
-
-    public static BrowserCore getInstance() {
-        if (instance == null) {
-            throw new UnsupportedOperationException("BrowserCore was not initialized with GrideView!");
-        }
-        return instance;
     }
 
     public void goToHome() {

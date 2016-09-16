@@ -51,7 +51,8 @@ public class BrowserController {
         setupToolBar();
         setupProgressBar();
         setupGrid();
-        browserCore = BrowserCore.getInstance(browserGridView);
+        browserCore = BrowserCore.getInstance();
+        browserCore.setGridView(browserGridView);
         browserRootBorderPane.setCenter(browserGridView);
         Platform.runLater(() -> browserCore.goToHome());
     }
