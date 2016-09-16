@@ -36,6 +36,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 /**
@@ -85,16 +86,16 @@ public class LsGUIController {
     private void setupQualityComboBox() {
         qualityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (!OFFLINEQUALITY.equals(newValue)) {
-                Settings.instance().setQuality(newValue);
+                Settings.getInstance().setQuality(newValue);
             }
         });
     }
 
     private void setupServiceComboBox() {
-        if (Settings.instance().getStreamServices().isEmpty()) {
-            Settings.instance().getStreamServices().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
+        if (Settings.getInstance().getStreamServices().isEmpty()) {
+            Settings.getInstance().getStreamServices().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
         }
-        serviceComboBox.itemsProperty().bind(Settings.instance().getStreamServices());
+        serviceComboBox.itemsProperty().bind(Settings.getInstance().getStreamServices());
         serviceComboBox.setCellFactory(listView -> new ServiceCell());
         serviceComboBox.setConverter(new StringConverter<IService>() {
             @Override
@@ -122,7 +123,7 @@ public class LsGUIController {
                     IChannel value = newValue == null ? oldValue : newValue;
                     qualityComboBox.setItems(FXCollections.observableArrayList(value.getAvailableQualities()));
                     if (qualityComboBox.getItems().size() > 1) {
-                        final String quality = Settings.instance().getQuality();
+                        final String quality = Settings.getInstance().getQuality();
                         if (qualityComboBox.getItems().contains(quality)) {
                             qualityComboBox.getSelectionModel().select(quality);
                         } else {
@@ -218,10 +219,11 @@ public class LsGUIController {
         popOver = new PopOver();
         hasPopOver.bind(popOver.showingProperty());
         popOver.getRoot().getStylesheets().add(
-                getClass().getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+                getClass().getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
         final Scene scene = addButton.getScene();
 
-        final Point2D windowCoord = new Point2D(scene.getWindow().getX(), scene.getWindow().getY());
+        final Window sceneWindow = scene.getWindow();
+        final Point2D windowCoord = new Point2D(sceneWindow.getX(), sceneWindow.getY());
         final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
         final Point2D nodeCoord = addButton.localToScene(0.0, 25.0);
         final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
@@ -316,10 +318,11 @@ public class LsGUIController {
         popOver = new PopOver();
         hasPopOver.bind(popOver.showingProperty());
         popOver.getRoot().getStylesheets().add(
-                getClass().getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+                getClass().getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
         final Scene scene = importButton.getScene();
 
-        final Point2D windowCoord = new Point2D(scene.getWindow().getX(), scene.getWindow().getY());
+        final Window sceneWindow = scene.getWindow();
+        final Point2D windowCoord = new Point2D(sceneWindow.getX(), sceneWindow.getY());
         final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
         final Point2D nodeCoord = importButton.localToScene(0.0, 25.0);
         final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());

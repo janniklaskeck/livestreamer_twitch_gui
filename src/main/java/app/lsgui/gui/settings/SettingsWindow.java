@@ -21,7 +21,7 @@ import javafx.stage.Window;
  * @author Niklas 11.06.2016
  *
  */
-public class SettingsWindow extends AnchorPane { // NOSONAR
+public class SettingsWindow extends AnchorPane {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsWindow.class);
     private static final String SETTINGSFXML = "fxml/SettingsWindow.fxml";
@@ -53,13 +53,13 @@ public class SettingsWindow extends AnchorPane { // NOSONAR
 
         settingsStage.setResizable(false);
 
-        settingsStage.setTitle("Livestreamer GUI v3.0 Settings");
+        settingsStage.setTitle("Livestreamer GUI v3 Settings");
         settingsStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         settingsStage.setScene(scene);
         settingsStage.initModality(Modality.APPLICATION_MODAL);
         settingsStage.initOwner(parentWindow);
         SettingsWindow.getSettingsStage().getScene().getStylesheets().add(SettingsWindow.class
-                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
         settingsStage.setOnCloseRequest(event -> setSettingsStage(null));
     }
 

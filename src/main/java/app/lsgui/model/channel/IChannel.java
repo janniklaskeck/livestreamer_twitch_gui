@@ -12,22 +12,14 @@ import javafx.beans.property.StringProperty;
  */
 public interface IChannel {
 
-    /**
-     *
-     * @return
-     */
     public StringProperty getName();
 
-    /**
-     *
-     * @return
-     */
     public BooleanProperty isOnline();
 
-    /**
-     *
-     * @return
-     */
+    public BooleanProperty hasReminder();
+
+    public void setReminder(final boolean hasReminder);
+
     public List<String> getAvailableQualities();
 
 }

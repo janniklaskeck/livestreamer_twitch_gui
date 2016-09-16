@@ -11,14 +11,17 @@ import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.LsGuiUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseButton;
 
-public class ChannelCell extends ListCell<IChannel> {// NOSONAR
+public class ChannelCell extends ListCell<IChannel> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCell.class);
     private static final PseudoClass ONLINE_PSEUDOCLASS = PseudoClass.getPseudoClass("online");
@@ -26,7 +29,7 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
 
     private BooleanProperty isOnline;
     private BooleanProperty isPlaylist;
-    private ContextMenu menu;
+    private BooleanProperty hasReminder;
 
     /**
      * Channelist ChannelCell
@@ -66,37 +69,48 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
             }
         };
         getStyleClass().add("channel-cell");
+        hasReminder = new SimpleBooleanProperty();
     }
 
     @Override
-    protected void updateItem(final IChannel item, final boolean isEmpty) {
-        super.updateItem(item, isEmpty);
-        if (isEmpty || item == null) {
+    protected void updateItem(final IChannel channel, final boolean isEmpty) {
+        super.updateItem(channel, isEmpty);
+        if (isEmpty || channel == null) {
             textProperty().unbind();
             setText(null);
             setContextMenu(null);
         } else {
-            if (menu == null) {
-                menu = createContextMenu();
-            }
-            setContextMenu(menu);
+            setGraphic(createReminderCheckBox(channel));
+            setContentDisplay(ContentDisplay.LEFT);
+            setContextMenu(createContextMenu(channel));
+            textProperty().bind(channel.getName());
             setOnMouseClicked(mouseEvent -> {
-                if (mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
-                    startLivestreamerStream(item);
+                if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+                    startLivestreamerStream(channel);
                 }
             });
-            textProperty().bind(item.getName());
-            isOnline.bind(item.isOnline());
-            if (LsGuiUtils.isTwitchChannel(item)) {
-                final TwitchChannel twitchChannel = (TwitchChannel) item;
+
+            isOnline.bind(channel.isOnline());
+            if (LsGuiUtils.isTwitchChannel(channel)) {
+                final TwitchChannel twitchChannel = (TwitchChannel) channel;
                 isPlaylist.bind(twitchChannel.getIsPlaylist());
             }
+            hasReminder.bind(channel.hasReminder());
         }
     }
 
-    private ContextMenu createContextMenu() {
+    private CheckBox createReminderCheckBox(final IChannel channel) {
+        final CheckBox checkBox = new CheckBox();
+        final BooleanProperty selectedProperty = checkBox.selectedProperty();
+        selectedProperty.set(channel.hasReminder().get());
+        selectedProperty.addListener((obs, oldValue, newValue) -> {
+            channel.setReminder(newValue);
+        });
+        return checkBox;
+    }
+
+    private ContextMenu createContextMenu(final IChannel channel) {
         final ContextMenu contextMenu = new ContextMenu();
-        final IChannel channel = this.getItem();
         final MenuItem delete = new MenuItem();
         delete.textProperty().set("Delete " + channel.getName().get());
         delete.setOnAction(event -> {
@@ -144,9 +158,8 @@ public class ChannelCell extends ListCell<IChannel> {// NOSONAR
     private void startLivestreamerStream(final IChannel channel) {
         final IService service = (IService) this.getListView().getUserData();
         final String url = LsGuiUtils.buildUrl(service.getUrl().get(), channel.getName().get());
-        final String quality = Settings.instance().getQuality();
+        final String quality = Settings.getInstance().getQuality();
         LivestreamerUtils.startLivestreamer(url, quality);
         LOGGER.info("Starting Stream for {}", channel.getName().get());
-
     }
 }

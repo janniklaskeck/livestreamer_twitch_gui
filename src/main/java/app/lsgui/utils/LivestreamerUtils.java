@@ -33,40 +33,28 @@ public class LivestreamerUtils {
     private LivestreamerUtils() {
     }
 
-    /**
-     *
-     * @param url
-     * @return
-     */
     public static JsonObject getQualityJsonFromLivestreamer(final String url) {
+        LOGGER.trace("Get available quality options for {}", url);
+        JsonObject jsonQualities = new JsonObject();
         try {
             final String livestreamerExec = LIVESTREAMERCMD;
             final Process process = new ProcessBuilder(livestreamerExec, "-j", url).redirectErrorStream(true).start();
             final InputStreamReader isr = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
             final JsonReader jr = new JsonReader(isr);
-            JsonObject jsonQualities = PARSER.parse(jr).getAsJsonObject();
+            jsonQualities = PARSER.parse(jr).getAsJsonObject();
             process.waitFor();
-            return jsonQualities;
         } catch (IOException | InterruptedException e) {
             LOGGER.error("failed to retrieve stream qualites for " + url + "," + " reason: " + e.getMessage(), e);
         }
-        return new JsonObject();
+        LOGGER.trace("Return {}", jsonQualities);
+        return jsonQualities;
     }
 
-    /**
-     *
-     * @param url
-     */
     public static void startLivestreamer(final String url) {
-        final String quality = Settings.instance().getQuality();
+        final String quality = Settings.getInstance().getQuality();
         startLivestreamer(url, quality);
     }
 
-    /**
-     *
-     * @param url
-     * @param quality
-     */
     public static void startLivestreamer(final String url, final String quality) {
         LOGGER.info("Starting Stream {} with Quality {}", url, quality);
         Thread t = new Thread(() -> {
@@ -84,19 +72,13 @@ public class LivestreamerUtils {
         t.start();
     }
 
-    /**
-     *
-     * @param url
-     * @param quality
-     * @param filePath
-     */
     public static void recordLivestreamer(final String url, final String quality, final File filePath) {
         LOGGER.info("Record Stream {} with Quality {} to file {}", url, quality, filePath);
         Thread t = new Thread(() -> {
             try {
                 String path = "\"" + filePath.getAbsolutePath() + "\"";
                 path = path.replace('\\', '/');
-                Settings.instance().setRecordingPath(path);
+                Settings.getInstance().setRecordingPath(path);
                 ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), "-o", path, url, quality));
                 pb.redirectOutput(Redirect.INHERIT);
                 pb.redirectError(Redirect.INHERIT);
@@ -111,14 +93,14 @@ public class LivestreamerUtils {
     }
 
     private static String getLivestreamerExe() {
-        if ("".equals(Settings.instance().getLivestreamerExePath())) {
+        if ("".equals(Settings.getInstance().getLivestreamerExePath())) {
             if (!checkForLivestreamerOnPath()) {
                 Platform.runLater(LivestreamerUtils::showLivestreamerPathWarning);
                 return "";
             }
             return LIVESTREAMERCMD;
         } else {
-            return Settings.instance().getLivestreamerExePath();
+            return Settings.getInstance().getLivestreamerExePath();
         }
     }
 

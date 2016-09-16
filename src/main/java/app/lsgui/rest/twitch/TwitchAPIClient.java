@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.model.twitch.channel.TwitchChannels;
 import app.lsgui.model.twitch.game.TwitchGames;
 import app.lsgui.settings.Settings;
@@ -61,24 +62,24 @@ public class TwitchAPIClient {
         return instance;
     }
 
-    public TwitchChannelData getStreamData(final String channelName) {
+    public TwitchChannel getStreamData(final String channelName, final boolean isBrowser) {
+        TwitchChannel channel = new TwitchChannel(new JsonObject(), channelName, isBrowser);
         if (!"".equals(channelName)) {
             try {
                 final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channelName);
                 final JsonObject jo = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
-                return new TwitchChannelData(jo, channelName);
+                channel = new TwitchChannel(jo, channelName, isBrowser);
             } catch (JsonSyntaxException e) {
                 LOGGER.error("ERROR while loading channel data. Return empty channel", e);
-                return new TwitchChannelData(new JsonObject(), channelName);
             }
         }
-        return null;
+        return channel;
     }
 
     public TwitchChannels getGameData(final String game) {
         LOGGER.debug("Load game Data");
         final String gameName = game.replace(' ', '+');
-        final int maxChannelsToLoad = Settings.instance().getMaxChannelsLoad();
+        final int maxChannelsToLoad = Settings.getInstance().getMaxChannelsLoad();
         final URI uri = convertToURI(
                 TWITCH_BASE_URL + "streams/?game=" + gameName + "&offset=0&limit=" + maxChannelsToLoad);
         final String response = getAPIResponse(uri);
@@ -88,7 +89,7 @@ public class TwitchAPIClient {
 
     public TwitchGames getGamesData() {
         LOGGER.debug("Load gamesData");
-        final int maxGamesToLoad = Settings.instance().getMaxGamesLoad();
+        final int maxGamesToLoad = Settings.getInstance().getMaxGamesLoad();
         final URI uri = convertToURI(TWITCH_BASE_URL + "games/top?offset=0&limit=" + maxGamesToLoad);
         final String response = getAPIResponse(uri);
         final JsonObject jo = JSONPARSER.parse(response).getAsJsonObject();
@@ -137,7 +138,7 @@ public class TwitchAPIClient {
     }
 
     private String getAPIResponse(final URI apiUrl) {
-        LOGGER.debug("Send Request to API URL '{}'", apiUrl);
+        LOGGER.trace("Send Request to API URL '{}'", apiUrl);
         final HttpGet request = new HttpGet(apiUrl);
         request.setHeader("Client-ID", LSGUI_CLIENT_ID);
         try (CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {

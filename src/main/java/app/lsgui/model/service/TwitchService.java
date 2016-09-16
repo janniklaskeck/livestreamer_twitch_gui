@@ -6,6 +6,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.twitch.channel.TwitchChannel;
 import app.lsgui.rest.twitch.TwitchAPIClient;
@@ -46,7 +48,7 @@ public class TwitchService implements IService {
         this.url = new SimpleStringProperty(url);
         channelProperty = new SimpleObjectProperty<>(new SortedList<>(channelList));
         sortChannels = new SimpleBooleanProperty();
-        sortChannels.bind(Settings.instance().getSortTwitch());
+        sortChannels.bind(Settings.getInstance().getSortTwitch());
         sortChannels.addListener((observable, oldValue, newVale) -> changeComparator(newVale));
         channelProperty.get().addListener(new ListChangeListener<IChannel>() {
             @Override
@@ -60,8 +62,8 @@ public class TwitchService implements IService {
     @Override
     public void addChannel(final String name) {
         LOGGER.debug("Add Channel {} to {} Service", name, this.getName().get());
-        final IChannel channelToAdd = new TwitchChannel(name);
-        final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd, false);
+        final TwitchChannel channelToAdd = new TwitchChannel(new JsonObject(), name, false);
+        final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
         tcus.start();
         UPDATESERVICES.put(channelToAdd, tcus);
         channelList.add(channelToAdd);
@@ -69,8 +71,8 @@ public class TwitchService implements IService {
 
     @Override
     public void removeChannel(final IChannel channel) {
-        LOGGER.debug("Remove Channel {} from Service {}", channel.getName(), this.getName().get());
-        if (channel != null && channel instanceof TwitchChannel) {
+        if (channel instanceof TwitchChannel) {
+            LOGGER.debug("Remove Channel {} from Service {}", channel.getName(), this.getName().get());
             final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(channel);
             tcus.cancel();
             channelList.remove(channel);

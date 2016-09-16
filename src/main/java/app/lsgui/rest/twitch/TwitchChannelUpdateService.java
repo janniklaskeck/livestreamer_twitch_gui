@@ -3,7 +3,6 @@ package app.lsgui.rest.twitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.twitch.channel.TwitchChannel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -18,63 +17,33 @@ import javafx.util.Duration;
  * @author Niklas 11.06.2016
  *
  */
-public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelData> {
+public class TwitchChannelUpdateService extends ScheduledService<TwitchChannel> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelUpdateService.class);
-    private static final ListProperty<IChannel> ACTIVE_LIST = new SimpleListProperty<>(
+    private static final ListProperty<TwitchChannel> ACTIVE_LIST = new SimpleListProperty<>(
             FXCollections.observableArrayList());
-    private static final ListProperty<IChannel> ACTIVE_SINGLE_LIST = new SimpleListProperty<>(
-            FXCollections.observableArrayList());
-    private TwitchChannel model;
-    private boolean runOnce = false;
+    private TwitchChannel channel;
 
-    public TwitchChannelUpdateService(final IChannel model, final boolean runOnce) {
-        LOGGER.debug("Create UpdateService for {}", model.getName().get());
-        this.runOnce = runOnce;
-        if (model.getClass().equals(TwitchChannel.class)) {
-            this.model = (TwitchChannel) model;
-            if (this.runOnce) {
-                setUpSingle();
-            } else {
-                setUpConstant();
-            }
-        }
-    }
-
-    public final void setUpSingle() {
-        setPeriod(Duration.seconds(40));
-        setRestartOnFailure(true);
-        setOnSucceeded(event -> {
-            final TwitchChannelData updatedModel = (TwitchChannelData) event.getSource().getValue();
-            if (updatedModel != null) {
-                synchronized (this.model) {
-                    this.model.updateData(updatedModel, false);
-                }
-            }
-            synchronized (ACTIVE_SINGLE_LIST) {
-                ObservableList<IChannel> activeChannelServices = FXCollections
-                        .observableArrayList(ACTIVE_SINGLE_LIST.get());
-                activeChannelServices.remove(model);
-                ACTIVE_SINGLE_LIST.set(activeChannelServices);
-            }
-            this.cancel();
-        });
-        setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
+    public TwitchChannelUpdateService(final TwitchChannel channel) {
+        LOGGER.debug("Create UpdateService for {}", channel.getName().get());
+        this.channel = channel;
+        setUpConstant();
     }
 
     public final void setUpConstant() {
         setPeriod(Duration.seconds(40));
         setRestartOnFailure(true);
         setOnSucceeded(event -> {
-            final TwitchChannelData updatedModel = (TwitchChannelData) event.getSource().getValue();
+            final TwitchChannel updatedModel = (TwitchChannel) event.getSource().getValue();
             if (updatedModel != null) {
-                synchronized (this.model) {
-                    this.model.updateData(updatedModel, true);
+                synchronized (this.channel) {
+                    this.channel.updateData(updatedModel, true);
                 }
             }
             synchronized (ACTIVE_LIST) {
-                ObservableList<IChannel> activeChannelServices = FXCollections.observableArrayList(ACTIVE_LIST.get());
-                activeChannelServices.remove(model);
+                ObservableList<TwitchChannel> activeChannelServices = FXCollections
+                        .observableArrayList(ACTIVE_LIST.get());
+                activeChannelServices.remove(channel);
                 ACTIVE_LIST.set(activeChannelServices);
             }
         });
@@ -82,36 +51,26 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannelDa
     }
 
     @Override
-    protected Task<TwitchChannelData> createTask() {
-        return new Task<TwitchChannelData>() {
+    protected Task<TwitchChannel> createTask() {
+        return new Task<TwitchChannel>() {
             @Override
-            protected TwitchChannelData call() throws Exception {
-                if (runOnce) {
-                    synchronized (ACTIVE_SINGLE_LIST) {
-                        ACTIVE_SINGLE_LIST.set(addAndGetChannelToList(model, ACTIVE_SINGLE_LIST));
-                    }
-                } else {
-                    synchronized (ACTIVE_LIST) {
-                        ACTIVE_LIST.set(addAndGetChannelToList(model, ACTIVE_LIST));
-                    }
+            protected TwitchChannel call() throws Exception {
+                synchronized (ACTIVE_LIST) {
+                    ACTIVE_LIST.set(addAndGetChannelToList(channel, ACTIVE_LIST));
                 }
-                return TwitchAPIClient.getInstance().getStreamData(model.getName().get());
+                return TwitchAPIClient.getInstance().getStreamData(channel.getName().get(), false);
             }
         };
     }
 
-    private static ObservableList<IChannel> addAndGetChannelToList(final IChannel channel,
-            final ObservableList<IChannel> list) {
-        final ObservableList<IChannel> activeChannelServices = FXCollections.observableArrayList(list);
+    private static ObservableList<TwitchChannel> addAndGetChannelToList(final TwitchChannel channel,
+            final ObservableList<TwitchChannel> list) {
+        final ObservableList<TwitchChannel> activeChannelServices = FXCollections.observableArrayList(list);
         activeChannelServices.add(channel);
         return activeChannelServices;
     }
 
-    public static ListProperty<IChannel> getActiveSingleChannelServicesProperty() {
-        return ACTIVE_SINGLE_LIST;
-    }
-
-    public static ListProperty<IChannel> getActiveChannelServicesProperty() {
+    public static ListProperty<TwitchChannel> getActiveChannelServicesProperty() {
         return ACTIVE_LIST;
     }
 }

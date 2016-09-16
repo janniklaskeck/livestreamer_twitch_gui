@@ -20,11 +20,8 @@ public class GenericChannel implements IChannel {
 
     private StringProperty nameProperty;
     private BooleanProperty onlineProperty;
+    private BooleanProperty hasReminder = new SimpleBooleanProperty();
 
-    /**
-     *
-     * @param name
-     */
     public GenericChannel(final String name) {
         this.nameProperty = new SimpleStringProperty(name);
         this.onlineProperty = new SimpleBooleanProperty(false);
@@ -45,7 +42,18 @@ public class GenericChannel implements IChannel {
         return Arrays.asList("Worst", "Best");
     }
 
+    @Override
+    public BooleanProperty hasReminder() {
+        return hasReminder;
+    }
+
+    @Override
+    public void setReminder(final boolean hasReminder) {
+        this.hasReminder.set(hasReminder);
+    }
+
     public static Callback<IChannel, Observable[]> extractor() {
         return (IChannel sm) -> new Observable[] { ((GenericChannel) sm).getName(), ((GenericChannel) sm).isOnline() };
     }
+
 }

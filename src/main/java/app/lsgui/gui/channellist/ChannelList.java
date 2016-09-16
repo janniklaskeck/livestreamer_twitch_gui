@@ -15,15 +15,16 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
 
-public class ChannelList extends AnchorPane {// NOSONAR
+public class ChannelList extends AnchorPane {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelList.class);
     private static final String CHANNELLISTFXML = "fxml/ChannelList.fxml";
 
-    private ListProperty<IChannel> channelListProperty;
-    private ObjectProperty<IChannel> selectedChannelProperty;
+    private ListProperty<IChannel> channelListProperty = new SimpleListProperty<>();
+    private ObjectProperty<IChannel> selectedChannelProperty = new SimpleObjectProperty<>();
 
     @FXML
     private ListView<IChannel> channelListView;
@@ -47,10 +48,9 @@ public class ChannelList extends AnchorPane {// NOSONAR
     }
 
     private void setupChannelList() {
-        channelListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        selectedChannelProperty = new SimpleObjectProperty<>();
-        channelListProperty = new SimpleListProperty<>();
-        selectedChannelProperty.bind(channelListView.getSelectionModel().selectedItemProperty());
+        final MultipleSelectionModel<IChannel> selectionModel = channelListView.getSelectionModel();
+        selectionModel.setSelectionMode(SelectionMode.SINGLE);
+        selectedChannelProperty.bind(selectionModel.selectedItemProperty());
         channelListView.itemsProperty().bind(channelListProperty);
         channelListView.setCellFactory(listView -> new ChannelCell());
     }
@@ -59,7 +59,7 @@ public class ChannelList extends AnchorPane {// NOSONAR
         return channelListProperty;
     }
 
-    public void setChannels(List<IChannel> channels) {
+    public void setChannels(final List<IChannel> channels) {
         channelListProperty.set(FXCollections.observableList(channels));
     }
 
@@ -67,7 +67,7 @@ public class ChannelList extends AnchorPane {// NOSONAR
         return channelListView;
     }
 
-    public void setListView(ListView<IChannel> channelList) {
+    public void setListView(final ListView<IChannel> channelList) {
         this.channelListView = channelList;
     }
 
@@ -75,7 +75,7 @@ public class ChannelList extends AnchorPane {// NOSONAR
         return selectedChannelProperty;
     }
 
-    public void setSelectedChannelProperty(ObjectProperty<IChannel> channelProperty) {
+    public void setSelectedChannelProperty(final ObjectProperty<IChannel> channelProperty) {
         this.selectedChannelProperty = channelProperty;
     }
 }

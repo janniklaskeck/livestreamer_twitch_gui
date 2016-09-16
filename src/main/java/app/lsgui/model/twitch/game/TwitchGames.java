@@ -24,10 +24,6 @@ public class TwitchGames {
     private JsonObject jsonData;
     private ObservableList<ITwitchItem> games = FXCollections.observableArrayList();
 
-    /**
-     *
-     * @param jsonData
-     */
     public TwitchGames(final JsonObject jsonData) {
         this.jsonData = jsonData;
         this.games = FXCollections.observableArrayList();
@@ -56,10 +52,6 @@ public class TwitchGames {
         }
     }
 
-    /**
-     *
-     * @param updatedGames
-     */
     public void updateData(final TwitchGames updatedGames) {
         LOGGER.debug("Update Twitch Games Data");
         this.games.clear();

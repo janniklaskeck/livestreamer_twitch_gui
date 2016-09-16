@@ -56,8 +56,8 @@ public class GenericService implements IService {
 
     @Override
     public void removeChannel(final IChannel channel) {
-        LOGGER.debug("Remove Channel {} from list", channel.getName());
-        if (channel != null && channel instanceof GenericChannel) {
+        if (channel instanceof GenericChannel) {
+            LOGGER.debug("Remove Channel {} from list", channel.getName());
             channelList.remove(channel);
         }
     }

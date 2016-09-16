@@ -25,7 +25,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
-public class ChannelInfoPanel extends BorderPane { // NOSONAR
+public class ChannelInfoPanel extends BorderPane {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelInfoPanel.class);
     private static final String CHANNELINFOPANELFXML = "fxml/ChannelInfoPanel.fxml";
@@ -45,6 +45,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
     private Button openChatButton;
     private Button startStreamButton;
     private Button recordStreamButton;
+    private Button openInBrowserButton;
 
     @FXML
     private BorderPane rootBorderPane;
@@ -94,9 +95,43 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         });
     }
 
+    private void setupChannelInfoPanel() {
+        previewImageView = new WrappedImageView(null);
+        rootBorderPane.setCenter(previewImageView);
+
+        channelDescription = new Label();
+        channelDescription.setWrapText(true);
+        channelUptime = new Label();
+        channelViewers = new Label();
+        channelGame = new Label();
+
+        descriptionGrid.add(channelGame, 0, 0, 1, 1);
+        descriptionGrid.add(channelViewers, 0, 1, 1, 1);
+        descriptionGrid.add(channelUptime, 0, 2, 1, 1);
+        descriptionGrid.add(channelDescription, 0, 3, 1, 1);
+
+        startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
+        startStreamButton.setOnAction(event -> startStream());
+        startStreamButton.setDisable(true);
+        recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
+        recordStreamButton.setOnAction(event -> recordStream());
+        recordStreamButton.setDisable(true);
+        openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
+        openChatButton.setOnAction(event -> openChat());
+        openChatButton.setDisable(true);
+        openInBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
+        openInBrowserButton.setOnAction(event -> openBrowser());
+        openInBrowserButton.setDisable(true);
+
+        buttonBox.getItems().add(startStreamButton);
+        buttonBox.getItems().add(recordStreamButton);
+        buttonBox.getItems().add(openChatButton);
+        buttonBox.getItems().add(openInBrowserButton);
+    }
+
     private void bindToTwitchChannel(final TwitchChannel selectedChannel) {
-        previewImageView.imageProperty().bind((selectedChannel).getPreviewImage());
-        channelDescription.textProperty().bind((selectedChannel).getDescription());
+        previewImageView.imageProperty().bind((selectedChannel).getPreviewImageLarge());
+        channelDescription.textProperty().bind((selectedChannel).getTitle());
         channelUptime.textProperty().bind((selectedChannel).getUptimeString());
         channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
         channelViewers.textProperty().bind((selectedChannel).getViewersString());
@@ -104,6 +139,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         channelGame.textProperty().bind((selectedChannel).getGame());
         channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
         openChatButton.setDisable(false);
+        openInBrowserButton.setDisable(false);
         startStreamButton.disableProperty().bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
         recordStreamButton.disableProperty().bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
     }
@@ -122,38 +158,7 @@ public class ChannelInfoPanel extends BorderPane { // NOSONAR
         recordStreamButton.disableProperty().unbind();
         startStreamButton.setDisable(false);
         recordStreamButton.setDisable(false);
-    }
-
-    private void setupChannelInfoPanel() {
-        previewImageView = new WrappedImageView(null);
-        rootBorderPane.setCenter(previewImageView);
-
-        channelDescription = new Label();
-        channelDescription.setWrapText(true);
-        channelUptime = new Label();
-        channelViewers = new Label();
-        channelGame = new Label();
-
-        descriptionGrid.add(channelGame, 0, 0, 1, 1);
-        descriptionGrid.add(channelViewers, 0, 1, 1, 1);
-        descriptionGrid.add(channelUptime, 0, 2, 1, 1);
-        descriptionGrid.add(channelDescription, 0, 3, 1, 1);
-
-        startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
-        startStreamButton.setOnAction(event -> startStream());
-
-        recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
-        recordStreamButton.setOnAction(event -> recordStream());
-
-        openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
-        openChatButton.setOnAction(event -> openChat());
-        final Button openInBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
-        openInBrowserButton.setOnAction(event -> openBrowser());
-
-        buttonBox.getItems().add(startStreamButton);
-        buttonBox.getItems().add(recordStreamButton);
-        buttonBox.getItems().add(openChatButton);
-        buttonBox.getItems().add(openInBrowserButton);
+        openInBrowserButton.setDisable(false);
     }
 
     public void setStream(final IChannel channel) {

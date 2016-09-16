@@ -3,37 +3,38 @@ plugins {
     id "distribution"
     id "eclipse"
     id "org.sonarqube" version "2.1-rc2"
+    id 'edu.sc.seis.launch4j' version '1.6.2'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
 group = 'app.lsgui'
 loadVersion()
 
-description = "LivestreamerGUI"
-
+description = "$project.name"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-     mavenCentral()
+    mavenCentral()
 }
 
 ext {
-  mainClass = "app.lsgui.LsGUI"
+    mainClass = "app.lsgui.LsGUI"
 
-  // Versionumbers
-  pircbotxVersion = "2.1"
-  richtextfxVersion = "0.6.10"
-  fontawesomefxVersion = "8.9"
-  controlsfxVersion = "8.40.11"
-  gsonVersion = "2.7"
-  httpclientVersion = "4.5.2"
-  slf4jVersion = "1.7.21"
-  log4jVersion = "2.6.2"
-  junitVersion = "4.12"
+    // Versionumbers
+    pircbotVersion = "1.5.0"
+    richtextfxVersion = "0.6.10"
+    fontawesomefxVersion = "8.9"
+    controlsfxVersion = "8.40.11"
+    gsonVersion = "2.7"
+    httpclientVersion = "4.5.2"
+    slf4jVersion = "1.7.21"
+    log4jVersion = "2.6.2"
+    junitVersion = "4.12"
 }
 
 dependencies {
-    compile "org.pircbotx:pircbotx:$pircbotxVersion"
+    compile "pircbot:pircbot:$pircbotVersion"
     compile "org.fxmisc.richtext:richtextfx:$richtextfxVersion"
     compile "de.jensd:fontawesomefx:$fontawesomefxVersion"
     compile "org.controlsfx:controlsfx:$controlsfxVersion"
@@ -44,42 +45,49 @@ dependencies {
     compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
     compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
     compile "org.apache.logging.log4j:log4j-jul:$log4jVersion"
+    testCompile files(System.getProperty("java.home") + "/lib/ext/jfxrt.jar" )
     testCompile "junit:junit:$junitVersion"
 }
 
-task fatJar(type: Jar) {
-  manifest {
-        attributes 'Implementation-Title': 'LivestreamerGUI FatJar',
-          'Implementation-Version': version,
-          'Main-Class': "$mainClass"
-    }
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
-
 jar {
-  appendix = "nolib"
+    manifest {
+        attributes "Implementation-Title": "LivestreamerGUI FatJar",
+          "Implementation-Version": version,
+          "Main-Class": "$mainClass"
+    }
+    appendix = "nolib"
 }
 
 distributions {
-  main {
-    contents {
-      from fatJar
+    main {
+        contents {
+            from shadowJar
+        }
     }
-  }
 }
 
 eclipse {
-  project {
-    natures 'org.springsource.ide.eclipse.gradle.core.nature', 'org.eclipse.jdt.core.javanature'
-    buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
+    project {
+        natures 'org.springsource.ide.eclipse.gradle.core.nature', 'org.eclipse.jdt.core.javanature'
+        buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
+    }
+    classpath {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
 
-  }
-
-  classpath {
-    downloadSources = true
-    downloadJavadoc = true
-  }
+launch4j {
+    outputDir = "$buildDir/distributions"
+    mainClassName = "$mainClass"
+    icon = "$buildDir/resources/main/icon.ico"
+    copyConfigurable = project.tasks.shadowJar.outputs.files
+    jar = "lib/${project.tasks.shadowJar.archiveName}"
+    supportUrl = "https://github.com/westerwave/livestreamer_twitch_gui"
+    copyright = "MIT LICENSE"
+    language = "ENGLISH_US"
+    initialHeapSize = 128
+    maxHeapSize = 384
 }
 
 def loadVersion() {

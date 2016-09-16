@@ -38,7 +38,7 @@ public class LsGUIWindow extends Application {
             Platform.exit();
         });
         Platform.setImplicitExit(false);
-        Settings.instance();
+        Settings.getInstance();
     }
 
     @Override
@@ -68,14 +68,14 @@ public class LsGUIWindow extends Application {
         primaryStage.setMinWidth(650);
         primaryStage.setWidth(750);
 
-        primaryStage.setTitle("Livestreamer GUI v3.0");
+        primaryStage.setTitle("Livestreamer GUI v3");
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         primaryStage.setScene(scene);
         primaryStage.show();
 
         primaryStage.setOnCloseRequest(event -> {
-            Settings.instance().saveSettings();
-            Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = ((TwitchService) Settings.instance()
+            Settings.getInstance().saveSettings();
+            Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = ((TwitchService) Settings.getInstance()
                     .getStreamServices().get(0)).getUpdateServices().entrySet().iterator();
             while (it.hasNext()) {
                 it.next();
@@ -85,8 +85,8 @@ public class LsGUIWindow extends Application {
         });
 
         primaryStage.setOnHiding(event -> {
-            Settings.instance().saveSettings();
-            Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = ((TwitchService) Settings.instance()
+            Settings.getInstance().saveSettings();
+            Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = ((TwitchService) Settings.getInstance()
                     .getStreamServices().get(0)).getUpdateServices().entrySet().iterator();
             while (it.hasNext()) {
                 it.next();
@@ -95,7 +95,7 @@ public class LsGUIWindow extends Application {
             Platform.exit();
         });
         LsGUIWindow.getRootStage().getScene().getStylesheets().add(LsGUIWindow.class
-                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
     }
 
     public static final Stage getRootStage() {

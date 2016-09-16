@@ -49,18 +49,18 @@ public class BrowserWindow {
     private void setupStage(final Parent root, final Stage browserStage, final Window parentWindow) {
         Scene scene = new Scene(root);
 
-        browserStage.setMinHeight(800);
-        browserStage.setHeight(800);
-        browserStage.setMinWidth(800);
-        browserStage.setWidth(800);
+        browserStage.setMinHeight(620);
+        browserStage.setHeight(620);
+        browserStage.setMinWidth(950);
+        browserStage.setWidth(950);
 
-        browserStage.setTitle("Livestreamer GUI v3.0 Twitch Browser");
+        browserStage.setTitle("Livestreamer GUI v3 Twitch Browser");
         browserStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         browserStage.setScene(scene);
         browserStage.initModality(Modality.APPLICATION_MODAL);
         browserStage.initOwner(parentWindow);
         BrowserWindow.getBrowserStage().getScene().getStylesheets().add(BrowserWindow.class
-                .getResource("/styles/" + Settings.instance().getWindowStyle() + ".css").toExternalForm());
+                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
         browserStage.setOnCloseRequest(event -> setBrowserStage(null));
     }
 
