@@ -1,5 +1,6 @@
 package app.lsgui.utils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -53,5 +54,12 @@ public class JSONUtils {
             return obj.get(name).getAsInt();
         }
         return 0;
+    }
+
+    public static JsonArray getJsonArraySafe(final String name, final JsonObject obj) {
+        if (obj.has(name) && !obj.get(name).isJsonNull() && obj.get(name).isJsonArray()) {
+            return obj.get(name).getAsJsonArray();
+        }
+        return new JsonArray();
     }
 }

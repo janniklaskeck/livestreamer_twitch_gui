@@ -136,7 +136,7 @@ public class Settings {
         maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMES_LOAD), 20);
         quality = JSONUtils.getStringSafe(settings.get(QUALITY_STRING), "Best");
         recordingPath = JSONUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home"));
-        final JsonArray favouritesArray = settings.get(FAVOURITE_GAMES).getAsJsonArray();
+        final JsonArray favouritesArray = JSONUtils.getJsonArraySafe(FAVOURITE_GAMES, settings);
         for (int i = 0; i < favouritesArray.size(); i++) {
             final String favourite = favouritesArray.get(i).getAsString();
             addFavouriteGame(favourite);
