@@ -3,11 +3,12 @@ plugins {
     id "distribution"
     id "eclipse"
     id "org.sonarqube" version "2.1-rc2"
-    id 'edu.sc.seis.launch4j' version '1.6.2'
-    id 'com.github.johnrengelman.shadow' version '1.2.3'
+    id "edu.sc.seis.launch4j" version "1.6.2"
+    id "com.github.johnrengelman.shadow" version "1.2.3"
+    id "com.github.hierynomus.license" version "0.13.1"
 }
 
-group = 'app.lsgui'
+group = "app.lsgui"
 loadVersion()
 
 description = "$project.name"
@@ -88,6 +89,11 @@ launch4j {
     language = "ENGLISH_US"
     initialHeapSize = 128
     maxHeapSize = 384
+}
+
+license {
+    header file("LICENSE.md")
+    ignoreFailures=true
 }
 
 def loadVersion() {
