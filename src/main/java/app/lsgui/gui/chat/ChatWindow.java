@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.settings.Settings;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -76,7 +77,7 @@ public class ChatWindow {
         stage.setMinHeight(400.0);
         stage.setMinWidth(600.0);
 
-        stage.setTitle(channel + " - Livestreamer GUI v3.0 Chat");
+        stage.setTitle(channel + " - Livestreamer GUI Chat v" + LsGuiUtils.readVersionProperty());
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         stage.setScene(scene);
         stage.initModality(Modality.NONE);

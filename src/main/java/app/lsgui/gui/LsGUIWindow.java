@@ -35,6 +35,7 @@ import app.lsgui.model.service.TwitchService;
 import app.lsgui.rest.GithubUpdateService;
 import app.lsgui.rest.twitch.TwitchChannelUpdateService;
 import app.lsgui.settings.Settings;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -91,7 +92,7 @@ public class LsGUIWindow extends Application {
         primaryStage.setMinWidth(650);
         primaryStage.setWidth(750);
 
-        primaryStage.setTitle("Livestreamer GUI v3");
+        primaryStage.setTitle("Livestreamer GUI v" + LsGuiUtils.readVersionProperty());
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         primaryStage.setScene(scene);
         primaryStage.show();

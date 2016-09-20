@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.settings.Settings;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -76,7 +77,7 @@ public class SettingsWindow extends AnchorPane {
 
         settingsStage.setResizable(false);
 
-        settingsStage.setTitle("Livestreamer GUI v3 Settings");
+        settingsStage.setTitle("Livestreamer GUI Settings v3" + LsGuiUtils.readVersionProperty());
         settingsStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         settingsStage.setScene(scene);
         settingsStage.initModality(Modality.APPLICATION_MODAL);

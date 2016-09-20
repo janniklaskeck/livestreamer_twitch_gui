@@ -24,7 +24,6 @@
 package app.lsgui.rest;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -32,7 +31,6 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Properties;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -122,7 +120,7 @@ public class GithubUpdateService {
 
     private static boolean isVersionNewer(final String tag) {
         final String realVersionTag = tag.substring(1);
-        String currentVersionTag = readVersionProperty();
+        String currentVersionTag = LsGuiUtils.readVersionProperty();
         if (currentVersionTag.endsWith("-SNAPSHOT")) {
             currentVersionTag = currentVersionTag.replace("-SNAPSHOT", "");
             LOGGER.info("Running development version!");
@@ -131,21 +129,6 @@ public class GithubUpdateService {
         final int newVersion = calcVersionSum(realVersionTag);
         final int currentVersion = calcVersionSum(currentVersionTag);
         return newVersion > currentVersion;
-    }
-
-    private static String readVersionProperty() {
-        final InputStream propertyStream = GithubUpdateService.class.getClassLoader()
-                .getResourceAsStream("version.properties");
-        final Properties versionProperty = new Properties();
-        String version = "";
-        try {
-            versionProperty.load(propertyStream);
-            version = versionProperty.getProperty("versionNumber");
-            LOGGER.debug("Read Version {} from version.properties", version);
-        } catch (IOException e) {
-            LOGGER.error("Could not load Properties from Inpustream!", e);
-        }
-        return version;
     }
 
     private static int calcVersionSum(final String version) {

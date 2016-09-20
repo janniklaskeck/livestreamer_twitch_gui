@@ -28,11 +28,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
@@ -282,6 +284,20 @@ public class LsGuiUtils {
             LOGGER.error("Could not read from Settings file.", e);
         }
         return result;
+    }
+
+    public static String readVersionProperty() {
+        final InputStream propertyStream = LsGuiUtils.class.getClassLoader().getResourceAsStream("version.properties");
+        final Properties versionProperty = new Properties();
+        String version = "";
+        try {
+            versionProperty.load(propertyStream);
+            version = versionProperty.getProperty("versionNumber");
+            LOGGER.debug("Read Version {} from version.properties", version);
+        } catch (IOException e) {
+            LOGGER.error("Could not load Properties from Inpustream!", e);
+        }
+        return version;
     }
 
 }

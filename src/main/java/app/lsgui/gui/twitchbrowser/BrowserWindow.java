@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.settings.Settings;
+import app.lsgui.utils.LsGuiUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -77,7 +78,7 @@ public class BrowserWindow {
         browserStage.setMinWidth(950);
         browserStage.setWidth(950);
 
-        browserStage.setTitle("Livestreamer GUI v3 Twitch Browser");
+        browserStage.setTitle("Livestreamer GUI Twitch Browser v" + LsGuiUtils.readVersionProperty());
         browserStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         browserStage.setScene(scene);
         browserStage.initModality(Modality.APPLICATION_MODAL);
