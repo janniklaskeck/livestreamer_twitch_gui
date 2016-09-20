@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.controlsfx.control.Notifications;
@@ -60,8 +62,7 @@ public class LivestreamerUtils {
         LOGGER.trace("Get available quality options for {}", url);
         JsonObject jsonQualities = new JsonObject();
         try {
-            final ProcessBuilder processBuilder = new ProcessBuilder(getLivestreamerExe(), "-j", url,
-                    "--twitch-oauth-token", getTwitchOAuth());
+            final ProcessBuilder processBuilder = new ProcessBuilder(getQualityCommand(url));
             processBuilder.redirectError(Redirect.INHERIT);
             final Process process = processBuilder.start();
             final InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream(),
@@ -76,17 +77,23 @@ public class LivestreamerUtils {
         return jsonQualities;
     }
 
-    public static void startLivestreamer(final String url) {
-        final String quality = Settings.getInstance().getQuality();
-        startLivestreamer(url, quality);
+    private static List<String> getQualityCommand(final String url) {
+        final List<String> command = new ArrayList<>();
+        command.add(getLivestreamerExe());
+        command.add(url);
+        command.add("-j");
+        if (url.toLowerCase().contains("twitch")) {
+            command.add("--twitch-oauth-token");
+            command.add(getTwitchOAuth());
+        }
+        return command;
     }
 
     public static void startLivestreamer(final String url, final String quality) {
         LOGGER.info("Starting Stream {} with Quality {}", url, quality);
         final Thread t = new Thread(() -> {
             try {
-                final ProcessBuilder processBuilder = new ProcessBuilder(getLivestreamerExe(), url, quality,
-                        "--twitch-oauth-token", getTwitchOAuth());
+                final ProcessBuilder processBuilder = new ProcessBuilder(getRunCommand(url, quality));
                 processBuilder.redirectOutput(Redirect.INHERIT);
                 processBuilder.redirectError(Redirect.INHERIT);
                 final Process process = processBuilder.start();
@@ -97,6 +104,18 @@ public class LivestreamerUtils {
         });
         t.setDaemon(true);
         t.start();
+    }
+
+    private static List<String> getRunCommand(final String url, final String quality) {
+        final List<String> command = new ArrayList<>();
+        command.add(getLivestreamerExe());
+        command.add(url);
+        command.add(quality);
+        if (url.toLowerCase().contains("twitch")) {
+            command.add("--twitch-oauth-token");
+            command.add(getTwitchOAuth());
+        }
+        return command;
     }
 
     private static String getTwitchOAuth() {
