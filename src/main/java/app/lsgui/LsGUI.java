@@ -41,15 +41,11 @@ public class LsGUI {
     private LsGUI() {
     }
 
-    /**
-     *
-     * @param args
-     */
     public static void main(String[] args) {
-	System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
+        System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
 
-	LOGGER.debug("Pre-Launch finished");
+        LOGGER.debug("Pre-Launch finished");
 
-	Application.launch(LsGUIWindow.class, args);
+        Application.launch(LsGUIWindow.class, args);
     }
 }

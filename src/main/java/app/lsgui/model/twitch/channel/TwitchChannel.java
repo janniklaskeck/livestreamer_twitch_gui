@@ -28,8 +28,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -45,14 +43,17 @@ import app.lsgui.utils.LsGuiUtils;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.image.Image;
 import javafx.util.Callback;
 
@@ -64,6 +65,7 @@ import javafx.util.Callback;
 public class TwitchChannel implements IChannel, ITwitchItem {
 
     private static final String CHANNEL_IS_OFFLINE = "Channel is offline";
+    private static final String NO_QUALITIES = "Error fetching Quality Options!";
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannel.class);
     private static final ZoneOffset OFFSET = ZoneOffset.ofHours(0);
     private static final String PREFIX = "GMT";
@@ -87,7 +89,7 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     private BooleanProperty isPlaylist = new SimpleBooleanProperty();
     private ObjectProperty<Image> previewImageLarge = new SimpleObjectProperty<>();
     private ObjectProperty<Image> previewImageMedium = new SimpleObjectProperty<>();
-    private List<String> availableQualities = new ArrayList<>();
+    private ListProperty<String> availableQualities = new SimpleListProperty<>(FXCollections.observableArrayList());
     private BooleanProperty hasReminder = new SimpleBooleanProperty();
 
     private boolean cameOnline = false;
@@ -134,7 +136,6 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         this.isPlaylist.set(JSONUtils.getBooleanIfNotNull("is_playlist", channelObject));
         this.previewImageLarge.set(new Image(getPreviewUrlLarge().get(), true));
         this.previewImageMedium.set(new Image(getPreviewUrlMedium().get(), true));
-        this.availableQualities = new ArrayList<>();
         this.uptimeString.set(buildUptimeString());
         this.viewersString.set(Integer.toString(this.viewers.get()));
         this.availableQualities.clear();
@@ -182,7 +183,7 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         this.isOnline.set(false);
         this.isPlaylist.set(false);
         this.previewImageLarge.setValue(defaultLogo);
-        this.availableQualities = new ArrayList<>();
+        this.availableQualities.clear();
     }
 
     private void setOnline(final TwitchChannel data) {
@@ -206,7 +207,8 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         this.isPlaylist.setValue(data.getIsPlaylist().get());
         this.previewImageLarge.setValue(data.getPreviewImageLarge().get());
         this.previewImageMedium.setValue(data.getPreviewImageMedium().get());
-        this.availableQualities = new ArrayList<>(data.getAvailableQualities());
+        this.availableQualities.clear();
+        this.availableQualities.addAll(data.getAvailableQualities());
     }
 
     private String buildUptimeString() {
@@ -273,9 +275,14 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     }
 
     @Override
-    public List<String> getAvailableQualities() {
+    public ListProperty<String> getAvailableQualities() {
         if (availableQualities.isEmpty()) {
-            availableQualities.add(CHANNEL_IS_OFFLINE);
+            if (!this.isOnline.get()) {
+                availableQualities.add(CHANNEL_IS_OFFLINE);
+            } else {
+                availableQualities.add(NO_QUALITIES);
+                LsGuiUtils.showWarningNotification(NO_QUALITIES, "Check your Twitch OAuth Key in the Settings!");
+            }
         }
         return availableQualities;
     }
@@ -292,10 +299,6 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         return isPlaylist;
     }
 
-    public void setIsPlaylist(BooleanProperty isPlaylist) {
-        this.isPlaylist = isPlaylist;
-    }
-
     @Override
     public BooleanProperty hasReminder() {
         return hasReminder;
@@ -304,6 +307,5 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     @Override
     public void setReminder(final boolean hasReminder) {
         this.hasReminder.set(hasReminder);
-        LOGGER.debug("{} {}", this.name.get(), hasReminder);
     }
 }

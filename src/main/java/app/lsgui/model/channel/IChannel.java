@@ -23,9 +23,8 @@
  */
 package app.lsgui.model.channel;
 
-import java.util.List;
-
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.StringProperty;
 
 /**
@@ -43,6 +42,6 @@ public interface IChannel {
 
     public void setReminder(final boolean hasReminder);
 
-    public List<String> getAvailableQualities();
+    public ListProperty<String> getAvailableQualities();
 
 }

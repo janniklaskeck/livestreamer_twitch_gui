@@ -268,6 +268,10 @@ public class LsGuiUtils {
                 .darkStyle().showInformation();
     }
 
+    public static void showWarningNotification(final String title, final String message) {
+        Notifications.create().title(title).darkStyle().text(message).showWarning();
+    }
+
     public static boolean isFileEmpty(final File file) {
         boolean result = true;
         BufferedReader br;

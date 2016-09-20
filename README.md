@@ -11,6 +11,15 @@ Its intended use is for twitch.tv but there is rudimentary support for other ser
 #Twitch.tv exclusive Features
  - Update Channels with information like current game, viewer count, uptime and preview Image
  - Simple IRC Chat client
+ - Simple Twitch.tv Browser, shows configurable amount of Games and Channels, favourite List for Games
+
+##IMPORTANT
+Twitch recently made Authentication to their API <b>mandatory</b>.<br>
+If you want to use these features, you have to generate an OAuth Token for your account and save it in the settings,
+either in the form "oauth:xyzabc" or just "xyzabc" (without the " of course).<br>
+To generate such a Token you can use a Site like https://twitchapps.com/tmi/.<br>
+To use the Chat client, you have to provide your Twitch.tv Username as well.
+This application only saves your Token locally on your Computer, in doubt look at the Code and build yourself.
 
 #Requirements
  - Current Java 8 JRE

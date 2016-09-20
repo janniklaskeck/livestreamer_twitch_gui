@@ -23,15 +23,15 @@
  */
 package app.lsgui.model.generic.channel;
 
-import java.util.Arrays;
-import java.util.List;
-
 import app.lsgui.model.channel.IChannel;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.util.Callback;
 
 /**
@@ -44,6 +44,8 @@ public class GenericChannel implements IChannel {
     private StringProperty nameProperty;
     private BooleanProperty onlineProperty;
     private BooleanProperty hasReminder = new SimpleBooleanProperty();
+    private static final ListProperty<String> availableQualities = new SimpleListProperty<>(
+            FXCollections.observableArrayList("Worst", "Best"));
 
     public GenericChannel(final String name) {
         this.nameProperty = new SimpleStringProperty(name);
@@ -61,8 +63,8 @@ public class GenericChannel implements IChannel {
     }
 
     @Override
-    public List<String> getAvailableQualities() {
-        return Arrays.asList("Worst", "Best");
+    public ListProperty<String> getAvailableQualities() {
+        return availableQualities;
     }
 
     @Override

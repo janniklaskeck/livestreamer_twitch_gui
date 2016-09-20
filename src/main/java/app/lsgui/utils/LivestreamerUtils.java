@@ -60,11 +60,14 @@ public class LivestreamerUtils {
         LOGGER.trace("Get available quality options for {}", url);
         JsonObject jsonQualities = new JsonObject();
         try {
-            final String livestreamerExec = LIVESTREAMERCMD;
-            final Process process = new ProcessBuilder(livestreamerExec, "-j", url).redirectErrorStream(true).start();
-            final InputStreamReader isr = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
-            final JsonReader jr = new JsonReader(isr);
-            jsonQualities = PARSER.parse(jr).getAsJsonObject();
+            final ProcessBuilder processBuilder = new ProcessBuilder(getLivestreamerExe(), "-j", url,
+                    "--twitch-oauth-token", getTwitchOAuth());
+            processBuilder.redirectError(Redirect.INHERIT);
+            final Process process = processBuilder.start();
+            final InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream(),
+                    StandardCharsets.UTF_8);
+            final JsonReader jsonReader = new JsonReader(inputStreamReader);
+            jsonQualities = PARSER.parse(jsonReader).getAsJsonObject();
             process.waitFor();
         } catch (IOException | InterruptedException e) {
             LOGGER.error("failed to retrieve stream qualites for " + url + "," + " reason: " + e.getMessage(), e);
@@ -80,19 +83,32 @@ public class LivestreamerUtils {
 
     public static void startLivestreamer(final String url, final String quality) {
         LOGGER.info("Starting Stream {} with Quality {}", url, quality);
-        Thread t = new Thread(() -> {
+        final Thread t = new Thread(() -> {
             try {
-                ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), url, quality));
-                pb.redirectOutput(Redirect.INHERIT);
-                pb.redirectError(Redirect.INHERIT);
-                Process prc = pb.start();
-                prc.waitFor();
+                final ProcessBuilder processBuilder = new ProcessBuilder(getLivestreamerExe(), url, quality,
+                        "--twitch-oauth-token", getTwitchOAuth());
+                processBuilder.redirectOutput(Redirect.INHERIT);
+                processBuilder.redirectError(Redirect.INHERIT);
+                final Process process = processBuilder.start();
+                process.waitFor();
             } catch (IOException | InterruptedException e) {
                 LOGGER.error("ERROR while running livestreamer", e);
             }
         });
         t.setDaemon(true);
         t.start();
+    }
+
+    private static String getTwitchOAuth() {
+        final String oauth = Settings.getInstance().getTwitchOAuth();
+        final String parameter;
+        if (oauth.startsWith("oauth")) {
+            final String oauthKey = oauth.split(":")[1];
+            parameter = oauthKey;
+        } else {
+            parameter = oauth;
+        }
+        return parameter;
     }
 
     public static void recordLivestreamer(final String url, final String quality, final File filePath) {

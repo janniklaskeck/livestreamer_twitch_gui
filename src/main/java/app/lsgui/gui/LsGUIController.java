@@ -42,7 +42,6 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -143,17 +142,18 @@ public class LsGUIController {
 
         channelList.getListView().getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
-                    IChannel value = newValue == null ? oldValue : newValue;
-                    qualityComboBox.setItems(FXCollections.observableArrayList(value.getAvailableQualities()));
-                    if (qualityComboBox.getItems().size() > 1) {
-                        final String quality = Settings.getInstance().getQuality();
-                        if (qualityComboBox.getItems().contains(quality)) {
-                            qualityComboBox.getSelectionModel().select(quality);
+                    if (newValue != null) {
+                        qualityComboBox.itemsProperty().bind(newValue.getAvailableQualities());
+                        if (qualityComboBox.getItems().size() > 1) {
+                            final String quality = Settings.getInstance().getQuality();
+                            if (qualityComboBox.getItems().contains(quality)) {
+                                qualityComboBox.getSelectionModel().select(quality);
+                            } else {
+                                qualityComboBox.getSelectionModel().select("Best");
+                            }
                         } else {
-                            qualityComboBox.getSelectionModel().select("Best");
+                            qualityComboBox.getSelectionModel().select(0);
                         }
-                    } else {
-                        qualityComboBox.getSelectionModel().select(0);
                     }
                 });
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
