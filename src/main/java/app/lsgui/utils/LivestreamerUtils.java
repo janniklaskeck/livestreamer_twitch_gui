@@ -120,12 +120,15 @@ public class LivestreamerUtils {
 
     private static String getTwitchOAuth() {
         final String oauth = Settings.getInstance().getTwitchOAuth();
-        final String parameter;
+        String parameter;
         if (oauth.startsWith("oauth")) {
             final String oauthKey = oauth.split(":")[1];
             parameter = oauthKey;
         } else {
             parameter = oauth;
+        }
+        if ("".equals(parameter)) {
+            parameter = "ERROR";
         }
         return parameter;
     }
