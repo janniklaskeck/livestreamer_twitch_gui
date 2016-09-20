@@ -254,7 +254,7 @@ public class LsGuiUtils {
         final String titleString = twitchChannel.getTitle().get();
         if (nameString != null && gameString != null && titleString != null) {
             final String title = "Channel Online Reminder!";
-            final String text = nameString + " just came online!\n The Game is " + gameString + ".\n" + titleString;
+            final String text = nameString + " just came online!\nThe Game is " + gameString + ".\n" + titleString;
             Notifications.create().title(title).text(text).darkStyle().hideAfter(Duration.INDEFINITE).showInformation();
         }
     }
