@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2016 Jan-Niklas Keck
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package app.lsgui.utils;
 
 import java.awt.Desktop;
@@ -5,11 +28,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
@@ -231,7 +256,7 @@ public class LsGuiUtils {
         final String titleString = twitchChannel.getTitle().get();
         if (nameString != null && gameString != null && titleString != null) {
             final String title = "Channel Online Reminder!";
-            final String text = nameString + " just came online!\n The Game is " + gameString + ".\n" + titleString;
+            final String text = nameString + " just came online!\nThe Game is " + gameString + ".\n" + titleString;
             Notifications.create().title(title).text(text).darkStyle().hideAfter(Duration.INDEFINITE).showInformation();
         }
     }
@@ -245,6 +270,10 @@ public class LsGuiUtils {
                 .darkStyle().showInformation();
     }
 
+    public static void showWarningNotification(final String title, final String message) {
+        Notifications.create().title(title).darkStyle().text(message).showWarning();
+    }
+
     public static boolean isFileEmpty(final File file) {
         boolean result = true;
         BufferedReader br;
@@ -255,6 +284,20 @@ public class LsGuiUtils {
             LOGGER.error("Could not read from Settings file.", e);
         }
         return result;
+    }
+
+    public static String readVersionProperty() {
+        final InputStream propertyStream = LsGuiUtils.class.getClassLoader().getResourceAsStream("version.properties");
+        final Properties versionProperty = new Properties();
+        String version = "";
+        try {
+            versionProperty.load(propertyStream);
+            version = versionProperty.getProperty("versionNumber");
+            LOGGER.debug("Read Version {} from version.properties", version);
+        } catch (IOException e) {
+            LOGGER.error("Could not load Properties from Inpustream!", e);
+        }
+        return version;
     }
 
 }

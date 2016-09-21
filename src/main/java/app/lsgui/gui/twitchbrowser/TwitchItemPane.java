@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2016 Jan-Niklas Keck
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package app.lsgui.gui.twitchbrowser;
 
 import org.controlsfx.control.GridCell;
@@ -13,7 +36,10 @@ import app.lsgui.utils.LsGuiUtils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -36,6 +62,11 @@ public class TwitchItemPane extends GridCell<ITwitchItem> {
 
     private TwitchChannel channel;
     private TwitchGame game;
+    private StringProperty quality = new SimpleStringProperty();
+
+    public TwitchItemPane(final ReadOnlyObjectProperty<String> quality) {
+        this.quality.bind(quality);
+    }
 
     @Override
     protected void updateItem(final ITwitchItem item, final boolean empty) {
@@ -127,12 +158,12 @@ public class TwitchItemPane extends GridCell<ITwitchItem> {
         Tooltip.install(node, titleTooltip);
         contentBorderPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
-                LivestreamerUtils.startLivestreamer("twitch.tv/" + channel.getName().get(), "source");
+                LivestreamerUtils.startLivestreamer("twitch.tv/" + channel.getName().get(), quality.get());
             } else if (event.getButton() == MouseButton.SECONDARY) {
                 final ContextMenu contextMenu = new ContextMenu();
                 final MenuItem startStream = new MenuItem("Start Stream");
                 startStream.setOnAction(eventStartContext -> LivestreamerUtils
-                        .startLivestreamer("twitch.tv/" + channel.getName().get(), "source"));
+                        .startLivestreamer("twitch.tv/" + channel.getName().get(), quality.get()));
                 final MenuItem addToList = new MenuItem("Add Stream To Favourites");
                 final IService twitchService = Settings.getInstance().getTwitchService();
                 addToList.setOnAction(

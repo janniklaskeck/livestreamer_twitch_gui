@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2016 Jan-Niklas Keck
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package app.lsgui.gui;
 
 import org.controlsfx.control.PopOver;
@@ -19,7 +42,6 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -120,17 +142,18 @@ public class LsGUIController {
 
         channelList.getListView().getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
-                    IChannel value = newValue == null ? oldValue : newValue;
-                    qualityComboBox.setItems(FXCollections.observableArrayList(value.getAvailableQualities()));
-                    if (qualityComboBox.getItems().size() > 1) {
-                        final String quality = Settings.getInstance().getQuality();
-                        if (qualityComboBox.getItems().contains(quality)) {
-                            qualityComboBox.getSelectionModel().select(quality);
+                    if (newValue != null) {
+                        qualityComboBox.itemsProperty().bind(newValue.getAvailableQualities());
+                        if (qualityComboBox.getItems().size() > 1) {
+                            final String quality = Settings.getInstance().getQuality();
+                            if (qualityComboBox.getItems().contains(quality)) {
+                                qualityComboBox.getSelectionModel().select(quality);
+                            } else {
+                                qualityComboBox.getSelectionModel().select("Best");
+                            }
                         } else {
-                            qualityComboBox.getSelectionModel().select("Best");
+                            qualityComboBox.getSelectionModel().select(0);
                         }
-                    } else {
-                        qualityComboBox.getSelectionModel().select(0);
                     }
                 });
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
@@ -281,6 +304,7 @@ public class LsGUIController {
             }
             popOver.hide();
         });
+        submitButton.setDefaultButton(true);
 
         cancelButton.setOnAction(event -> popOver.hide());
         dialogBox.getChildren().add(addChannelButton);
@@ -349,6 +373,7 @@ public class LsGUIController {
             LsGuiUtils.addFollowedChannelsToService(username, service);
             popOver.hide();
         });
+        submitButton.setDefaultButton(true);
 
         cancelButton.setOnAction(event -> popOver.hide());
 

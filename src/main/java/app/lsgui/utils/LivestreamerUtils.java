@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2016 Jan-Niklas Keck
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package app.lsgui.utils;
 
 import java.io.File;
@@ -5,7 +28,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.controlsfx.control.Notifications;
@@ -37,11 +62,13 @@ public class LivestreamerUtils {
         LOGGER.trace("Get available quality options for {}", url);
         JsonObject jsonQualities = new JsonObject();
         try {
-            final String livestreamerExec = LIVESTREAMERCMD;
-            final Process process = new ProcessBuilder(livestreamerExec, "-j", url).redirectErrorStream(true).start();
-            final InputStreamReader isr = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
-            final JsonReader jr = new JsonReader(isr);
-            jsonQualities = PARSER.parse(jr).getAsJsonObject();
+            final ProcessBuilder processBuilder = new ProcessBuilder(getQualityCommand(url));
+            processBuilder.redirectError(Redirect.INHERIT);
+            final Process process = processBuilder.start();
+            final InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream(),
+                    StandardCharsets.UTF_8);
+            final JsonReader jsonReader = new JsonReader(inputStreamReader);
+            jsonQualities = PARSER.parse(jsonReader).getAsJsonObject();
             process.waitFor();
         } catch (IOException | InterruptedException e) {
             LOGGER.error("failed to retrieve stream qualites for " + url + "," + " reason: " + e.getMessage(), e);
@@ -50,26 +77,60 @@ public class LivestreamerUtils {
         return jsonQualities;
     }
 
-    public static void startLivestreamer(final String url) {
-        final String quality = Settings.getInstance().getQuality();
-        startLivestreamer(url, quality);
+    private static List<String> getQualityCommand(final String url) {
+        final List<String> command = new ArrayList<>();
+        command.add(getLivestreamerExe());
+        command.add(url);
+        command.add("-j");
+        if (url.toLowerCase().contains("twitch")) {
+            command.add("--twitch-oauth-token");
+            command.add(getTwitchOAuth());
+        }
+        return command;
     }
 
     public static void startLivestreamer(final String url, final String quality) {
         LOGGER.info("Starting Stream {} with Quality {}", url, quality);
-        Thread t = new Thread(() -> {
+        final Thread t = new Thread(() -> {
             try {
-                ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), url, quality));
-                pb.redirectOutput(Redirect.INHERIT);
-                pb.redirectError(Redirect.INHERIT);
-                Process prc = pb.start();
-                prc.waitFor();
+                final ProcessBuilder processBuilder = new ProcessBuilder(getRunCommand(url, quality));
+                processBuilder.redirectOutput(Redirect.INHERIT);
+                processBuilder.redirectError(Redirect.INHERIT);
+                final Process process = processBuilder.start();
+                process.waitFor();
             } catch (IOException | InterruptedException e) {
                 LOGGER.error("ERROR while running livestreamer", e);
             }
         });
         t.setDaemon(true);
         t.start();
+    }
+
+    private static List<String> getRunCommand(final String url, final String quality) {
+        final List<String> command = new ArrayList<>();
+        command.add(getLivestreamerExe());
+        command.add(url);
+        command.add(quality);
+        if (url.toLowerCase().contains("twitch")) {
+            command.add("--twitch-oauth-token");
+            command.add(getTwitchOAuth());
+        }
+        return command;
+    }
+
+    private static String getTwitchOAuth() {
+        final String oauth = Settings.getInstance().getTwitchOAuth();
+        String parameter;
+        if (oauth.startsWith("oauth")) {
+            final String oauthKey = oauth.split(":")[1];
+            parameter = oauthKey;
+        } else {
+            parameter = oauth;
+        }
+        if ("".equals(parameter)) {
+            parameter = "ERROR";
+        }
+        return parameter;
     }
 
     public static void recordLivestreamer(final String url, final String quality, final File filePath) {

@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2016 Jan-Niklas Keck
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package app.lsgui.gui.twitchbrowser;
 
 import org.controlsfx.control.GridView;
@@ -42,6 +65,7 @@ public class BrowserController {
     private BorderPane browserRootBorderPane;
 
     private ComboBox<String> favouriteGameComboBox;
+    private ComboBox<String> qualityComboBox;
     private ProgressBar browserProgressBar;
     private GridView<ITwitchItem> browserGridView;
     private BrowserCore browserCore;
@@ -100,6 +124,11 @@ public class BrowserController {
             }
         });
 
+        qualityComboBox = new ComboBox<>();
+        qualityComboBox.getItems().add("Worst");
+        qualityComboBox.getItems().add("Best");
+        qualityComboBox.getSelectionModel().select(1);
+
         browserToolBar.getItems().add(homeButton);
         browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
         browserToolBar.getItems().add(refreshButton);
@@ -108,6 +137,8 @@ public class BrowserController {
         browserToolBar.getItems().add(searchTextField);
         browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
         browserToolBar.getItems().add(favouriteGameComboBox);
+        browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
+        browserToolBar.getItems().add(qualityComboBox);
     }
 
     private void goToHome() {
@@ -122,7 +153,8 @@ public class BrowserController {
 
     private void setupGrid() {
         browserGridView = new GridView<>();
-        browserGridView.setCellFactory(param -> new TwitchItemPane());
+        browserGridView.setCellFactory(
+                param -> new TwitchItemPane(qualityComboBox.getSelectionModel().selectedItemProperty()));
         browserGridView.setCellWidth(TwitchItemPane.WIDTH);
         browserGridView.cellHeightProperty().bind(TwitchItemPane.HEIGHT_PROPERTY);
     }
