@@ -304,6 +304,7 @@ public class LsGUIController {
             }
             popOver.hide();
         });
+        submitButton.setDefaultButton(true);
 
         cancelButton.setOnAction(event -> popOver.hide());
         dialogBox.getChildren().add(addChannelButton);
@@ -372,6 +373,7 @@ public class LsGUIController {
             LsGuiUtils.addFollowedChannelsToService(username, service);
             popOver.hide();
         });
+        submitButton.setDefaultButton(true);
 
         cancelButton.setOnAction(event -> popOver.hide());
 
