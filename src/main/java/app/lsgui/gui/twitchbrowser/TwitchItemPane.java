@@ -36,7 +36,10 @@ import app.lsgui.utils.LsGuiUtils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -59,6 +62,11 @@ public class TwitchItemPane extends GridCell<ITwitchItem> {
 
     private TwitchChannel channel;
     private TwitchGame game;
+    private StringProperty quality = new SimpleStringProperty();
+
+    public TwitchItemPane(final ReadOnlyObjectProperty<String> quality) {
+        this.quality.bind(quality);
+    }
 
     @Override
     protected void updateItem(final ITwitchItem item, final boolean empty) {
@@ -150,12 +158,12 @@ public class TwitchItemPane extends GridCell<ITwitchItem> {
         Tooltip.install(node, titleTooltip);
         contentBorderPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
-                LivestreamerUtils.startLivestreamer("twitch.tv/" + channel.getName().get(), "source");
+                LivestreamerUtils.startLivestreamer("twitch.tv/" + channel.getName().get(), quality.get());
             } else if (event.getButton() == MouseButton.SECONDARY) {
                 final ContextMenu contextMenu = new ContextMenu();
                 final MenuItem startStream = new MenuItem("Start Stream");
                 startStream.setOnAction(eventStartContext -> LivestreamerUtils
-                        .startLivestreamer("twitch.tv/" + channel.getName().get(), "source"));
+                        .startLivestreamer("twitch.tv/" + channel.getName().get(), quality.get()));
                 final MenuItem addToList = new MenuItem("Add Stream To Favourites");
                 final IService twitchService = Settings.getInstance().getTwitchService();
                 addToList.setOnAction(

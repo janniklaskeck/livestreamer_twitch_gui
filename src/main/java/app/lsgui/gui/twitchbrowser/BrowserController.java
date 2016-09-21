@@ -65,6 +65,7 @@ public class BrowserController {
     private BorderPane browserRootBorderPane;
 
     private ComboBox<String> favouriteGameComboBox;
+    private ComboBox<String> qualityComboBox;
     private ProgressBar browserProgressBar;
     private GridView<ITwitchItem> browserGridView;
     private BrowserCore browserCore;
@@ -123,6 +124,11 @@ public class BrowserController {
             }
         });
 
+        qualityComboBox = new ComboBox<>();
+        qualityComboBox.getItems().add("Worst");
+        qualityComboBox.getItems().add("Best");
+        qualityComboBox.getSelectionModel().select(1);
+
         browserToolBar.getItems().add(homeButton);
         browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
         browserToolBar.getItems().add(refreshButton);
@@ -131,6 +137,8 @@ public class BrowserController {
         browserToolBar.getItems().add(searchTextField);
         browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
         browserToolBar.getItems().add(favouriteGameComboBox);
+        browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
+        browserToolBar.getItems().add(qualityComboBox);
     }
 
     private void goToHome() {
@@ -145,7 +153,8 @@ public class BrowserController {
 
     private void setupGrid() {
         browserGridView = new GridView<>();
-        browserGridView.setCellFactory(param -> new TwitchItemPane());
+        browserGridView.setCellFactory(
+                param -> new TwitchItemPane(qualityComboBox.getSelectionModel().selectedItemProperty()));
         browserGridView.setCellWidth(TwitchItemPane.WIDTH);
         browserGridView.cellHeightProperty().bind(TwitchItemPane.HEIGHT_PROPERTY);
     }
