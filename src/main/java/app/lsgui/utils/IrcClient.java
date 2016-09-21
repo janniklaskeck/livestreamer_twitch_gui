@@ -27,7 +27,6 @@ import java.util.Locale;
 
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.jibble.pircbot.PircBot;
-import org.jibble.pircbot.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,22 +63,6 @@ public class IrcClient extends PircBot {
     protected void onConnect() {
         this.sendRawLine("CAP REQ :twitch.tv/membership");
         joinChannel("#" + channel.toLowerCase(Locale.ENGLISH));
-    }
-
-    @Override
-    protected void onNotice(String sourceNick, String sourceLogin, String sourceHostname, String target,
-            String notice) {
-        LOGGER.debug("{}", notice);
-    }
-
-    @Override
-    protected void onUserList(String channel, User[] users) {
-        LOGGER.debug("{}", users.length);
-    }
-
-    @Override
-    protected void onPrivateMessage(String sender, String login, String hostname, String message) {
-        LOGGER.debug("{}", message);
     }
 
     public void setChannel(final String channel) {
