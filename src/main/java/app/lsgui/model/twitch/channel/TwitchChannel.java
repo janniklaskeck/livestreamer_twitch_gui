@@ -92,17 +92,19 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     private ListProperty<String> availableQualities = new SimpleListProperty<>(FXCollections.observableArrayList());
     private BooleanProperty hasReminder = new SimpleBooleanProperty();
 
-    private boolean cameOnline = false;
+    private boolean isBrowser;
+    private boolean cameOnline;
 
     public TwitchChannel(final JsonObject channelAPIResponse, final String name, final boolean isBrowser) {
+        this.isBrowser = isBrowser;
         final JsonElement streamElement = channelAPIResponse.get(STREAM);
         if (streamElement != null && !streamElement.isJsonNull()) {
             final JsonObject streamObject = streamElement.getAsJsonObject();
             if (isStreamObjectValid(streamObject)) {
-                setData(streamObject, name, isBrowser);
+                setData(streamObject, name);
             }
         } else {
-            setData(new JsonObject(), name, isBrowser);
+            setData(new JsonObject(), name);
         }
     }
 
@@ -111,15 +113,15 @@ public class TwitchChannel implements IChannel, ITwitchItem {
                 && !streamObject.get("preview").isJsonNull() && !streamObject.isJsonNull();
     }
 
-    private void setData(final JsonObject channelObject, final String name, final boolean isBrowser) {
+    private void setData(final JsonObject channelObject, final String name) {
         if (!channelObject.equals(new JsonObject())) {
-            setOnlineData(channelObject, isBrowser);
+            setOnlineData(channelObject);
         } else {
             setOffline(name);
         }
     }
 
-    private void setOnlineData(final JsonObject channelObject, final boolean isBrowser) {
+    private void setOnlineData(final JsonObject channelObject) {
         final JsonObject channel = channelObject.get("channel").getAsJsonObject();
         final JsonObject preview = channelObject.get("preview").getAsJsonObject();
 
@@ -139,7 +141,7 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         this.uptimeString.set(buildUptimeString());
         this.viewersString.set(Integer.toString(this.viewers.get()));
         this.availableQualities.clear();
-        if (!isBrowser) {
+        if (!this.isBrowser) {
             this.availableQualities.addAll(LsGuiUtils.getAvailableQuality("http://twitch.tv/" + this.name.get()));
         }
     }
@@ -279,7 +281,7 @@ public class TwitchChannel implements IChannel, ITwitchItem {
         if (availableQualities.isEmpty()) {
             if (!this.isOnline.get()) {
                 availableQualities.add(CHANNEL_IS_OFFLINE);
-            } else {
+            } else if (!this.isBrowser) {
                 availableQualities.add(NO_QUALITIES);
                 LsGuiUtils.showWarningNotification(NO_QUALITIES, "Check your Twitch OAuth Key in the Settings!");
             }
