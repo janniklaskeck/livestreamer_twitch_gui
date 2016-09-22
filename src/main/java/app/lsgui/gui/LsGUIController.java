@@ -66,21 +66,16 @@ import javafx.util.StringConverter;
  * @author Niklas 11.06.2016
  *
  */
-public class LsGUIController {
+public class LsGuiController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LsGUIController.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(LsGuiController.class);
     private static final String OFFLINEQUALITY = "Channel is offline";
+    private static final int CORDER_RADIUS = 4;
 
     private ChannelList channelList;
-    private ChannelInfoPanel channelInfoPanel;
-    private ProgressIndicator updateProgressIndicator;
-
     private Button importButton;
-    private Button removeButton;
     private Button addButton;
     private Button twitchBrowserButton;
-
     private BooleanProperty hasPopOver;
     private PopOver popOver;
 
@@ -96,17 +91,21 @@ public class LsGUIController {
     @FXML
     private ToolBar toolBarTop;
 
+    public LsGuiController() {
+        // Empty Constructor
+    }
+
     @FXML
-    public void initialize() { // NOSONAR
-        setupServiceComboBox();
-        setupChannelList();
-        setupQualityComboBox();
-        setupChannelInfoPanel();
-        setupToolbar();
+    public void initialize() {
+        this.setupServiceComboBox();
+        this.setupChannelList();
+        this.setupQualityComboBox();
+        this.setupChannelInfoPanel();
+        this.setupToolbar();
     }
 
     private void setupQualityComboBox() {
-        qualityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+        this.qualityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (!OFFLINEQUALITY.equals(newValue)) {
                 Settings.getInstance().setQuality(newValue);
             }
@@ -117,9 +116,9 @@ public class LsGUIController {
         if (Settings.getInstance().getStreamServices().isEmpty()) {
             Settings.getInstance().getStreamServices().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
         }
-        serviceComboBox.itemsProperty().bind(Settings.getInstance().getStreamServices());
-        serviceComboBox.setCellFactory(listView -> new ServiceCell());
-        serviceComboBox.setConverter(new StringConverter<IService>() {
+        this.serviceComboBox.itemsProperty().bind(Settings.getInstance().getStreamServices());
+        this.serviceComboBox.setCellFactory(listView -> new ServiceCell());
+        this.serviceComboBox.setConverter(new StringConverter<IService>() {
             @Override
             public String toString(IService service) {
                 if (service == null) {
@@ -133,58 +132,58 @@ public class LsGUIController {
                 return null;
             }
         });
-        serviceComboBox.getSelectionModel().select(0);
-        serviceComboBox.valueProperty().addListener((observable, oldValue, newValue) -> changeService(newValue));
+        this.serviceComboBox.getSelectionModel().select(0);
+        this.serviceComboBox.valueProperty()
+                .addListener((observable, oldValue, newValue) -> this.changeService(newValue));
     }
 
     private void setupChannelList() {
-        channelList = new ChannelList();
-
-        channelList.getListView().getSelectionModel().selectedItemProperty()
+        this.channelList = new ChannelList();
+        this.channelList.getListView().getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {
-                        qualityComboBox.itemsProperty().bind(newValue.getAvailableQualities());
-                        if (qualityComboBox.getItems().size() > 1) {
+                        this.qualityComboBox.itemsProperty().bind(newValue.getAvailableQualities());
+                        if (this.qualityComboBox.getItems().size() > 1) {
                             final String quality = Settings.getInstance().getQuality();
-                            if (qualityComboBox.getItems().contains(quality)) {
-                                qualityComboBox.getSelectionModel().select(quality);
+                            if (this.qualityComboBox.getItems().contains(quality)) {
+                                this.qualityComboBox.getSelectionModel().select(quality);
                             } else {
-                                qualityComboBox.getSelectionModel().select("Best");
+                                this.qualityComboBox.getSelectionModel().select("Best");
                             }
                         } else {
-                            qualityComboBox.getSelectionModel().select(0);
+                            this.qualityComboBox.getSelectionModel().select(0);
                         }
                     }
                 });
-        final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
-        channelList.getStreams().bind(service.getChannelProperty());
-        channelList.getListView().setUserData(service);
-        contentBorderPane.setLeft(channelList);
+        final IService service = this.serviceComboBox.getSelectionModel().getSelectedItem();
+        this.channelList.getStreams().bind(service.getChannelProperty());
+        this.channelList.getListView().setUserData(service);
+        this.contentBorderPane.setLeft(this.channelList);
     }
 
     private void setupChannelInfoPanel() {
-        channelInfoPanel = new ChannelInfoPanel(serviceComboBox, qualityComboBox);
-        channelInfoPanel.getChannelProperty().bind(channelList.getSelectedChannelProperty());
-        contentBorderPane.setCenter(channelInfoPanel);
+        final ChannelInfoPanel channelInfoPanel = new ChannelInfoPanel(this.serviceComboBox, this.qualityComboBox);
+        channelInfoPanel.getChannelProperty().bind(this.channelList.getSelectedChannelProperty());
+        this.contentBorderPane.setCenter(channelInfoPanel);
     }
 
     private void setupToolbar() {
-        addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS);
-        addButton.setOnAction(event -> addAction());
-        removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS);
-        removeButton.setOnAction(event -> removeAction());
-        importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
-        importButton.setOnAction(event -> importFollowedChannels());
-        twitchBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
-        twitchBrowserButton.setOnAction(event -> openTwitchBrowser());
+        this.addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS);
+        this.addButton.setOnAction(event -> this.addAction());
+        final Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS);
+        removeButton.setOnAction(event -> this.removeAction());
+        this.importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
+        this.importButton.setOnAction(event -> this.importFollowedChannels());
+        this.twitchBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
+        this.twitchBrowserButton.setOnAction(event -> this.openTwitchBrowser());
 
-        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, addButton);
-        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, removeButton);
-        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, importButton);
-        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, twitchBrowserButton);
-        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, new Separator());
+        this.toolBarTop.getItems().add(this.toolBarTop.getItems().size() - 1, this.addButton);
+        this.toolBarTop.getItems().add(this.toolBarTop.getItems().size() - 1, removeButton);
+        this.toolBarTop.getItems().add(this.toolBarTop.getItems().size() - 1, this.importButton);
+        this.toolBarTop.getItems().add(this.toolBarTop.getItems().size() - 1, this.twitchBrowserButton);
+        this.toolBarTop.getItems().add(this.toolBarTop.getItems().size() - 1, new Separator());
 
-        updateProgressIndicator = new ProgressIndicator();
+        final ProgressIndicator updateProgressIndicator = new ProgressIndicator();
         updateProgressIndicator.setVisible(false);
         TwitchChannelUpdateService.getActiveChannelServicesProperty().addListener((obs, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
@@ -194,61 +193,58 @@ public class LsGUIController {
             }
         });
 
-        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, updateProgressIndicator);
+        this.toolBarTop.getItems().add(this.toolBarTop.getItems().size() - 1, updateProgressIndicator);
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         spacer.setMinWidth(Region.USE_PREF_SIZE);
-        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, spacer);
-
-        toolBarTop.getItems().add(toolBarTop.getItems().size() - 1, new Separator());
-
+        this.toolBarTop.getItems().add(this.toolBarTop.getItems().size() - 1, spacer);
+        this.toolBarTop.getItems().add(this.toolBarTop.getItems().size() - 1, new Separator());
         Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
-        settingsButton.setOnAction(event -> openSettings());
-        toolBarTop.getItems().add(toolBarTop.getItems().size(), settingsButton);
-
-        hasPopOver = new SimpleBooleanProperty(false);
+        settingsButton.setOnAction(event -> this.openSettings());
+        this.toolBarTop.getItems().add(this.toolBarTop.getItems().size(), settingsButton);
+        this.hasPopOver = new SimpleBooleanProperty(false);
     }
 
     private void changeService(final IService newService) {
         LOGGER.debug("Change Service to {}", newService.getName().get());
-        channelList.getStreams().bind(newService.getChannelProperty());
-        channelList.getListView().setUserData(newService);
+        this.channelList.getStreams().bind(newService.getChannelProperty());
+        this.channelList.getListView().setUserData(newService);
         if (LsGuiUtils.isTwitchService(newService)) {
-            importButton.setDisable(false);
-            twitchBrowserButton.setDisable(false);
+            this.importButton.setDisable(false);
+            this.twitchBrowserButton.setDisable(false);
         } else {
-            importButton.setDisable(true);
-            twitchBrowserButton.setDisable(true);
+            this.importButton.setDisable(true);
+            this.twitchBrowserButton.setDisable(true);
         }
     }
 
     private void openSettings() {
-        final SettingsWindow sw = new SettingsWindow(contentBorderPane.getScene().getWindow());
+        final SettingsWindow sw = new SettingsWindow(this.contentBorderPane.getScene().getWindow());
         sw.showAndWait();
     }
 
     private void addAction() {
-        final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
+        final IService service = this.serviceComboBox.getSelectionModel().getSelectedItem();
         if (service != null) {
-            createAddDialog(service);
+            this.createAddDialog(service);
         }
     }
 
     private void createAddDialog(final IService service) {
-        if (hasPopOver.get() && popOver != null) {
-            popOver.hide();
+        if (this.hasPopOver.get() && this.popOver != null) {
+            this.popOver.hide();
         }
-        popOver = new PopOver();
-        hasPopOver.bind(popOver.showingProperty());
-        popOver.getRoot().getStylesheets().add(
+        this.popOver = new PopOver();
+        this.hasPopOver.bind(this.popOver.showingProperty());
+        this.popOver.getRoot().getStylesheets().add(
                 getClass().getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
-        final Scene scene = addButton.getScene();
+        final Scene scene = this.addButton.getScene();
 
         final Window sceneWindow = scene.getWindow();
         final Point2D windowCoord = new Point2D(sceneWindow.getX(), sceneWindow.getY());
         final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
-        final Point2D nodeCoord = addButton.localToScene(0.0, 25.0);
+        final Point2D nodeCoord = this.addButton.localToScene(0.0, 25.0);
         final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
         final double clickY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
 
@@ -302,53 +298,53 @@ public class LsGUIController {
                 LOGGER.info("Adding channel");
                 LsGuiUtils.addChannelToService(channelName, service);
             }
-            popOver.hide();
+            this.popOver.hide();
         });
         submitButton.setDefaultButton(true);
 
-        cancelButton.setOnAction(event -> popOver.hide());
+        cancelButton.setOnAction(event -> this.popOver.hide());
         dialogBox.getChildren().add(addChannelButton);
         dialogBox.getChildren().add(addServiceButton);
 
-        popOver.setContentNode(dialogBox);
-        popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
-        popOver.setCornerRadius(4);
-        popOver.setTitle("Add new Channel or Service");
-        popOver.show(addButton.getParent(), clickX, clickY);
+        this.popOver.setContentNode(dialogBox);
+        this.popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
+        this.popOver.setCornerRadius(CORDER_RADIUS);
+        this.popOver.setTitle("Add new Channel or Service");
+        this.popOver.show(this.addButton.getParent(), clickX, clickY);
     }
 
     private void removeAction() {
-        final IChannel channel = channelList.getListView().getSelectionModel().getSelectedItem();
-        final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
+        final IChannel channel = this.channelList.getListView().getSelectionModel().getSelectedItem();
+        final IService service = this.serviceComboBox.getSelectionModel().getSelectedItem();
         if (channel != null && service != null) {
             LsGuiUtils.removeChannelFromService(channel, service);
-        } else if (channel == null && service != null && serviceComboBox.getItems().size() > 1) {
-            serviceComboBox.getSelectionModel().select(0);
+        } else if (channel == null && service != null && this.serviceComboBox.getItems().size() > 1) {
+            this.serviceComboBox.getSelectionModel().select(0);
             LsGuiUtils.removeService(service);
         }
     }
 
     private void importFollowedChannels() {
-        final TwitchService service = (TwitchService) serviceComboBox.getSelectionModel().getSelectedItem();
+        final TwitchService service = (TwitchService) this.serviceComboBox.getSelectionModel().getSelectedItem();
         if (service != null) {
-            createImportPopOver(service);
+            this.createImportPopOver(service);
         }
     }
 
     private void createImportPopOver(final TwitchService service) {
-        if (hasPopOver.get() && popOver != null) {
-            popOver.hide();
+        if (this.hasPopOver.get() && this.popOver != null) {
+            this.popOver.hide();
         }
-        popOver = new PopOver();
-        hasPopOver.bind(popOver.showingProperty());
-        popOver.getRoot().getStylesheets().add(
+        this.popOver = new PopOver();
+        this.hasPopOver.bind(this.popOver.showingProperty());
+        this.popOver.getRoot().getStylesheets().add(
                 getClass().getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
-        final Scene scene = importButton.getScene();
+        final Scene scene = this.importButton.getScene();
 
         final Window sceneWindow = scene.getWindow();
         final Point2D windowCoord = new Point2D(sceneWindow.getX(), sceneWindow.getY());
         final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
-        final Point2D nodeCoord = importButton.localToScene(0.0, 25.0);
+        final Point2D nodeCoord = this.importButton.localToScene(0.0, 25.0);
         final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
         final double clickY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
 
@@ -371,21 +367,21 @@ public class LsGUIController {
         submitButton.setOnAction(event -> {
             final String username = nameTextField.getText();
             LsGuiUtils.addFollowedChannelsToService(username, service);
-            popOver.hide();
+            this.popOver.hide();
         });
         submitButton.setDefaultButton(true);
 
-        cancelButton.setOnAction(event -> popOver.hide());
+        cancelButton.setOnAction(event -> this.popOver.hide());
 
-        popOver.setContentNode(dialogBox);
-        popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
-        popOver.setCornerRadius(4);
-        popOver.setTitle("Import followed Twitch.tv Channels");
-        popOver.show(importButton.getParent(), clickX, clickY);
+        this.popOver.setContentNode(dialogBox);
+        this.popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
+        this.popOver.setCornerRadius(CORDER_RADIUS);
+        this.popOver.setTitle("Import followed Twitch.tv Channels");
+        this.popOver.show(this.importButton.getParent(), clickX, clickY);
     }
 
     private void openTwitchBrowser() {
-        final BrowserWindow browser = new BrowserWindow(twitchBrowserButton.getScene().getWindow());
+        final BrowserWindow browser = new BrowserWindow(this.twitchBrowserButton.getScene().getWindow());
         browser.showAndWait();
     }
 }

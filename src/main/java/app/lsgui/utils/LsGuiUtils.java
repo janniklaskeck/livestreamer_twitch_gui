@@ -26,14 +26,17 @@ package app.lsgui.utils;
 import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 import org.controlsfx.control.Notifications;
@@ -42,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
-import app.lsgui.gui.LsGUIWindow;
+import app.lsgui.gui.LsGuiWindow;
 import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.service.GenericService;
@@ -93,7 +96,7 @@ public class LsGuiUtils {
 
     private static List<String> sortQualities(final List<String> qualities) {
         final List<String> sortedQualities = new ArrayList<>();
-        qualities.forEach(s -> s = s.toLowerCase());
+        qualities.forEach(quality -> quality = quality.toLowerCase(Locale.ENGLISH));
         if (qualities.contains("audio")) {
             sortedQualities.add("Audio");
         }
@@ -219,7 +222,7 @@ public class LsGuiUtils {
             final FileChooser recordFileChooser = new FileChooser();
             recordFileChooser.setTitle("Choose Target file");
             recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
-            final File recordFile = recordFileChooser.showSaveDialog(LsGUIWindow.getRootStage());
+            final File recordFile = recordFileChooser.showSaveDialog(LsGuiWindow.getRootStage());
             if (recordFile != null) {
                 LivestreamerUtils.recordLivestreamer(url, quality, recordFile);
             }
@@ -278,8 +281,12 @@ public class LsGuiUtils {
         boolean result = true;
         BufferedReader br;
         try {
-            br = new BufferedReader(new FileReader(file));
-            result = br.readLine() == null;
+            final FileInputStream inputStream = new FileInputStream(file);
+            br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            final String line = br.readLine();
+            result = line == null;
+            inputStream.close();
+            br.close();
         } catch (IOException e) {
             LOGGER.error("Could not read from Settings file.", e);
         }

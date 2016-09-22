@@ -45,9 +45,10 @@ import javafx.scene.text.Font;
  * @author Niklas 11.06.2016
  *
  */
-public class ChatController {
+public final class ChatController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
+    private static final int FONT_SIZE = 20;
 
     private IrcClient client;
     private InlineCssTextArea chatTextArea;
@@ -61,35 +62,38 @@ public class ChatController {
     @FXML
     private BorderPane chatBorderPane;
 
+    public ChatController() {
+        // Empty Constructor
+    }
+
     @FXML
     public void initialize() {
         LOGGER.info("SettingsController init");
-        chatTextArea = new InlineCssTextArea();
-        chatTextArea.setWrapText(true);
-        chatTextArea.setFont(new Font(20));
-        chatTextArea.setEditable(false);
+        this.chatTextArea = new InlineCssTextArea();
+        this.chatTextArea.setWrapText(true);
+        this.chatTextArea.setFont(new Font(FONT_SIZE));
+        this.chatTextArea.setEditable(false);
 
-        chatBorderPane.setCenter(chatTextArea);
-        inputTextField.setOnKeyPressed(key -> {
+        this.chatBorderPane.setCenter(chatTextArea);
+        this.inputTextField.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.ENTER) {
-                sendMessage(inputTextField.getText());
+                sendMessage(this.inputTextField.getText());
             }
         });
 
-        sendButton.setOnAction(event -> sendMessage(inputTextField.getText()));
-        client = new IrcClient(chatTextArea);
+        this.sendButton.setOnAction(event -> this.sendMessage(this.inputTextField.getText()));
+        this.client = new IrcClient(this.chatTextArea);
     }
 
     private void sendMessage(final String message) {
         if (!"".equals(message)) {
-
             final String twitchUsername = Settings.getInstance().getTwitchUser();
-            final int start = chatTextArea.getText().length();
+            final int start = this.chatTextArea.getText().length();
             final int end = start + twitchUsername.length() + 1;
-            chatTextArea.appendText(twitchUsername + ": " + message + "\n");
-            setColoredNickName(chatTextArea, start, end);
-            setChatMessageStyle(chatTextArea, end, end + message.length() + 1);
-            inputTextField.clear();
+            this.chatTextArea.appendText(twitchUsername + ": " + message + "\n");
+            setColoredNickName(this.chatTextArea, start, end);
+            setChatMessageStyle(this.chatTextArea, end, end + message.length() + 1);
+            this.inputTextField.clear();
         }
     }
 
@@ -99,30 +103,30 @@ public class ChatController {
             final String user = Settings.getInstance().getTwitchUser();
             final String oauth = Settings.getInstance().getTwitchOAuth();
 
-            client.setUserName(user);
-            client.setChannel(channel);
+            this.client.setUserName(user);
+            this.client.setChannel(channel);
             clientConnect(twitchIrc, oauth);
             LOGGER.info("DATA Login");
         }
     }
 
-    public void clientConnect(String twitchIrc, String oauth) {
+    public void clientConnect(final String twitchIrc, final String oauth) {
         try {
-            client.connect(twitchIrc, 6667, oauth);
+            final int port = 6667;
+            this.client.connect(twitchIrc, port, oauth);
         } catch (IOException | IrcException e) {
-            e.printStackTrace();
+            LOGGER.error("Could not connect to Twitch IRC", e);
         }
     }
 
     public void disconnect() {
-        client.disconnect();
-        client.dispose();
+        this.client.disconnect();
+        this.client.dispose();
     }
 
     public static void setColoredNickName(final InlineCssTextArea cta, final int start, final int end) {
         cta.setStyle(start, end,
                 "-fx-fill: " + LsGuiUtils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
-
     }
 
     public static void setChatMessageStyle(final InlineCssTextArea cta, final int start, final int end) {

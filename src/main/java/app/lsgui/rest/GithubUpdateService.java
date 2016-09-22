@@ -55,7 +55,8 @@ public class GithubUpdateService {
 
     private static final int CONNECTION_COUNT = 100;
     private static final CloseableHttpClient HTTP_CLIENT;
-    private static final String RELEASES_URL = "https://api.github.com/repos/westerwave/livestreamer_twitch_gui/releases/latest";
+    private static final String RELEASES_URL = "https://api.github.com/repos/westerwave/"
+            + "livestreamer_twitch_gui/releases/latest";
     private static final ZoneOffset OFFSET = ZoneOffset.ofHours(0);
     private static final String PREFIX = "GMT";
     private static final ZoneId GMT = ZoneId.ofOffset(PREFIX, OFFSET);
@@ -122,7 +123,6 @@ public class GithubUpdateService {
         final String realVersionTag = tag.substring(1);
         String currentVersionTag = LsGuiUtils.readVersionProperty();
         if (currentVersionTag.endsWith("-SNAPSHOT")) {
-            currentVersionTag = currentVersionTag.replace("-SNAPSHOT", "");
             LOGGER.info("Running development version!");
             return false;
         }

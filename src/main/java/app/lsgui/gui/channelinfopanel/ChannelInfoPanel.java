@@ -82,13 +82,8 @@ public class ChannelInfoPanel extends BorderPane {
     @FXML
     private ToolBar buttonBox;
 
-    /**
-     *
-     * @param serviceComboBox
-     * @param qualityComboBox
-     */
     public ChannelInfoPanel(ComboBox<IService> serviceComboBox, ComboBox<String> qualityComboBox) {
-        channelProperty = new SimpleObjectProperty<>();
+        this.channelProperty = new SimpleObjectProperty<>();
 
         this.serviceComboBox = serviceComboBox;
         this.qualityComboBox = qualityComboBox;
@@ -100,132 +95,138 @@ public class ChannelInfoPanel extends BorderPane {
         } catch (IOException e) {
             LOGGER.error("ERROR while loading ChannelInfoPanel FXML", e);
         }
-        setupChannelInfoPanel();
-        setupChannelListener();
+        this.setupChannelInfoPanel();
+        this.setupChannelListener();
 
     }
 
     private void setupChannelListener() {
-        channelProperty.addListener((observable, oldValue, newValue) -> {
+        this.channelProperty.addListener((observable, oldValue, newValue) -> {
             final IChannel selectedChannel = newValue;
             if (selectedChannel != null) {
                 if (LsGuiUtils.isTwitchChannel(selectedChannel)) {
-                    bindToTwitchChannel((TwitchChannel) selectedChannel);
+                    this.bindToTwitchChannel((TwitchChannel) selectedChannel);
                 } else {
-                    bindToGenericChannel(selectedChannel);
+                    this.bindToGenericChannel(selectedChannel);
                 }
             }
         });
     }
 
     private void setupChannelInfoPanel() {
-        previewImageView = new WrappedImageView(null);
-        rootBorderPane.setCenter(previewImageView);
+        this.previewImageView = new WrappedImageView(null);
+        this.rootBorderPane.setCenter(this.previewImageView);
 
-        channelDescription = new Label();
-        channelDescription.setWrapText(true);
-        channelUptime = new Label();
-        channelViewers = new Label();
-        channelGame = new Label();
+        this.channelDescription = new Label();
+        this.channelDescription.setWrapText(true);
+        this.channelUptime = new Label();
+        this.channelViewers = new Label();
+        this.channelGame = new Label();
 
-        descriptionGrid.add(channelGame, 0, 0, 1, 1);
-        descriptionGrid.add(channelViewers, 0, 1, 1, 1);
-        descriptionGrid.add(channelUptime, 0, 2, 1, 1);
-        descriptionGrid.add(channelDescription, 0, 3, 1, 1);
+        final int rowSpan = 1;
+        final int columnSpan = 1;
+        final int column = 0;
+        final int gameRow = 0;
+        final int viewersRow = 1;
+        final int uptimeRow = 2;
+        final int descriptionRow = 3;
 
-        startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
-        startStreamButton.setOnAction(event -> startStream());
-        startStreamButton.setDisable(true);
-        recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
-        recordStreamButton.setOnAction(event -> recordStream());
-        recordStreamButton.setDisable(true);
-        openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
-        openChatButton.setOnAction(event -> openChat());
-        openChatButton.setDisable(true);
-        openInBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
-        openInBrowserButton.setOnAction(event -> openBrowser());
-        openInBrowserButton.setDisable(true);
+        this.descriptionGrid.add(this.channelGame, column, gameRow, columnSpan, rowSpan);
+        this.descriptionGrid.add(this.channelViewers, column, viewersRow, columnSpan, rowSpan);
+        this.descriptionGrid.add(this.channelUptime, column, uptimeRow, columnSpan, rowSpan);
+        this.descriptionGrid.add(this.channelDescription, column, descriptionRow, columnSpan, rowSpan);
 
-        buttonBox.getItems().add(startStreamButton);
-        buttonBox.getItems().add(recordStreamButton);
-        buttonBox.getItems().add(openChatButton);
-        buttonBox.getItems().add(openInBrowserButton);
+        this.startStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLAY);
+        this.startStreamButton.setOnAction(event -> this.startStream());
+        this.startStreamButton.setDisable(true);
+        this.recordStreamButton = GlyphsDude.createIconButton(FontAwesomeIcon.DOWNLOAD);
+        this.recordStreamButton.setOnAction(event -> this.recordStream());
+        this.recordStreamButton.setDisable(true);
+        this.openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
+        this.openChatButton.setOnAction(event -> this.openChat());
+        this.openChatButton.setDisable(true);
+        this.openInBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
+        this.openInBrowserButton.setOnAction(event -> this.openBrowser());
+        this.openInBrowserButton.setDisable(true);
+
+        this.buttonBox.getItems().add(this.startStreamButton);
+        this.buttonBox.getItems().add(this.recordStreamButton);
+        this.buttonBox.getItems().add(this.openChatButton);
+        this.buttonBox.getItems().add(this.openInBrowserButton);
     }
 
     private void bindToTwitchChannel(final TwitchChannel selectedChannel) {
-        previewImageView.imageProperty().bind((selectedChannel).getPreviewImageLarge());
-        channelDescription.textProperty().bind((selectedChannel).getTitle());
-        channelUptime.textProperty().bind((selectedChannel).getUptimeString());
-        channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
-        channelViewers.textProperty().bind((selectedChannel).getViewersString());
-        channelViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
-        channelGame.textProperty().bind((selectedChannel).getGame());
-        channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
-        openChatButton.setDisable(false);
-        openInBrowserButton.setDisable(false);
-        startStreamButton.disableProperty().bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
-        recordStreamButton.disableProperty().bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
+        this.previewImageView.imageProperty().bind((selectedChannel).getPreviewImageLarge());
+        this.channelDescription.textProperty().bind((selectedChannel).getTitle());
+        this.channelUptime.textProperty().bind((selectedChannel).getUptimeString());
+        this.channelUptime.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
+        this.channelViewers.textProperty().bind((selectedChannel).getViewersString());
+        this.channelViewers.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
+        this.channelGame.textProperty().bind((selectedChannel).getGame());
+        this.channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
+        this.openChatButton.setDisable(false);
+        this.openInBrowserButton.setDisable(false);
+        this.startStreamButton.disableProperty()
+                .bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
+        this.recordStreamButton.disableProperty()
+                .bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
     }
 
     private void bindToGenericChannel(final IChannel channel) {
-        channelDescription.textProperty().bind(channel.getName());
-        previewImageView.imageProperty().unbind();
-        channelUptime.textProperty().unbind();
-        channelUptime.setGraphic(null);
-        channelViewers.textProperty().unbind();
-        channelViewers.setGraphic(null);
-        channelGame.textProperty().unbind();
-        channelGame.setGraphic(null);
-        openChatButton.setDisable(true);
-        startStreamButton.disableProperty().unbind();
-        recordStreamButton.disableProperty().unbind();
-        startStreamButton.setDisable(false);
-        recordStreamButton.setDisable(false);
-        openInBrowserButton.setDisable(false);
-    }
-
-    public void setStream(final IChannel channel) {
-        channelProperty.setValue(channel);
+        this.channelDescription.textProperty().bind(channel.getName());
+        this.previewImageView.imageProperty().unbind();
+        this.channelUptime.textProperty().unbind();
+        this.channelUptime.setGraphic(null);
+        this.channelViewers.textProperty().unbind();
+        this.channelViewers.setGraphic(null);
+        this.channelGame.textProperty().unbind();
+        this.channelGame.setGraphic(null);
+        this.openChatButton.setDisable(true);
+        this.startStreamButton.disableProperty().unbind();
+        this.recordStreamButton.disableProperty().unbind();
+        this.startStreamButton.setDisable(false);
+        this.recordStreamButton.setDisable(false);
+        this.openInBrowserButton.setDisable(false);
     }
 
     private void startStream() {
-        if (LsGuiUtils.isChannelOnline(channelProperty.get())) {
-            final String url = buildUrl();
-            final String quality = getQuality();
+        if (LsGuiUtils.isChannelOnline(this.channelProperty.get())) {
+            final String url = this.buildUrl();
+            final String quality = this.getQuality();
             LivestreamerUtils.startLivestreamer(url, quality);
         }
     }
 
     private void recordStream() {
-        final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
-        LsGuiUtils.recordStream(service, channelProperty.get());
+        final IService service = this.serviceComboBox.getSelectionModel().getSelectedItem();
+        LsGuiUtils.recordStream(service, this.channelProperty.get());
     }
 
     private void openChat() {
-        LsGuiUtils.openTwitchChat(channelProperty.get());
+        LsGuiUtils.openTwitchChat(this.channelProperty.get());
     }
 
     private void openBrowser() {
-        if (channelProperty.get() != null) {
-            LsGuiUtils.openURLInBrowser(buildUrl());
+        if (this.channelProperty.get() != null) {
+            LsGuiUtils.openURLInBrowser(this.buildUrl());
         }
     }
 
-    public ObjectProperty<IChannel> getChannelProperty() {
-        return channelProperty;
+    public final ObjectProperty<IChannel> getChannelProperty() {
+        return this.channelProperty;
     }
 
-    public void setChannelProperty(ObjectProperty<IChannel> channelProperty) {
+    public final void setChannelProperty(ObjectProperty<IChannel> channelProperty) {
         this.channelProperty = channelProperty;
     }
 
     private String getQuality() {
-        return qualityComboBox.getSelectionModel().getSelectedItem();
+        return this.qualityComboBox.getSelectionModel().getSelectedItem();
     }
 
     private String buildUrl() {
-        final String serviceUrl = serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get();
-        final String channel = channelProperty.get().getName().get();
+        final String serviceUrl = this.serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get();
+        final String channel = this.channelProperty.get().getName().get();
         return LsGuiUtils.buildUrl(serviceUrl, channel);
     }
 }

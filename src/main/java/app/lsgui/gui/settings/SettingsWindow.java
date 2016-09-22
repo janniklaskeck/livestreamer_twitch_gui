@@ -45,26 +45,22 @@ import javafx.stage.Window;
  * @author Niklas 11.06.2016
  *
  */
-public class SettingsWindow extends AnchorPane {
+public final class SettingsWindow extends AnchorPane {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsWindow.class);
-    private static final String SETTINGSFXML = "fxml/SettingsWindow.fxml";
+    private static final String SETTINGS_FXML = "fxml/SettingsWindow.fxml";
     private static Stage settingsStage;
 
-    /**
-     *
-     * @param parentWindow
-     */
     public SettingsWindow(final Window parentWindow) {
         setSettingsStage(new Stage());
-        Parent root = loadFXML();
-        setupStage(root, settingsStage, parentWindow);
+        final Parent root = this.loadFxml();
+        this.setupStage(root, settingsStage, parentWindow);
 
     }
 
-    private Parent loadFXML() {
+    private Parent loadFxml() {
         try {
-            return FXMLLoader.load(getClass().getClassLoader().getResource(SETTINGSFXML));
+            return FXMLLoader.load(getClass().getClassLoader().getResource(SETTINGS_FXML));
         } catch (IOException e) {
             LOGGER.error("ERROR while load settings fxml", e);
             Platform.exit();
@@ -73,12 +69,10 @@ public class SettingsWindow extends AnchorPane {
     }
 
     private void setupStage(final Parent root, final Stage settingsStage, final Window parentWindow) {
-        Scene scene = new Scene(root);
-
         settingsStage.setResizable(false);
-
         settingsStage.setTitle("Livestreamer GUI Settings v3" + LsGuiUtils.readVersionProperty());
         settingsStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
+        final Scene scene = new Scene(root);
         settingsStage.setScene(scene);
         settingsStage.initModality(Modality.APPLICATION_MODAL);
         settingsStage.initOwner(parentWindow);
@@ -87,11 +81,11 @@ public class SettingsWindow extends AnchorPane {
         settingsStage.setOnCloseRequest(event -> setSettingsStage(null));
     }
 
-    private static void setSettingsStage(final Stage stage) {
+    private static synchronized void setSettingsStage(final Stage stage) {
         settingsStage = stage;
     }
 
-    public static Stage getSettingsStage() {
+    public static synchronized Stage getSettingsStage() {
         return settingsStage;
     }
 

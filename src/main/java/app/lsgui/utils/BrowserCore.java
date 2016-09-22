@@ -23,6 +23,8 @@
  */
 package app.lsgui.utils;
 
+import java.util.Locale;
+
 import org.controlsfx.control.GridView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,10 +106,10 @@ public class BrowserCore {
         filteredItems.setPredicate(item -> {
             if (item instanceof TwitchGame) {
                 final TwitchGame game = (TwitchGame) item;
-                return game.getName().get().toLowerCase().contains(filter);
+                return game.getName().get().toLowerCase(Locale.ENGLISH).contains(filter);
             } else if (item instanceof TwitchChannel) {
                 final TwitchChannel channel = (TwitchChannel) item;
-                return channel.getName().get().toLowerCase().contains(filter);
+                return channel.getName().get().toLowerCase(Locale.ENGLISH).contains(filter);
             }
             return true;
         });

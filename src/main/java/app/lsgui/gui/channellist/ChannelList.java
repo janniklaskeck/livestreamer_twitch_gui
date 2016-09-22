@@ -42,7 +42,7 @@ import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.AnchorPane;
 
-public class ChannelList extends AnchorPane {
+public final class ChannelList extends AnchorPane {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelList.class);
     private static final String CHANNELLISTFXML = "fxml/ChannelList.fxml";
 
@@ -52,9 +52,6 @@ public class ChannelList extends AnchorPane {
     @FXML
     private ListView<IChannel> channelListView;
 
-    /**
-     * ChannelList
-     */
     public ChannelList() {
         LOGGER.debug("Construct StreamList");
         final FXMLLoader loader;
@@ -71,23 +68,23 @@ public class ChannelList extends AnchorPane {
     }
 
     private void setupChannelList() {
-        final MultipleSelectionModel<IChannel> selectionModel = channelListView.getSelectionModel();
+        final MultipleSelectionModel<IChannel> selectionModel = this.channelListView.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.SINGLE);
-        selectedChannelProperty.bind(selectionModel.selectedItemProperty());
-        channelListView.itemsProperty().bind(channelListProperty);
-        channelListView.setCellFactory(listView -> new ChannelCell());
+        this.selectedChannelProperty.bind(selectionModel.selectedItemProperty());
+        this.channelListView.itemsProperty().bind(this.channelListProperty);
+        this.channelListView.setCellFactory(listView -> new ChannelCell());
     }
 
     public ListProperty<IChannel> getStreams() {
-        return channelListProperty;
+        return this.channelListProperty;
     }
 
     public void setChannels(final List<IChannel> channels) {
-        channelListProperty.set(FXCollections.observableList(channels));
+        this.channelListProperty.set(FXCollections.observableList(channels));
     }
 
     public ListView<IChannel> getListView() {
-        return channelListView;
+        return this.channelListView;
     }
 
     public void setListView(final ListView<IChannel> channelList) {
@@ -95,7 +92,7 @@ public class ChannelList extends AnchorPane {
     }
 
     public ObjectProperty<IChannel> getSelectedChannelProperty() {
-        return selectedChannelProperty;
+        return this.selectedChannelProperty;
     }
 
     public void setSelectedChannelProperty(final ObjectProperty<IChannel> channelProperty) {

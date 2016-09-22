@@ -53,12 +53,12 @@ import javafx.scene.layout.VBox;
 
 public class TwitchItemPane extends GridCell<ITwitchItem> {
 
-    public static final float RATIO_GAME = 1.4f;
-    public static final float RATIO_CHANNEL = 0.5625f;
+    public static final double RATIO_GAME = 1.4D;
+    public static final double RATIO_CHANNEL = 0.5625D;
     public static final float WIDTH = 150;
     public static final DoubleProperty HEIGHT_PROPERTY = new SimpleDoubleProperty();
-    public static final float HEIGHT_GAME = WIDTH * RATIO_GAME;
-    public static final float HEIGHT_CHANNEL = WIDTH * RATIO_CHANNEL;
+    public static final double HEIGHT_GAME = WIDTH * RATIO_GAME;
+    public static final double HEIGHT_CHANNEL = WIDTH * RATIO_CHANNEL;
 
     private TwitchChannel channel;
     private TwitchGame game;

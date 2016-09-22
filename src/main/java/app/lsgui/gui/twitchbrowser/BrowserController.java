@@ -70,6 +70,10 @@ public class BrowserController {
     private GridView<ITwitchItem> browserGridView;
     private BrowserCore browserCore;
 
+    public BrowserController() {
+        // Empty Constructor
+    }
+
     @FXML
     public void initialize() {
         setupToolBar();

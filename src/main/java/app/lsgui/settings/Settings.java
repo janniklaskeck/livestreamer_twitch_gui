@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -99,7 +100,11 @@ public class Settings {
     private String recordingPath;
     private StringProperty updateLink = new SimpleStringProperty();
 
-    private static boolean isLoading = false;
+    private static boolean isLoading;
+
+    public Settings() {
+        // Empty Constructor
+    }
 
     public static synchronized Settings getInstance() {
         if (instance == null) {
@@ -174,7 +179,7 @@ public class Settings {
             final String serviceName = serviceJson.get(SERVICE_NAME).getAsString();
             final String serviceUrl = serviceJson.get(SERVICE_URL).getAsString();
             final IService service;
-            if (serviceUrl.toLowerCase().contains("twitch")) {
+            if (serviceUrl.toLowerCase(Locale.ENGLISH).contains("twitch")) {
                 service = new TwitchService(serviceName, serviceUrl);
             } else {
                 service = new GenericService(serviceName, serviceUrl);

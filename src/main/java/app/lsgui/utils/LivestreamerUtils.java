@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.controlsfx.control.Notifications;
@@ -82,7 +83,7 @@ public class LivestreamerUtils {
         command.add(getLivestreamerExe());
         command.add(url);
         command.add("-j");
-        if (url.toLowerCase().contains("twitch")) {
+        if (url.toLowerCase(Locale.ENGLISH).contains("twitch")) {
             command.add("--twitch-oauth-token");
             command.add(getTwitchOAuth());
         }
@@ -111,7 +112,7 @@ public class LivestreamerUtils {
         command.add(getLivestreamerExe());
         command.add(url);
         command.add(quality);
-        if (url.toLowerCase().contains("twitch")) {
+        if (url.toLowerCase(Locale.ENGLISH).contains("twitch")) {
             command.add("--twitch-oauth-token");
             command.add(getTwitchOAuth());
         }
@@ -173,7 +174,7 @@ public class LivestreamerUtils {
     private static boolean checkForLivestreamerOnPath() {
         Map<String, String> env = System.getenv();
         final String windowsPath = env.get("Path");
-        if (windowsPath.toLowerCase().contains(LIVESTREAMERCMD)) {
+        if (windowsPath.toLowerCase(Locale.ENGLISH).contains(LIVESTREAMERCMD)) {
             return true;
         }
         return false;

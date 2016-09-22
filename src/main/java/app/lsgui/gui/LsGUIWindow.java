@@ -49,13 +49,19 @@ import javafx.stage.Stage;
  * @author Niklas 11.06.2016
  *
  */
-public class LsGUIWindow extends Application {
+public class LsGuiWindow extends Application {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LsGUIWindow.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LsGuiWindow.class);
+    private static final int MIN_WIDTH = 650;
+    private static final int MIN_HEIGHT = 550;
     private static Stage rootstage;
 
+    public LsGuiWindow() {
+        // Empty Constructor
+    }
+
     @Override
-    public void init() {
+    public final void init() {
         Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
             LOGGER.error("Uncaught Exception on JavaFX Thread", throwable);
             LOGGER.error("Exiting JavaFX Thread...");
@@ -66,9 +72,9 @@ public class LsGUIWindow extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = loadFXML();
-        setupStage(root, primaryStage);
+    public final void start(Stage primaryStage) {
+        final Parent root = this.loadFXML();
+        this.setupStage(root, primaryStage);
         GithubUpdateService.checkForUpdate();
     }
 
@@ -83,17 +89,17 @@ public class LsGUIWindow extends Application {
     }
 
     private void setupStage(final Parent root, final Stage primaryStage) {
-        Scene scene = new Scene(root);
         setRootStage(primaryStage);
 
-        primaryStage.setMinHeight(550);
-        primaryStage.setHeight(550);
+        primaryStage.setMinHeight(MIN_HEIGHT);
+        primaryStage.setHeight(MIN_HEIGHT);
 
-        primaryStage.setMinWidth(650);
-        primaryStage.setWidth(750);
+        primaryStage.setMinWidth(MIN_WIDTH);
+        primaryStage.setWidth(MIN_WIDTH);
 
         primaryStage.setTitle("Livestreamer GUI v" + LsGuiUtils.readVersionProperty());
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
+        final Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -118,15 +124,15 @@ public class LsGUIWindow extends Application {
             }
             Platform.exit();
         });
-        LsGUIWindow.getRootStage().getScene().getStylesheets().add(LsGUIWindow.class
+        LsGuiWindow.getRootStage().getScene().getStylesheets().add(LsGuiWindow.class
                 .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
     }
 
-    public static final Stage getRootStage() {
+    public static final synchronized Stage getRootStage() {
         return rootstage;
     }
 
-    private static final void setRootStage(final Stage newRootStage) {
+    private static final synchronized void setRootStage(final Stage newRootStage) {
         rootstage = newRootStage;
     }
 }

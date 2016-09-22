@@ -33,8 +33,12 @@ import javafx.scene.control.ListCell;
  */
 public class ServiceCell extends ListCell<IService> {
 
+    public ServiceCell() {
+        // Empty Constructor
+    }
+
     @Override
-    protected void updateItem(IService item, boolean isEmpty) {
+    protected final void updateItem(IService item, boolean isEmpty) {
         super.updateItem(item, isEmpty);
         if (isEmpty || item == null) {
             setText(null);

@@ -58,7 +58,7 @@ public class ChannelCell extends ListCell<IChannel> {
      * Channelist ChannelCell
      */
     public ChannelCell() {
-        isOnline = new BooleanPropertyBase() {
+        this.isOnline = new BooleanPropertyBase() {
             @Override
             public void invalidated() {
                 pseudoClassStateChanged(ONLINE_PSEUDOCLASS, get());
@@ -75,7 +75,7 @@ public class ChannelCell extends ListCell<IChannel> {
             }
         };
         getStyleClass().add("channel-cell");
-        isPlaylist = new BooleanPropertyBase() {
+        this.isPlaylist = new BooleanPropertyBase() {
             @Override
             public void invalidated() {
                 pseudoClassStateChanged(PLAYLIST_PSEUDOCLASS, get());
@@ -92,11 +92,11 @@ public class ChannelCell extends ListCell<IChannel> {
             }
         };
         getStyleClass().add("channel-cell");
-        hasReminder = new SimpleBooleanProperty();
+        this.hasReminder = new SimpleBooleanProperty();
     }
 
     @Override
-    protected void updateItem(final IChannel channel, final boolean isEmpty) {
+    protected final void updateItem(final IChannel channel, final boolean isEmpty) {
         super.updateItem(channel, isEmpty);
         if (isEmpty || channel == null) {
             textProperty().unbind();
@@ -105,30 +105,29 @@ public class ChannelCell extends ListCell<IChannel> {
         } else {
             setGraphic(createReminderCheckBox(channel));
             setContentDisplay(ContentDisplay.LEFT);
-            setContextMenu(createContextMenu(channel));
+            setContextMenu(this.createContextMenu(channel));
             textProperty().bind(channel.getName());
             setOnMouseClicked(mouseEvent -> {
-                if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
-                    startLivestreamerStream(channel);
+                final int doubleClickAmount = 2;
+                if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == doubleClickAmount) {
+                    this.startLivestreamerStream(channel);
                 }
             });
 
-            isOnline.bind(channel.isOnline());
+            this.isOnline.bind(channel.isOnline());
             if (LsGuiUtils.isTwitchChannel(channel)) {
                 final TwitchChannel twitchChannel = (TwitchChannel) channel;
-                isPlaylist.bind(twitchChannel.getIsPlaylist());
+                this.isPlaylist.bind(twitchChannel.getIsPlaylist());
             }
-            hasReminder.bind(channel.hasReminder());
+            this.hasReminder.bind(channel.hasReminder());
         }
     }
 
-    private CheckBox createReminderCheckBox(final IChannel channel) {
+    private static CheckBox createReminderCheckBox(final IChannel channel) {
         final CheckBox checkBox = new CheckBox();
         final BooleanProperty selectedProperty = checkBox.selectedProperty();
         selectedProperty.set(channel.hasReminder().get());
-        selectedProperty.addListener((obs, oldValue, newValue) -> {
-            channel.setReminder(newValue);
-        });
+        selectedProperty.addListener((obs, oldValue, newValue) -> channel.setReminder(newValue));
         return checkBox;
     }
 
@@ -143,7 +142,7 @@ public class ChannelCell extends ListCell<IChannel> {
         });
         final MenuItem startStream = new MenuItem();
         startStream.textProperty().set("Start Stream ");
-        startStream.setOnAction(event -> startLivestreamerStream(channel));
+        startStream.setOnAction(event -> this.startLivestreamerStream(channel));
         startStream.disableProperty().bind(channel.isOnline().not());
 
         final MenuItem recordStream = new MenuItem();

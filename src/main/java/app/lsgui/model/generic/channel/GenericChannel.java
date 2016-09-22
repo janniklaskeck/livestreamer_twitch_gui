@@ -39,7 +39,7 @@ import javafx.util.Callback;
  * @author Niklas 11.06.2016
  *
  */
-public class GenericChannel implements IChannel {
+public final class GenericChannel implements IChannel {
 
     private StringProperty nameProperty;
     private BooleanProperty onlineProperty;

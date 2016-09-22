@@ -50,10 +50,6 @@ public class BrowserWindow {
     private static final String BROWSER_FXML = "fxml/BrowserWindow.fxml";
     private static Stage browserStage;
 
-    /**
-     *
-     * @param parentWindow
-     */
     public BrowserWindow(final Window parentWindow) {
         setBrowserStage(new Stage());
         Parent root = loadFXML();
@@ -88,17 +84,14 @@ public class BrowserWindow {
         browserStage.setOnCloseRequest(event -> setBrowserStage(null));
     }
 
-    private static void setBrowserStage(final Stage stage) {
+    private static synchronized void setBrowserStage(final Stage stage) {
         browserStage = stage;
     }
 
-    public static Stage getBrowserStage() {
+    public static synchronized Stage getBrowserStage() {
         return browserStage;
     }
 
-    /**
-     * Show Browser Stage
-     */
     public void showAndWait() {
         browserStage.showAndWait();
     }

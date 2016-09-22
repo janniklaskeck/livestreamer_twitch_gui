@@ -147,16 +147,9 @@ public class TwitchChannel implements IChannel, ITwitchItem {
     }
 
     private long calculateUptime(final String createdAt) {
-        long uptime = 0L;
-        try {
-            final ZonedDateTime nowDate = ZonedDateTime.now(GMT);
-            final ZonedDateTime startDate = ZonedDateTime.parse(createdAt, DTF);
-            long time = startDate.until(nowDate, ChronoUnit.MILLIS);
-            uptime = time;
-        } catch (Exception e) {
-            LOGGER.error("ERROR while parsing date", e);
-        }
-        return uptime;
+        final ZonedDateTime nowDate = ZonedDateTime.now(GMT);
+        final ZonedDateTime startDate = ZonedDateTime.parse(createdAt, DTF);
+        return startDate.until(nowDate, ChronoUnit.MILLIS);
     }
 
     public void updateData(final TwitchChannel data, final boolean notify) {
