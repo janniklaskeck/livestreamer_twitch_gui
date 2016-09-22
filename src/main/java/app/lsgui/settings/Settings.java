@@ -137,7 +137,7 @@ public final class Settings {
     }
 
     private void loadSettingsFromFile(final File file) {
-        isLoading = true;
+        this.isLoading = true;
         try (final FileInputStream inputStream = new FileInputStream(file)) {
             final BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(inputStream, StandardCharsets.UTF_8));
@@ -352,7 +352,7 @@ public final class Settings {
     }
 
     public IService getTwitchService() {
-        final List<IService> servicesAsList = getStreamServices().get();
+        final List<IService> servicesAsList = this.getStreamServices().get();
         final Optional<IService> serviceOptional = servicesAsList.stream().filter(LsGuiUtils::isTwitchService)
                 .findFirst();
         if (serviceOptional.isPresent()) {

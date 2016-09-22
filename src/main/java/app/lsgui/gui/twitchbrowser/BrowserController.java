@@ -142,7 +142,7 @@ public final class BrowserController {
         this.browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
         this.browserToolBar.getItems().add(favouriteGameComboBox);
         this.browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
-        this.browserToolBar.getItems().add(qualityComboBox);
+        this.browserToolBar.getItems().add(this.qualityComboBox);
     }
 
     private void goToHome() {

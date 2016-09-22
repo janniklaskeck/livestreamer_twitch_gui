@@ -47,7 +47,7 @@ public final class TwitchBrowserUpdateService extends Service<TwitchChannel> {
         this.setUpChannel();
     }
 
-    public final void setUpChannel() {
+    public void setUpChannel() {
         setOnSucceeded(event -> {
             final TwitchChannel updatedChannel = (TwitchChannel) event.getSource().getValue();
             if (updatedChannel != null) {

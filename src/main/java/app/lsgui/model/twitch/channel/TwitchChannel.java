@@ -158,10 +158,10 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
         } else if (data != null && !data.isOnline().get()) {
             this.setOffline(data.getName().get());
         }
-        if (this.cameOnline && notify && !hasReminder.get()) {
+        if (this.cameOnline && notify && !this.hasReminder.get()) {
             LsGuiUtils.showOnlineNotification(this);
             this.cameOnline = false;
-        } else if (this.cameOnline && notify && hasReminder.get()) {
+        } else if (this.cameOnline && notify && this.hasReminder.get()) {
             LsGuiUtils.showReminderNotification(this);
             this.cameOnline = false;
         }
@@ -192,8 +192,8 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
         this.uptime.setValue(data.getUptime().get());
         this.uptimeString.setValue(buildUptimeString(this.uptime.get()));
         this.viewers.setValue(data.getViewers().get());
-        this.viewersString.setValue(Integer.toString(getViewers().get()));
-        if (data.isOnline().get() && !isOnline.get()) {
+        this.viewersString.setValue(Integer.toString(this.getViewers().get()));
+        if (data.isOnline().get() && !this.isOnline.get()) {
             this.isOnline.set(true);
             this.cameOnline = true;
         } else if (!data.isOnline().get()) {
@@ -220,7 +220,7 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
                 ((TwitchChannel) sm).isOnline(), ((TwitchChannel) sm).getTitle(), ((TwitchChannel) sm).getLogoURL(),
                 ((TwitchChannel) sm).getPreviewImageLarge(), ((TwitchChannel) sm).getPreviewUrlLarge(),
                 ((TwitchChannel) sm).getPreviewUrlMedium(), ((TwitchChannel) sm).getUptime(),
-                ((TwitchChannel) sm).getViewers() };
+                ((TwitchChannel) sm).getViewers(), };
     }
 
     @Override

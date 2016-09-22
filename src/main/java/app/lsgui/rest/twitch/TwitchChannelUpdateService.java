@@ -40,7 +40,7 @@ import javafx.util.Duration;
  * @author Niklas 11.06.2016
  *
  */
-public class TwitchChannelUpdateService extends ScheduledService<TwitchChannel> {
+public final class TwitchChannelUpdateService extends ScheduledService<TwitchChannel> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelUpdateService.class);
     private static final ListProperty<TwitchChannel> ACTIVE_LIST = new SimpleListProperty<>(

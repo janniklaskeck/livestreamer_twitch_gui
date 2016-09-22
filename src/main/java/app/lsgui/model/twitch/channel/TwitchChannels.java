@@ -40,25 +40,18 @@ import javafx.collections.ObservableList;
  * @author Niklas 26.06.2016
  *
  */
-public class TwitchChannels {
+public final class TwitchChannels {
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannels.class);
 
     private JsonObject jsonData;
     private ObservableList<ITwitchItem> channels;
 
-    /**
-     *
-     * @param jsonData
-     */
     public TwitchChannels(final JsonObject jsonData) {
         this.jsonData = jsonData;
         this.channels = FXCollections.observableArrayList();
         this.addGames();
     }
 
-    /**
-     * Empty Constructor
-     */
     public TwitchChannels() {
         this.channels = FXCollections.observableArrayList();
     }
@@ -75,14 +68,10 @@ public class TwitchChannels {
             final TwitchChannel channel = new TwitchChannel(new JsonObject(), name, true);
             final TwitchBrowserUpdateService tcus = new TwitchBrowserUpdateService(channel);
             tcus.start();
-            channels.add(channel);
+            this.channels.add(channel);
         }
     }
 
-    /**
-     *
-     * @param updatedGames
-     */
     public void updateData(final TwitchChannels updatedGames) {
         LOGGER.debug("Update Twitch Channels Data");
         this.channels.clear();
@@ -90,7 +79,7 @@ public class TwitchChannels {
     }
 
     public ObservableList<ITwitchItem> getChannels() {
-        return channels;
+        return this.channels;
     }
 
 }

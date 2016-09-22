@@ -71,7 +71,7 @@ public final class BrowserCore {
 
     public void setGridView(final GridView<ITwitchItem> displayGridView) {
         this.browserGridView = displayGridView;
-        this.browserGridView.itemsProperty().bind(activeItems);
+        this.browserGridView.itemsProperty().bind(this.activeItems);
     }
 
     public void goToHome() {
