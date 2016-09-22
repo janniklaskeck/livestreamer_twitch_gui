@@ -31,6 +31,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -42,6 +43,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.zafarkhaja.semver.Version;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -124,24 +126,13 @@ public final class GithubUpdateService {
 
     private static boolean isVersionNewer(final String tag) {
         String currentVersionTag = LsGuiUtils.readVersionProperty();
-        if (currentVersionTag.endsWith("-SNAPSHOT")) {
-            LOGGER.info("Running development version!");
-            return false;
-        }
+        final Version currentVersion = Version.valueOf(currentVersionTag);
         final String realVersionTag = tag.substring(1);
-        final int newVersion = calcVersionSum(realVersionTag);
-        final int currentVersion = calcVersionSum(currentVersionTag);
-        return newVersion > currentVersion;
-    }
-
-    private static int calcVersionSum(final String version) {
-        final String[] versionSplit = version.split("\\.");
-        int sum = 0;
-        // TODO such a bad system
-        sum += Integer.parseInt(versionSplit[0]) * 1000;
-        sum += Integer.parseInt(versionSplit[1]) * 10;
-        sum += Integer.parseInt(versionSplit[2]);
-        return sum;
+        final Version newVersion = Version.valueOf(realVersionTag);
+        if (currentVersion.getPreReleaseVersion().toLowerCase(Locale.ENGLISH).contains("snapshot")) {
+            LOGGER.info("Running development version!");
+        }
+        return newVersion.greaterThan(currentVersion);
     }
 
     private static ZonedDateTime convertPublishedDate(final String publishedAt) {

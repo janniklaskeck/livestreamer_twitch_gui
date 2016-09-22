@@ -120,15 +120,15 @@ public final class LsGuiController {
         this.serviceComboBox.setCellFactory(listView -> new ServiceCell());
         this.serviceComboBox.setConverter(new StringConverter<IService>() {
             @Override
-            public String toString(IService service) {
+            public String toString(final IService service) {
                 if (service == null) {
-                    return null;
+                    return "";
                 }
                 return service.getName().get();
             }
 
             @Override
-            public IService fromString(String string) {
+            public IService fromString(final String string) {
                 return null;
             }
         });
