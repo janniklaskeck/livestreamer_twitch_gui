@@ -66,7 +66,7 @@ import javafx.util.StringConverter;
  * @author Niklas 11.06.2016
  *
  */
-public class LsGuiController {
+public final class LsGuiController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LsGuiController.class);
     private static final String OFFLINEQUALITY = "Channel is offline";

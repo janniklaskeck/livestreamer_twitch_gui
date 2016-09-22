@@ -56,7 +56,7 @@ import app.lsgui.settings.Settings;
  * @author Niklas 11.06.2016
  *
  */
-public class TwitchAPIClient {
+public final class TwitchAPIClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchAPIClient.class);
     private static final JsonParser JSONPARSER = new JsonParser();
@@ -65,7 +65,7 @@ public class TwitchAPIClient {
     private static final int CONNECTION_COUNT = 100;
     private static final CloseableHttpClient HTTP_CLIENT;
 
-    private static TwitchAPIClient instance = null;
+    private static TwitchAPIClient instance;
 
     static {
         final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
@@ -121,7 +121,7 @@ public class TwitchAPIClient {
 
     public Set<String> getListOfFollowedStreams(final String userName) {
         final Set<String> followedStreams = new TreeSet<>();
-        if (!"".equals(userName) && channelExists(userName)) {
+        if (!"".equals(userName) && this.channelExists(userName)) {
             final URI uri = convertToURI("https://api.twitch.tv/kraken/users/" + userName + "/follows/channels");
             JsonObject jo = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
 
@@ -160,7 +160,7 @@ public class TwitchAPIClient {
         return true;
     }
 
-    private String getAPIResponse(final URI apiUrl) {
+    private static String getAPIResponse(final URI apiUrl) {
         LOGGER.trace("Send Request to API URL '{}'", apiUrl);
         final HttpGet request = new HttpGet(apiUrl);
         request.setHeader("Client-ID", LSGUI_CLIENT_ID);

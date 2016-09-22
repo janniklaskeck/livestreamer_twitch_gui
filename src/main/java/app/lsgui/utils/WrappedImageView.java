@@ -31,61 +31,60 @@ import javafx.scene.image.ImageView;
  * @author Niklas 11.06.2016
  *
  */
-public class WrappedImageView extends ImageView {
+public final class WrappedImageView extends ImageView {
 
-    /**
-     *
-     * @param img
-     */
+    private static final double MAX_WIDTH_HEIGHT = Double.MAX_VALUE;
+    private static final double MIN_WIDTH_HEIGHT = 40;
+
     public WrappedImageView(final Image img) {
-	super(img);
-	setPreserveRatio(true);
+        super(img);
+        setPreserveRatio(true);
     }
 
     @Override
     public double minWidth(final double height) {
-	return 40;
+        return MIN_WIDTH_HEIGHT;
     }
 
     @Override
     public double maxWidth(final double height) {
-	return 16384;
+        return MAX_WIDTH_HEIGHT;
     }
 
     @Override
     public double prefWidth(final double height) {
-	if (getImage() == null) {
-	    return minWidth(height);
-	}
-	return getImage().getWidth();
+        if (getImage() == null) {
+            return this.minWidth(height);
+        }
+        return getImage().getWidth();
     }
 
     @Override
     public double prefHeight(final double width) {
-	if (getImage() == null) {
-	    return minHeight(width);
-	}
-	return getImage().getHeight();
+        if (getImage() == null) {
+            return this.minHeight(width);
+        }
+        return getImage().getHeight();
     }
 
     @Override
     public double minHeight(final double width) {
-	return 40;
+        return MIN_WIDTH_HEIGHT;
     }
 
     @Override
     public double maxHeight(final double width) {
-	return 16384;
+        return MAX_WIDTH_HEIGHT;
     }
 
     @Override
     public boolean isResizable() {
-	return true;
+        return true;
     }
 
     @Override
     public void resize(final double width, final double height) {
-	setFitWidth(width);
-	setFitHeight(height);
+        setFitWidth(width);
+        setFitHeight(height);
     }
 }

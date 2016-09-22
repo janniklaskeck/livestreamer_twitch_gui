@@ -57,11 +57,11 @@ public final class ChatWindow {
         setChatStage(new Stage());
 
         this.loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/ChatWindow.fxml"));
-        final Parent root = loadFXML();
+        final Parent root = this.loadFxml();
         this.setupStage(root, chatStage);
     }
 
-    private Parent loadFXML() {
+    private Parent loadFxml() {
         try {
             return this.loader.load();
         } catch (IOException e) {
@@ -75,7 +75,7 @@ public final class ChatWindow {
         stage.setMinHeight(MIN_HEIGHT);
         stage.setMinWidth(MIN_WIDTH);
 
-        stage.setTitle(channel + " - Livestreamer GUI Chat v" + LsGuiUtils.readVersionProperty());
+        stage.setTitle(this.channel + " - Livestreamer GUI Chat v" + LsGuiUtils.readVersionProperty());
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         final Scene scene = new Scene(root);
         scene.getStylesheets().add(ChatWindow.class
@@ -90,11 +90,9 @@ public final class ChatWindow {
         });
     }
 
-    /**
-     * Start Connecting to IRC Server
-     */
     public void connect() {
-        this.loader.<ChatController> getController().connect(channel);
+        final ChatController chatController = (ChatController) this.loader.getController();
+        chatController.connect(this.channel);
     }
 
     public static synchronized Stage getChatStage() {

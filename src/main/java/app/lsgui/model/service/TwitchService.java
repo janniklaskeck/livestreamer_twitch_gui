@@ -53,7 +53,7 @@ import javafx.collections.transformation.SortedList;
  * @author Niklas 11.06.2016
  *
  */
-public class TwitchService implements IService {
+public final class TwitchService implements IService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchService.class);
     public static final String TWITCH_ID = "twitch.tv";
 
@@ -69,16 +69,13 @@ public class TwitchService implements IService {
     public TwitchService(final String name, final String url) {
         this.name = new SimpleStringProperty(name);
         this.url = new SimpleStringProperty(url);
-        channelProperty = new SimpleObjectProperty<>(new SortedList<>(channelList));
-        sortChannels = new SimpleBooleanProperty();
-        sortChannels.bind(Settings.getInstance().getSortTwitch());
-        sortChannels.addListener((observable, oldValue, newVale) -> changeComparator(newVale));
-        channelProperty.get().addListener(new ListChangeListener<IChannel>() {
-            @Override
-            public void onChanged(Change<? extends IChannel> c) {
-                c.next();
-                changeComparator(sortChannels.get());
-            }
+        this.channelProperty = new SimpleObjectProperty<>(new SortedList<>(this.channelList));
+        this.sortChannels = new SimpleBooleanProperty();
+        this.sortChannels.bind(Settings.getInstance().getSortTwitch());
+        this.sortChannels.addListener((observable, oldValue, newVale) -> changeComparator(newVale));
+        this.channelProperty.get().addListener((ListChangeListener<IChannel>) change -> {
+            change.next();
+            changeComparator(sortChannels.get());
         });
     }
 
@@ -89,7 +86,7 @@ public class TwitchService implements IService {
         final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
         tcus.start();
         UPDATESERVICES.put(channelToAdd, tcus);
-        channelList.add(channelToAdd);
+        this.channelList.add(channelToAdd);
     }
 
     @Override
@@ -98,7 +95,7 @@ public class TwitchService implements IService {
             LOGGER.debug("Remove Channel {} from Service {}", channel.getName(), this.getName().get());
             final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(channel);
             tcus.cancel();
-            channelList.remove(channel);
+            this.channelList.remove(channel);
         }
     }
 
@@ -106,41 +103,41 @@ public class TwitchService implements IService {
         LOGGER.debug("Import followed Streams for user {} into Service {}", username, this.getName().get());
         final Set<String> set = TwitchAPIClient.getInstance().getListOfFollowedStreams(username);
         for (final String s : set) {
-            addChannel(s);
+            this.addChannel(s);
         }
     }
 
     private void changeComparator(final boolean doSorting) {
-        final Comparator<IChannel> comp;
+        final Comparator<IChannel> comparator;
         if (!doSorting) {
-            comp = (ch1, ch2) -> ch1.getName().get().compareToIgnoreCase(ch2.getName().get());
+            comparator = (channel1, channel2) -> channel1.getName().get().compareToIgnoreCase(channel2.getName().get());
         } else {
-            comp = (ch1, ch2) -> {
-                if (ch1.isOnline().get() && !ch2.isOnline().get()) {
+            comparator = (channel1, channel2) -> {
+                if (channel1.isOnline().get() && !channel2.isOnline().get()) {
                     return -1;
-                } else if (!ch1.isOnline().get() && ch2.isOnline().get()) {
+                } else if (!channel1.isOnline().get() && channel2.isOnline().get()) {
                     return 1;
                 } else {
-                    return ch1.getName().get().compareToIgnoreCase(ch2.getName().get());
+                    return channel1.getName().get().compareToIgnoreCase(channel2.getName().get());
                 }
             };
         }
-        getChannelProperty().get().setComparator(comp);
+        this.getChannelProperty().get().setComparator(comparator);
     }
 
     @Override
     public ObjectProperty<SortedList<IChannel>> getChannelProperty() {
-        return channelProperty;
+        return this.channelProperty;
     }
 
     @Override
     public StringProperty getName() {
-        return name;
+        return this.name;
     }
 
     @Override
     public StringProperty getUrl() {
-        return url;
+        return this.url;
     }
 
     public ObservableMap<IChannel, TwitchChannelUpdateService> getUpdateServices() {

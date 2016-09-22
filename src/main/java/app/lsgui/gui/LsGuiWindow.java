@@ -73,12 +73,12 @@ public class LsGuiWindow extends Application {
 
     @Override
     public final void start(Stage primaryStage) {
-        final Parent root = this.loadFXML();
+        final Parent root = this.loadFxml();
         this.setupStage(root, primaryStage);
         GithubUpdateService.checkForUpdate();
     }
 
-    private Parent loadFXML() {
+    private Parent loadFxml() {
         try {
             return FXMLLoader.load(getClass().getClassLoader().getResource("fxml/MainWindow.fxml"));
         } catch (IOException e) {

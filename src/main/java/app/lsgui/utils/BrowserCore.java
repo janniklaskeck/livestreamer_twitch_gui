@@ -47,7 +47,7 @@ import javafx.scene.control.ScrollBar;
  * @author Niklas 26.06.2016
  *
  */
-public class BrowserCore {
+public final class BrowserCore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrowserCore.class);
 
@@ -70,38 +70,38 @@ public class BrowserCore {
     }
 
     public void setGridView(final GridView<ITwitchItem> displayGridView) {
-        browserGridView = displayGridView;
-        browserGridView.itemsProperty().bind(activeItems);
+        this.browserGridView = displayGridView;
+        this.browserGridView.itemsProperty().bind(activeItems);
     }
 
     public void goToHome() {
         LOGGER.debug("Go to home");
         final TwitchGames games = TwitchAPIClient.getInstance().getGamesData();
-        items.set(games.getGames());
-        activeItems.set(games.getGames());
-        scrollToTop();
+        this.items.set(games.getGames());
+        this.activeItems.set(games.getGames());
+        this.scrollToTop();
     }
 
     public void refresh() {
         LOGGER.debug("Refresh: redirect to home page");
-        if ("".equals(currentGame)) {
-            goToHome();
+        if ("".equals(this.currentGame)) {
+            this.goToHome();
         } else {
-            openGame(currentGame);
+            this.openGame(this.currentGame);
         }
     }
 
     public void openGame(final String game) {
         LOGGER.debug("Open Data for Game '{}'", game);
         final TwitchChannels channels = TwitchAPIClient.getInstance().getGameData(game);
-        items.set(channels.getChannels());
-        activeItems.set(channels.getChannels());
-        scrollToTop();
-        currentGame = game;
+        this.items.set(channels.getChannels());
+        this.activeItems.set(channels.getChannels());
+        this.scrollToTop();
+        this.currentGame = game;
     }
 
     public void filter(final String filter) {
-        final ObservableList<ITwitchItem> oldItems = items.get();
+        final ObservableList<ITwitchItem> oldItems = this.items.get();
         final FilteredList<ITwitchItem> filteredItems = new FilteredList<>(oldItems);
         filteredItems.setPredicate(item -> {
             if (item instanceof TwitchGame) {
@@ -113,11 +113,11 @@ public class BrowserCore {
             }
             return true;
         });
-        activeItems.set(filteredItems);
+        this.activeItems.set(filteredItems);
     }
 
     private void scrollToTop() {
-        final ScrollBar vBar = (ScrollBar) browserGridView.lookup(".scroll-bar:vertical");
+        final ScrollBar vBar = (ScrollBar) this.browserGridView.lookup(".scroll-bar:vertical");
         if (vBar != null) {
             vBar.setValue(0.0D);
             vBar.setVisible(true);
@@ -125,6 +125,6 @@ public class BrowserCore {
     }
 
     public ObjectProperty<ObservableList<ITwitchItem>> getItems() {
-        return activeItems;
+        return this.activeItems;
     }
 }

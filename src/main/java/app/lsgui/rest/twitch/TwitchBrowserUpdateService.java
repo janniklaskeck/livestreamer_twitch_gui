@@ -35,7 +35,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
-public class TwitchBrowserUpdateService extends Service<TwitchChannel> {
+public final class TwitchBrowserUpdateService extends Service<TwitchChannel> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchBrowserUpdateService.class);
     private static final ListProperty<IChannel> ACTIVE_LIST = new SimpleListProperty<>(
@@ -44,7 +44,7 @@ public class TwitchBrowserUpdateService extends Service<TwitchChannel> {
 
     public TwitchBrowserUpdateService(final TwitchChannel model) {
         this.channel = model;
-        setUpChannel();
+        this.setUpChannel();
     }
 
     public final void setUpChannel() {
@@ -57,7 +57,7 @@ public class TwitchBrowserUpdateService extends Service<TwitchChannel> {
             }
             synchronized (ACTIVE_LIST) {
                 ObservableList<IChannel> activeChannelServices = FXCollections.observableArrayList(ACTIVE_LIST.get());
-                activeChannelServices.remove(channel);
+                activeChannelServices.remove(this.channel);
                 ACTIVE_LIST.set(activeChannelServices);
             }
         });

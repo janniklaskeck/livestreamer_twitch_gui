@@ -35,34 +35,14 @@ import javafx.collections.transformation.SortedList;
  */
 public interface IService {
 
-    /**
-     *
-     * @return
-     */
-    public StringProperty getName();
+    StringProperty getName();
 
-    /**
-     *
-     * @return
-     */
-    public StringProperty getUrl();
+    StringProperty getUrl();
 
-    /**
-     *
-     * @return
-     */
-    public ObjectProperty<SortedList<IChannel>> getChannelProperty();
+    ObjectProperty<SortedList<IChannel>> getChannelProperty();
 
-    /**
-     *
-     * @param channelName
-     */
-    public void addChannel(final String channelName);
+    void addChannel(final String channelName);
 
-    /**
-     *
-     * @param channel
-     */
-    public void removeChannel(final IChannel channel);
+    void removeChannel(final IChannel channel);
 
 }

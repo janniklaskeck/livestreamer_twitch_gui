@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import app.lsgui.gui.chat.ChatController;
 import javafx.application.Platform;
 
-public class IrcClient extends PircBot {
+public final class IrcClient extends PircBot {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IrcClient.class);
     private String channel;
@@ -47,11 +47,11 @@ public class IrcClient extends PircBot {
     public void onMessage(String channel, String sender, String login, String hostname, String message) {
         LOGGER.trace("{} {} {}", channel, sender, message);
         Platform.runLater(() -> {
-            final int start = chatTextArea.getText().length();
+            final int start = this.chatTextArea.getText().length();
             final int end = start + sender.length() + 1;
-            chatTextArea.appendText(sender + ": " + message + "\n");
-            ChatController.setColoredNickName(chatTextArea, start, end);
-            ChatController.setChatMessageStyle(chatTextArea, end, end + message.length() + 1);
+            this.chatTextArea.appendText(sender + ": " + message + "\n");
+            ChatController.setColoredNickName(this.chatTextArea, start, end);
+            ChatController.setChatMessageStyle(this.chatTextArea, end, end + message.length() + 1);
         });
     }
 
@@ -62,7 +62,7 @@ public class IrcClient extends PircBot {
     @Override
     protected void onConnect() {
         this.sendRawLine("CAP REQ :twitch.tv/membership");
-        joinChannel("#" + channel.toLowerCase(Locale.ENGLISH));
+        joinChannel("#" + this.channel.toLowerCase(Locale.ENGLISH));
     }
 
     public void setChannel(final String channel) {

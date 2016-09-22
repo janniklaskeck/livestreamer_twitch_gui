@@ -32,9 +32,9 @@ import com.google.gson.JsonObject;
  * @author Niklas 11.06.2016
  *
  */
-public class JSONUtils {
+public final class JsonUtils {
 
-    private JSONUtils() {
+    private JsonUtils() {
     }
 
     public static int getIntSafe(final JsonElement element, final int defaultValue) {

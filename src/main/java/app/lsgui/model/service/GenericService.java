@@ -41,7 +41,7 @@ import javafx.collections.transformation.SortedList;
  * @author Niklas 11.06.2016
  *
  */
-public class GenericService implements IService {
+public final class GenericService implements IService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericService.class);
 
     private StringProperty name;
@@ -52,36 +52,36 @@ public class GenericService implements IService {
     public GenericService(final String name, final String url) {
         this.name = new SimpleStringProperty(name);
         this.url = new SimpleStringProperty(url);
-        channelProperty = new SimpleObjectProperty<>(new SortedList<>(channelList));
+        this.channelProperty = new SimpleObjectProperty<>(new SortedList<>(this.channelList));
     }
 
     @Override
     public StringProperty getName() {
-        return name;
+        return this.name;
     }
 
     @Override
     public StringProperty getUrl() {
-        return url;
+        return this.url;
     }
 
     @Override
     public ObjectProperty<SortedList<IChannel>> getChannelProperty() {
-        return channelProperty;
+        return this.channelProperty;
     }
 
     @Override
     public void addChannel(final String channelName) {
         LOGGER.debug("Adding Channel {} to Service {}", channelName, this.getName().get());
         final IChannel channelToAdd = new GenericChannel(channelName);
-        channelList.add(channelToAdd);
+        this.channelList.add(channelToAdd);
     }
 
     @Override
     public void removeChannel(final IChannel channel) {
         if (channel instanceof GenericChannel) {
             LOGGER.debug("Remove Channel {} from list", channel.getName());
-            channelList.remove(channel);
+            this.channelList.remove(channel);
         }
     }
 }

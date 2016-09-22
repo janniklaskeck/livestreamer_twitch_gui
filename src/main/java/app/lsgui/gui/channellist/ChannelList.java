@@ -64,7 +64,7 @@ public final class ChannelList extends AnchorPane {
         } catch (IOException e) {
             LOGGER.error("ERROR while loading streamlist fxml", e);
         }
-        setupChannelList();
+        this.setupChannelList();
     }
 
     private void setupChannelList() {

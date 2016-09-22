@@ -74,10 +74,10 @@ public final class ChatController {
         this.chatTextArea.setFont(new Font(FONT_SIZE));
         this.chatTextArea.setEditable(false);
 
-        this.chatBorderPane.setCenter(chatTextArea);
+        this.chatBorderPane.setCenter(this.chatTextArea);
         this.inputTextField.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.ENTER) {
-                sendMessage(this.inputTextField.getText());
+                this.sendMessage(this.inputTextField.getText());
             }
         });
 
@@ -105,7 +105,7 @@ public final class ChatController {
 
             this.client.setUserName(user);
             this.client.setChannel(channel);
-            clientConnect(twitchIrc, oauth);
+            this.clientConnect(twitchIrc, oauth);
             LOGGER.info("DATA Login");
         }
     }

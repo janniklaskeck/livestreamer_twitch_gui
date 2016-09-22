@@ -40,7 +40,7 @@ import javafx.scene.image.Image;
  * @author Niklas 11.06.2016
  *
  */
-public class TwitchGames {
+public final class TwitchGames {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchGames.class);
 
@@ -70,7 +70,7 @@ public class TwitchGames {
                 final String imageUrl = box.get("large").getAsString();
                 final Image boxImage = new Image(imageUrl, true);
 
-                games.add(new TwitchGame(gameName, viewers, channels, boxImage));
+                this.games.add(new TwitchGame(gameName, viewers, channels, boxImage));
             }
         }
     }
@@ -82,7 +82,7 @@ public class TwitchGames {
     }
 
     public ObservableList<ITwitchItem> getGames() {
-        return games;
+        return this.games;
     }
 
 }

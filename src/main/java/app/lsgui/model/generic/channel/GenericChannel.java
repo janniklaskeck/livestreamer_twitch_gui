@@ -54,12 +54,12 @@ public final class GenericChannel implements IChannel {
 
     @Override
     public StringProperty getName() {
-        return nameProperty;
+        return this.nameProperty;
     }
 
     @Override
     public BooleanProperty isOnline() {
-        return onlineProperty;
+        return this.onlineProperty;
     }
 
     @Override
@@ -69,7 +69,7 @@ public final class GenericChannel implements IChannel {
 
     @Override
     public BooleanProperty hasReminder() {
-        return hasReminder;
+        return this.hasReminder;
     }
 
     @Override

@@ -23,17 +23,18 @@
  */
 package twitch;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import app.lsgui.rest.twitch.TwitchAPIClient;
 
-public class RemoteTestTwitch {
+public class TestTwitchApiClient {
 
-    TwitchAPIClient tp = TwitchAPIClient.getInstance();
+    private static final TwitchAPIClient tp = TwitchAPIClient.getInstance();
 
     @Test
-    public void test() {
-        System.out.println(tp.getListOfFollowedStreams("nuamor"));
+    public void testGetFollowedChannels() {
+        Assert.assertFalse("account nuamor follows nobody", tp.getListOfFollowedStreams("nuamor").isEmpty());
     }
 
 }

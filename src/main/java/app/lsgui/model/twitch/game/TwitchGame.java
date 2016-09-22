@@ -37,7 +37,7 @@ import javafx.scene.image.Image;
  * @author Niklas 26.06.2016
  *
  */
-public class TwitchGame implements ITwitchItem {
+public final class TwitchGame implements ITwitchItem {
 
     private StringProperty name;
     private StringProperty viewers;
@@ -54,27 +54,27 @@ public class TwitchGame implements ITwitchItem {
     }
 
     public void loadChannelData() {
-        channels = TwitchAPIClient.getInstance().getGameData(getName().get());
+        this.channels = TwitchAPIClient.getInstance().getGameData(this.getName().get());
     }
 
     public TwitchChannels getChannels() {
-        return channels;
+        return this.channels;
     }
 
     public StringProperty getName() {
-        return name;
+        return this.name;
     }
 
     public StringProperty getViewers() {
-        return viewers;
+        return this.viewers;
     }
 
     public StringProperty getChannelCount() {
-        return channelCount;
+        return this.channelCount;
     }
 
     public ObjectProperty<Image> getBoxImage() {
-        return boxImage;
+        return this.boxImage;
     }
 
     public void updateData(final TwitchGame updatedGame) {
@@ -82,7 +82,7 @@ public class TwitchGame implements ITwitchItem {
         this.viewers = new SimpleStringProperty(updatedGame.getViewers().get());
         this.boxImage = new SimpleObjectProperty<>(updatedGame.getBoxImage().get());
         this.channelCount = new SimpleStringProperty(updatedGame.getChannelCount().get());
-        loadChannelData();
+        this.loadChannelData();
     }
 
 }

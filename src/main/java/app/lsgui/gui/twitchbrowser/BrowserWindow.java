@@ -44,19 +44,21 @@ import javafx.stage.Window;
  * @author Niklas 25.06.2016
  *
  */
-public class BrowserWindow {
+public final class BrowserWindow {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrowserWindow.class);
     private static final String BROWSER_FXML = "fxml/BrowserWindow.fxml";
+    private static final int BROWSER_WINDOW_MIN_HEIGHT = 620;
+    private static final int BROWSER_WINDOW_MIN_WIDTH = 950;
     private static Stage browserStage;
 
     public BrowserWindow(final Window parentWindow) {
         setBrowserStage(new Stage());
-        Parent root = loadFXML();
-        setupStage(root, browserStage, parentWindow);
+        final Parent root = this.loadFxml();
+        this.setupStage(root, browserStage, parentWindow);
     }
 
-    private Parent loadFXML() {
+    private Parent loadFxml() {
         try {
             return FXMLLoader.load(getClass().getClassLoader().getResource(BROWSER_FXML));
         } catch (IOException e) {
@@ -67,15 +69,15 @@ public class BrowserWindow {
     }
 
     private void setupStage(final Parent root, final Stage browserStage, final Window parentWindow) {
-        Scene scene = new Scene(root);
 
-        browserStage.setMinHeight(620);
-        browserStage.setHeight(620);
-        browserStage.setMinWidth(950);
-        browserStage.setWidth(950);
+        browserStage.setMinHeight(BROWSER_WINDOW_MIN_HEIGHT);
+        browserStage.setHeight(BROWSER_WINDOW_MIN_HEIGHT);
+        browserStage.setMinWidth(BROWSER_WINDOW_MIN_WIDTH);
+        browserStage.setWidth(BROWSER_WINDOW_MIN_WIDTH);
 
         browserStage.setTitle("Livestreamer GUI Twitch Browser v" + LsGuiUtils.readVersionProperty());
         browserStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
+        final Scene scene = new Scene(root);
         browserStage.setScene(scene);
         browserStage.initModality(Modality.APPLICATION_MODAL);
         browserStage.initOwner(parentWindow);

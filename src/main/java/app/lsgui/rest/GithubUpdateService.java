@@ -49,7 +49,7 @@ import com.google.gson.JsonParser;
 import app.lsgui.settings.Settings;
 import app.lsgui.utils.LsGuiUtils;
 
-public class GithubUpdateService {
+public final class GithubUpdateService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GithubUpdateService.class);
 
@@ -67,6 +67,9 @@ public class GithubUpdateService {
         cm.setMaxTotal(CONNECTION_COUNT);
         cm.setDefaultMaxPerRoute(CONNECTION_COUNT);
         HTTP_CLIENT = HttpClients.createMinimal(cm);
+    }
+
+    private GithubUpdateService() {
     }
 
     public static void checkForUpdate() {
@@ -120,12 +123,12 @@ public class GithubUpdateService {
     }
 
     private static boolean isVersionNewer(final String tag) {
-        final String realVersionTag = tag.substring(1);
         String currentVersionTag = LsGuiUtils.readVersionProperty();
         if (currentVersionTag.endsWith("-SNAPSHOT")) {
             LOGGER.info("Running development version!");
             return false;
         }
+        final String realVersionTag = tag.substring(1);
         final int newVersion = calcVersionSum(realVersionTag);
         final int currentVersion = calcVersionSum(currentVersionTag);
         return newVersion > currentVersion;

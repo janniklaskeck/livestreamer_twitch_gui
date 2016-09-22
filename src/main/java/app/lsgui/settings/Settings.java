@@ -48,7 +48,7 @@ import app.lsgui.model.channel.IChannel;
 import app.lsgui.model.service.GenericService;
 import app.lsgui.model.service.IService;
 import app.lsgui.model.service.TwitchService;
-import app.lsgui.utils.JSONUtils;
+import app.lsgui.utils.JsonUtils;
 import app.lsgui.utils.LsGuiUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
@@ -64,7 +64,7 @@ import javafx.collections.ObservableList;
  * @author Niklas 11.06.2016
  *
  */
-public class Settings {
+public final class Settings {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Settings.class);
     private static final String FILEPATH = System.getProperty("user.home") + "/.lsgui/settings.json";
@@ -133,7 +133,7 @@ public class Settings {
         } catch (IOException e) {
             LOGGER.error("ERROR while creaing Settings file", e);
         }
-        createSettingsJson(settings);
+        this.createSettingsJson(settings);
     }
 
     private void loadSettingsFromFile(final File file) {
@@ -148,8 +148,8 @@ public class Settings {
             }
             final Gson g = new Gson();
             final JsonArray jArray = g.fromJson(sb.toString(), JsonArray.class);
-            loadSettings(jArray);
-            loadServices(jArray);
+            this.loadSettings(jArray);
+            this.loadServices(jArray);
             bufferedReader.close();
         } catch (IOException e) {
             LOGGER.error("ERROR while reading Settings file", e);
@@ -158,25 +158,25 @@ public class Settings {
 
     private void loadSettings(final JsonArray jArray) {
         final JsonObject settings = jArray.get(0).getAsJsonObject();
-        sortTwitch.setValue(JSONUtils.getBooleanSafe(settings.get(TWITCH_SORT), false));
-        minimizeToTray = JSONUtils.getBooleanSafe(settings.get(MINIMIZE_TO_TRAY_STRING), false);
-        twitchUser = JSONUtils.getStringSafe(settings.get(TWITCH_USER_STRING), "");
-        twitchOAuth = JSONUtils.getStringSafe(settings.get(TWITCH_OAUTH_STRING), "");
-        windowStyle = JSONUtils.getStringSafe(settings.get(WINDOWSTYLE_STRING), "LightStyle");
-        liveStreamerExePath = JSONUtils.getStringSafe(settings.get(EXEPATH_STRING), "");
-        maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELS_LOAD), DEFAULT_CHANNELS_TO_LOAD);
-        maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMES_LOAD), DEFAULT_GAMES_TO_LOAD);
-        quality = JSONUtils.getStringSafe(settings.get(QUALITY_STRING), "Best");
-        recordingPath = JSONUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home"));
-        final JsonArray favouritesArray = JSONUtils.getJsonArraySafe(FAVOURITE_GAMES, settings);
+        this.sortTwitch.setValue(JsonUtils.getBooleanSafe(settings.get(TWITCH_SORT), false));
+        this.minimizeToTray = JsonUtils.getBooleanSafe(settings.get(MINIMIZE_TO_TRAY_STRING), false);
+        this.twitchUser = JsonUtils.getStringSafe(settings.get(TWITCH_USER_STRING), "");
+        this.twitchOAuth = JsonUtils.getStringSafe(settings.get(TWITCH_OAUTH_STRING), "");
+        this.windowStyle = JsonUtils.getStringSafe(settings.get(WINDOWSTYLE_STRING), "LightStyle");
+        this.liveStreamerExePath = JsonUtils.getStringSafe(settings.get(EXEPATH_STRING), "");
+        this.maxChannelsLoad = JsonUtils.getIntSafe(settings.get(CHANNELS_LOAD), DEFAULT_CHANNELS_TO_LOAD);
+        this.maxGamesLoad = JsonUtils.getIntSafe(settings.get(GAMES_LOAD), DEFAULT_GAMES_TO_LOAD);
+        this.quality = JsonUtils.getStringSafe(settings.get(QUALITY_STRING), "Best");
+        this.recordingPath = JsonUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home"));
+        final JsonArray favouritesArray = JsonUtils.getJsonArraySafe(FAVOURITE_GAMES, settings);
         for (int i = 0; i < favouritesArray.size(); i++) {
             final String favourite = favouritesArray.get(i).getAsString();
-            addFavouriteGame(favourite);
+            this.addFavouriteGame(favourite);
         }
     }
 
     private void loadServices(final JsonArray jArray) {
-        services.set(FXCollections.observableArrayList());
+        this.services.set(FXCollections.observableArrayList());
         final JsonArray servicesArray = jArray.get(1).getAsJsonArray();
         for (int i = 0; i < servicesArray.size(); i++) {
             final JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
@@ -194,7 +194,7 @@ public class Settings {
                 final String channel = channels.get(e).getAsString();
                 service.addChannel(channel);
             }
-            services.get().add(service);
+            this.services.get().add(service);
         }
     }
 
@@ -207,16 +207,16 @@ public class Settings {
             jsonWriter.setIndent("  ");
             jsonWriter.beginArray();
             jsonWriter.beginObject();
-            jsonWriter.name(TWITCH_USER_STRING).value(twitchUser);
-            jsonWriter.name(TWITCH_OAUTH_STRING).value(twitchOAuth);
-            jsonWriter.name(TWITCH_SORT).value(sortTwitch.get());
-            jsonWriter.name(QUALITY_STRING).value(quality);
-            jsonWriter.name(PATH).value(getRecordingPath());
-            jsonWriter.name(CHANNELS_LOAD).value(maxChannelsLoad);
-            jsonWriter.name(GAMES_LOAD).value(maxGamesLoad);
-            jsonWriter.name(MINIMIZE_TO_TRAY_STRING).value(minimizeToTray);
-            jsonWriter.name(WINDOWSTYLE_STRING).value(windowStyle);
-            jsonWriter.name(EXEPATH_STRING).value(liveStreamerExePath);
+            jsonWriter.name(TWITCH_USER_STRING).value(this.twitchUser);
+            jsonWriter.name(TWITCH_OAUTH_STRING).value(this.twitchOAuth);
+            jsonWriter.name(TWITCH_SORT).value(this.sortTwitch.get());
+            jsonWriter.name(QUALITY_STRING).value(this.quality);
+            jsonWriter.name(PATH).value(this.getRecordingPath());
+            jsonWriter.name(CHANNELS_LOAD).value(this.maxChannelsLoad);
+            jsonWriter.name(GAMES_LOAD).value(this.maxGamesLoad);
+            jsonWriter.name(MINIMIZE_TO_TRAY_STRING).value(this.minimizeToTray);
+            jsonWriter.name(WINDOWSTYLE_STRING).value(this.windowStyle);
+            jsonWriter.name(EXEPATH_STRING).value(this.liveStreamerExePath);
             this.writeFavouriteGames(jsonWriter);
             jsonWriter.endObject();
             this.writeServices(jsonWriter);
@@ -230,7 +230,7 @@ public class Settings {
 
     private void writeServices(final JsonWriter writer) throws IOException {
         writer.beginArray();
-        for (final IService service : services) {
+        for (final IService service : this.services) {
             LOGGER.debug("Creating JSON for Service {}", service.getName().get());
             writer.beginObject();
             writer.name(SERVICE_NAME).value(service.getName().get());
@@ -252,7 +252,7 @@ public class Settings {
         LOGGER.debug("Writing Favourites to Settings file");
         writer.name(FAVOURITE_GAMES);
         writer.beginArray();
-        for (final String favourite : favouriteGames) {
+        for (final String favourite : this.favouriteGames) {
             LOGGER.trace("Writing Favourite '{}' to file", favourite);
             writer.value(favourite);
         }
@@ -260,15 +260,15 @@ public class Settings {
     }
 
     public ListProperty<IService> getStreamServices() {
-        return services;
+        return this.services;
     }
 
     public BooleanProperty getSortTwitch() {
-        return sortTwitch;
+        return this.sortTwitch;
     }
 
     public String getCurrentStreamService() {
-        return currentService;
+        return this.currentService;
     }
 
     public void setCurrentStreamService(final String currentStreamService) {
@@ -276,7 +276,7 @@ public class Settings {
     }
 
     public String getTwitchUser() {
-        return twitchUser;
+        return this.twitchUser;
     }
 
     public void setTwitchUser(final String twitchUser) {
@@ -284,7 +284,7 @@ public class Settings {
     }
 
     public String getTwitchOAuth() {
-        return twitchOAuth;
+        return this.twitchOAuth;
     }
 
     public void setTwitchOAuth(final String twitchOAuth) {
@@ -292,7 +292,7 @@ public class Settings {
     }
 
     public int getMaxGamesLoad() {
-        return maxGamesLoad;
+        return this.maxGamesLoad;
     }
 
     public void setMaxGamesLoad(final int maxGamesLoad) {
@@ -300,7 +300,7 @@ public class Settings {
     }
 
     public int getMaxChannelsLoad() {
-        return maxChannelsLoad;
+        return this.maxChannelsLoad;
     }
 
     public void setMaxChannelsLoad(final int maxChannelsLoad) {
@@ -312,7 +312,7 @@ public class Settings {
     }
 
     public boolean isMinimizeToTray() {
-        return minimizeToTray;
+        return this.minimizeToTray;
     }
 
     public void setMinimizeToTray(final boolean minimizeToTray) {
@@ -320,7 +320,7 @@ public class Settings {
     }
 
     public String getWindowStyle() {
-        return windowStyle;
+        return this.windowStyle;
     }
 
     public void setWindowStyle(final String windowStyle) {
@@ -336,7 +336,7 @@ public class Settings {
     }
 
     public String getQuality() {
-        return quality;
+        return this.quality;
     }
 
     public void setQuality(final String quality) {
@@ -344,7 +344,7 @@ public class Settings {
     }
 
     public String getRecordingPath() {
-        return recordingPath;
+        return this.recordingPath;
     }
 
     public void setRecordingPath(final String recordingPath) {
@@ -362,7 +362,7 @@ public class Settings {
     }
 
     public StringProperty getUpdateLink() {
-        return updateLink;
+        return this.updateLink;
     }
 
     public void setUpdateLink(final String updateLink) {
@@ -370,18 +370,18 @@ public class Settings {
     }
 
     public ListProperty<String> getFavouriteGames() {
-        return favouriteGames;
+        return this.favouriteGames;
     }
 
     public void addFavouriteGame(final String game) {
-        final ObservableList<String> favourites = FXCollections.observableArrayList(favouriteGames);
+        final ObservableList<String> favourites = FXCollections.observableArrayList(this.favouriteGames);
         favourites.add(game);
-        favouriteGames.set(favourites);
+        this.favouriteGames.set(favourites);
     }
 
     public void removeFavouriteGame(final String game) {
-        final ObservableList<String> favourites = FXCollections.observableArrayList(favouriteGames);
+        final ObservableList<String> favourites = FXCollections.observableArrayList(this.favouriteGames);
         favourites.remove(game);
-        favouriteGames.set(favourites);
+        this.favouriteGames.set(favourites);
     }
 }

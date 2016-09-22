@@ -34,14 +34,14 @@ import javafx.beans.property.StringProperty;
  */
 public interface IChannel {
 
-    public StringProperty getName();
+    StringProperty getName();
 
-    public BooleanProperty isOnline();
+    BooleanProperty isOnline();
 
-    public BooleanProperty hasReminder();
+    BooleanProperty hasReminder();
 
-    public void setReminder(final boolean hasReminder);
+    void setReminder(final boolean hasReminder);
 
-    public ListProperty<String> getAvailableQualities();
+    ListProperty<String> getAvailableQualities();
 
 }

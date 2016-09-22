@@ -45,16 +45,17 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannel> 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannelUpdateService.class);
     private static final ListProperty<TwitchChannel> ACTIVE_LIST = new SimpleListProperty<>(
             FXCollections.observableArrayList());
+    private static final double UPDATE_PERIOD = 60;
     private TwitchChannel channel;
 
     public TwitchChannelUpdateService(final TwitchChannel channel) {
         LOGGER.debug("Create UpdateService for {}", channel.getName().get());
         this.channel = channel;
-        setUpConstant();
+        this.setUpConstant();
     }
 
     public final void setUpConstant() {
-        setPeriod(Duration.seconds(40));
+        setPeriod(Duration.seconds(UPDATE_PERIOD));
         setRestartOnFailure(true);
         setOnSucceeded(event -> {
             final TwitchChannel updatedModel = (TwitchChannel) event.getSource().getValue();
@@ -66,7 +67,7 @@ public class TwitchChannelUpdateService extends ScheduledService<TwitchChannel> 
             synchronized (ACTIVE_LIST) {
                 ObservableList<TwitchChannel> activeChannelServices = FXCollections
                         .observableArrayList(ACTIVE_LIST.get());
-                activeChannelServices.remove(channel);
+                activeChannelServices.remove(this.channel);
                 ACTIVE_LIST.set(activeChannelServices);
             }
         });
