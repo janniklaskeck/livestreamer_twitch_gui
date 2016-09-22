@@ -74,6 +74,12 @@ public final class SettingsController {
     @FXML
     private Hyperlink updateLink;
 
+    @FXML
+    private Button saveButton;
+
+    @FXML
+    private Button cancelButton;
+
     public SettingsController() {
         // Empty Constructor
     }
@@ -132,6 +138,8 @@ public final class SettingsController {
             this.updateLink.setDisable(true);
         }
 
+        this.saveButton.setOnAction(event -> saveSettingsAction());
+        this.cancelButton.setOnAction(event -> cancelSettingsAction());
     }
 
     private void setupLoadChoiceBoxes() {
@@ -155,13 +163,11 @@ public final class SettingsController {
         this.styleChoiceBox.getSelectionModel().select(Settings.getInstance().getWindowStyle());
     }
 
-    @FXML
     private static void cancelSettingsAction() {
         SettingsWindow.getSettingsStage().hide();
         SettingsWindow.getSettingsStage().close();
     }
 
-    @FXML
     private static void saveSettingsAction() {
         Settings.getInstance().saveSettings();
         SettingsWindow.getSettingsStage().hide();

@@ -69,6 +69,8 @@ public class Settings {
     private static final Logger LOGGER = LoggerFactory.getLogger(Settings.class);
     private static final String FILEPATH = System.getProperty("user.home") + "/.lsgui/settings.json";
     private static final long TIMEOUT = 5000L;
+    private static final int DEFAULT_GAMES_TO_LOAD = 20;
+    private static final int DEFAULT_CHANNELS_TO_LOAD = 20;
     private static final String TWITCH_USER_STRING = "twitchusername";
     private static final String TWITCH_OAUTH_STRING = "twitchoauth";
     private static final String TWITCH_SORT = "twitchsorting";
@@ -93,14 +95,14 @@ public class Settings {
     private String currentService = "twitch.tv";
     private String twitchUser = "";
     private String twitchOAuth = "";
-    private int maxGamesLoad = 100;
-    private int maxChannelsLoad = 100;
+    private int maxGamesLoad;
+    private int maxChannelsLoad;
     private String liveStreamerExePath = "";
     private String quality = "Best";
     private String recordingPath;
     private StringProperty updateLink = new SimpleStringProperty();
 
-    private static boolean isLoading;
+    private boolean isLoading;
 
     public Settings() {
         // Empty Constructor
@@ -110,7 +112,7 @@ public class Settings {
         if (instance == null) {
             instance = new Settings();
             final File settings = new File(FILEPATH);
-            if (!isLoading && settings.exists() && settings.isFile() && !LsGuiUtils.isFileEmpty(settings)) {
+            if (!instance.isLoading && settings.exists() && settings.isFile() && !LsGuiUtils.isFileEmpty(settings)) {
                 LOGGER.info("Loading Settings from File");
                 instance.loadSettingsFromFile(settings);
             } else {
@@ -136,8 +138,9 @@ public class Settings {
 
     private void loadSettingsFromFile(final File file) {
         isLoading = true;
-        try (final BufferedReader bufferedReader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+        try (final FileInputStream inputStream = new FileInputStream(file)) {
+            final BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             final StringBuilder sb = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
@@ -147,6 +150,7 @@ public class Settings {
             final JsonArray jArray = g.fromJson(sb.toString(), JsonArray.class);
             loadSettings(jArray);
             loadServices(jArray);
+            bufferedReader.close();
         } catch (IOException e) {
             LOGGER.error("ERROR while reading Settings file", e);
         }
@@ -160,8 +164,8 @@ public class Settings {
         twitchOAuth = JSONUtils.getStringSafe(settings.get(TWITCH_OAUTH_STRING), "");
         windowStyle = JSONUtils.getStringSafe(settings.get(WINDOWSTYLE_STRING), "LightStyle");
         liveStreamerExePath = JSONUtils.getStringSafe(settings.get(EXEPATH_STRING), "");
-        maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELS_LOAD), 20);
-        maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMES_LOAD), 20);
+        maxChannelsLoad = JSONUtils.getIntSafe(settings.get(CHANNELS_LOAD), DEFAULT_CHANNELS_TO_LOAD);
+        maxGamesLoad = JSONUtils.getIntSafe(settings.get(GAMES_LOAD), DEFAULT_GAMES_TO_LOAD);
         quality = JSONUtils.getStringSafe(settings.get(QUALITY_STRING), "Best");
         recordingPath = JSONUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home"));
         final JsonArray favouritesArray = JSONUtils.getJsonArraySafe(FAVOURITE_GAMES, settings);
@@ -195,29 +199,30 @@ public class Settings {
     }
 
     private void createSettingsJson(final File file) {
-        JsonWriter w;
-        try (final BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-            w = new JsonWriter(writer);
-            w.setIndent("  ");
-            w.beginArray();
-            w.beginObject();
-            w.name(TWITCH_USER_STRING).value(twitchUser);
-            w.name(TWITCH_OAUTH_STRING).value(twitchOAuth);
-            w.name(TWITCH_SORT).value(sortTwitch.get());
-            w.name(QUALITY_STRING).value(quality);
-            w.name(PATH).value(getRecordingPath());
-            w.name(CHANNELS_LOAD).value(maxChannelsLoad);
-            w.name(GAMES_LOAD).value(maxGamesLoad);
-            w.name(MINIMIZE_TO_TRAY_STRING).value(minimizeToTray);
-            w.name(WINDOWSTYLE_STRING).value(windowStyle);
-            w.name(EXEPATH_STRING).value(liveStreamerExePath);
-            this.writeFavouriteGames(w);
-            w.endObject();
-            this.writeServices(w);
 
-            w.endArray();
-            w.close();
+        try (final FileOutputStream outputStream = new FileOutputStream(file);) {
+            final BufferedWriter bufferedWriter = new BufferedWriter(
+                    new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
+            final JsonWriter jsonWriter = new JsonWriter(bufferedWriter);
+            jsonWriter.setIndent("  ");
+            jsonWriter.beginArray();
+            jsonWriter.beginObject();
+            jsonWriter.name(TWITCH_USER_STRING).value(twitchUser);
+            jsonWriter.name(TWITCH_OAUTH_STRING).value(twitchOAuth);
+            jsonWriter.name(TWITCH_SORT).value(sortTwitch.get());
+            jsonWriter.name(QUALITY_STRING).value(quality);
+            jsonWriter.name(PATH).value(getRecordingPath());
+            jsonWriter.name(CHANNELS_LOAD).value(maxChannelsLoad);
+            jsonWriter.name(GAMES_LOAD).value(maxGamesLoad);
+            jsonWriter.name(MINIMIZE_TO_TRAY_STRING).value(minimizeToTray);
+            jsonWriter.name(WINDOWSTYLE_STRING).value(windowStyle);
+            jsonWriter.name(EXEPATH_STRING).value(liveStreamerExePath);
+            this.writeFavouriteGames(jsonWriter);
+            jsonWriter.endObject();
+            this.writeServices(jsonWriter);
+            jsonWriter.endArray();
+            jsonWriter.close();
+            bufferedWriter.close();
         } catch (IOException e) {
             LOGGER.error("ERROR while writing to Settings file", e);
         }

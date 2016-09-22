@@ -69,4 +69,30 @@ public class IrcClient extends PircBot {
         this.channel = channel;
     }
 
+    @Override
+    public boolean equals(final Object other) {
+        boolean result = false;
+        if (other == null) {
+            result = false;
+        } else {
+            if (other == this) {
+                return true;
+            }
+            if (this.getClass() != other.getClass()) {
+                result = false;
+            } else {
+                final IrcClient otherClient = (IrcClient) other;
+                if (this.channel.equalsIgnoreCase(otherClient.channel)) {
+                    result = true;
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.channel.hashCode();
+    }
+
 }

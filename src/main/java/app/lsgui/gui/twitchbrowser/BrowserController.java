@@ -57,6 +57,7 @@ import javafx.scene.layout.VBox;
 public class BrowserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrowserController.class);
+    private static final int PROGRESS_BAR_MIN_HEIGHT = 20;
 
     @FXML
     private ToolBar browserToolBar;
@@ -64,9 +65,8 @@ public class BrowserController {
     @FXML
     private BorderPane browserRootBorderPane;
 
-    private ComboBox<String> favouriteGameComboBox;
     private ComboBox<String> qualityComboBox;
-    private ProgressBar browserProgressBar;
+
     private GridView<ITwitchItem> browserGridView;
     private BrowserCore browserCore;
 
@@ -82,14 +82,14 @@ public class BrowserController {
         browserCore = BrowserCore.getInstance();
         browserCore.setGridView(browserGridView);
         browserRootBorderPane.setCenter(browserGridView);
-        Platform.runLater(() -> browserCore.goToHome());
+        Platform.runLater(browserCore::goToHome);
     }
 
     private void setupProgressBar() {
         final VBox vbox = new VBox();
-        browserProgressBar = new ProgressBar();
+        final ProgressBar browserProgressBar = new ProgressBar();
         browserProgressBar.setVisible(false);
-        browserProgressBar.setMinHeight(20);
+        browserProgressBar.setMinHeight(PROGRESS_BAR_MIN_HEIGHT);
         browserProgressBar.setMaxWidth(Double.MAX_VALUE);
         vbox.getChildren().add(browserProgressBar);
         browserRootBorderPane.setBottom(vbox);
@@ -119,7 +119,7 @@ public class BrowserController {
             }
         });
         final Label searchLabel = new Label("Filter");
-        favouriteGameComboBox = new ComboBox<>();
+        final ComboBox<String> favouriteGameComboBox = new ComboBox<>();
         final ListProperty<String> favouriteGames = Settings.getInstance().getFavouriteGames();
         favouriteGameComboBox.itemsProperty().bind(favouriteGames);
         favouriteGameComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {

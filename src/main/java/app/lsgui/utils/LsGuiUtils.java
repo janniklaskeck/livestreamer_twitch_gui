@@ -66,9 +66,10 @@ import javafx.util.Duration;
  * @author Niklas 11.06.2016
  *
  */
-public class LsGuiUtils {
+public final class LsGuiUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LsGuiUtils.class);
+    private static final double UPDATE_NOTIFICATION_DURATION = 10;
 
     private LsGuiUtils() {
     }
@@ -123,22 +124,25 @@ public class LsGuiUtils {
     }
 
     public static String getColorFromString(final String input) {
+        final int maxRgbValue = 200;
+        final int shiftTwoBytes = 16;
+        final int shiftOneByte = 8;
         int r = 0;
         int g = 0;
         int b = 0;
         if (!"".equals(input)) {
             int hash = input.hashCode();
-            r = (hash & 0xFF0000) >> 16;
-            if (r > 200) {
-                r = 200;
+            r = (hash & 0xFF0000) >> shiftTwoBytes;
+            if (r > maxRgbValue) {
+                r = maxRgbValue;
             }
-            g = (hash & 0x00FF00) >> 8;
-            if (g > 200) {
-                g = 200;
+            g = (hash & 0x00FF00) >> shiftOneByte;
+            if (g > maxRgbValue) {
+                g = maxRgbValue;
             }
             b = hash & 0x0000FF;
-            if (b > 200) {
-                b = 200;
+            if (b > maxRgbValue) {
+                b = maxRgbValue;
             }
         }
         return "rgb(" + r + "," + g + "," + b + ")";
@@ -269,8 +273,8 @@ public class LsGuiUtils {
         final String title = "Update available!";
         final String updateMessage = "Version " + version + " is available! Released at " + date
                 + ". Click this or check Settings for a Link.";
-        Notifications.create().title(title).text(updateMessage).onAction(action).hideAfter(Duration.seconds(10))
-                .darkStyle().showInformation();
+        Notifications.create().title(title).text(updateMessage).onAction(action)
+                .hideAfter(Duration.seconds(UPDATE_NOTIFICATION_DURATION)).darkStyle().showInformation();
     }
 
     public static void showWarningNotification(final String title, final String message) {
@@ -280,12 +284,11 @@ public class LsGuiUtils {
     public static boolean isFileEmpty(final File file) {
         boolean result = true;
         BufferedReader br;
-        try {
-            final FileInputStream inputStream = new FileInputStream(file);
+
+        try (final FileInputStream inputStream = new FileInputStream(file);) {
             br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             final String line = br.readLine();
             result = line == null;
-            inputStream.close();
             br.close();
         } catch (IOException e) {
             LOGGER.error("Could not read from Settings file.", e);
@@ -300,6 +303,7 @@ public class LsGuiUtils {
         try {
             versionProperty.load(propertyStream);
             version = versionProperty.getProperty("versionNumber");
+            version = version.replaceAll("[\n\r]", "");
             LOGGER.debug("Read Version {} from version.properties", version);
         } catch (IOException e) {
             LOGGER.error("Could not load Properties from Inpustream!", e);

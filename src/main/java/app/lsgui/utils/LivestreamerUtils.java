@@ -50,7 +50,7 @@ import javafx.application.Platform;
  * @author Niklas 11.06.2016
  *
  */
-public class LivestreamerUtils {
+public final class LivestreamerUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LivestreamerUtils.class);
     private static final String LIVESTREAMERCMD = "livestreamer";
