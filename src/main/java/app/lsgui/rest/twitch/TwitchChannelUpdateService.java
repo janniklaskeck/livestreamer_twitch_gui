@@ -54,7 +54,7 @@ public final class TwitchChannelUpdateService extends ScheduledService<TwitchCha
         this.setUpConstant();
     }
 
-    public final void setUpConstant() {
+    public void setUpConstant() {
         setPeriod(Duration.seconds(UPDATE_PERIOD));
         setRestartOnFailure(true);
         setOnSucceeded(event -> {
