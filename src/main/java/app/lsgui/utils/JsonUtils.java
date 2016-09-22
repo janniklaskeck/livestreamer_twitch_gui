@@ -23,6 +23,17 @@
  */
 package app.lsgui.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -33,6 +44,8 @@ import com.google.gson.JsonObject;
  *
  */
 public final class JsonUtils {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonUtils.class);
 
     private JsonUtils() {
     }
@@ -84,5 +97,23 @@ public final class JsonUtils {
             return obj.get(name).getAsJsonArray();
         }
         return new JsonArray();
+    }
+
+    public static JsonArray getJsonArrayFromFile(final File file) {
+        JsonArray jsonArray = new JsonArray();
+        try (final FileInputStream inputStream = new FileInputStream(file)) {
+            final BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            final StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            final Gson g = new Gson();
+            jsonArray = g.fromJson(sb.toString(), JsonArray.class);
+        } catch (IOException e) {
+            LOGGER.error("ERROR while reading Settings file", e);
+        }
+        return jsonArray;
     }
 }
