@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.gui;
+package app.lsgui.gui.main;
 
-import app.lsgui.model.service.IService;
+import app.lsgui.model.IService;
 import javafx.scene.control.ListCell;
 
 /**

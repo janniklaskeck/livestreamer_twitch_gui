@@ -26,7 +26,7 @@ package twitch;
 import org.junit.Assert;
 import org.junit.Test;
 
-import app.lsgui.rest.twitch.TwitchAPIClient;
+import app.lsgui.remote.twitch.TwitchAPIClient;
 
 public class TestTwitchApiClient {
 

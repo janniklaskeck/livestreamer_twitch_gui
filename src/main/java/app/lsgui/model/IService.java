@@ -21,27 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.model.channel;
+package app.lsgui.model;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.transformation.SortedList;
 
 /**
  *
  * @author Niklas 11.06.2016
  *
  */
-public interface IChannel {
+public interface IService {
 
     StringProperty getName();
 
-    BooleanProperty isOnline();
+    StringProperty getUrl();
 
-    BooleanProperty hasReminder();
+    ObjectProperty<SortedList<IChannel>> getChannelProperty();
 
-    void setReminder(final boolean hasReminder);
+    void addChannel(final String channelName);
 
-    ListProperty<String> getAvailableQualities();
+    void removeChannel(final IChannel channel);
 
 }

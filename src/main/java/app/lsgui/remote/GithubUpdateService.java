@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.rest;
+package app.lsgui.remote;
 
 import java.io.IOException;
 import java.net.URI;
@@ -46,8 +46,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import app.lsgui.settings.Settings;
 import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.utils.Settings;
 
 public final class GithubUpdateService {
 

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.model.twitch.channel;
+package app.lsgui.model.twitch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +30,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import app.lsgui.model.twitch.ITwitchItem;
-import app.lsgui.rest.twitch.TwitchBrowserUpdateService;
+import app.lsgui.remote.twitch.TwitchBrowserUpdateService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

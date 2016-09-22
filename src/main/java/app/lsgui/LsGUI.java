@@ -26,7 +26,7 @@ package app.lsgui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.LsGuiWindow;
+import app.lsgui.gui.main.LsGuiWindow;
 import javafx.application.Application;
 
 /**

@@ -30,11 +30,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.twitch.ITwitchItem;
-import app.lsgui.model.twitch.channel.TwitchChannel;
-import app.lsgui.model.twitch.channel.TwitchChannels;
-import app.lsgui.model.twitch.game.TwitchGame;
-import app.lsgui.model.twitch.game.TwitchGames;
-import app.lsgui.rest.twitch.TwitchAPIClient;
+import app.lsgui.model.twitch.TwitchChannel;
+import app.lsgui.model.twitch.TwitchChannels;
+import app.lsgui.model.twitch.TwitchGame;
+import app.lsgui.model.twitch.TwitchGames;
+import app.lsgui.remote.twitch.TwitchAPIClient;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;

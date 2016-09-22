@@ -21,23 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.gui;
+package app.lsgui.gui.main;
 
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.channelinfopanel.ChannelInfoPanel;
-import app.lsgui.gui.channellist.ChannelList;
+import app.lsgui.gui.main.infopanel.ChannelInfoPanel;
+import app.lsgui.gui.main.list.ChannelList;
 import app.lsgui.gui.settings.SettingsWindow;
 import app.lsgui.gui.twitchbrowser.BrowserWindow;
-import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.service.IService;
-import app.lsgui.model.service.TwitchService;
-import app.lsgui.rest.twitch.TwitchChannelUpdateService;
-import app.lsgui.settings.Settings;
+import app.lsgui.model.IChannel;
+import app.lsgui.model.IService;
+import app.lsgui.model.twitch.TwitchService;
+import app.lsgui.remote.twitch.TwitchChannelUpdateService;
 import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.utils.Settings;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.BooleanProperty;

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.model.service;
+package app.lsgui.model.twitch;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -31,11 +31,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
-import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.twitch.channel.TwitchChannel;
-import app.lsgui.rest.twitch.TwitchAPIClient;
-import app.lsgui.rest.twitch.TwitchChannelUpdateService;
-import app.lsgui.settings.Settings;
+import app.lsgui.model.IChannel;
+import app.lsgui.model.IService;
+import app.lsgui.remote.twitch.TwitchAPIClient;
+import app.lsgui.remote.twitch.TwitchChannelUpdateService;
+import app.lsgui.utils.Settings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;

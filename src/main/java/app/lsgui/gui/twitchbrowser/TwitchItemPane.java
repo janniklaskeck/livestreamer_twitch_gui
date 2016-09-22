@@ -25,14 +25,14 @@ package app.lsgui.gui.twitchbrowser;
 
 import org.controlsfx.control.GridCell;
 
-import app.lsgui.model.service.IService;
+import app.lsgui.model.IService;
 import app.lsgui.model.twitch.ITwitchItem;
-import app.lsgui.model.twitch.channel.TwitchChannel;
-import app.lsgui.model.twitch.game.TwitchGame;
-import app.lsgui.settings.Settings;
+import app.lsgui.model.twitch.TwitchChannel;
+import app.lsgui.model.twitch.TwitchGame;
 import app.lsgui.utils.BrowserCore;
 import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.utils.Settings;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;

@@ -21,16 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.gui.channelinfopanel;
+package app.lsgui.gui.main.infopanel;
 
 import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.service.IService;
-import app.lsgui.model.twitch.channel.TwitchChannel;
+import app.lsgui.model.IChannel;
+import app.lsgui.model.IService;
+import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.WrappedImageView;

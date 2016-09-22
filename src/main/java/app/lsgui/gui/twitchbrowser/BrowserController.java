@@ -28,9 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.twitch.ITwitchItem;
-import app.lsgui.rest.twitch.TwitchBrowserUpdateService;
-import app.lsgui.settings.Settings;
+import app.lsgui.remote.twitch.TwitchBrowserUpdateService;
 import app.lsgui.utils.BrowserCore;
+import app.lsgui.utils.Settings;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;

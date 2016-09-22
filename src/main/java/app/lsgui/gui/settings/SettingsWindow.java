@@ -28,8 +28,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.settings.Settings;
 import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.utils.Settings;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

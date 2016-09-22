@@ -21,13 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.rest.twitch;
+package app.lsgui.remote.twitch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.twitch.channel.TwitchChannel;
+import app.lsgui.model.IChannel;
+import app.lsgui.model.twitch.TwitchChannel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;

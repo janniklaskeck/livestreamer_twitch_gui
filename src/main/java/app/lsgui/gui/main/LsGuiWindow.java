@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.gui;
+package app.lsgui.gui.main;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -30,12 +30,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.service.TwitchService;
-import app.lsgui.rest.GithubUpdateService;
-import app.lsgui.rest.twitch.TwitchChannelUpdateService;
-import app.lsgui.settings.Settings;
+import app.lsgui.model.IChannel;
+import app.lsgui.model.twitch.TwitchService;
+import app.lsgui.remote.GithubUpdateService;
+import app.lsgui.remote.twitch.TwitchChannelUpdateService;
 import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.utils.Settings;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;

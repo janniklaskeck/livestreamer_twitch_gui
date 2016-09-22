@@ -21,11 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.model.twitch.game;
+package app.lsgui.model.twitch;
 
-import app.lsgui.model.twitch.ITwitchItem;
-import app.lsgui.model.twitch.channel.TwitchChannels;
-import app.lsgui.rest.twitch.TwitchAPIClient;
+import app.lsgui.remote.twitch.TwitchAPIClient;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

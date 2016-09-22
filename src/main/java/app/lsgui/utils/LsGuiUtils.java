@@ -45,15 +45,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
-import app.lsgui.gui.LsGuiWindow;
 import app.lsgui.gui.chat.ChatWindow;
-import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.service.GenericService;
-import app.lsgui.model.service.IService;
-import app.lsgui.model.service.TwitchService;
-import app.lsgui.model.twitch.channel.TwitchChannel;
-import app.lsgui.rest.twitch.TwitchAPIClient;
-import app.lsgui.settings.Settings;
+import app.lsgui.gui.main.LsGuiWindow;
+import app.lsgui.model.IChannel;
+import app.lsgui.model.IService;
+import app.lsgui.model.generic.GenericService;
+import app.lsgui.model.twitch.TwitchChannel;
+import app.lsgui.model.twitch.TwitchService;
+import app.lsgui.remote.twitch.TwitchAPIClient;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.stage.FileChooser;

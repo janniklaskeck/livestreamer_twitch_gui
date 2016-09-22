@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.rest.twitch;
+package app.lsgui.remote.twitch;
 
 import java.io.IOException;
 import java.net.URI;
@@ -46,10 +46,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-import app.lsgui.model.twitch.channel.TwitchChannel;
-import app.lsgui.model.twitch.channel.TwitchChannels;
-import app.lsgui.model.twitch.game.TwitchGames;
-import app.lsgui.settings.Settings;
+import app.lsgui.model.twitch.TwitchChannel;
+import app.lsgui.model.twitch.TwitchChannels;
+import app.lsgui.model.twitch.TwitchGames;
+import app.lsgui.utils.Settings;
 
 /**
  *

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.model.twitch.channel;
+package app.lsgui.model.twitch;
 
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.twitch.ITwitchItem;
+import app.lsgui.model.IChannel;
 import app.lsgui.utils.JsonUtils;
 import app.lsgui.utils.LsGuiUtils;
 import javafx.beans.Observable;

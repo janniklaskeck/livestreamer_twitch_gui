@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.settings;
+package app.lsgui.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -44,12 +44,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 
-import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.service.GenericService;
-import app.lsgui.model.service.IService;
-import app.lsgui.model.service.TwitchService;
-import app.lsgui.utils.JsonUtils;
-import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.model.IChannel;
+import app.lsgui.model.IService;
+import app.lsgui.model.generic.GenericService;
+import app.lsgui.model.twitch.TwitchService;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;

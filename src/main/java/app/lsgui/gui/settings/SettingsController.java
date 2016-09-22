@@ -28,10 +28,10 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.LsGuiWindow;
 import app.lsgui.gui.chat.ChatWindow;
-import app.lsgui.settings.Settings;
+import app.lsgui.gui.main.LsGuiWindow;
 import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.utils.Settings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
