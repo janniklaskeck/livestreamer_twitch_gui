@@ -28,7 +28,6 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.gui.chat.ChatWindow;
 import app.lsgui.gui.main.LsGuiWindow;
 import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.Settings;
@@ -108,11 +107,9 @@ public final class SettingsController {
 
             LsGuiUtils.clearStyleSheetsFromStage(LsGuiWindow.getRootStage());
             LsGuiUtils.clearStyleSheetsFromStage(SettingsWindow.getSettingsStage());
-            LsGuiUtils.clearStyleSheetsFromStage(ChatWindow.getChatStage());
 
             LsGuiUtils.addStyleSheetToStage(LsGuiWindow.getRootStage(), style);
             LsGuiUtils.addStyleSheetToStage(SettingsWindow.getSettingsStage(), style);
-            LsGuiUtils.addStyleSheetToStage(ChatWindow.getChatStage(), style);
         });
 
         this.gamesToLoadChoiceBox.getSelectionModel().selectedItemProperty()

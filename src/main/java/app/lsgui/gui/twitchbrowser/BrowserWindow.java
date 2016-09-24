@@ -44,18 +44,16 @@ import javafx.stage.Window;
  * @author Niklas 25.06.2016
  *
  */
-public final class BrowserWindow {
+public final class BrowserWindow extends Stage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrowserWindow.class);
     private static final String BROWSER_FXML = "fxml/BrowserWindow.fxml";
     private static final int BROWSER_WINDOW_MIN_HEIGHT = 620;
     private static final int BROWSER_WINDOW_MIN_WIDTH = 950;
-    private static Stage browserStage;
 
     public BrowserWindow(final Window parentWindow) {
-        setBrowserStage(new Stage());
         final Parent root = this.loadFxml();
-        this.setupStage(root, browserStage, parentWindow);
+        this.setupStage(root, parentWindow);
     }
 
     private Parent loadFxml() {
@@ -68,34 +66,19 @@ public final class BrowserWindow {
         }
     }
 
-    private void setupStage(final Parent root, final Stage browserStage, final Window parentWindow) {
+    private void setupStage(final Parent root, final Window parentWindow) {
+        this.setMinHeight(BROWSER_WINDOW_MIN_HEIGHT);
+        this.setHeight(BROWSER_WINDOW_MIN_HEIGHT);
+        this.setMinWidth(BROWSER_WINDOW_MIN_WIDTH);
+        this.setWidth(BROWSER_WINDOW_MIN_WIDTH);
 
-        browserStage.setMinHeight(BROWSER_WINDOW_MIN_HEIGHT);
-        browserStage.setHeight(BROWSER_WINDOW_MIN_HEIGHT);
-        browserStage.setMinWidth(BROWSER_WINDOW_MIN_WIDTH);
-        browserStage.setWidth(BROWSER_WINDOW_MIN_WIDTH);
-
-        browserStage.setTitle("Livestreamer GUI Twitch Browser v" + LsGuiUtils.readVersionProperty());
-        browserStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
+        this.setTitle("Livestreamer GUI Twitch Browser v" + LsGuiUtils.readVersionProperty());
+        this.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         final Scene scene = new Scene(root);
-        browserStage.setScene(scene);
-        browserStage.initModality(Modality.APPLICATION_MODAL);
-        browserStage.initOwner(parentWindow);
-        BrowserWindow.getBrowserStage().getScene().getStylesheets().add(BrowserWindow.class
+        this.setScene(scene);
+        this.initModality(Modality.APPLICATION_MODAL);
+        this.initOwner(parentWindow);
+        this.getScene().getStylesheets().add(BrowserWindow.class
                 .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
-        browserStage.setOnCloseRequest(event -> setBrowserStage(null));
     }
-
-    private static synchronized void setBrowserStage(final Stage stage) {
-        browserStage = stage;
-    }
-
-    public static synchronized Stage getBrowserStage() {
-        return browserStage;
-    }
-
-    public void showAndWait() {
-        browserStage.showAndWait();
-    }
-
 }

@@ -43,22 +43,19 @@ import javafx.stage.Stage;
  * @author Niklas 11.06.2016
  *
  */
-public final class ChatWindow {
+public final class ChatWindow extends Stage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatWindow.class);
     private static final int MIN_WIDTH = 600;
     private static final int MIN_HEIGHT = 400;
-    private static Stage chatStage;
     private String channel;
     private FXMLLoader loader;
 
     public ChatWindow(final String channel) {
         this.channel = channel;
-        setChatStage(new Stage());
-
         this.loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/ChatWindow.fxml"));
         final Parent root = this.loadFxml();
-        this.setupStage(root, chatStage);
+        this.setupStage(root);
     }
 
     private Parent loadFxml() {
@@ -71,35 +68,28 @@ public final class ChatWindow {
         }
     }
 
-    private void setupStage(final Parent root, final Stage stage) {
-        stage.setMinHeight(MIN_HEIGHT);
-        stage.setMinWidth(MIN_WIDTH);
+    private void setupStage(final Parent root) {
+        this.setMinHeight(MIN_HEIGHT);
+        this.setMinWidth(MIN_WIDTH);
 
-        stage.setTitle(this.channel + " - Livestreamer GUI Chat v" + LsGuiUtils.readVersionProperty());
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
+        this.setTitle(this.channel + " - Livestreamer GUI Chat v" + LsGuiUtils.readVersionProperty());
+        this.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         final Scene scene = new Scene(root);
         scene.getStylesheets().add(ChatWindow.class
                 .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
-        stage.setScene(scene);
-        stage.initModality(Modality.NONE);
-        stage.show();
+        this.setScene(scene);
+        this.initModality(Modality.NONE);
+        this.show();
 
-        stage.setOnCloseRequest(event -> {
-            ((ChatController) this.loader.getController()).disconnect();
-            setChatStage(null);
-        });
+        this.setOnCloseRequest(event -> this.disconnect());
+    }
+
+    private void disconnect() {
+        ((ChatController) this.loader.getController()).disconnect();
     }
 
     public void connect() {
         final ChatController chatController = (ChatController) this.loader.getController();
         chatController.connect(this.channel);
-    }
-
-    public static synchronized Stage getChatStage() {
-        return chatStage;
-    }
-
-    private static synchronized void setChatStage(final Stage stage) {
-        chatStage = stage;
     }
 }
