@@ -101,9 +101,9 @@ public final class JsonUtils {
 
     public static JsonArray getJsonArrayFromFile(final File file) {
         JsonArray jsonArray = new JsonArray();
-        try (final FileInputStream inputStream = new FileInputStream(file)) {
-            final BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        try (final FileInputStream inputStream = new FileInputStream(file);
+                final InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);) {
             final StringBuilder sb = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {

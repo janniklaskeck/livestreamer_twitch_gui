@@ -36,7 +36,6 @@ public final class TopToolBar extends ToolBar {
     private final Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
     private final Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS);
     private final Button twitchBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
-    private final Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS);
 
     private QualityComboBox qualityComboBox = new QualityComboBox();
     private ServiceComboBox serviceComboBox = new ServiceComboBox();
@@ -49,9 +48,10 @@ public final class TopToolBar extends ToolBar {
         setMinHeight(PREF_HEIGHT);
         this.serviceComboBox.initialize(this::changeService);
         this.qualityComboBox.initialize();
+        final Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS);
 
         this.addButton.setOnAction(event -> this.addAction());
-        this.removeButton.setOnAction(event -> this.removeAction());
+        removeButton.setOnAction(event -> this.removeAction());
         this.importButton.setOnAction(event -> this.importFollowedChannels());
         this.twitchBrowserButton.setOnAction(event -> this.openTwitchBrowser());
 
@@ -74,7 +74,7 @@ public final class TopToolBar extends ToolBar {
 
         this.addItemAtEnd(this.serviceComboBox);
         this.addItemAtEnd(this.addButton);
-        this.addItemAtEnd(this.removeButton);
+        this.addItemAtEnd(removeButton);
         this.addItemAtEnd(this.importButton);
         this.addItemAtEnd(this.twitchBrowserButton);
         this.addItemAtEnd(new Separator());

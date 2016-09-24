@@ -58,7 +58,7 @@ public final class LsGuiController {
     @FXML
     public void initialize() {
         LOGGER.debug("Initialize Main Window");
-        this.topBorderPane.setCenter(topToolBar);
+        this.topBorderPane.setCenter(this.topToolBar);
         this.setupChannelList();
         this.setupChannelInfoPanel();
         this.topToolBar.initialize(this.contentBorderPane, this.channelList);
