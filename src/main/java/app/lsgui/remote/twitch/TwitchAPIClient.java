@@ -87,15 +87,20 @@ public final class TwitchAPIClient {
     }
 
     public TwitchChannel getStreamData(final String channelName, final boolean isBrowser) {
+        LOGGER.debug("Get Data for Channel '{}'", channelName);
         TwitchChannel channel = TwitchUtils.constructTwitchChannel(new JsonObject(), channelName, isBrowser);
         if (!"".equals(channelName)) {
             try {
                 final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channelName);
-                final JsonObject jo = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
-                channel = TwitchUtils.constructTwitchChannel(jo, channelName, isBrowser);
+                final JsonObject jsonData = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
+                channel = TwitchUtils.constructTwitchChannel(jsonData, channelName, isBrowser);
+                // LOGGER.debug("{} {}", channel.getName().get(),
+                // channel.isOnline().get());
             } catch (JsonSyntaxException e) {
                 LOGGER.error("ERROR while loading channel data. Return empty channel", e);
             }
+        } else {
+            LOGGER.error("Channelname is empty");
         }
         return channel;
     }

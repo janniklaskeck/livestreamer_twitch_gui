@@ -228,10 +228,6 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
         this.hasReminder.set(hasReminder);
     }
 
-    public BooleanProperty getIsOnline() {
-        return this.isOnline;
-    }
-
     public boolean isBrowser() {
         return this.isBrowser;
     }

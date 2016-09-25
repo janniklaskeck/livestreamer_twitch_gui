@@ -65,13 +65,13 @@ public final class TwitchChannelUpdateService extends ScheduledService<TwitchCha
                 }
             }
             synchronized (ACTIVE_LIST) {
-                ObservableList<TwitchChannel> activeChannelServices = FXCollections
+                final ObservableList<TwitchChannel> activeChannelServices = FXCollections
                         .observableArrayList(ACTIVE_LIST.get());
                 activeChannelServices.remove(this.channel);
                 ACTIVE_LIST.set(activeChannelServices);
             }
         });
-        setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
+        setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED {}", event.getEventType()));
     }
 
     @Override
@@ -91,6 +91,7 @@ public final class TwitchChannelUpdateService extends ScheduledService<TwitchCha
             final ObservableList<TwitchChannel> list) {
         final ObservableList<TwitchChannel> activeChannelServices = FXCollections.observableArrayList(list);
         activeChannelServices.add(channel);
+        LOGGER.trace("Add channel {} to active list with size {}", channel.getName().get(), list.size());
         return activeChannelServices;
     }
 

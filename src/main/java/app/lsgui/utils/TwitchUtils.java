@@ -8,6 +8,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
 import org.controlsfx.control.Notifications;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -21,7 +23,7 @@ import javafx.scene.image.Image;
 import javafx.util.Duration;
 
 public final class TwitchUtils {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchUtils.class);
     private static final ZoneOffset OFFSET = ZoneOffset.ofHours(0);
     private static final String PREFIX = "GMT";
     private static final ZoneId GMT = ZoneId.ofOffset(PREFIX, OFFSET);
@@ -116,6 +118,7 @@ public final class TwitchUtils {
 
     public static TwitchChannel constructTwitchChannel(final JsonObject data, final String name,
             final boolean isBrowser) {
+        LOGGER.trace("Create TwitchChannel '{}'", name);
         final TwitchChannel channel = new TwitchChannel();
         channel.setBrowser(isBrowser);
         final JsonElement streamElement = data.get(STREAM);
@@ -127,6 +130,7 @@ public final class TwitchUtils {
         } else {
             setData(channel, new JsonObject(), name);
         }
+
         return channel;
     }
 
@@ -137,6 +141,7 @@ public final class TwitchUtils {
 
     private static void setData(final TwitchChannel channel, final JsonObject channelObject, final String name) {
         if (!channelObject.equals(new JsonObject())) {
+            System.out.println(1);
             setOnlineData(channel, channelObject);
         } else {
             setOfflineData(channel, name);
@@ -156,7 +161,7 @@ public final class TwitchUtils {
         final String createdAt = JsonUtils.getStringIfNotNull("created_at", channelObject);
         channel.getUptime().set(calculateUptime(createdAt));
         channel.getViewers().set(JsonUtils.getIntegerIfNotNull("viewers", channelObject));
-        channel.getIsOnline().set(true);
+        channel.isOnline().set(true);
         channel.getIsPlaylist().set(JsonUtils.getBooleanIfNotNull("is_playlist", channelObject));
         channel.getPreviewImageLarge().set(new Image(channel.getPreviewUrlLarge().get(), true));
         channel.getPreviewImageMedium().set(new Image(channel.getPreviewUrlMedium().get(), true));
@@ -166,6 +171,8 @@ public final class TwitchUtils {
         if (!channel.isBrowser()) {
             channel.getAvailableQualities()
                     .addAll(LsGuiUtils.getAvailableQuality("http://twitch.tv/" + channel.getName().get()));
+            LOGGER.debug("Created Channel '{}' from JsonData. {}", channel.getName().get(),
+                    channel.getAvailableQualities().get().size());
         }
     }
 
@@ -177,7 +184,7 @@ public final class TwitchUtils {
         channel.getTitle().set(CHANNEL_IS_OFFLINE);
         channel.getUptime().set(0);
         channel.getViewers().set(0);
-        channel.getIsOnline().set(false);
+        channel.isOnline().set(false);
         channel.getIsPlaylist().set(false);
         channel.getPreviewImageLarge().set(DEFAULT_LOGO);
         channel.getAvailableQualities().clear();
