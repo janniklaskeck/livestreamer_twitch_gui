@@ -44,8 +44,6 @@ public final class GenericChannel implements IChannel {
     private StringProperty nameProperty;
     private BooleanProperty onlineProperty;
     private BooleanProperty hasReminder = new SimpleBooleanProperty();
-    private static final ListProperty<String> availableQualities = new SimpleListProperty<>(
-            FXCollections.observableArrayList("Worst", "Best"));
 
     public GenericChannel(final String name) {
         this.nameProperty = new SimpleStringProperty(name);
@@ -64,7 +62,7 @@ public final class GenericChannel implements IChannel {
 
     @Override
     public ListProperty<String> getAvailableQualities() {
-        return availableQualities;
+        return new SimpleListProperty<>(FXCollections.observableArrayList("Worst", "Best"));
     }
 
     @Override
