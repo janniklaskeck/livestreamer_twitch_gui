@@ -50,6 +50,7 @@ import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.model.twitch.TwitchChannels;
 import app.lsgui.model.twitch.TwitchGames;
 import app.lsgui.utils.Settings;
+import app.lsgui.utils.TwitchUtils;
 
 /**
  *
@@ -86,12 +87,12 @@ public final class TwitchAPIClient {
     }
 
     public TwitchChannel getStreamData(final String channelName, final boolean isBrowser) {
-        TwitchChannel channel = new TwitchChannel(new JsonObject(), channelName, isBrowser);
+        TwitchChannel channel = TwitchUtils.constructTwitchChannel(new JsonObject(), channelName, isBrowser);
         if (!"".equals(channelName)) {
             try {
                 final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channelName);
                 final JsonObject jo = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
-                channel = new TwitchChannel(jo, channelName, isBrowser);
+                channel = TwitchUtils.constructTwitchChannel(jo, channelName, isBrowser);
             } catch (JsonSyntaxException e) {
                 LOGGER.error("ERROR while loading channel data. Return empty channel", e);
             }

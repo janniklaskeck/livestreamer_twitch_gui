@@ -31,6 +31,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import app.lsgui.remote.twitch.TwitchBrowserUpdateService;
+import app.lsgui.utils.TwitchUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -64,7 +65,7 @@ public final class TwitchChannels {
             final JsonObject channelObject = object.get("channel").getAsJsonObject();
             final String name = channelObject.get("name").getAsString();
 
-            final TwitchChannel channel = new TwitchChannel(new JsonObject(), name, true);
+            final TwitchChannel channel = TwitchUtils.constructTwitchChannel(new JsonObject(), name, true);
             final TwitchBrowserUpdateService tcus = new TwitchBrowserUpdateService(channel);
             tcus.start();
             this.channels.add(channel);

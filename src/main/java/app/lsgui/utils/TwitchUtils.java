@@ -1,7 +1,15 @@
 package app.lsgui.utils;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
+
 import org.controlsfx.control.Notifications;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import app.lsgui.gui.chat.ChatWindow;
@@ -9,9 +17,19 @@ import app.lsgui.model.IChannel;
 import app.lsgui.model.IService;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.model.twitch.TwitchService;
+import javafx.scene.image.Image;
 import javafx.util.Duration;
 
 public final class TwitchUtils {
+
+    private static final ZoneOffset OFFSET = ZoneOffset.ofHours(0);
+    private static final String PREFIX = "GMT";
+    private static final ZoneId GMT = ZoneId.ofOffset(PREFIX, OFFSET);
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(GMT);
+    private static final String STREAM = "stream";
+    private static final String CHANNEL_IS_OFFLINE = "Channel is offline";
+    public static final Image DEFAULT_LOGO = new Image(
+            TwitchUtils.class.getClassLoader().getResource("default_channel.png").toExternalForm());
 
     private TwitchUtils() {
     }
@@ -42,11 +60,11 @@ public final class TwitchUtils {
     }
 
     public static boolean isTwitchChannel(final IChannel channel) {
-        return channel.getClass().equals(TwitchChannel.class);
+        return channel instanceof TwitchChannel;
     }
 
     public static boolean isTwitchService(final IService service) {
-        return service.getClass().equals(TwitchService.class);
+        return service instanceof TwitchService;
     }
 
     public static boolean isChannelOnline(final IChannel channel) {
@@ -69,7 +87,7 @@ public final class TwitchUtils {
     public static void openTwitchChat(final IChannel channel) {
         if (TwitchUtils.isTwitchChannel(channel)) {
             final String channelName = channel.getName().get();
-            ChatWindow cw = new ChatWindow(channelName);
+            final ChatWindow cw = new ChatWindow(channelName);
             cw.connect();
         }
     }
@@ -96,8 +114,87 @@ public final class TwitchUtils {
         }
     }
 
-    public static TwitchChannel constructTwitchChannel(final JsonObject data) {
-        return null;
+    public static TwitchChannel constructTwitchChannel(final JsonObject data, final String name,
+            final boolean isBrowser) {
+        final TwitchChannel channel = new TwitchChannel();
+        channel.setBrowser(isBrowser);
+        final JsonElement streamElement = data.get(STREAM);
+        if (streamElement != null && !streamElement.isJsonNull()) {
+            final JsonObject streamObject = streamElement.getAsJsonObject();
+            if (isStreamObjectValid(streamObject)) {
+                setData(channel, streamObject, name);
+            }
+        } else {
+            setData(channel, new JsonObject(), name);
+        }
+        return channel;
+    }
 
+    private static boolean isStreamObjectValid(final JsonObject streamObject) {
+        return streamObject != null && !streamObject.get("channel").isJsonNull()
+                && !streamObject.get("preview").isJsonNull() && !streamObject.isJsonNull();
+    }
+
+    private static void setData(final TwitchChannel channel, final JsonObject channelObject, final String name) {
+        if (!channelObject.equals(new JsonObject())) {
+            setOnlineData(channel, channelObject);
+        } else {
+            setOfflineData(channel, name);
+        }
+    }
+
+    private static void setOnlineData(final TwitchChannel channel, final JsonObject channelObject) {
+        final JsonObject channelJson = channelObject.get("channel").getAsJsonObject();
+        final JsonObject previewJson = channelObject.get("preview").getAsJsonObject();
+
+        channel.getName().set(JsonUtils.getStringIfNotNull("display_name", channelJson));
+        channel.getLogoURL().set(JsonUtils.getStringIfNotNull("logo", channelJson));
+        channel.getPreviewUrlLarge().set(JsonUtils.getStringIfNotNull("large", previewJson));
+        channel.getPreviewUrlMedium().set(JsonUtils.getStringIfNotNull("medium", previewJson));
+        channel.getGame().set(JsonUtils.getStringIfNotNull("game", channelObject));
+        channel.getTitle().set(JsonUtils.getStringIfNotNull("status", channelJson));
+        final String createdAt = JsonUtils.getStringIfNotNull("created_at", channelObject);
+        channel.getUptime().set(calculateUptime(createdAt));
+        channel.getViewers().set(JsonUtils.getIntegerIfNotNull("viewers", channelObject));
+        channel.getIsOnline().set(true);
+        channel.getIsPlaylist().set(JsonUtils.getBooleanIfNotNull("is_playlist", channelObject));
+        channel.getPreviewImageLarge().set(new Image(channel.getPreviewUrlLarge().get(), true));
+        channel.getPreviewImageMedium().set(new Image(channel.getPreviewUrlMedium().get(), true));
+        channel.getUptimeString().set(buildUptimeString(channel.getUptime().get()));
+        channel.getViewersString().set(Integer.toString(channel.getViewers().get()));
+        channel.getAvailableQualities().clear();
+        if (!channel.isBrowser()) {
+            channel.getAvailableQualities()
+                    .addAll(LsGuiUtils.getAvailableQuality("http://twitch.tv/" + channel.getName().get()));
+        }
+    }
+
+    private static void setOfflineData(final TwitchChannel channel, final String name) {
+        channel.getName().set(name);
+        channel.getLogoURL().set("");
+        channel.getPreviewUrlLarge().set("");
+        channel.getGame().set("");
+        channel.getTitle().set(CHANNEL_IS_OFFLINE);
+        channel.getUptime().set(0);
+        channel.getViewers().set(0);
+        channel.getIsOnline().set(false);
+        channel.getIsPlaylist().set(false);
+        channel.getPreviewImageLarge().set(DEFAULT_LOGO);
+        channel.getAvailableQualities().clear();
+    }
+
+    private static long calculateUptime(final String createdAt) {
+        final ZonedDateTime nowDate = ZonedDateTime.now(GMT);
+        final ZonedDateTime startDate = ZonedDateTime.parse(createdAt, DTF);
+        return startDate.until(nowDate, ChronoUnit.MILLIS);
+    }
+
+    public static String buildUptimeString(final Long uptime) {
+        final long hours = TimeUnit.MILLISECONDS.toHours(uptime);
+        final long minutes = TimeUnit.MILLISECONDS.toMinutes(uptime)
+                - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(uptime));
+        final long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime)
+                - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime));
+        return String.format("%02d:%02d:%02d Uptime", hours, minutes, seconds);
     }
 }

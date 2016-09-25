@@ -36,6 +36,7 @@ import app.lsgui.model.IService;
 import app.lsgui.remote.twitch.TwitchAPIClient;
 import app.lsgui.remote.twitch.TwitchChannelUpdateService;
 import app.lsgui.utils.Settings;
+import app.lsgui.utils.TwitchUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -82,7 +83,7 @@ public final class TwitchService implements IService {
     @Override
     public void addChannel(final String name) {
         LOGGER.debug("Add Channel {} to {} Service", name, this.getName().get());
-        final TwitchChannel channelToAdd = new TwitchChannel(new JsonObject(), name, false);
+        final TwitchChannel channelToAdd = TwitchUtils.constructTwitchChannel(new JsonObject(), name, false);
         final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
         tcus.start();
         UPDATESERVICES.put(channelToAdd, tcus);

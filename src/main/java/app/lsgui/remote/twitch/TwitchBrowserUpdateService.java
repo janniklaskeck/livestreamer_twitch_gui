@@ -26,7 +26,6 @@ package app.lsgui.remote.twitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.IChannel;
 import app.lsgui.model.twitch.TwitchChannel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -38,7 +37,7 @@ import javafx.concurrent.Task;
 public final class TwitchBrowserUpdateService extends Service<TwitchChannel> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchBrowserUpdateService.class);
-    private static final ListProperty<IChannel> ACTIVE_LIST = new SimpleListProperty<>(
+    private static final ListProperty<TwitchChannel> ACTIVE_LIST = new SimpleListProperty<>(
             FXCollections.observableArrayList());
     private TwitchChannel channel;
 
@@ -56,7 +55,8 @@ public final class TwitchBrowserUpdateService extends Service<TwitchChannel> {
                 }
             }
             synchronized (ACTIVE_LIST) {
-                ObservableList<IChannel> activeChannelServices = FXCollections.observableArrayList(ACTIVE_LIST.get());
+                ObservableList<TwitchChannel> activeChannelServices = FXCollections
+                        .observableArrayList(ACTIVE_LIST.get());
                 activeChannelServices.remove(this.channel);
                 ACTIVE_LIST.set(activeChannelServices);
             }
@@ -77,14 +77,14 @@ public final class TwitchBrowserUpdateService extends Service<TwitchChannel> {
         };
     }
 
-    private static ObservableList<IChannel> addAndGetChannelToList(final IChannel channel,
-            final ObservableList<IChannel> list) {
-        final ObservableList<IChannel> activeChannelServices = FXCollections.observableArrayList(list);
+    private static ObservableList<TwitchChannel> addAndGetChannelToList(final TwitchChannel channel,
+            final ObservableList<TwitchChannel> list) {
+        final ObservableList<TwitchChannel> activeChannelServices = FXCollections.observableArrayList(list);
         activeChannelServices.add(channel);
         return activeChannelServices;
     }
 
-    public static ListProperty<IChannel> getActiveChannelServicesProperty() {
+    public static ListProperty<TwitchChannel> getActiveChannelServicesProperty() {
         return ACTIVE_LIST;
     }
 
