@@ -87,7 +87,7 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
         } else if (data != null && !data.isOnline().get()) {
             this.setOffline(data.getName().get());
         }
-        displayNotification(notify);
+        this.displayNotification(notify);
     }
 
     private void displayNotification(final boolean notify) {
