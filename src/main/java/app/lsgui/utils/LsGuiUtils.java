@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
-import app.lsgui.gui.main.LsGuiWindow;
 import app.lsgui.model.IChannel;
 import app.lsgui.model.IService;
 import app.lsgui.model.generic.GenericService;
@@ -164,14 +163,14 @@ public final class LsGuiUtils {
         return serviceUrl + channelUrl;
     }
 
-    public static void recordStream(final IService service, final IChannel channel) {
+    public static void recordStream(final Stage stage, final IService service, final IChannel channel) {
         final String url = buildUrl(service.getUrl().get(), channel.getName().get());
         final String quality = Settings.getInstance().getQuality();
 
         final FileChooser recordFileChooser = new FileChooser();
         recordFileChooser.setTitle("Choose Target file");
         recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
-        final File recordFile = recordFileChooser.showSaveDialog(LsGuiWindow.getRootStage());
+        final File recordFile = recordFileChooser.showSaveDialog(stage);
         if (recordFile != null) {
             LivestreamerUtils.recordLivestreamer(url, quality, recordFile);
         }

@@ -48,6 +48,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 public class ChannelInfoPanel extends BorderPane {
 
@@ -200,7 +201,7 @@ public class ChannelInfoPanel extends BorderPane {
 
     private void recordStream() {
         final IService service = this.serviceComboBox.getSelectionModel().getSelectedItem();
-        LsGuiUtils.recordStream(service, this.channelProperty.get());
+        LsGuiUtils.recordStream((Stage) getScene().getWindow(), service, this.channelProperty.get());
     }
 
     private void openChat() {

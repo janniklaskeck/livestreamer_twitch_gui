@@ -44,6 +44,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseButton;
+import javafx.stage.Stage;
 
 public class ChannelCell extends ListCell<IChannel> {
 
@@ -150,7 +151,7 @@ public class ChannelCell extends ListCell<IChannel> {
         recordStream.textProperty().set("Record Stream");
         recordStream.setOnAction(event -> {
             final IService service = (IService) this.getListView().getUserData();
-            LsGuiUtils.recordStream(service, channel);
+            LsGuiUtils.recordStream((Stage) getScene().getWindow(), service, channel);
         });
         recordStream.disableProperty().bind(channel.isOnline().not());
 
