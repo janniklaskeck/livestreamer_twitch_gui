@@ -121,6 +121,7 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
     }
 
     private void setOnlineData(final JsonObject channelObject) {
+        // TODO extract into util
         final JsonObject channel = channelObject.get("channel").getAsJsonObject();
         final JsonObject preview = channelObject.get("preview").getAsJsonObject();
 
