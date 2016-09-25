@@ -33,6 +33,7 @@ import app.lsgui.model.IService;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.utils.TwitchUtils;
 import app.lsgui.utils.WrappedImageView;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -104,7 +105,7 @@ public class ChannelInfoPanel extends BorderPane {
         this.channelProperty.addListener((observable, oldValue, newValue) -> {
             final IChannel selectedChannel = newValue;
             if (selectedChannel != null) {
-                if (LsGuiUtils.isTwitchChannel(selectedChannel)) {
+                if (TwitchUtils.isTwitchChannel(selectedChannel)) {
                     this.bindToTwitchChannel((TwitchChannel) selectedChannel);
                 } else {
                     this.bindToGenericChannel(selectedChannel);
@@ -190,7 +191,7 @@ public class ChannelInfoPanel extends BorderPane {
     }
 
     private void startStream() {
-        if (LsGuiUtils.isChannelOnline(this.channelProperty.get())) {
+        if (TwitchUtils.isChannelOnline(this.channelProperty.get())) {
             final String url = this.buildUrl();
             final String quality = this.getQuality();
             LivestreamerUtils.startLivestreamer(url, quality);
@@ -203,7 +204,7 @@ public class ChannelInfoPanel extends BorderPane {
     }
 
     private void openChat() {
-        LsGuiUtils.openTwitchChat(this.channelProperty.get());
+        TwitchUtils.openTwitchChat(this.channelProperty.get());
     }
 
     private void openBrowser() {

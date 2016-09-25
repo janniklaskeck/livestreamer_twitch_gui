@@ -13,6 +13,7 @@ import app.lsgui.model.twitch.TwitchService;
 import app.lsgui.remote.twitch.TwitchChannelUpdateService;
 import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.PopOverUtil;
+import app.lsgui.utils.TwitchUtils;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.BooleanProperty;
@@ -144,7 +145,7 @@ public final class TopToolBar extends ToolBar {
         LOGGER.debug("Change Service to {}", newService.getName().get());
         this.channelList.getStreams().bind(newService.getChannelProperty());
         this.channelList.getListView().setUserData(newService);
-        if (LsGuiUtils.isTwitchService(newService)) {
+        if (TwitchUtils.isTwitchService(newService)) {
             this.importButton.setDisable(false);
             this.twitchBrowserButton.setDisable(false);
         } else {

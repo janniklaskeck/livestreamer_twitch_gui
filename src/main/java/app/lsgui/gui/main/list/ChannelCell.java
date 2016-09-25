@@ -32,6 +32,7 @@ import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.Settings;
+import app.lsgui.utils.TwitchUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -115,7 +116,7 @@ public class ChannelCell extends ListCell<IChannel> {
             });
 
             this.isOnline.bind(channel.isOnline());
-            if (LsGuiUtils.isTwitchChannel(channel)) {
+            if (TwitchUtils.isTwitchChannel(channel)) {
                 final TwitchChannel twitchChannel = (TwitchChannel) channel;
                 this.isPlaylist.bind(twitchChannel.getIsPlaylist());
             }
@@ -156,10 +157,10 @@ public class ChannelCell extends ListCell<IChannel> {
         final MenuItem openChat = new MenuItem();
         openChat.textProperty().set("Open Twitch.tv Chat");
         openChat.setOnAction(event -> {
-            LsGuiUtils.openTwitchChat(channel);
+            TwitchUtils.openTwitchChat(channel);
             LOGGER.debug("Opening Twitch Chat for {}", channel.getName().get());
         });
-        openChat.setDisable(!LsGuiUtils.isTwitchChannel(channel));
+        openChat.setDisable(!TwitchUtils.isTwitchChannel(channel));
         final MenuItem openBrowser = new MenuItem();
         openBrowser.textProperty().set("Open in Browser");
         openBrowser.setOnAction(event -> {

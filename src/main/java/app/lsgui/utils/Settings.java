@@ -328,7 +328,7 @@ public final class Settings {
 
     public IService getTwitchService() {
         final List<IService> servicesAsList = this.getStreamServices().get();
-        final Optional<IService> serviceOptional = servicesAsList.stream().filter(LsGuiUtils::isTwitchService)
+        final Optional<IService> serviceOptional = servicesAsList.stream().filter(TwitchUtils::isTwitchService)
                 .findFirst();
         if (serviceOptional.isPresent()) {
             return serviceOptional.get();

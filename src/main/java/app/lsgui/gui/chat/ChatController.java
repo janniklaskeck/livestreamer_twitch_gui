@@ -31,8 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.utils.IrcClient;
-import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.Settings;
+import app.lsgui.utils.TwitchUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -126,7 +126,7 @@ public final class ChatController {
 
     public static void setColoredNickName(final InlineCssTextArea cta, final int start, final int end) {
         cta.setStyle(start, end,
-                "-fx-fill: " + LsGuiUtils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
+                "-fx-fill: " + TwitchUtils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
     }
 
     public static void setChatMessageStyle(final InlineCssTextArea cta, final int start, final int end) {

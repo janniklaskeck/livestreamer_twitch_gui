@@ -135,7 +135,7 @@ public final class PopOverUtil {
 
         submitButton.setOnAction(event -> {
             final String username = nameTextField.getText();
-            LsGuiUtils.addFollowedChannelsToService(username, service);
+            TwitchUtils.addFollowedChannelsToService(username, service);
             popOver.hide();
         });
         submitButton.setDefaultButton(true);

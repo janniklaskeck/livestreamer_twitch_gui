@@ -39,6 +39,7 @@ import com.google.gson.JsonObject;
 import app.lsgui.model.IChannel;
 import app.lsgui.utils.JsonUtils;
 import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.utils.TwitchUtils;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -159,10 +160,10 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
             this.setOffline(data.getName().get());
         }
         if (this.cameOnline && notify && !this.hasReminder.get()) {
-            LsGuiUtils.showOnlineNotification(this);
+            TwitchUtils.showOnlineNotification(this);
             this.cameOnline = false;
         } else if (this.cameOnline && notify && this.hasReminder.get()) {
-            LsGuiUtils.showReminderNotification(this);
+            TwitchUtils.showReminderNotification(this);
             this.cameOnline = false;
         }
     }
