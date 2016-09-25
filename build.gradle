@@ -26,7 +26,7 @@ ext {
     pircbotVersion = "1.5.0"
     richtextfxVersion = "0.6.10"
     fontawesomefxVersion = "8.9"
-    controlsfxVersion = "8.40.11"
+    controlsfxVersion = "8.40.12"
     gsonVersion = "2.7"
     httpclientVersion = "4.5.2"
     slf4jVersion = "1.7.21"
