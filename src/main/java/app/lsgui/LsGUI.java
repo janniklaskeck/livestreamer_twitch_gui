@@ -42,10 +42,7 @@ public final class LsGUI {
     }
 
     public static void main(String[] args) {
-        System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
-
         LOGGER.debug("Pre-Launch finished");
-
         Application.launch(LsGuiWindow.class, args);
     }
 }
