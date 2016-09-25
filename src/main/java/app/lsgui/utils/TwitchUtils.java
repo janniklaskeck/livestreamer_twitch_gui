@@ -30,6 +30,7 @@ public final class TwitchUtils {
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(GMT);
     private static final String STREAM = "stream";
     private static final String CHANNEL_IS_OFFLINE = "Channel is offline";
+    public static final String NO_QUALITIES = "Error fetching Quality Options!";
     public static final Image DEFAULT_LOGO = new Image(
             TwitchUtils.class.getClassLoader().getResource("default_channel.png").toExternalForm());
 
@@ -141,7 +142,6 @@ public final class TwitchUtils {
 
     private static void setData(final TwitchChannel channel, final JsonObject channelObject, final String name) {
         if (!channelObject.equals(new JsonObject())) {
-            System.out.println(1);
             setOnlineData(channel, channelObject);
         } else {
             setOfflineData(channel, name);
@@ -168,11 +168,11 @@ public final class TwitchUtils {
         channel.getUptimeString().set(buildUptimeString(channel.getUptime().get()));
         channel.getViewersString().set(Integer.toString(channel.getViewers().get()));
         channel.getAvailableQualities().clear();
+
         if (!channel.isBrowser()) {
             channel.getAvailableQualities()
                     .addAll(LsGuiUtils.getAvailableQuality("http://twitch.tv/" + channel.getName().get()));
-            LOGGER.debug("Created Channel '{}' from JsonData. {}", channel.getName().get(),
-                    channel.getAvailableQualities().get().size());
+
         }
     }
 
@@ -188,6 +188,7 @@ public final class TwitchUtils {
         channel.getIsPlaylist().set(false);
         channel.getPreviewImageLarge().set(DEFAULT_LOGO);
         channel.getAvailableQualities().clear();
+        channel.getAvailableQualities().add(CHANNEL_IS_OFFLINE);
     }
 
     private static long calculateUptime(final String createdAt) {

@@ -94,8 +94,6 @@ public final class TwitchAPIClient {
                 final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channelName);
                 final JsonObject jsonData = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
                 channel = TwitchUtils.constructTwitchChannel(jsonData, channelName, isBrowser);
-                // LOGGER.debug("{} {}", channel.getName().get(),
-                // channel.isOnline().get());
             } catch (JsonSyntaxException e) {
                 LOGGER.error("ERROR while loading channel data. Return empty channel", e);
             }

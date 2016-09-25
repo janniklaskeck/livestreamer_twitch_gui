@@ -54,7 +54,6 @@ import javafx.util.Callback;
 public final class TwitchChannel implements IChannel, ITwitchItem {
 
     private static final String CHANNEL_IS_OFFLINE = "Channel is offline";
-    private static final String NO_QUALITIES = "Error fetching Quality Options!";
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannel.class);
 
     private StringProperty name = new SimpleStringProperty();
@@ -137,6 +136,11 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
         this.previewImageMedium.setValue(data.getPreviewImageMedium().get());
         this.availableQualities.clear();
         this.availableQualities.addAll(data.getAvailableQualities());
+        if (this.getAvailableQualities().isEmpty() && !this.isBrowser()) {
+            this.getAvailableQualities().add(TwitchUtils.NO_QUALITIES);
+            LsGuiUtils.showWarningNotification(TwitchUtils.NO_QUALITIES,
+                    "Check your Twitch OAuth Key in the Settings!");
+        }
     }
 
     public static Callback<IChannel, Observable[]> extractor() {
@@ -195,14 +199,6 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
 
     @Override
     public ListProperty<String> getAvailableQualities() {
-        if (this.availableQualities.isEmpty()) {
-            if (!this.isOnline.get()) {
-                this.availableQualities.add(CHANNEL_IS_OFFLINE);
-            } else if (!this.isBrowser) {
-                this.availableQualities.add(NO_QUALITIES);
-                LsGuiUtils.showWarningNotification(NO_QUALITIES, "Check your Twitch OAuth Key in the Settings!");
-            }
-        }
         return this.availableQualities;
     }
 
