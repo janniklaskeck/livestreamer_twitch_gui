@@ -71,7 +71,7 @@ public final class TwitchBrowserUpdateService extends Service<TwitchChannel> {
     }
 
     public static ListProperty<TwitchChannel> activeServicesProperty() {
-        return ACTIVE_LIST;
+        return TwitchBrowserUpdateService.ACTIVE_LIST;
     }
 
 }

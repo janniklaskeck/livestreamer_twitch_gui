@@ -81,6 +81,6 @@ public final class TwitchChannelUpdateService extends ScheduledService<TwitchCha
     }
 
     public static ListProperty<TwitchChannel> getActiveChannelServicesProperty() {
-        return ACTIVE_LIST;
+        return TwitchChannelUpdateService.ACTIVE_LIST;
     }
 }
