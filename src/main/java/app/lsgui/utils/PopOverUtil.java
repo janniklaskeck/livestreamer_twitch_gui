@@ -28,90 +28,74 @@ public final class PopOverUtil {
     }
 
     public static PopOver createAddDialog(final Node root, final IService service) {
-        final PopOver popOver = new PopOver();
-        popOver.getRoot().getStylesheets().add(PopOverUtil.class
-                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
-
+        final PopOver popOver = createBasePopOver("Add new Channel or Service");
         final VBox dialogBox = new VBox();
-        dialogBox.setPadding(INSETS);
-
         final HBox buttonBox = new HBox();
         final Button submitButton = new Button("Submit");
         final Button cancelButton = new Button("Cancel");
-
         final HBox nameBox = new HBox();
         final Label nameLabel = new Label("Name ");
         final TextField nameTextField = new TextField();
-        nameBox.getChildren().add(nameLabel);
-        nameBox.getChildren().add(nameTextField);
-
+        final Button addChannelButton = new Button("Add Channel");
+        final Button addServiceButton = new Button("Add Service");
         final HBox urlBox = new HBox();
         final Label urlLabel = new Label("URL ");
         final TextField urlTextField = new TextField();
+        nameBox.getChildren().add(nameLabel);
+        nameBox.getChildren().add(nameTextField);
+
         urlBox.getChildren().add(urlLabel);
         urlBox.getChildren().add(urlTextField);
 
         buttonBox.getChildren().add(submitButton);
         buttonBox.getChildren().add(cancelButton);
 
-        final Button addChannelButton = new Button("Add Channel");
-        final Button addServiceButton = new Button("Add Service");
+        dialogBox.setPadding(INSETS);
+
+        dialogBox.getChildren().add(addChannelButton);
+        dialogBox.getChildren().add(addServiceButton);
         addChannelButton.setOnAction(event -> {
             dialogBox.getChildren().clear();
             dialogBox.getChildren().add(nameBox);
             dialogBox.getChildren().add(buttonBox);
         });
-
         addServiceButton.setOnAction(event -> {
             dialogBox.getChildren().clear();
             dialogBox.getChildren().add(nameBox);
             dialogBox.getChildren().add(urlBox);
             dialogBox.getChildren().add(buttonBox);
         });
-
         submitButton.setOnAction(event -> {
             if (dialogBox.getChildren().contains(urlBox)) {
                 final String serviceName = nameTextField.getText();
                 final String serviceUrl = urlTextField.getText();
-                LOGGER.info("Adding service");
                 LsGuiUtils.addService(serviceName, serviceUrl);
             } else {
                 final String channelName = nameTextField.getText();
-                LOGGER.info("Adding channel");
                 LsGuiUtils.addChannelToService(channelName, service);
             }
             popOver.hide();
         });
         submitButton.setDefaultButton(true);
-
         cancelButton.setOnAction(event -> popOver.hide());
-        dialogBox.getChildren().add(addChannelButton);
-        dialogBox.getChildren().add(addServiceButton);
 
         popOver.setContentNode(dialogBox);
-        popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
-        popOver.setCornerRadius(CORDER_RADIUS);
-        popOver.setTitle("Add new Channel or Service");
         final Point2D clickedPoint = getClickedPoint(root);
         popOver.show(root.getParent(), clickedPoint.getX(), clickedPoint.getY());
         return popOver;
     }
 
     public static PopOver createImportPopOver(final Node root, final TwitchService service) {
-        final PopOver popOver = new PopOver();
-        popOver.getRoot().getStylesheets().add(PopOverUtil.class
-                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
+        final PopOver popOver = createBasePopOver("Import followed Twitch.tv Channels");
         final VBox dialogBox = new VBox();
-        dialogBox.setPadding(INSETS);
-
         final HBox buttonBox = new HBox();
         final Button submitButton = new Button("Import");
         final Button cancelButton = new Button("Cancel");
         final TextField nameTextField = new TextField();
-
         buttonBox.getChildren().add(submitButton);
         buttonBox.getChildren().add(cancelButton);
 
+        dialogBox.setPadding(INSETS);
         dialogBox.getChildren().add(nameTextField);
         dialogBox.getChildren().add(buttonBox);
 
@@ -125,15 +109,23 @@ public final class PopOverUtil {
         cancelButton.setOnAction(event -> popOver.hide());
 
         popOver.setContentNode(dialogBox);
-        popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
-        popOver.setCornerRadius(CORDER_RADIUS);
-        popOver.setTitle("Import followed Twitch.tv Channels");
         final Point2D clickedPoint = getClickedPoint(root);
         popOver.show(root.getParent(), clickedPoint.getX(), clickedPoint.getY());
         return popOver;
     }
 
+    private static PopOver createBasePopOver(final String title) {
+        final PopOver popOver = new PopOver();
+        popOver.getRoot().getStylesheets().add(PopOverUtil.class
+                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
+        popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
+        popOver.setCornerRadius(CORDER_RADIUS);
+        popOver.setTitle(title);
+        return popOver;
+    }
+
     private static Point2D getClickedPoint(final Node root) {
+        LOGGER.debug("Get clicked Point from Node root");
         final Scene scene = root.getScene();
         final Point2D nodeCoord = root.localToScene(0.0D, 25.0D);
         final Window sceneWindow = scene.getWindow();
@@ -141,6 +133,7 @@ public final class PopOverUtil {
         final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
         final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
         final double clickY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
+        LOGGER.debug("Return clicked Point(X: {}, Y: {}) from Node root", clickX, clickY);
         return new Point2D(clickX, clickY);
     }
 }
