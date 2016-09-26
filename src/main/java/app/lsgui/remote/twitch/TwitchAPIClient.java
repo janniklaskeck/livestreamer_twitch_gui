@@ -134,8 +134,9 @@ public final class TwitchAPIClient {
             JsonObject links = jo.get("_links").getAsJsonObject();
             String self = links.get("self").getAsString();
             String next = links.get("next").getAsString();
-
-            int offset = Integer.parseInt(self.split("&")[2].split("=")[1]);
+            final int offsetIndex = 2;
+            final int valueIndex = 1;
+            int offset = Integer.parseInt(self.split("&")[offsetIndex].split("=")[valueIndex]);
             while (offset < total) {
                 for (JsonElement je : streams) {
                     final JsonObject channel = je.getAsJsonObject().get("channel").getAsJsonObject();
@@ -147,7 +148,7 @@ public final class TwitchAPIClient {
                 links = jo.get("_links").getAsJsonObject();
                 self = links.get("self").getAsString();
                 next = links.get("next").getAsString();
-                offset = Integer.parseInt(self.split("&")[2].split("=")[1]);
+                offset = Integer.parseInt(self.split("&")[offsetIndex].split("=")[valueIndex]);
             }
         }
         return followedStreams;
