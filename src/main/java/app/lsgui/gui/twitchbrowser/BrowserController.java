@@ -94,7 +94,7 @@ public final class BrowserController {
         vbox.getChildren().add(browserProgressBar);
         this.browserRootBorderPane.setBottom(vbox);
         final DoubleProperty progress = new SimpleDoubleProperty();
-        TwitchBrowserUpdateService.getActiveChannelServicesProperty().addListener((observable, oldValue, newValue) -> {
+        TwitchBrowserUpdateService.activeServicesProperty().addListener((observable, oldValue, newValue) -> {
             final int size = observable.getValue().size();
             if (size == 0) {
                 progress.set(1.0D);

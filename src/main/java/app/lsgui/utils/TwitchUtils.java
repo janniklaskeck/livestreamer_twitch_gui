@@ -19,6 +19,9 @@ import app.lsgui.model.IChannel;
 import app.lsgui.model.IService;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.model.twitch.TwitchService;
+import javafx.beans.property.ListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
@@ -204,5 +207,24 @@ public final class TwitchUtils {
         final long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime)
                 - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime));
         return String.format("%02d:%02d:%02d Uptime", hours, minutes, seconds);
+    }
+
+    public static void removeTwitchChannelFromList(final ListProperty<TwitchChannel> activeList,
+            final TwitchChannel channel) {
+        synchronized (activeList) {
+            ObservableList<TwitchChannel> activeChannelServices = FXCollections.observableArrayList(activeList.get());
+            activeChannelServices.remove(channel);
+            activeList.set(activeChannelServices);
+        }
+    }
+
+    public static void addChannelToList(final ListProperty<TwitchChannel> activeList,
+            final TwitchChannel channel) {
+        synchronized (activeList) {
+            final ObservableList<TwitchChannel> activeChannelServices = FXCollections
+                    .observableArrayList(activeList.get());
+            activeChannelServices.add(channel);
+            activeList.set(activeChannelServices);
+        }
     }
 }

@@ -27,10 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.twitch.TwitchChannel;
+import app.lsgui.utils.TwitchUtils;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.util.Duration;
@@ -64,12 +64,7 @@ public final class TwitchChannelUpdateService extends ScheduledService<TwitchCha
                     this.channel.updateData(updatedModel, true);
                 }
             }
-            synchronized (ACTIVE_LIST) {
-                final ObservableList<TwitchChannel> activeChannelServices = FXCollections
-                        .observableArrayList(ACTIVE_LIST.get());
-                activeChannelServices.remove(this.channel);
-                ACTIVE_LIST.set(activeChannelServices);
-            }
+            TwitchUtils.removeTwitchChannelFromList(ACTIVE_LIST, channel);
         });
         setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED {}", event.getEventType()));
     }
@@ -79,20 +74,10 @@ public final class TwitchChannelUpdateService extends ScheduledService<TwitchCha
         return new Task<TwitchChannel>() {
             @Override
             protected TwitchChannel call() throws Exception {
-                synchronized (ACTIVE_LIST) {
-                    ACTIVE_LIST.set(addAndGetChannelToList(channel, ACTIVE_LIST));
-                }
+                TwitchUtils.addChannelToList(ACTIVE_LIST, channel);
                 return TwitchAPIClient.getInstance().getStreamData(channel.getName().get(), false);
             }
         };
-    }
-
-    private static ObservableList<TwitchChannel> addAndGetChannelToList(final TwitchChannel channel,
-            final ObservableList<TwitchChannel> list) {
-        final ObservableList<TwitchChannel> activeChannelServices = FXCollections.observableArrayList(list);
-        activeChannelServices.add(channel);
-        LOGGER.trace("Add channel {} to active list with size {}", channel.getName().get(), list.size());
-        return activeChannelServices;
     }
 
     public static ListProperty<TwitchChannel> getActiveChannelServicesProperty() {
