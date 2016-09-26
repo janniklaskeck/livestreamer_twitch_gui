@@ -22,6 +22,7 @@ public final class PopOverUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PopOverUtil.class);
     private static final int CORDER_RADIUS = 4;
+    private static final Insets INSETS = new Insets(8);
 
     private PopOverUtil() {
     }
@@ -30,18 +31,9 @@ public final class PopOverUtil {
         final PopOver popOver = new PopOver();
         popOver.getRoot().getStylesheets().add(PopOverUtil.class
                 .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
-        final Scene scene = root.getScene();
-        final Point2D nodeCoord = root.localToScene(0.0, 25.0);
-        final Window sceneWindow = scene.getWindow();
-        final Point2D windowCoord = new Point2D(sceneWindow.getX(), sceneWindow.getY());
-        final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
-        final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
-        final double clickY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
-
-        final Insets inset = new Insets(8);
 
         final VBox dialogBox = new VBox();
-        dialogBox.setPadding(inset);
+        dialogBox.setPadding(INSETS);
 
         final HBox buttonBox = new HBox();
         final Button submitButton = new Button("Submit");
@@ -100,7 +92,8 @@ public final class PopOverUtil {
         popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
         popOver.setCornerRadius(CORDER_RADIUS);
         popOver.setTitle("Add new Channel or Service");
-        popOver.show(root.getParent(), clickX, clickY);
+        final Point2D clickedPoint = getClickedPoint(root);
+        popOver.show(root.getParent(), clickedPoint.getX(), clickedPoint.getY());
         return popOver;
     }
 
@@ -108,19 +101,8 @@ public final class PopOverUtil {
         final PopOver popOver = new PopOver();
         popOver.getRoot().getStylesheets().add(PopOverUtil.class
                 .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
-        final Scene scene = root.getScene();
-
-        final Window sceneWindow = scene.getWindow();
-        final Point2D windowCoord = new Point2D(sceneWindow.getX(), sceneWindow.getY());
-        final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
-        final Point2D nodeCoord = root.localToScene(0.0, 25.0);
-        final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
-        final double clickY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
-
-        final Insets inset = new Insets(8);
-
         final VBox dialogBox = new VBox();
-        dialogBox.setPadding(inset);
+        dialogBox.setPadding(INSETS);
 
         final HBox buttonBox = new HBox();
         final Button submitButton = new Button("Import");
@@ -146,7 +128,19 @@ public final class PopOverUtil {
         popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
         popOver.setCornerRadius(CORDER_RADIUS);
         popOver.setTitle("Import followed Twitch.tv Channels");
-        popOver.show(root.getParent(), clickX, clickY);
+        final Point2D clickedPoint = getClickedPoint(root);
+        popOver.show(root.getParent(), clickedPoint.getX(), clickedPoint.getY());
         return popOver;
+    }
+
+    private static Point2D getClickedPoint(final Node root) {
+        final Scene scene = root.getScene();
+        final Point2D nodeCoord = root.localToScene(0.0D, 25.0D);
+        final Window sceneWindow = scene.getWindow();
+        final Point2D windowCoord = new Point2D(sceneWindow.getX(), sceneWindow.getY());
+        final Point2D sceneCoord = new Point2D(scene.getX(), scene.getY());
+        final double clickX = Math.round(windowCoord.getX() + sceneCoord.getY() + nodeCoord.getX());
+        final double clickY = Math.round(windowCoord.getY() + sceneCoord.getY() + nodeCoord.getY());
+        return new Point2D(clickX, clickY);
     }
 }
