@@ -124,7 +124,7 @@ public final class SettingsController {
             exeFileChooser.getExtensionFilters().add(new ExtensionFilter("EXE", "*.exe"));
             final File exeFile = exeFileChooser.showOpenDialog(LsGuiWindow.getRootStage());
             if (exeFile != null) {
-                Settings.getInstance().setLivestreamerExePath(exeFile.getAbsolutePath());
+                Settings.getInstance().getLivestreamerExePath().set(exeFile.getAbsolutePath());
             }
         });
         final String updateLinkString = settings.getUpdateLink().get();

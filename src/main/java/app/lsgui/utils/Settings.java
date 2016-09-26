@@ -91,9 +91,9 @@ public final class Settings {
     private String twitchOAuth = "";
     private int maxGamesLoad;
     private int maxChannelsLoad;
-    private String liveStreamerExePath = "";
-    private String quality = "Best";
-    private String recordingPath;
+    private StringProperty liveStreamerExePath = new SimpleStringProperty();
+    private StringProperty quality = new SimpleStringProperty("Best");
+    private StringProperty recordingPath = new SimpleStringProperty();
     private StringProperty updateLink = new SimpleStringProperty();
 
     private boolean isLoading;
@@ -143,11 +143,11 @@ public final class Settings {
         this.twitchUser = JsonUtils.getStringSafe(settings.get(TWITCH_USER_STRING), "");
         this.twitchOAuth = JsonUtils.getStringSafe(settings.get(TWITCH_OAUTH_STRING), "");
         this.windowStyle = JsonUtils.getStringSafe(settings.get(WINDOWSTYLE_STRING), "LightStyle");
-        this.liveStreamerExePath = JsonUtils.getStringSafe(settings.get(EXEPATH_STRING), "");
+        this.liveStreamerExePath.set(JsonUtils.getStringSafe(settings.get(EXEPATH_STRING), ""));
         this.maxChannelsLoad = JsonUtils.getIntSafe(settings.get(CHANNELS_LOAD), DEFAULT_CHANNELS_TO_LOAD);
         this.maxGamesLoad = JsonUtils.getIntSafe(settings.get(GAMES_LOAD), DEFAULT_GAMES_TO_LOAD);
-        this.quality = JsonUtils.getStringSafe(settings.get(QUALITY_STRING), "Best");
-        this.recordingPath = JsonUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home"));
+        this.quality.set(JsonUtils.getStringSafe(settings.get(QUALITY_STRING), "Best"));
+        this.recordingPath.set(JsonUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home")));
         final JsonArray favouritesArray = JsonUtils.getJsonArraySafe(FAVOURITE_GAMES, settings);
         for (int i = 0; i < favouritesArray.size(); i++) {
             final String favourite = favouritesArray.get(i).getAsString();
@@ -189,13 +189,13 @@ public final class Settings {
             jsonWriter.name(TWITCH_USER_STRING).value(this.twitchUser);
             jsonWriter.name(TWITCH_OAUTH_STRING).value(this.twitchOAuth);
             jsonWriter.name(TWITCH_SORT).value(this.sortTwitch.get());
-            jsonWriter.name(QUALITY_STRING).value(this.quality);
-            jsonWriter.name(PATH).value(this.getRecordingPath());
+            jsonWriter.name(QUALITY_STRING).value(this.getQuality().get());
+            jsonWriter.name(PATH).value(this.getRecordingPath().get());
             jsonWriter.name(CHANNELS_LOAD).value(this.maxChannelsLoad);
             jsonWriter.name(GAMES_LOAD).value(this.maxGamesLoad);
             jsonWriter.name(MINIMIZE_TO_TRAY_STRING).value(this.minimizeToTray);
             jsonWriter.name(WINDOWSTYLE_STRING).value(this.windowStyle);
-            jsonWriter.name(EXEPATH_STRING).value(this.liveStreamerExePath);
+            jsonWriter.name(EXEPATH_STRING).value(this.getLivestreamerExePath().get());
             this.writeFavouriteGames(jsonWriter);
             jsonWriter.endObject();
             this.writeServices(jsonWriter);
@@ -302,28 +302,16 @@ public final class Settings {
         this.windowStyle = windowStyle;
     }
 
-    public void setLivestreamerExePath(final String absolutePath) {
-        this.liveStreamerExePath = absolutePath;
-    }
-
-    public String getLivestreamerExePath() {
+    public StringProperty getLivestreamerExePath() {
         return this.liveStreamerExePath;
     }
 
-    public String getQuality() {
+    public StringProperty getQuality() {
         return this.quality;
     }
 
-    public void setQuality(final String quality) {
-        this.quality = quality;
-    }
-
-    public String getRecordingPath() {
+    public StringProperty getRecordingPath() {
         return this.recordingPath;
-    }
-
-    public void setRecordingPath(final String recordingPath) {
-        this.recordingPath = recordingPath;
     }
 
     public IService getTwitchService() {
@@ -340,10 +328,6 @@ public final class Settings {
         return this.updateLink;
     }
 
-    public void setUpdateLink(final String updateLink) {
-        this.updateLink.setValue(updateLink);
-    }
-
     public ListProperty<String> getFavouriteGames() {
         return this.favouriteGames;
     }
@@ -351,12 +335,12 @@ public final class Settings {
     public void addFavouriteGame(final String game) {
         final ObservableList<String> favourites = FXCollections.observableArrayList(this.favouriteGames);
         favourites.add(game);
-        this.favouriteGames.set(favourites);
+        this.getFavouriteGames().set(favourites);
     }
 
     public void removeFavouriteGame(final String game) {
         final ObservableList<String> favourites = FXCollections.observableArrayList(this.favouriteGames);
         favourites.remove(game);
-        this.favouriteGames.set(favourites);
+        this.getFavouriteGames().set(favourites);
     }
 }

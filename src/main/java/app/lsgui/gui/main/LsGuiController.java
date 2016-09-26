@@ -72,7 +72,7 @@ public final class LsGuiController {
                         final QualityComboBox qualityComboBox = this.topToolBar.getQualityComboBox();
                         qualityComboBox.itemsProperty().bind(newValue.getAvailableQualities());
                         if (qualityComboBox.getItems().size() > 1) {
-                            final String quality = Settings.getInstance().getQuality();
+                            final String quality = Settings.getInstance().getQuality().get();
                             if (qualityComboBox.getItems().contains(quality)) {
                                 qualityComboBox.getSelectionModel().select(quality);
                             } else {

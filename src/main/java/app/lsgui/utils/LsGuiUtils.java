@@ -165,7 +165,7 @@ public final class LsGuiUtils {
 
     public static void recordStream(final Stage stage, final IService service, final IChannel channel) {
         final String url = buildUrl(service.getUrl().get(), channel.getName().get());
-        final String quality = Settings.getInstance().getQuality();
+        final String quality = Settings.getInstance().getQuality().get();
 
         final FileChooser recordFileChooser = new FileChooser();
         recordFileChooser.setTitle("Choose Target file");
