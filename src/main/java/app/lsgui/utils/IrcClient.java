@@ -69,6 +69,10 @@ public final class IrcClient extends PircBot {
         this.channel = channel;
     }
 
+    public String getChannel() {
+        return this.channel;
+    }
+
     @Override
     public boolean equals(final Object other) {
         boolean result = false;

@@ -90,6 +90,7 @@ public final class ChatController {
             final String twitchUsername = Settings.getInstance().getTwitchUser();
             final int start = this.chatTextArea.getText().length();
             final int end = start + twitchUsername.length() + 1;
+            this.client.sendMessage(this.client.getChannel(), message);
             this.chatTextArea.appendText(twitchUsername + ": " + message + "\n");
             setColoredNickName(this.chatTextArea, start, end);
             setChatMessageStyle(this.chatTextArea, end, end + message.length() + 1);
