@@ -231,4 +231,14 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
     public void setBrowser(final boolean isBrowser) {
         this.isBrowser = isBrowser;
     }
+
+    @Override
+    public boolean isTwitchGame() {
+        return false;
+    }
+
+    @Override
+    public boolean isTwitchChannel() {
+        return true;
+    }
 }

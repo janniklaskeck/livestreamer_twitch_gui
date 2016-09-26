@@ -55,6 +55,14 @@ public final class TwitchGame implements ITwitchItem {
         this.channels = TwitchAPIClient.getInstance().getGameData(this.getName().get());
     }
 
+    public void updateData(final TwitchGame updatedGame) {
+        this.name = new SimpleStringProperty(updatedGame.getName().get());
+        this.viewers = new SimpleStringProperty(updatedGame.getViewers().get());
+        this.boxImage = new SimpleObjectProperty<>(updatedGame.getBoxImage().get());
+        this.channelCount = new SimpleStringProperty(updatedGame.getChannelCount().get());
+        this.loadChannelData();
+    }
+
     public TwitchChannels getChannels() {
         return this.channels;
     }
@@ -75,12 +83,14 @@ public final class TwitchGame implements ITwitchItem {
         return this.boxImage;
     }
 
-    public void updateData(final TwitchGame updatedGame) {
-        this.name = new SimpleStringProperty(updatedGame.getName().get());
-        this.viewers = new SimpleStringProperty(updatedGame.getViewers().get());
-        this.boxImage = new SimpleObjectProperty<>(updatedGame.getBoxImage().get());
-        this.channelCount = new SimpleStringProperty(updatedGame.getChannelCount().get());
-        this.loadChannelData();
+    @Override
+    public boolean isTwitchGame() {
+        return true;
+    }
+
+    @Override
+    public boolean isTwitchChannel() {
+        return false;
     }
 
 }

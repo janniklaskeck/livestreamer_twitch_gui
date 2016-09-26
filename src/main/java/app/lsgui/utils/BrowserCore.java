@@ -104,10 +104,10 @@ public final class BrowserCore {
         final ObservableList<ITwitchItem> oldItems = this.items.get();
         final FilteredList<ITwitchItem> filteredItems = new FilteredList<>(oldItems);
         filteredItems.setPredicate(item -> {
-            if (item instanceof TwitchGame) {
+            if (item.isTwitchGame()) {
                 final TwitchGame game = (TwitchGame) item;
                 return game.getName().get().toLowerCase(Locale.ENGLISH).contains(filter);
-            } else if (item instanceof TwitchChannel) {
+            } else if (item.isTwitchChannel()) {
                 final TwitchChannel channel = (TwitchChannel) item;
                 return channel.getName().get().toLowerCase(Locale.ENGLISH).contains(filter);
             }

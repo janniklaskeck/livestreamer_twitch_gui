@@ -25,4 +25,8 @@ package app.lsgui.model.twitch;
 
 public interface ITwitchItem {
 
+    boolean isTwitchGame();
+
+    boolean isTwitchChannel();
+
 }
