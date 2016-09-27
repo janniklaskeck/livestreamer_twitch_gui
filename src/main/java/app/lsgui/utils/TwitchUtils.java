@@ -174,9 +174,13 @@ public final class TwitchUtils {
         channel.getViewersString().set(Integer.toString(channel.getViewers().get()));
         channel.getAvailableQualities().clear();
         if (!channel.isBrowser()) {
-            final List<String> availableQualities = TwitchUtils.getStreamQualities(channel.isPartneredProperty().get());
+            final List<String> availableQualities;
+            if (channel.isPartneredProperty().get()) {
+                availableQualities = TwitchUtils.getStreamQualitiesForPartnered();
+            } else {
+                availableQualities = TwitchUtils.getStreamQualities();
+            }
             channel.getAvailableQualities().addAll(availableQualities);
-
         }
     }
 
@@ -229,19 +233,21 @@ public final class TwitchUtils {
         }
     }
 
-    public static List<String> getStreamQualities(final boolean isPartnered) {
+    public static List<String> getStreamQualitiesForPartnered() {
         final List<String> qualities = new ArrayList<>();
-        if (isPartnered) {
-            qualities.add("Audio");
-            qualities.add("Mobile");
-            qualities.add("Low");
-            qualities.add("Medium");
-            qualities.add("High");
-            qualities.add("Source");
-        } else {
-            qualities.add("Audio");
-            qualities.add("Source");
-        }
+        qualities.add("Audio");
+        qualities.add("Mobile");
+        qualities.add("Low");
+        qualities.add("Medium");
+        qualities.add("High");
+        qualities.add("Source");
+        return qualities;
+    }
+
+    public static List<String> getStreamQualities() {
+        final List<String> qualities = new ArrayList<>();
+        qualities.add("Audio");
+        qualities.add("Source");
         return qualities;
     }
 }
