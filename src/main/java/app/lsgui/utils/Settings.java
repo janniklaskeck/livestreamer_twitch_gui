@@ -78,6 +78,7 @@ public final class Settings {
     private static final String EXEPATH_STRING = "livestreamerexe";
     private static final String QUALITY_STRING = "quality";
     private static final String FAVOURITE_GAMES = "favouriteGames";
+    private static final String DEFAULT_TOKEN = "vkwhrtlhzcz3o91nu386ub62p5j6sk";
 
     private static Settings instance;
 
@@ -141,7 +142,7 @@ public final class Settings {
         this.sortTwitch.setValue(JsonUtils.getBooleanSafe(settings.get(TWITCH_SORT), false));
         this.minimizeToTray = JsonUtils.getBooleanSafe(settings.get(MINIMIZE_TO_TRAY_STRING), false);
         this.twitchUser = JsonUtils.getStringSafe(settings.get(TWITCH_USER_STRING), "");
-        this.twitchOAuth = JsonUtils.getStringSafe(settings.get(TWITCH_OAUTH_STRING), "");
+        this.twitchOAuth = JsonUtils.getStringSafe(settings.get(TWITCH_OAUTH_STRING), DEFAULT_TOKEN);
         this.windowStyle = JsonUtils.getStringSafe(settings.get(WINDOWSTYLE_STRING), "LightStyle");
         this.liveStreamerExePath.set(JsonUtils.getStringSafe(settings.get(EXEPATH_STRING), ""));
         this.maxChannelsLoad = JsonUtils.getIntSafe(settings.get(CHANNELS_LOAD), DEFAULT_CHANNELS_TO_LOAD);
