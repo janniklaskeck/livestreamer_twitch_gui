@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.controlsfx.control.Notifications;
@@ -41,7 +42,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
-import app.lsgui.settings.Settings;
 import javafx.application.Platform;
 
 /**
@@ -49,7 +49,7 @@ import javafx.application.Platform;
  * @author Niklas 11.06.2016
  *
  */
-public class LivestreamerUtils {
+public final class LivestreamerUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LivestreamerUtils.class);
     private static final String LIVESTREAMERCMD = "livestreamer";
@@ -82,7 +82,7 @@ public class LivestreamerUtils {
         command.add(getLivestreamerExe());
         command.add(url);
         command.add("-j");
-        if (url.toLowerCase().contains("twitch")) {
+        if (url.toLowerCase(Locale.ENGLISH).contains("twitch")) {
             command.add("--twitch-oauth-token");
             command.add(getTwitchOAuth());
         }
@@ -111,7 +111,7 @@ public class LivestreamerUtils {
         command.add(getLivestreamerExe());
         command.add(url);
         command.add(quality);
-        if (url.toLowerCase().contains("twitch")) {
+        if (url.toLowerCase(Locale.ENGLISH).contains("twitch")) {
             command.add("--twitch-oauth-token");
             command.add(getTwitchOAuth());
         }
@@ -139,7 +139,7 @@ public class LivestreamerUtils {
             try {
                 String path = "\"" + filePath.getAbsolutePath() + "\"";
                 path = path.replace('\\', '/');
-                Settings.getInstance().setRecordingPath(path);
+                Settings.getInstance().getRecordingPath().set(path);
                 ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), "-o", path, url, quality));
                 pb.redirectOutput(Redirect.INHERIT);
                 pb.redirectError(Redirect.INHERIT);
@@ -154,14 +154,14 @@ public class LivestreamerUtils {
     }
 
     private static String getLivestreamerExe() {
-        if ("".equals(Settings.getInstance().getLivestreamerExePath())) {
+        if ("".equals(Settings.getInstance().getLivestreamerExePath().get())) {
             if (!checkForLivestreamerOnPath()) {
                 Platform.runLater(LivestreamerUtils::showLivestreamerPathWarning);
                 return "";
             }
             return LIVESTREAMERCMD;
         } else {
-            return Settings.getInstance().getLivestreamerExePath();
+            return Settings.getInstance().getLivestreamerExePath().get();
         }
     }
 
@@ -173,7 +173,7 @@ public class LivestreamerUtils {
     private static boolean checkForLivestreamerOnPath() {
         Map<String, String> env = System.getenv();
         final String windowsPath = env.get("Path");
-        if (windowsPath.toLowerCase().contains(LIVESTREAMERCMD)) {
+        if (windowsPath.toLowerCase(Locale.ENGLISH).contains(LIVESTREAMERCMD)) {
             return true;
         }
         return false;

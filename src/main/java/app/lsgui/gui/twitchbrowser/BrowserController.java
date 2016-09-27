@@ -28,9 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.model.twitch.ITwitchItem;
-import app.lsgui.rest.twitch.TwitchBrowserUpdateService;
-import app.lsgui.settings.Settings;
+import app.lsgui.remote.twitch.TwitchBrowserUpdateService;
 import app.lsgui.utils.BrowserCore;
+import app.lsgui.utils.Settings;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
@@ -54,9 +54,10 @@ import javafx.scene.layout.VBox;
  * @author Niklas 25.06.2016
  *
  */
-public class BrowserController {
+public final class BrowserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrowserController.class);
+    private static final int PROGRESS_BAR_MIN_HEIGHT = 20;
 
     @FXML
     private ToolBar browserToolBar;
@@ -64,33 +65,36 @@ public class BrowserController {
     @FXML
     private BorderPane browserRootBorderPane;
 
-    private ComboBox<String> favouriteGameComboBox;
     private ComboBox<String> qualityComboBox;
-    private ProgressBar browserProgressBar;
+
     private GridView<ITwitchItem> browserGridView;
     private BrowserCore browserCore;
 
+    public BrowserController() {
+        // Empty Constructor
+    }
+
     @FXML
     public void initialize() {
-        setupToolBar();
-        setupProgressBar();
-        setupGrid();
-        browserCore = BrowserCore.getInstance();
-        browserCore.setGridView(browserGridView);
-        browserRootBorderPane.setCenter(browserGridView);
-        Platform.runLater(() -> browserCore.goToHome());
+        this.setupToolBar();
+        this.setupProgressBar();
+        this.setupGrid();
+        this.browserCore = BrowserCore.getInstance();
+        this.browserCore.setGridView(this.browserGridView);
+        this.browserRootBorderPane.setCenter(this.browserGridView);
+        Platform.runLater(this.browserCore::goToHome);
     }
 
     private void setupProgressBar() {
         final VBox vbox = new VBox();
-        browserProgressBar = new ProgressBar();
+        final ProgressBar browserProgressBar = new ProgressBar();
         browserProgressBar.setVisible(false);
-        browserProgressBar.setMinHeight(20);
+        browserProgressBar.setMinHeight(PROGRESS_BAR_MIN_HEIGHT);
         browserProgressBar.setMaxWidth(Double.MAX_VALUE);
         vbox.getChildren().add(browserProgressBar);
-        browserRootBorderPane.setBottom(vbox);
+        this.browserRootBorderPane.setBottom(vbox);
         final DoubleProperty progress = new SimpleDoubleProperty();
-        TwitchBrowserUpdateService.getActiveChannelServicesProperty().addListener((observable, oldValue, newValue) -> {
+        TwitchBrowserUpdateService.activeServicesProperty().addListener((observable, oldValue, newValue) -> {
             final int size = observable.getValue().size();
             if (size == 0) {
                 progress.set(1.0D);
@@ -105,58 +109,58 @@ public class BrowserController {
 
     private void setupToolBar() {
         final Button homeButton = GlyphsDude.createIconButton(FontAwesomeIcon.HOME);
-        homeButton.setOnAction(event -> goToHome());
+        homeButton.setOnAction(event -> this.goToHome());
         final Button refreshButton = GlyphsDude.createIconButton(FontAwesomeIcon.REFRESH);
-        refreshButton.setOnAction(event -> refreshBrowser());
+        refreshButton.setOnAction(event -> this.refreshBrowser());
         final TextField searchTextField = new TextField();
         searchTextField.textProperty().addListener((obs, oldValue, newValue) -> {
             if (!"".equals(newValue)) {
-                browserCore.filter(newValue);
+                this.browserCore.filter(newValue);
             }
         });
         final Label searchLabel = new Label("Filter");
-        favouriteGameComboBox = new ComboBox<>();
+        final ComboBox<String> favouriteGameComboBox = new ComboBox<>();
         final ListProperty<String> favouriteGames = Settings.getInstance().getFavouriteGames();
         favouriteGameComboBox.itemsProperty().bind(favouriteGames);
         favouriteGameComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                browserCore.openGame(newValue);
+                this.browserCore.openGame(newValue);
             }
         });
 
-        qualityComboBox = new ComboBox<>();
-        qualityComboBox.getItems().add("Worst");
-        qualityComboBox.getItems().add("Best");
-        qualityComboBox.getSelectionModel().select(1);
+        this.qualityComboBox = new ComboBox<>();
+        this.qualityComboBox.getItems().add("Worst");
+        this.qualityComboBox.getItems().add("Best");
+        this.qualityComboBox.getSelectionModel().select(1);
 
-        browserToolBar.getItems().add(homeButton);
-        browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
-        browserToolBar.getItems().add(refreshButton);
-        browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
-        browserToolBar.getItems().add(searchLabel);
-        browserToolBar.getItems().add(searchTextField);
-        browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
-        browserToolBar.getItems().add(favouriteGameComboBox);
-        browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
-        browserToolBar.getItems().add(qualityComboBox);
+        this.browserToolBar.getItems().add(homeButton);
+        this.browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
+        this.browserToolBar.getItems().add(refreshButton);
+        this.browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
+        this.browserToolBar.getItems().add(searchLabel);
+        this.browserToolBar.getItems().add(searchTextField);
+        this.browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
+        this.browserToolBar.getItems().add(favouriteGameComboBox);
+        this.browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
+        this.browserToolBar.getItems().add(this.qualityComboBox);
     }
 
     private void goToHome() {
         LOGGER.debug("Go to home directory");
-        browserCore.goToHome();
+        this.browserCore.goToHome();
     }
 
     private void refreshBrowser() {
         LOGGER.debug("Refresh current page");
-        browserCore.refresh();
+        this.browserCore.refresh();
     }
 
     private void setupGrid() {
-        browserGridView = new GridView<>();
-        browserGridView.setCellFactory(
-                param -> new TwitchItemPane(qualityComboBox.getSelectionModel().selectedItemProperty()));
-        browserGridView.setCellWidth(TwitchItemPane.WIDTH);
-        browserGridView.cellHeightProperty().bind(TwitchItemPane.HEIGHT_PROPERTY);
+        this.browserGridView = new GridView<>();
+        this.browserGridView.setCellFactory(
+                param -> new TwitchItemPane(this.qualityComboBox.getSelectionModel().selectedItemProperty()));
+        this.browserGridView.setCellWidth(TwitchItemPane.WIDTH);
+        this.browserGridView.cellHeightProperty().bind(TwitchItemPane.HEIGHT_PROPERTY);
     }
 
 }

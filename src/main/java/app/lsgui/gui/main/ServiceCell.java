@@ -21,12 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.model.twitch;
+package app.lsgui.gui.main;
 
-public interface ITwitchItem {
+import app.lsgui.model.IService;
+import javafx.scene.control.ListCell;
 
-    boolean isTwitchGame();
+/**
+ *
+ * @author Niklas 11.06.2016
+ *
+ */
+public class ServiceCell extends ListCell<IService> {
 
-    boolean isTwitchChannel();
+    public ServiceCell() {
+        // Empty Constructor
+    }
 
+    @Override
+    protected final void updateItem(IService item, boolean isEmpty) {
+        super.updateItem(item, isEmpty);
+        if (isEmpty || item == null) {
+            setText(null);
+        } else {
+            setText(item.getName().get());
+        }
+    }
 }

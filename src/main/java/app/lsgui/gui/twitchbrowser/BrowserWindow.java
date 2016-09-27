@@ -28,8 +28,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.settings.Settings;
 import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.utils.Settings;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -44,23 +44,19 @@ import javafx.stage.Window;
  * @author Niklas 25.06.2016
  *
  */
-public class BrowserWindow {
+public final class BrowserWindow extends Stage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrowserWindow.class);
     private static final String BROWSER_FXML = "fxml/BrowserWindow.fxml";
-    private static Stage browserStage;
+    private static final int BROWSER_WINDOW_MIN_HEIGHT = 620;
+    private static final int BROWSER_WINDOW_MIN_WIDTH = 950;
 
-    /**
-     *
-     * @param parentWindow
-     */
     public BrowserWindow(final Window parentWindow) {
-        setBrowserStage(new Stage());
-        Parent root = loadFXML();
-        setupStage(root, browserStage, parentWindow);
+        final Parent root = this.loadFxml();
+        this.setupStage(root, parentWindow);
     }
 
-    private Parent loadFXML() {
+    private Parent loadFxml() {
         try {
             return FXMLLoader.load(getClass().getClassLoader().getResource(BROWSER_FXML));
         } catch (IOException e) {
@@ -70,37 +66,19 @@ public class BrowserWindow {
         }
     }
 
-    private void setupStage(final Parent root, final Stage browserStage, final Window parentWindow) {
-        Scene scene = new Scene(root);
+    private void setupStage(final Parent root, final Window parentWindow) {
+        this.setMinHeight(BROWSER_WINDOW_MIN_HEIGHT);
+        this.setHeight(BROWSER_WINDOW_MIN_HEIGHT);
+        this.setMinWidth(BROWSER_WINDOW_MIN_WIDTH);
+        this.setWidth(BROWSER_WINDOW_MIN_WIDTH);
 
-        browserStage.setMinHeight(620);
-        browserStage.setHeight(620);
-        browserStage.setMinWidth(950);
-        browserStage.setWidth(950);
-
-        browserStage.setTitle("Livestreamer GUI Twitch Browser v" + LsGuiUtils.readVersionProperty());
-        browserStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
-        browserStage.setScene(scene);
-        browserStage.initModality(Modality.APPLICATION_MODAL);
-        browserStage.initOwner(parentWindow);
-        BrowserWindow.getBrowserStage().getScene().getStylesheets().add(BrowserWindow.class
+        this.setTitle("Livestreamer GUI Twitch Browser v" + LsGuiUtils.readVersionProperty());
+        this.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
+        final Scene scene = new Scene(root);
+        this.setScene(scene);
+        this.initModality(Modality.APPLICATION_MODAL);
+        this.initOwner(parentWindow);
+        this.getScene().getStylesheets().add(BrowserWindow.class
                 .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
-        browserStage.setOnCloseRequest(event -> setBrowserStage(null));
     }
-
-    private static void setBrowserStage(final Stage stage) {
-        browserStage = stage;
-    }
-
-    public static Stage getBrowserStage() {
-        return browserStage;
-    }
-
-    /**
-     * Show Browser Stage
-     */
-    public void showAndWait() {
-        browserStage.showAndWait();
-    }
-
 }

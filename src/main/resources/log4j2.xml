@@ -45,10 +45,6 @@
             <AppenderRef ref="Console" />
             <AppenderRef ref="RollingFile" />
         </Root>
-        <Logger name="app.lsgui" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="RollingFile" />
-        </Logger>
     </Loggers>
 
 </Configuration>

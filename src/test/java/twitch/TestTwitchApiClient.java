@@ -21,12 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.model.twitch;
+package twitch;
 
-public interface ITwitchItem {
+import org.junit.Assert;
+import org.junit.Test;
 
-    boolean isTwitchGame();
+import app.lsgui.remote.twitch.TwitchAPIClient;
 
-    boolean isTwitchChannel();
+public class TestTwitchApiClient {
+
+    private static final TwitchAPIClient tp = TwitchAPIClient.getInstance();
+
+    @Test
+    public void testGetFollowedChannels() {
+        Assert.assertFalse("account nuamor follows nobody", tp.getListOfFollowedStreams("nuamor").isEmpty());
+    }
 
 }

@@ -48,7 +48,7 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
       </ChoiceBox>
-      <Button mnemonicParsing="false" onAction="#cancelSettingsAction" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="8">
+      <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="8">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
@@ -58,7 +58,7 @@
       <Label text="Twitch.tv OAuth Key" GridPane.rowIndex="2" />
       <Label text="Games to load" GridPane.rowIndex="3" />
       <Label text="Channels to load" GridPane.rowIndex="4" />
-      <Button mnemonicParsing="false" onAction="#saveSettingsAction" text="Save &amp; Close" GridPane.rowIndex="8">
+      <Button fx:id="saveButton" mnemonicParsing="false" text="Save &amp; Close" GridPane.rowIndex="8">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>

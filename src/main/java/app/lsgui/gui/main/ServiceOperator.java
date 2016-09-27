@@ -21,12 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.model.twitch;
+package app.lsgui.gui.main;
 
-public interface ITwitchItem {
+import app.lsgui.model.IService;
 
-    boolean isTwitchGame();
-
-    boolean isTwitchChannel();
-
+@FunctionalInterface
+public interface ServiceOperator {
+    void changeService(final IService service);
 }

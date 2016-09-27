@@ -28,8 +28,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.settings.Settings;
 import app.lsgui.utils.LsGuiUtils;
+import app.lsgui.utils.Settings;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -43,25 +43,24 @@ import javafx.stage.Stage;
  * @author Niklas 11.06.2016
  *
  */
-public class ChatWindow {
+public final class ChatWindow extends Stage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatWindow.class);
-    private static Stage chatStage;
+    private static final int MIN_WIDTH = 600;
+    private static final int MIN_HEIGHT = 400;
     private String channel;
     private FXMLLoader loader;
 
     public ChatWindow(final String channel) {
         this.channel = channel;
-        setChatStage(new Stage());
-
-        loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/ChatWindow.fxml"));
-        Parent root = loadFXML();
-        setupStage(root, chatStage);
+        this.loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/ChatWindow.fxml"));
+        final Parent root = this.loadFxml();
+        this.setupStage(root);
     }
 
-    private Parent loadFXML() {
+    private Parent loadFxml() {
         try {
-            return loader.load();
+            return this.loader.load();
         } catch (IOException e) {
             LOGGER.error("ERROR while loading chat fxml", e);
             Platform.exit();
@@ -69,38 +68,28 @@ public class ChatWindow {
         }
     }
 
-    private void setupStage(final Parent root, final Stage stage) {
-        Scene scene = new Scene(root);
+    private void setupStage(final Parent root) {
+        this.setMinHeight(MIN_HEIGHT);
+        this.setMinWidth(MIN_WIDTH);
+
+        this.setTitle(this.channel + " - Livestreamer GUI Chat v" + LsGuiUtils.readVersionProperty());
+        this.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
+        final Scene scene = new Scene(root);
         scene.getStylesheets().add(ChatWindow.class
                 .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
+        this.setScene(scene);
+        this.initModality(Modality.NONE);
+        this.show();
 
-        stage.setMinHeight(400.0);
-        stage.setMinWidth(600.0);
-
-        stage.setTitle(channel + " - Livestreamer GUI Chat v" + LsGuiUtils.readVersionProperty());
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
-        stage.setScene(scene);
-        stage.initModality(Modality.NONE);
-        stage.show();
-
-        stage.setOnCloseRequest(event -> {
-            ((ChatController) loader.getController()).disconnect();
-            setChatStage(null);
-        });
+        this.setOnCloseRequest(event -> this.disconnect());
     }
 
-    /**
-     * Start Connecting to IRC Server
-     */
+    private void disconnect() {
+        ((ChatController) this.loader.getController()).disconnect();
+    }
+
     public void connect() {
-        loader.<ChatController> getController().connect(channel);
-    }
-
-    public static Stage getChatStage() {
-        return chatStage;
-    }
-
-    private static void setChatStage(final Stage stage) {
-        chatStage = stage;
+        final ChatController chatController = (ChatController) this.loader.getController();
+        chatController.connect(this.channel);
     }
 }

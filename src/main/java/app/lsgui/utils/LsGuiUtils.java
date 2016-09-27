@@ -26,31 +26,24 @@ package app.lsgui.utils;
 import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonObject;
-
-import app.lsgui.gui.LsGUIWindow;
-import app.lsgui.gui.chat.ChatWindow;
-import app.lsgui.model.channel.IChannel;
-import app.lsgui.model.service.GenericService;
-import app.lsgui.model.service.IService;
-import app.lsgui.model.service.TwitchService;
-import app.lsgui.model.twitch.channel.TwitchChannel;
-import app.lsgui.rest.twitch.TwitchAPIClient;
-import app.lsgui.settings.Settings;
+import app.lsgui.model.IChannel;
+import app.lsgui.model.IService;
+import app.lsgui.model.generic.GenericService;
+import app.lsgui.remote.twitch.TwitchAPIClient;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.stage.FileChooser;
@@ -63,9 +56,10 @@ import javafx.util.Duration;
  * @author Niklas 11.06.2016
  *
  */
-public class LsGuiUtils {
+public final class LsGuiUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LsGuiUtils.class);
+    private static final double UPDATE_NOTIFICATION_DURATION = 10;
 
     private LsGuiUtils() {
     }
@@ -80,67 +74,6 @@ public class LsGuiUtils {
         }
     }
 
-    public static List<String> getAvailableQuality(final String url) {
-        final List<String> qualities = new ArrayList<>();
-        final JsonObject qualitiesJson = LivestreamerUtils.getQualityJsonFromLivestreamer(url);
-        if (qualitiesJson.get("error") == null) {
-            final JsonObject jsonQualitiyList = qualitiesJson.get("streams").getAsJsonObject();
-            jsonQualitiyList.entrySet().forEach(entry -> qualities.add(entry.getKey()));
-            return sortQualities(qualities);
-        }
-        return qualities;
-    }
-
-    private static List<String> sortQualities(final List<String> qualities) {
-        final List<String> sortedQualities = new ArrayList<>();
-        qualities.forEach(s -> s = s.toLowerCase());
-        if (qualities.contains("audio")) {
-            sortedQualities.add("Audio");
-        }
-        if (qualities.contains("mobile")) {
-            sortedQualities.add("Mobile");
-        }
-        if (qualities.contains("low")) {
-            sortedQualities.add("Low");
-        }
-        if (qualities.contains("medium")) {
-            sortedQualities.add("Medium");
-        }
-        if (qualities.contains("high")) {
-            sortedQualities.add("High");
-        }
-        if (qualities.contains("source")) {
-            sortedQualities.add("Source");
-        }
-        if (sortedQualities.isEmpty()) {
-            sortedQualities.add("Worst");
-            sortedQualities.add("Best");
-        }
-        return sortedQualities;
-    }
-
-    public static String getColorFromString(final String input) {
-        int r = 0;
-        int g = 0;
-        int b = 0;
-        if (!"".equals(input)) {
-            int hash = input.hashCode();
-            r = (hash & 0xFF0000) >> 16;
-            if (r > 200) {
-                r = 200;
-            }
-            g = (hash & 0x00FF00) >> 8;
-            if (g > 200) {
-                g = 200;
-            }
-            b = hash & 0x0000FF;
-            if (b > 200) {
-                b = 200;
-            }
-        }
-        return "rgb(" + r + "," + g + "," + b + ")";
-    }
-
     public static void addStyleSheetToStage(final Stage stage, final String style) {
         if (stage != null && !stage.getScene().getStylesheets().contains(style) && !"".equals(style)) {
             stage.getScene().getStylesheets().add(style);
@@ -153,27 +86,13 @@ public class LsGuiUtils {
         }
     }
 
-    public static boolean isTwitchChannel(final IChannel channel) {
-        return channel.getClass().equals(TwitchChannel.class);
-    }
-
-    public static boolean isTwitchService(final IService service) {
-        return service.getClass().equals(TwitchService.class);
-    }
-
     public static void addChannelToService(final String channel, final IService service) {
-        if (isTwitchService(service) && !"".equals(channel)) {
+        if (TwitchUtils.isTwitchService(service) && !"".equals(channel)) {
             if (TwitchAPIClient.getInstance().channelExists(channel)) {
                 service.addChannel(channel);
             }
         } else {
             service.addChannel(channel);
-        }
-    }
-
-    public static void addFollowedChannelsToService(final String username, final TwitchService service) {
-        if (!"".equals(username)) {
-            service.addFollowedChannels(username);
         }
     }
 
@@ -200,37 +119,16 @@ public class LsGuiUtils {
         return serviceUrl + channelUrl;
     }
 
-    public static boolean isChannelOnline(final IChannel channel) {
-        if (channel != null) {
-            if (LsGuiUtils.isTwitchChannel(channel)) {
-                return channel.isOnline().get();
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
+    public static void recordStream(final Stage stage, final IService service, final IChannel channel) {
+        final String url = buildUrl(service.getUrl().get(), channel.getName().get());
+        final String quality = Settings.getInstance().getQuality().get();
 
-    public static void recordStream(final IService service, final IChannel channel) {
-        if (LsGuiUtils.isChannelOnline(channel)) {
-            final String url = buildUrl(service.getUrl().get(), channel.getName().get());
-            final String quality = Settings.getInstance().getQuality();
-
-            final FileChooser recordFileChooser = new FileChooser();
-            recordFileChooser.setTitle("Choose Target file");
-            recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
-            final File recordFile = recordFileChooser.showSaveDialog(LsGUIWindow.getRootStage());
-            if (recordFile != null) {
-                LivestreamerUtils.recordLivestreamer(url, quality, recordFile);
-            }
-        }
-    }
-
-    public static void openTwitchChat(final IChannel channel) {
-        if (LsGuiUtils.isTwitchChannel(channel)) {
-            final String channelName = channel.getName().get();
-            ChatWindow cw = new ChatWindow(channelName);
-            cw.connect();
+        final FileChooser recordFileChooser = new FileChooser();
+        recordFileChooser.setTitle("Choose Target file");
+        recordFileChooser.getExtensionFilters().add(new ExtensionFilter("MPEG4", ".mpeg4"));
+        final File recordFile = recordFileChooser.showSaveDialog(stage);
+        if (recordFile != null) {
+            LivestreamerUtils.recordLivestreamer(url, quality, recordFile);
         }
     }
 
@@ -239,35 +137,13 @@ public class LsGuiUtils {
         Settings.getInstance().getStreamServices().remove(service);
     }
 
-    public static void showOnlineNotification(final TwitchChannel channel) {
-        final String nameString = channel.getName().get();
-        final String gameString = channel.getGame().get();
-        final String titleString = channel.getTitle().get();
-        if (nameString != null && gameString != null && titleString != null) {
-            final String title = "Channel Update";
-            final String text = nameString + " just came online!\n The Game is " + gameString + ".\n" + titleString;
-            Notifications.create().title(title).text(text).darkStyle().showInformation();
-        }
-    }
-
-    public static void showReminderNotification(final TwitchChannel twitchChannel) {
-        final String nameString = twitchChannel.getName().get();
-        final String gameString = twitchChannel.getGame().get();
-        final String titleString = twitchChannel.getTitle().get();
-        if (nameString != null && gameString != null && titleString != null) {
-            final String title = "Channel Online Reminder!";
-            final String text = nameString + " just came online!\nThe Game is " + gameString + ".\n" + titleString;
-            Notifications.create().title(title).text(text).darkStyle().hideAfter(Duration.INDEFINITE).showInformation();
-        }
-    }
-
     public static void showUpdateNotification(final String version, final ZonedDateTime date,
             final EventHandler<ActionEvent> action) {
         final String title = "Update available!";
         final String updateMessage = "Version " + version + " is available! Released at " + date
                 + ". Click this or check Settings for a Link.";
-        Notifications.create().title(title).text(updateMessage).onAction(action).hideAfter(Duration.seconds(10))
-                .darkStyle().showInformation();
+        Notifications.create().title(title).text(updateMessage).onAction(action)
+                .hideAfter(Duration.seconds(UPDATE_NOTIFICATION_DURATION)).darkStyle().showInformation();
     }
 
     public static void showWarningNotification(final String title, final String message) {
@@ -277,9 +153,12 @@ public class LsGuiUtils {
     public static boolean isFileEmpty(final File file) {
         boolean result = true;
         BufferedReader br;
-        try {
-            br = new BufferedReader(new FileReader(file));
-            result = br.readLine() == null;
+
+        try (final FileInputStream inputStream = new FileInputStream(file);) {
+            br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            final String line = br.readLine();
+            result = line == null;
+            br.close();
         } catch (IOException e) {
             LOGGER.error("Could not read from Settings file.", e);
         }
@@ -293,6 +172,7 @@ public class LsGuiUtils {
         try {
             versionProperty.load(propertyStream);
             version = versionProperty.getProperty("versionNumber");
+            version = version.replaceAll("[\n\r]", "");
             LOGGER.debug("Read Version {} from version.properties", version);
         } catch (IOException e) {
             LOGGER.error("Could not load Properties from Inpustream!", e);

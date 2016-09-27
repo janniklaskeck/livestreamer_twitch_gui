@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane minHeight="500.0" minWidth="600.0" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.lsgui.gui.LsGUIController">
+<BorderPane minHeight="500.0" minWidth="600.0" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.lsgui.gui.main.LsGuiController">
    <center>
       <BorderPane fx:id="contentBorderPane" BorderPane.alignment="CENTER" />
    </center>
    <top>
-      <BorderPane BorderPane.alignment="CENTER">
-         <center>
-            <ToolBar fx:id="toolBarTop" maxHeight="35.0" minHeight="35.0" prefHeight="33.0" BorderPane.alignment="CENTER">
-               <items>
-                  <ComboBox fx:id="serviceComboBox" />
-                  <ComboBox fx:id="qualityComboBox" />
-               </items>
-            </ToolBar>
-         </center>
-      </BorderPane>
+      <BorderPane fx:id="topBorderPane" BorderPane.alignment="CENTER" />
    </top>
 </BorderPane>
