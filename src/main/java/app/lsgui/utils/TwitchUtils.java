@@ -5,6 +5,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.controlsfx.control.Notifications;
@@ -154,9 +156,9 @@ public final class TwitchUtils {
     private static void setOnlineData(final TwitchChannel channel, final JsonObject channelObject) {
         final JsonObject channelJson = channelObject.get("channel").getAsJsonObject();
         final JsonObject previewJson = channelObject.get("preview").getAsJsonObject();
-
         channel.getName().set(JsonUtils.getStringIfNotNull("display_name", channelJson));
         channel.getLogoURL().set(JsonUtils.getStringIfNotNull("logo", channelJson));
+        channel.isPartneredProperty().set(JsonUtils.getBooleanIfNotNull("partner", channelJson));
         channel.getPreviewUrlLarge().set(JsonUtils.getStringIfNotNull("large", previewJson));
         channel.getPreviewUrlMedium().set(JsonUtils.getStringIfNotNull("medium", previewJson));
         channel.getGame().set(JsonUtils.getStringIfNotNull("game", channelObject));
@@ -171,10 +173,9 @@ public final class TwitchUtils {
         channel.getUptimeString().set(buildUptimeString(channel.getUptime().get()));
         channel.getViewersString().set(Integer.toString(channel.getViewers().get()));
         channel.getAvailableQualities().clear();
-
         if (!channel.isBrowser()) {
-            channel.getAvailableQualities()
-                    .addAll(LsGuiUtils.getAvailableQuality("http://twitch.tv/" + channel.getName().get()));
+            final List<String> availableQualities = TwitchUtils.getStreamQualities(channel.isPartneredProperty().get());
+            channel.getAvailableQualities().addAll(availableQualities);
 
         }
     }
@@ -182,6 +183,7 @@ public final class TwitchUtils {
     private static void setOfflineData(final TwitchChannel channel, final String name) {
         channel.getName().set(name);
         channel.getLogoURL().set("");
+        channel.isPartneredProperty().set(false);
         channel.getPreviewUrlLarge().set("");
         channel.getGame().set("");
         channel.getTitle().set(CHANNEL_IS_OFFLINE);
@@ -218,13 +220,28 @@ public final class TwitchUtils {
         }
     }
 
-    public static void addChannelToList(final ListProperty<TwitchChannel> activeList,
-            final TwitchChannel channel) {
+    public static void addChannelToList(final ListProperty<TwitchChannel> activeList, final TwitchChannel channel) {
         synchronized (activeList) {
             final ObservableList<TwitchChannel> activeChannelServices = FXCollections
                     .observableArrayList(activeList.get());
             activeChannelServices.add(channel);
             activeList.set(activeChannelServices);
         }
+    }
+
+    public static List<String> getStreamQualities(final boolean isPartnered) {
+        final List<String> qualities = new ArrayList<>();
+        if (isPartnered) {
+            qualities.add("Audio");
+            qualities.add("Mobile");
+            qualities.add("Low");
+            qualities.add("Medium");
+            qualities.add("High");
+            qualities.add("Source");
+        } else {
+            qualities.add("Audio");
+            qualities.add("Source");
+        }
+        return qualities;
     }
 }

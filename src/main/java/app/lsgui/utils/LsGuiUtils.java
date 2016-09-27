@@ -34,16 +34,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
 
 import org.controlsfx.control.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonObject;
 
 import app.lsgui.model.IChannel;
 import app.lsgui.model.IService;
@@ -77,45 +72,6 @@ public final class LsGuiUtils {
         } catch (IOException | URISyntaxException e) {
             LOGGER.error("ERROR while opening URL in Browser", e);
         }
-    }
-
-    public static List<String> getAvailableQuality(final String url) {
-        final List<String> qualities = new ArrayList<>();
-        final JsonObject qualitiesJson = LivestreamerUtils.getQualityJsonFromLivestreamer(url);
-        if (qualitiesJson.get("error") == null) {
-            final JsonObject jsonQualitiyList = qualitiesJson.get("streams").getAsJsonObject();
-            jsonQualitiyList.entrySet().forEach(entry -> qualities.add(entry.getKey()));
-            return sortQualities(qualities);
-        }
-        return qualities;
-    }
-
-    private static List<String> sortQualities(final List<String> qualities) {
-        final List<String> sortedQualities = new ArrayList<>();
-        qualities.forEach(quality -> quality = quality.toLowerCase(Locale.ENGLISH));
-        if (qualities.contains("audio")) {
-            sortedQualities.add("Audio");
-        }
-        if (qualities.contains("mobile")) {
-            sortedQualities.add("Mobile");
-        }
-        if (qualities.contains("low")) {
-            sortedQualities.add("Low");
-        }
-        if (qualities.contains("medium")) {
-            sortedQualities.add("Medium");
-        }
-        if (qualities.contains("high")) {
-            sortedQualities.add("High");
-        }
-        if (qualities.contains("source")) {
-            sortedQualities.add("Source");
-        }
-        if (sortedQualities.isEmpty()) {
-            sortedQualities.add("Worst");
-            sortedQualities.add("Best");
-        }
-        return sortedQualities;
     }
 
     public static void addStyleSheetToStage(final Stage stage, final String style) {

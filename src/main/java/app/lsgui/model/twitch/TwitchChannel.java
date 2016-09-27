@@ -72,6 +72,7 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
     private ObjectProperty<Image> previewImageMedium = new SimpleObjectProperty<>();
     private ListProperty<String> availableQualities = new SimpleListProperty<>(FXCollections.observableArrayList());
     private BooleanProperty hasReminder = new SimpleBooleanProperty();
+    private BooleanProperty isPartnered = new SimpleBooleanProperty();
 
     private boolean isBrowser;
     private boolean cameOnline;
@@ -222,6 +223,10 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
     @Override
     public void setReminder(final boolean hasReminder) {
         this.hasReminder.set(hasReminder);
+    }
+
+    public BooleanProperty isPartneredProperty() {
+        return this.isPartnered;
     }
 
     public boolean isBrowser() {
