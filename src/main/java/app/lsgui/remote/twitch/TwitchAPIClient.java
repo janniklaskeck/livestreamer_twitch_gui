@@ -169,17 +169,14 @@ public final class TwitchAPIClient {
         LOGGER.trace("Send Request to API URL '{}'", apiUrl);
         final HttpGet request = new HttpGet(apiUrl);
         request.setHeader("Client-ID", LSGUI_CLIENT_ID);
-        try (CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {
+        try (final CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {
             return new BasicResponseHandler().handleResponse(response);
+        } catch (UnknownHostException e) {
+            LOGGER.error("Twitch is not reachable. Check your Internet Connection", e);
+        } catch (HttpResponseException e) {
+            LOGGER.error("Http Error when fetching twitch api response.", e);
         } catch (IOException e) {
-            if (e.getClass().equals(UnknownHostException.class)) {
-                LOGGER.error("Twitch is not reachable. Check your Internet Connection");
-            } else if (e.getClass().equals(HttpResponseException.class)) {
-                LOGGER.error("Http Error when fetching twitch api response. Status Code: {}",
-                        ((HttpResponseException) e).getStatusCode());
-            } else {
-                LOGGER.error("Error when fetching twitch api response", e);
-            }
+            LOGGER.error("Error when fetching twitch api response", e);
         } finally {
             request.reset();
         }
