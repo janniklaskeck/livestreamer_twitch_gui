@@ -23,11 +23,9 @@
  */
 package app.lsgui.gui.twitchbrowser;
 
-import org.controlsfx.control.GridView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.remote.twitch.TwitchBrowserUpdateService;
 import app.lsgui.utils.BrowserCore;
 import app.lsgui.utils.Settings;
@@ -44,6 +42,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
@@ -65,9 +65,10 @@ public final class BrowserController {
     @FXML
     private BorderPane browserRootBorderPane;
 
-    private ComboBox<String> qualityComboBox;
+    @FXML
+    private TabPane browserTabPane;
 
-    private GridView<ITwitchItem> browserGridView;
+    private ComboBox<String> qualityComboBox;
     private BrowserCore browserCore;
 
     public BrowserController() {
@@ -78,10 +79,10 @@ public final class BrowserController {
     public void initialize() {
         this.setupToolBar();
         this.setupProgressBar();
-        this.setupGrid();
+        this.browserTabPane.setTabClosingPolicy(TabClosingPolicy.ALL_TABS);
         this.browserCore = BrowserCore.getInstance();
-        this.browserCore.setGridView(this.browserGridView);
-        this.browserRootBorderPane.setCenter(this.browserGridView);
+        this.browserCore.bindQualityProperty(this.qualityComboBox.getSelectionModel().selectedItemProperty());
+        this.browserCore.setTabPane(this.browserTabPane);
         Platform.runLater(this.browserCore::goToHome);
     }
 
@@ -153,14 +154,6 @@ public final class BrowserController {
     private void refreshBrowser() {
         LOGGER.debug("Refresh current page");
         this.browserCore.refresh();
-    }
-
-    private void setupGrid() {
-        this.browserGridView = new GridView<>();
-        this.browserGridView.setCellFactory(
-                param -> new TwitchItemPane(this.qualityComboBox.getSelectionModel().selectedItemProperty()));
-        this.browserGridView.setCellWidth(TwitchItemPane.WIDTH);
-        this.browserGridView.cellHeightProperty().bind(TwitchItemPane.HEIGHT_PROPERTY);
     }
 
 }

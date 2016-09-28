@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.gui.main;
+package app.lsgui.gui.main.toolbar;
 
 import org.controlsfx.control.PopOver;
 import org.slf4j.Logger;
@@ -166,7 +166,7 @@ public final class TopToolBar extends ToolBar {
 
     private void changeService(final IService newService) {
         LOGGER.debug("Change Service to {}", newService.getName().get());
-        this.channelList.getStreams().bind(newService.getChannelProperty());
+        this.channelList.channelListProperty().bind(newService.getChannelProperty());
         this.channelList.getListView().setUserData(newService);
         if (TwitchUtils.isTwitchService(newService)) {
             this.importButton.setDisable(false);

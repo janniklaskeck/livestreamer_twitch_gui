@@ -82,12 +82,18 @@ public final class TwitchService implements IService {
 
     @Override
     public void addChannel(final String name) {
-        LOGGER.debug("Add Channel {} to {} Service", name, this.getName().get());
-        final TwitchChannel channelToAdd = TwitchUtils.constructTwitchChannel(new JsonObject(), name, false);
-        final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
-        tcus.start();
-        UPDATESERVICES.put(channelToAdd, tcus);
-        this.channelList.add(channelToAdd);
+        final boolean existsAlready = this.channelList.stream()
+                .anyMatch(channel -> channel.getName().get().equalsIgnoreCase(name));
+        if (!existsAlready) {
+            LOGGER.debug("Add Channel {} to {} Service", name, this.getName().get());
+            final TwitchChannel channelToAdd = TwitchUtils.constructTwitchChannel(new JsonObject(), name, false);
+            final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
+            tcus.start();
+            UPDATESERVICES.put(channelToAdd, tcus);
+            this.channelList.add(channelToAdd);
+        } else {
+            LOGGER.debug("Skipping {}, exists already in list", name);
+        }
     }
 
     @Override

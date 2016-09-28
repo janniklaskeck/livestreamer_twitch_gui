@@ -28,6 +28,9 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.main.infopanel.ChannelInfoPanel;
 import app.lsgui.gui.main.list.ChannelList;
+import app.lsgui.gui.main.toolbar.QualityComboBox;
+import app.lsgui.gui.main.toolbar.ServiceComboBox;
+import app.lsgui.gui.main.toolbar.TopToolBar;
 import app.lsgui.model.IService;
 import app.lsgui.utils.Settings;
 import javafx.fxml.FXML;
@@ -85,7 +88,7 @@ public final class LsGuiController {
                 });
         final ServiceComboBox serviceComboBox = this.topToolBar.getServiceComboBox();
         final IService service = serviceComboBox.getSelectionModel().getSelectedItem();
-        this.channelList.getStreams().bind(service.getChannelProperty());
+        this.channelList.channelListProperty().bind(service.getChannelProperty());
         this.channelList.getListView().setUserData(service);
         this.contentBorderPane.setLeft(this.channelList);
     }
@@ -95,7 +98,7 @@ public final class LsGuiController {
         final ServiceComboBox serviceComboBox = this.topToolBar.getServiceComboBox();
         final QualityComboBox qualityComboBox = this.topToolBar.getQualityComboBox();
         final ChannelInfoPanel channelInfoPanel = new ChannelInfoPanel(serviceComboBox, qualityComboBox);
-        channelInfoPanel.getChannelProperty().bind(this.channelList.getSelectedChannelProperty());
+        channelInfoPanel.getChannelProperty().bind(this.channelList.selectedChannelProperty());
         this.contentBorderPane.setCenter(channelInfoPanel);
     }
 

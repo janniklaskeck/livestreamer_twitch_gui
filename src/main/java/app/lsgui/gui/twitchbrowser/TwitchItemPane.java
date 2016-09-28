@@ -30,16 +30,12 @@ import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.model.twitch.TwitchGame;
 import app.lsgui.utils.BrowserCore;
-import app.lsgui.utils.LivestreamerUtils;
 import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.Settings;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -63,10 +59,9 @@ public final class TwitchItemPane extends GridCell<ITwitchItem> {
 
     private TwitchChannel channel;
     private TwitchGame game;
-    private StringProperty quality = new SimpleStringProperty();
 
-    public TwitchItemPane(final ReadOnlyObjectProperty<String> quality) {
-        this.quality.bind(quality);
+    public TwitchItemPane() {
+        // Empty Constructor
     }
 
     @Override
@@ -159,12 +154,12 @@ public final class TwitchItemPane extends GridCell<ITwitchItem> {
         Tooltip.install(node, titleTooltip);
         contentBorderPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
-                LivestreamerUtils.startLivestreamer("twitch.tv/" + this.channel.getName().get(), this.quality.get());
+                BrowserCore.getInstance().startStream(this.channel.getName().get());
             } else if (event.getButton() == MouseButton.SECONDARY) {
                 final ContextMenu contextMenu = new ContextMenu();
                 final MenuItem startStream = new MenuItem("Start Stream");
-                startStream.setOnAction(eventStartContext -> LivestreamerUtils
-                        .startLivestreamer("twitch.tv/" + this.channel.getName().get(), this.quality.get()));
+                startStream.setOnAction(
+                        eventStartContext -> BrowserCore.getInstance().startStream(this.channel.getName().get()));
                 final MenuItem addToList = new MenuItem("Add Stream To Favourites");
                 final IService twitchService = Settings.getInstance().getTwitchService();
                 addToList.setOnAction(

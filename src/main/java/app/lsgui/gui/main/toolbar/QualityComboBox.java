@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.gui.main;
+package app.lsgui.gui.main.toolbar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
