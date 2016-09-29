@@ -8,19 +8,14 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Tab;
 
-public class BrowserTab extends Tab {
+public final class BrowserTab extends Tab {
 
-    private String name;
     private ListProperty<ITwitchItem> items = new SimpleListProperty<>(FXCollections.observableArrayList());
     private ListProperty<ITwitchItem> activeItems = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public BrowserTab(final String name) {
         super(name);
-        setContent(buildGridView());
-    }
-
-    public String getName() {
-        return this.name;
+        setContent(this.buildGridView());
     }
 
     public GridView<ITwitchItem> getGridView() {

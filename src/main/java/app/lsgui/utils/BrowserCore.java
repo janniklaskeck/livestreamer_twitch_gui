@@ -81,7 +81,7 @@ public final class BrowserCore {
             this.goToHome();
         } else {
             final BrowserTab currentTab = (BrowserTab) this.tabPane.getSelectionModel().getSelectedItem();
-            this.openGame(currentTab.getName());
+            this.openGame(currentTab.getText());
         }
     }
 

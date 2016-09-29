@@ -7,7 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TabPane;
 
-public class BrowserTabPane extends TabPane {
+public final class BrowserTabPane extends TabPane {
 
     public BrowserTabPane() {
         super();
