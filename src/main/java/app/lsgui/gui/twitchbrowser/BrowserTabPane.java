@@ -19,4 +19,8 @@ public class BrowserTabPane extends TabPane {
         return FXCollections.observableArrayList(browserTabs);
     }
 
+    public BrowserTab getSelectedItem() {
+        return (BrowserTab) this.getSelectionModel().getSelectedItem();
+    }
+
 }
