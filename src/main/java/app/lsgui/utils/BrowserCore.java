@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.twitchbrowser.BrowserTab;
+import app.lsgui.gui.twitchbrowser.BrowserTabPane;
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.model.twitch.TwitchChannels;
@@ -44,7 +45,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
-import javafx.scene.control.TabPane;
 
 /**
  *
@@ -57,7 +57,7 @@ public final class BrowserCore {
 
     private static BrowserCore instance;
     private ObjectProperty<String> qualityProperty = new SimpleObjectProperty<>();
-    private TabPane tabPane;
+    private BrowserTabPane tabPane;
     private ObjectProperty<ObservableList<ITwitchItem>> items = new SimpleObjectProperty<>(
             FXCollections.observableArrayList());
     private ObjectProperty<ObservableList<ITwitchItem>> activeItems = new SimpleObjectProperty<>(
@@ -73,7 +73,7 @@ public final class BrowserCore {
         return instance;
     }
 
-    public void setTabPane(final TabPane tabPane) {
+    public void setTabPane(final BrowserTabPane tabPane) {
         this.tabPane = tabPane;
     }
 
@@ -90,7 +90,7 @@ public final class BrowserCore {
             homeTab.getGridView().setItems(games.getGames());
             this.tabPane.getTabs().add(homeTab);
         } else {
-            final GridView<ITwitchItem> gridView = (GridView<ITwitchItem>) this.tabPane.getTabs().get(0).getContent();
+            final GridView<ITwitchItem> gridView = this.tabPane.getBrowserTabs().get(0).getGridView();
             gridView.setItems(games.getGames());
             this.scrollToTop();
         }

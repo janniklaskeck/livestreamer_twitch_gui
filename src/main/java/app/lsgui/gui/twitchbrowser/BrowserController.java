@@ -42,7 +42,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
@@ -65,22 +64,20 @@ public final class BrowserController {
     @FXML
     private BorderPane browserRootBorderPane;
 
-    @FXML
-    private TabPane browserTabPane;
-
-    private ComboBox<String> qualityComboBox;
-    private BrowserCore browserCore;
+    private BrowserTabPane browserTabPane = new BrowserTabPane();
+    private ComboBox<String> qualityComboBox = new ComboBox<>();
+    private BrowserCore browserCore = BrowserCore.getInstance();
 
     public BrowserController() {
-        // Empty Constructor
+        LOGGER.trace("BrowserController created.");
     }
 
     @FXML
     public void initialize() {
         this.setupToolBar();
         this.setupProgressBar();
+        this.browserRootBorderPane.setCenter(this.browserTabPane);
         this.browserTabPane.setTabClosingPolicy(TabClosingPolicy.ALL_TABS);
-        this.browserCore = BrowserCore.getInstance();
         this.browserCore.bindQualityProperty(this.qualityComboBox.getSelectionModel().selectedItemProperty());
         this.browserCore.setTabPane(this.browserTabPane);
         Platform.runLater(this.browserCore::goToHome);
@@ -110,9 +107,9 @@ public final class BrowserController {
 
     private void setupToolBar() {
         final Button homeButton = GlyphsDude.createIconButton(FontAwesomeIcon.HOME);
-        homeButton.setOnAction(event -> this.goToHome());
+        homeButton.setOnAction(event -> this.browserCore.goToHome());
         final Button refreshButton = GlyphsDude.createIconButton(FontAwesomeIcon.REFRESH);
-        refreshButton.setOnAction(event -> this.refreshBrowser());
+        refreshButton.setOnAction(event -> this.browserCore.refresh());
         final TextField searchTextField = new TextField();
         searchTextField.textProperty().addListener((obs, oldValue, newValue) -> {
             if (!"".equals(newValue)) {
@@ -129,7 +126,6 @@ public final class BrowserController {
             }
         });
 
-        this.qualityComboBox = new ComboBox<>();
         this.qualityComboBox.getItems().add("Worst");
         this.qualityComboBox.getItems().add("Best");
         this.qualityComboBox.getSelectionModel().select(1);
@@ -145,15 +141,4 @@ public final class BrowserController {
         this.browserToolBar.getItems().add(new Separator(Orientation.VERTICAL));
         this.browserToolBar.getItems().add(this.qualityComboBox);
     }
-
-    private void goToHome() {
-        LOGGER.debug("Go to home directory");
-        this.browserCore.goToHome();
-    }
-
-    private void refreshBrowser() {
-        LOGGER.debug("Refresh current page");
-        this.browserCore.refresh();
-    }
-
 }
