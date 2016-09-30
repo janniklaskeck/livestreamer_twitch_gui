@@ -143,6 +143,7 @@ public final class BrowserController {
         favouriteGameComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 this.browserCore.openGame(newValue);
+                Platform.runLater(() -> favouriteGameComboBox.setValue(null));
             }
         });
 
