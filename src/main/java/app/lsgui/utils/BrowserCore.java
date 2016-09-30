@@ -24,6 +24,7 @@
 package app.lsgui.utils;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,10 +105,34 @@ public final class BrowserCore {
     public void openGame(final String game) {
         LOGGER.debug("Open Data for Game '{}'", game);
         final TwitchChannels channels = TwitchAPIClient.getInstance().getGameData(game);
-        final BrowserTab gameTab = this.addGameTab(game);
+        final BrowserTab gameTab;
+        if (gameTabAlreadyExists(game)) {
+            final Optional<BrowserTab> optionalTab = this.tabPane.getBrowserTabs().stream()
+                    .filter(tab -> tab.getText().equalsIgnoreCase(game)).findFirst();
+            if (optionalTab.isPresent()) {
+                gameTab = optionalTab.get();
+            } else {
+                throw new UnsupportedOperationException("Could not get already existing Game Tab");
+            }
+            this.tabPane.getSelectionModel().select(gameTab);
+        } else {
+            gameTab = this.addGameTab(game);
+        }
         gameTab.itemsProperty().set(channels.getChannels());
         gameTab.activeItemsProperty().set(channels.getChannels());
         this.scrollToTop();
+    }
+
+    private boolean gameTabAlreadyExists(final String game) {
+        boolean alreadyExists = false;
+        final ObservableList<BrowserTab> browserTabs = this.tabPane.getBrowserTabs();
+        for (final BrowserTab tab : browserTabs) {
+            if (tab.getText().equalsIgnoreCase(game)) {
+                alreadyExists = true;
+                break;
+            }
+        }
+        return alreadyExists;
     }
 
     public void filter(final String filter) {
@@ -128,7 +153,7 @@ public final class BrowserCore {
     }
 
     private void scrollToTop() {
-        final Node tabContent = this.tabPane.getTabs().get(0).getContent();
+        final Node tabContent = this.tabPane.getSelectedItem().getContent();
         final ScrollBar vBar = (ScrollBar) tabContent.lookup(".scroll-bar:vertical");
         if (vBar != null) {
             vBar.setValue(0.0D);
