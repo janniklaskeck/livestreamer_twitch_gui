@@ -108,7 +108,7 @@ public class ChannelCell extends ListCell<IChannel> {
             setGraphic(createReminderCheckBox(channel));
             setContentDisplay(ContentDisplay.LEFT);
             setContextMenu(this.createContextMenu(channel));
-            textProperty().bind(channel.getName());
+            textProperty().bind(channel.getDisplayName());
             setOnMouseClicked(mouseEvent -> {
                 final int doubleClickAmount = 2;
                 if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == doubleClickAmount) {
@@ -136,7 +136,7 @@ public class ChannelCell extends ListCell<IChannel> {
     private ContextMenu createContextMenu(final IChannel channel) {
         final ContextMenu contextMenu = new ContextMenu();
         final MenuItem delete = new MenuItem();
-        delete.textProperty().set("Delete " + channel.getName().get());
+        delete.textProperty().set("Delete " + channel.getDisplayName().get());
         delete.setOnAction(event -> {
             final IService service = (IService) this.getListView().getUserData();
             LsGuiUtils.removeChannelFromService(channel, service);

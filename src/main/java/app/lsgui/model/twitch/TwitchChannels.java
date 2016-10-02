@@ -32,8 +32,9 @@ import com.google.gson.JsonObject;
 
 import app.lsgui.remote.twitch.TwitchBrowserUpdateService;
 import app.lsgui.utils.TwitchUtils;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
  *
@@ -44,16 +45,11 @@ public final class TwitchChannels {
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannels.class);
 
     private JsonObject jsonData;
-    private ObservableList<ITwitchItem> channels;
+    private ListProperty<ITwitchItem> channels = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public TwitchChannels(final JsonObject jsonData) {
         this.jsonData = jsonData;
-        this.channels = FXCollections.observableArrayList();
         this.addGames();
-    }
-
-    public TwitchChannels() {
-        this.channels = FXCollections.observableArrayList();
     }
 
     private void addGames() {
@@ -72,13 +68,7 @@ public final class TwitchChannels {
         }
     }
 
-    public void updateData(final TwitchChannels updatedGames) {
-        LOGGER.debug("Update Twitch Channels Data");
-        this.channels.clear();
-        this.channels.addAll(updatedGames.getChannels());
-    }
-
-    public ObservableList<ITwitchItem> getChannels() {
+    public ListProperty<ITwitchItem> getChannels() {
         return this.channels;
     }
 

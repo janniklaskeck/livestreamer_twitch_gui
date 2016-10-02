@@ -124,7 +124,7 @@ public final class TwitchUtils {
     }
 
     public static void showOnlineNotification(final TwitchChannel channel) {
-        final String nameString = channel.getName().get();
+        final String nameString = channel.getDisplayName().get();
         final String gameString = channel.getGame().get();
         final String titleString = channel.getTitle().get();
         if (nameString != null && gameString != null && titleString != null) {
@@ -135,7 +135,7 @@ public final class TwitchUtils {
     }
 
     public static void showReminderNotification(final TwitchChannel twitchChannel) {
-        final String nameString = twitchChannel.getName().get();
+        final String nameString = twitchChannel.getDisplayName().get();
         final String gameString = twitchChannel.getGame().get();
         final String titleString = twitchChannel.getTitle().get();
         if (nameString != null && gameString != null && titleString != null) {
@@ -179,7 +179,8 @@ public final class TwitchUtils {
     private static void setOnlineData(final TwitchChannel channel, final JsonObject channelObject) {
         final JsonObject channelJson = channelObject.get("channel").getAsJsonObject();
         final JsonObject previewJson = channelObject.get("preview").getAsJsonObject();
-        channel.getName().set(JsonUtils.getStringIfNotNull("display_name", channelJson));
+        channel.getName().set(JsonUtils.getStringIfNotNull("name", channelJson));
+        channel.displayNameProperty().set(JsonUtils.getStringIfNotNull("display_name", channelJson));
         channel.getLogoURL().set(JsonUtils.getStringIfNotNull("logo", channelJson));
         channel.isPartneredProperty().set(JsonUtils.getBooleanIfNotNull("partner", channelJson));
         channel.getPreviewUrlLarge().set(JsonUtils.getStringIfNotNull("large", previewJson));
@@ -207,8 +208,9 @@ public final class TwitchUtils {
         }
     }
 
-    private static void setOfflineData(final TwitchChannel channel, final String name) {
+    public static void setOfflineData(final TwitchChannel channel, final String name) {
         channel.getName().set(name);
+        channel.displayNameProperty().set(name);
         channel.getLogoURL().set("");
         channel.isPartneredProperty().set(false);
         channel.getPreviewUrlLarge().set("");
