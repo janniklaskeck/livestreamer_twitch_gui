@@ -6,20 +6,23 @@ import app.lsgui.model.twitch.ITwitchItem;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 
 public final class BrowserTab extends Tab {
 
     private ListProperty<ITwitchItem> items = new SimpleListProperty<>(FXCollections.observableArrayList());
     private ListProperty<ITwitchItem> activeItems = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private GridView<ITwitchItem> contentGridView;
 
     public BrowserTab(final String name) {
         super(name);
-        setContent(this.buildGridView());
+        this.contentGridView = this.buildGridView();
+        setContent(this.contentGridView);
     }
 
     public GridView<ITwitchItem> getGridView() {
-        return (GridView<ITwitchItem>) getContent();
+        return this.contentGridView;
     }
 
     private GridView<ITwitchItem> buildGridView() {
@@ -29,6 +32,13 @@ public final class BrowserTab extends Tab {
         gridView.cellHeightProperty().bind(TwitchItemPane.HEIGHT_PROPERTY);
         gridView.itemsProperty().bind(this.activeItemsProperty());
         return gridView;
+    }
+
+    public void refresh() {
+        final ObservableList<ITwitchItem> gridViewItems = this.getGridView().getItems();
+        this.getGridView().itemsProperty().unbind();
+        this.getGridView().setItems(FXCollections.observableArrayList());
+        this.getGridView().setItems(gridViewItems);
     }
 
     public ListProperty<ITwitchItem> itemsProperty() {
