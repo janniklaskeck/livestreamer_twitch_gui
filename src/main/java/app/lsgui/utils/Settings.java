@@ -267,6 +267,11 @@ public final class Settings {
         this.favouriteGamesProperty().set(favourites);
     }
 
+    public String getCurrentStyleSheet() {
+        return Settings.class.getResource("/styles/" + Settings.getInstance().windowStyleProperty().get() + ".css")
+                .toExternalForm();
+    }
+
     public long getTimeout() {
         return TIMEOUT;
     }

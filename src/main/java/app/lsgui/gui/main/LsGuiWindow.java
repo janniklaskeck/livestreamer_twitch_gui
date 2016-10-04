@@ -124,8 +124,7 @@ public class LsGuiWindow extends Application {
             }
             Platform.exit();
         });
-        LsGuiWindow.getRootStage().getScene().getStylesheets().add(LsGuiWindow.class
-                .getResource("/styles/" + Settings.getInstance().windowStyleProperty() + ".css").toExternalForm());
+        LsGuiWindow.getRootStage().getScene().getStylesheets().add(Settings.getInstance().getCurrentStyleSheet());
     }
 
     public static final synchronized Stage getRootStage() {
