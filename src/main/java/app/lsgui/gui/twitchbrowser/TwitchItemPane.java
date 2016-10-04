@@ -166,7 +166,7 @@ public final class TwitchItemPane extends GridCell<ITwitchItem> {
 
     private static ContextMenu createContextMenu(final TwitchGame game) {
         final ContextMenu contextMenu = new ContextMenu();
-        if (!Settings.getInstance().getFavouriteGames().contains(game.getName().get())) {
+        if (!Settings.getInstance().favouriteGamesProperty().contains(game.getName().get())) {
             final MenuItem addToFavourites = new MenuItem("Add to Favourites");
             addToFavourites
                     .setOnAction(eventStartContext -> Settings.getInstance().addFavouriteGame(game.getName().get()));

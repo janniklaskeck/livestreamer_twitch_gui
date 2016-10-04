@@ -104,7 +104,7 @@ public final class LsGuiUtils {
         LOGGER.debug("Add new Service {} with URL {}", serviceName, serviceUrl);
         if (!"".equals(serviceName) && !"".equals(serviceUrl)) {
             String correctedUrl = correctUrl(serviceUrl);
-            Settings.getInstance().getStreamServices().add(new GenericService(serviceName, correctedUrl));
+            Settings.getInstance().servicesProperty().add(new GenericService(serviceName, correctedUrl));
         }
     }
 
@@ -121,7 +121,7 @@ public final class LsGuiUtils {
 
     public static void recordStream(final Stage stage, final IService service, final IChannel channel) {
         final String url = buildUrl(service.getUrl().get(), channel.getName().get());
-        final String quality = Settings.getInstance().getQuality().get();
+        final String quality = Settings.getInstance().qualityProperty().get();
 
         final FileChooser recordFileChooser = new FileChooser();
         recordFileChooser.setTitle("Choose Target file");
@@ -134,7 +134,7 @@ public final class LsGuiUtils {
 
     public static void removeService(final IService service) {
         LOGGER.debug("Removing Service {}", service.getName().get());
-        Settings.getInstance().getStreamServices().remove(service);
+        Settings.getInstance().servicesProperty().remove(service);
     }
 
     public static void showUpdateNotification(final String version, final ZonedDateTime date,

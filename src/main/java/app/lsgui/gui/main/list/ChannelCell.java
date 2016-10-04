@@ -182,7 +182,7 @@ public class ChannelCell extends ListCell<IChannel> {
     private void startLivestreamerStream(final IChannel channel) {
         final IService service = (IService) this.getListView().getUserData();
         final String url = LsGuiUtils.buildUrl(service.getUrl().get(), channel.getName().get());
-        final String quality = Settings.getInstance().getQuality().get();
+        final String quality = Settings.getInstance().qualityProperty().get();
         LivestreamerUtils.startLivestreamer(url, quality);
         LOGGER.info("Starting Stream for {}", channel.getName().get());
     }

@@ -138,7 +138,7 @@ public final class BrowserController {
         });
         final Label searchLabel = new Label("Filter");
         final ComboBox<String> favouriteGameComboBox = new ComboBox<>();
-        final ListProperty<String> favouriteGames = Settings.getInstance().getFavouriteGames();
+        final ListProperty<String> favouriteGames = Settings.getInstance().favouriteGamesProperty();
         favouriteGameComboBox.itemsProperty().bind(favouriteGames);
         favouriteGameComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {

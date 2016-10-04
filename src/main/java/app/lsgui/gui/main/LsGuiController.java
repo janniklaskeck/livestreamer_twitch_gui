@@ -75,11 +75,11 @@ public final class LsGuiController {
                         final QualityComboBox qualityComboBox = this.topToolBar.getQualityComboBox();
                         qualityComboBox.itemsProperty().bind(newValue.getAvailableQualities());
                         if (qualityComboBox.getItems().size() > 1) {
-                            final String quality = Settings.getInstance().getQuality().get();
+                            final String quality = Settings.getInstance().qualityProperty().get();
                             if (qualityComboBox.getItems().contains(quality)) {
                                 qualityComboBox.getSelectionModel().select(quality);
                             } else {
-                                qualityComboBox.getSelectionModel().select("Best");
+                                qualityComboBox.getSelectionModel().select(Settings.DEFAULT_QUALITY);
                             }
                         } else {
                             qualityComboBox.getSelectionModel().select(0);

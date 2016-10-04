@@ -79,6 +79,6 @@ public final class BrowserWindow extends Stage {
         this.initModality(Modality.APPLICATION_MODAL);
         this.initOwner(parentWindow);
         this.getScene().getStylesheets().add(BrowserWindow.class
-                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
+                .getResource("/styles/" + Settings.getInstance().windowStyleProperty() + ".css").toExternalForm());
     }
 }

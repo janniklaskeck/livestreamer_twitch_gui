@@ -76,7 +76,7 @@ public final class ChatWindow extends Stage {
         this.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         final Scene scene = new Scene(root);
         scene.getStylesheets().add(ChatWindow.class
-                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
+                .getResource("/styles/" + Settings.getInstance().windowStyleProperty() + ".css").toExternalForm());
         this.setScene(scene);
         this.initModality(Modality.NONE);
         this.show();

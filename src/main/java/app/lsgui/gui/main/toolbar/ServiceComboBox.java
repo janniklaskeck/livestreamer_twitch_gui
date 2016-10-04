@@ -41,10 +41,10 @@ public final class ServiceComboBox extends ComboBox<IService> {
     }
 
     public void initialize(final ServiceOperator serviceOperator) {
-        if (Settings.getInstance().getStreamServices().isEmpty()) {
-            Settings.getInstance().getStreamServices().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
+        if (Settings.getInstance().servicesProperty().isEmpty()) {
+            Settings.getInstance().servicesProperty().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
         }
-        itemsProperty().bind(Settings.getInstance().getStreamServices());
+        itemsProperty().bind(Settings.getInstance().servicesProperty());
         setCellFactory(listView -> new ServiceCell());
         setConverter(new StringConverter<IService>() {
             @Override

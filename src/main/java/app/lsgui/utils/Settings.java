@@ -45,8 +45,10 @@ import app.lsgui.model.IService;
 import app.lsgui.model.generic.GenericService;
 import app.lsgui.model.twitch.TwitchService;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -80,20 +82,22 @@ public final class Settings {
     private static final String FAVOURITE_GAMES = "favouriteGames";
     private static final String DEFAULT_TOKEN = "vkwhrtlhzcz3o91nu386ub62p5j6sk";
 
+    public static final String DEFAULT_QUALITY = "Source";
+
     private static Settings instance;
 
     private ListProperty<IService> services = new SimpleListProperty<>();
     private ListProperty<String> favouriteGames = new SimpleListProperty<>();
     private BooleanProperty sortTwitch = new SimpleBooleanProperty();
-    private boolean minimizeToTray = true;
-    private String windowStyle = "LightStyle";
-    private String currentService = "twitch.tv";
-    private String twitchUser = "";
-    private String twitchOAuth = "";
-    private int maxGamesLoad;
-    private int maxChannelsLoad;
+    private BooleanProperty minimizeToTray = new SimpleBooleanProperty();
+    private StringProperty windowStyle = new SimpleStringProperty("LightStyle");
+    private StringProperty currentService = new SimpleStringProperty("twitch.tv");
+    private StringProperty twitchUser = new SimpleStringProperty();
+    private StringProperty twitchOAuth = new SimpleStringProperty();
+    private IntegerProperty maxGamesLoad = new SimpleIntegerProperty();
+    private IntegerProperty maxChannelsLoad = new SimpleIntegerProperty();
     private StringProperty liveStreamerExePath = new SimpleStringProperty();
-    private StringProperty quality = new SimpleStringProperty("Best");
+    private StringProperty quality = new SimpleStringProperty(DEFAULT_QUALITY);
     private StringProperty recordingPath = new SimpleStringProperty();
     private StringProperty updateLink = new SimpleStringProperty();
 
@@ -139,16 +143,18 @@ public final class Settings {
 
     private void loadSettings(final JsonArray jArray) {
         final JsonObject settings = jArray.get(0).getAsJsonObject();
-        this.sortTwitch.setValue(JsonUtils.getBooleanSafe(settings.get(TWITCH_SORT), false));
-        this.minimizeToTray = JsonUtils.getBooleanSafe(settings.get(MINIMIZE_TO_TRAY_STRING), false);
-        this.twitchUser = JsonUtils.getStringSafe(settings.get(TWITCH_USER_STRING), "");
-        this.twitchOAuth = JsonUtils.getStringSafe(settings.get(TWITCH_OAUTH_STRING), DEFAULT_TOKEN);
-        this.windowStyle = JsonUtils.getStringSafe(settings.get(WINDOWSTYLE_STRING), "LightStyle");
-        this.liveStreamerExePath.set(JsonUtils.getStringSafe(settings.get(EXEPATH_STRING), ""));
-        this.maxChannelsLoad = JsonUtils.getIntSafe(settings.get(CHANNELS_LOAD), DEFAULT_CHANNELS_TO_LOAD);
-        this.maxGamesLoad = JsonUtils.getIntSafe(settings.get(GAMES_LOAD), DEFAULT_GAMES_TO_LOAD);
-        this.quality.set(JsonUtils.getStringSafe(settings.get(QUALITY_STRING), "Best"));
-        this.recordingPath.set(JsonUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home")));
+        this.sortTwitchProperty().setValue(JsonUtils.getBooleanSafe(settings.get(TWITCH_SORT), false));
+        this.minimizeToTrayProperty().setValue(JsonUtils.getBooleanSafe(settings.get(MINIMIZE_TO_TRAY_STRING), false));
+        this.twitchUserProperty().setValue(JsonUtils.getStringSafe(settings.get(TWITCH_USER_STRING), ""));
+        this.twitchOAuthProperty().setValue(JsonUtils.getStringSafe(settings.get(TWITCH_OAUTH_STRING), DEFAULT_TOKEN));
+        this.windowStyleProperty().setValue(JsonUtils.getStringSafe(settings.get(WINDOWSTYLE_STRING), "LightStyle"));
+        this.livestreamerPathProperty().setValue(JsonUtils.getStringSafe(settings.get(EXEPATH_STRING), ""));
+        this.maxChannelsProperty()
+                .setValue(JsonUtils.getIntSafe(settings.get(CHANNELS_LOAD), DEFAULT_CHANNELS_TO_LOAD));
+        this.maxGamesProperty().setValue(JsonUtils.getIntSafe(settings.get(GAMES_LOAD), DEFAULT_GAMES_TO_LOAD));
+        this.qualityProperty().setValue(JsonUtils.getStringSafe(settings.get(QUALITY_STRING), DEFAULT_QUALITY));
+        this.recordingPathProperty()
+                .setValue(JsonUtils.getStringSafe(settings.get(PATH), System.getProperty("user.home")));
         final JsonArray favouritesArray = JsonUtils.getJsonArraySafe(FAVOURITE_GAMES, settings);
         for (int i = 0; i < favouritesArray.size(); i++) {
             final String favourite = favouritesArray.get(i).getAsString();
@@ -157,7 +163,7 @@ public final class Settings {
     }
 
     private void loadServices(final JsonArray jArray) {
-        this.services.set(FXCollections.observableArrayList());
+        this.services.setValue(FXCollections.observableArrayList());
         final JsonArray servicesArray = jArray.get(1).getAsJsonArray();
         for (int i = 0; i < servicesArray.size(); i++) {
             final JsonObject serviceJson = servicesArray.get(i).getAsJsonObject();
@@ -187,16 +193,16 @@ public final class Settings {
             jsonWriter.setIndent("  ");
             jsonWriter.beginArray();
             jsonWriter.beginObject();
-            jsonWriter.name(TWITCH_USER_STRING).value(this.twitchUser);
-            jsonWriter.name(TWITCH_OAUTH_STRING).value(this.twitchOAuth);
-            jsonWriter.name(TWITCH_SORT).value(this.sortTwitch.get());
-            jsonWriter.name(QUALITY_STRING).value(this.getQuality().get());
-            jsonWriter.name(PATH).value(this.getRecordingPath().get());
-            jsonWriter.name(CHANNELS_LOAD).value(this.maxChannelsLoad);
-            jsonWriter.name(GAMES_LOAD).value(this.maxGamesLoad);
-            jsonWriter.name(MINIMIZE_TO_TRAY_STRING).value(this.minimizeToTray);
-            jsonWriter.name(WINDOWSTYLE_STRING).value(this.windowStyle);
-            jsonWriter.name(EXEPATH_STRING).value(this.getLivestreamerExePath().get());
+            jsonWriter.name(TWITCH_USER_STRING).value(this.twitchUserProperty().get());
+            jsonWriter.name(TWITCH_OAUTH_STRING).value(this.twitchOAuthProperty().get());
+            jsonWriter.name(TWITCH_SORT).value(this.sortTwitchProperty().get());
+            jsonWriter.name(QUALITY_STRING).value(this.qualityProperty().get());
+            jsonWriter.name(PATH).value(this.recordingPathProperty().get());
+            jsonWriter.name(CHANNELS_LOAD).value(this.maxChannelsProperty().get());
+            jsonWriter.name(GAMES_LOAD).value(this.maxGamesProperty().get());
+            jsonWriter.name(MINIMIZE_TO_TRAY_STRING).value(this.minimizeToTrayProperty().get());
+            jsonWriter.name(WINDOWSTYLE_STRING).value(this.windowStyleProperty().get());
+            jsonWriter.name(EXEPATH_STRING).value(this.livestreamerPathProperty().get());
             this.writeFavouriteGames(jsonWriter);
             jsonWriter.endObject();
             this.writeServices(jsonWriter);
@@ -239,84 +245,8 @@ public final class Settings {
         writer.endArray();
     }
 
-    public ListProperty<IService> getStreamServices() {
-        return this.services;
-    }
-
-    public BooleanProperty getSortTwitch() {
-        return this.sortTwitch;
-    }
-
-    public String getCurrentStreamService() {
-        return this.currentService;
-    }
-
-    public String getTwitchUser() {
-        return this.twitchUser;
-    }
-
-    public void setTwitchUser(final String twitchUser) {
-        this.twitchUser = twitchUser;
-    }
-
-    public String getTwitchOAuth() {
-        return this.twitchOAuth;
-    }
-
-    public void setTwitchOAuth(final String twitchOAuth) {
-        this.twitchOAuth = twitchOAuth;
-    }
-
-    public int getMaxGamesLoad() {
-        return this.maxGamesLoad;
-    }
-
-    public void setMaxGamesLoad(final int maxGamesLoad) {
-        this.maxGamesLoad = maxGamesLoad;
-    }
-
-    public int getMaxChannelsLoad() {
-        return this.maxChannelsLoad;
-    }
-
-    public void setMaxChannelsLoad(final int maxChannelsLoad) {
-        this.maxChannelsLoad = maxChannelsLoad;
-    }
-
-    public long getTimeout() {
-        return TIMEOUT;
-    }
-
-    public boolean isMinimizeToTray() {
-        return this.minimizeToTray;
-    }
-
-    public void setMinimizeToTray(final boolean minimizeToTray) {
-        this.minimizeToTray = minimizeToTray;
-    }
-
-    public String getWindowStyle() {
-        return this.windowStyle;
-    }
-
-    public void setWindowStyle(final String windowStyle) {
-        this.windowStyle = windowStyle;
-    }
-
-    public StringProperty getLivestreamerExePath() {
-        return this.liveStreamerExePath;
-    }
-
-    public StringProperty getQuality() {
-        return this.quality;
-    }
-
-    public StringProperty getRecordingPath() {
-        return this.recordingPath;
-    }
-
     public IService getTwitchService() {
-        final List<IService> servicesAsList = this.getStreamServices().get();
+        final List<IService> servicesAsList = this.servicesProperty().get();
         final Optional<IService> serviceOptional = servicesAsList.stream().filter(TwitchUtils::isTwitchService)
                 .findFirst();
         if (serviceOptional.isPresent()) {
@@ -325,23 +255,76 @@ public final class Settings {
         return null;
     }
 
-    public StringProperty getUpdateLink() {
-        return this.updateLink;
-    }
-
-    public ListProperty<String> getFavouriteGames() {
-        return this.favouriteGames;
-    }
-
     public void addFavouriteGame(final String game) {
         final ObservableList<String> favourites = FXCollections.observableArrayList(this.favouriteGames);
         favourites.add(game);
-        this.getFavouriteGames().set(favourites);
+        this.favouriteGamesProperty().set(favourites);
     }
 
     public void removeFavouriteGame(final String game) {
         final ObservableList<String> favourites = FXCollections.observableArrayList(this.favouriteGames);
         favourites.remove(game);
-        this.getFavouriteGames().set(favourites);
+        this.favouriteGamesProperty().set(favourites);
     }
+
+    public long getTimeout() {
+        return TIMEOUT;
+    }
+
+    public ListProperty<IService> servicesProperty() {
+        return this.services;
+    }
+
+    public BooleanProperty sortTwitchProperty() {
+        return this.sortTwitch;
+    }
+
+    public StringProperty currentServiceProperty() {
+        return this.currentService;
+    }
+
+    public StringProperty twitchUserProperty() {
+        return this.twitchUser;
+    }
+
+    public StringProperty twitchOAuthProperty() {
+        return this.twitchOAuth;
+    }
+
+    public IntegerProperty maxGamesProperty() {
+        return this.maxGamesLoad;
+    }
+
+    public IntegerProperty maxChannelsProperty() {
+        return this.maxChannelsLoad;
+    }
+
+    public BooleanProperty minimizeToTrayProperty() {
+        return this.minimizeToTray;
+    }
+
+    public StringProperty windowStyleProperty() {
+        return this.windowStyle;
+    }
+
+    public StringProperty livestreamerPathProperty() {
+        return this.liveStreamerExePath;
+    }
+
+    public StringProperty qualityProperty() {
+        return this.quality;
+    }
+
+    public StringProperty recordingPathProperty() {
+        return this.recordingPath;
+    }
+
+    public StringProperty updateLinkProperty() {
+        return this.updateLink;
+    }
+
+    public ListProperty<String> favouriteGamesProperty() {
+        return this.favouriteGames;
+    }
+
 }
