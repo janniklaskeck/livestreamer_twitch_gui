@@ -64,7 +64,7 @@ public final class TwitchChannelUpdateService extends ScheduledService<TwitchCha
                     this.channel.updateData(updatedModel, true);
                 }
             }
-            TwitchUtils.removeTwitchChannelFromList(ACTIVE_LIST, this.channel);
+            ACTIVE_LIST.remove(this.channel);
         });
         setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED {}", event.getEventType()));
     }

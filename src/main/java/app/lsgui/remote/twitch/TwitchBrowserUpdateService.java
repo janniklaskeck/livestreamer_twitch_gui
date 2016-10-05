@@ -54,7 +54,7 @@ public final class TwitchBrowserUpdateService extends Service<TwitchChannel> {
                     this.channel.updateData(updatedChannel, false);
                 }
             }
-            TwitchUtils.removeTwitchChannelFromList(ACTIVE_LIST, this.channel);
+            ACTIVE_LIST.remove(this.channel);
         });
         setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
     }

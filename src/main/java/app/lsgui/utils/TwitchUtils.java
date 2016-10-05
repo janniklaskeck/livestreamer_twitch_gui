@@ -240,15 +240,6 @@ public final class TwitchUtils {
         return String.format("%02d:%02d:%02d Uptime", hours, minutes, seconds);
     }
 
-    public static void removeTwitchChannelFromList(final ListProperty<TwitchChannel> activeList,
-            final TwitchChannel channel) {
-        synchronized (activeList) {
-            ObservableList<TwitchChannel> activeChannelServices = FXCollections.observableArrayList(activeList.get());
-            activeChannelServices.remove(channel);
-            activeList.set(activeChannelServices);
-        }
-    }
-
     public static void addChannelToList(final ListProperty<TwitchChannel> activeList, final TwitchChannel channel) {
         synchronized (activeList) {
             final ObservableList<TwitchChannel> activeChannelServices = FXCollections

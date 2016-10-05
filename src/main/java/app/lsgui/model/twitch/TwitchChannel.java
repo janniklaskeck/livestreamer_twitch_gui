@@ -101,13 +101,14 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
     }
 
     private void setOffline(final String name) {
+        LOGGER.debug("set {} offline", name);
         TwitchUtils.setOfflineData(this, name);
     }
 
     private void setOnline(final TwitchChannel data) {
         LOGGER.trace("update {} with data {}", data.getName(), data.isOnline());
         this.name.setValue(data.getName().get());
-        this.displayName.set(data.displayNameProperty().get());
+        this.displayName.setValue(data.displayNameProperty().get());
         this.logoURL.setValue(data.getLogoURL().get());
         this.previewUrlLarge.setValue(data.getPreviewUrlLarge().get());
         this.previewUrlMedium.setValue(data.getPreviewUrlMedium().get());
@@ -118,10 +119,10 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
         this.viewers.setValue(data.getViewers().get());
         this.viewersString.setValue(Integer.toString(this.getViewers().get()));
         if (data.isOnline().get() && !this.isOnline.get()) {
-            this.isOnline.set(true);
+            this.isOnline.setValue(true);
             this.cameOnline = true;
         } else if (!data.isOnline().get()) {
-            this.isOnline.set(false);
+            this.isOnline.setValue(false);
         }
         this.isPlaylist.setValue(data.getIsPlaylist().get());
         this.previewImageLarge.setValue(data.getPreviewImageLarge().get());
