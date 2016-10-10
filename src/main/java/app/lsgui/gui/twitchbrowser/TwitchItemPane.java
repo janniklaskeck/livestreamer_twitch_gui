@@ -23,8 +23,6 @@
  */
 package app.lsgui.gui.twitchbrowser;
 
-import org.controlsfx.control.GridCell;
-
 import app.lsgui.model.IService;
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.TwitchChannel;
@@ -47,45 +45,33 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-public final class TwitchItemPane extends GridCell<ITwitchItem> {
+public final class TwitchItemPane extends BorderPane {
 
-    public static final float WIDTH = 150;
+    public static final DoubleProperty WIDTH_PROPERTY = new SimpleDoubleProperty(150);
     public static final DoubleProperty HEIGHT_PROPERTY = new SimpleDoubleProperty();
 
     private static final int BOTTOM_OFFSET = 40;
     private static final double RATIO_GAME = 1.4D;
     private static final double RATIO_CHANNEL = 0.5625D;
-    private static final double HEIGHT_GAME = WIDTH * RATIO_GAME;
-    private static final double HEIGHT_CHANNEL = WIDTH * RATIO_CHANNEL;
+    private static final double HEIGHT_GAME = WIDTH_PROPERTY.get() * RATIO_GAME;
+    private static final double HEIGHT_CHANNEL = WIDTH_PROPERTY.get() * RATIO_CHANNEL;
 
-    public TwitchItemPane() {
-        // Empty Constructor
-    }
-
-    @Override
-    protected void updateItem(final ITwitchItem item, final boolean empty) {
-        super.updateItem(item, empty);
-        if (empty || item == null) {
-            setText(null);
-            setGraphic(null);
-        } else {
-            if (item instanceof TwitchGame) {
-                final TwitchGame game = (TwitchGame) item;
-                setGraphic(this.createGameBorderPane(game));
-                HEIGHT_PROPERTY.set(HEIGHT_GAME + BOTTOM_OFFSET);
-            } else if (item instanceof TwitchChannel) {
-                final TwitchChannel channel = (TwitchChannel) item;
-                setGraphic(this.createChannelBorderPane(channel));
-                HEIGHT_PROPERTY.set(HEIGHT_CHANNEL + BOTTOM_OFFSET);
-            }
+    public TwitchItemPane(final ITwitchItem item) {
+        if (item instanceof TwitchGame) {
+            final TwitchGame game = (TwitchGame) item;
+            this.createGameBorderPane(game);
+            HEIGHT_PROPERTY.set(HEIGHT_GAME + BOTTOM_OFFSET);
+        } else if (item instanceof TwitchChannel) {
+            final TwitchChannel channel = (TwitchChannel) item;
+            this.createChannelBorderPane(channel);
+            HEIGHT_PROPERTY.set(HEIGHT_CHANNEL + BOTTOM_OFFSET);
         }
     }
 
-    private BorderPane createGameBorderPane(final TwitchGame game) {
-        final BorderPane contentBorderPane = new BorderPane();
+    private void createGameBorderPane(final TwitchGame game) {
         final ImageView gameImage = new ImageView();
         gameImage.imageProperty().bind(game.getBoxImage());
-        gameImage.setFitWidth(WIDTH);
+        gameImage.setFitWidth(WIDTH_PROPERTY.get());
         gameImage.setFitHeight(HEIGHT_GAME);
         final Label nameLabel = new Label();
         nameLabel.setTooltip(new Tooltip("Name of Category"));
@@ -100,25 +86,22 @@ public final class TwitchItemPane extends GridCell<ITwitchItem> {
         channelLabel.textProperty().bind(game.getChannelCount());
         channelLabel.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
         final VBox textBox = new VBox(nameLabel, viewersLabel, channelLabel);
-        contentBorderPane.setCenter(gameImage);
-        contentBorderPane.setBottom(textBox);
-        contentBorderPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+        this.setCenter(gameImage);
+        this.setBottom(textBox);
+        this.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 BrowserCore.getInstance().openGame(game.getName().get());
             } else if (event.getButton() == MouseButton.SECONDARY) {
-                final ContextMenu contextMenu = createContextMenu(game);
-                this.contextMenuProperty().set(contextMenu);
+                this.showContextMenu(game, event.getScreenX(), event.getScreenY());
             }
             event.consume();
         });
-        return contentBorderPane;
     }
 
-    private BorderPane createChannelBorderPane(final TwitchChannel channel) {
-        final BorderPane contentBorderPane = new BorderPane();
+    private void createChannelBorderPane(final TwitchChannel channel) {
         final ImageView channelImage = new ImageView();
         channelImage.imageProperty().bind(channel.getPreviewImageMedium());
-        channelImage.setFitWidth(WIDTH);
+        channelImage.setFitWidth(WIDTH_PROPERTY.get());
         channelImage.setFitHeight(HEIGHT_CHANNEL);
         final Label nameLabel = new Label();
         nameLabel.setTooltip(new Tooltip("Name of the Channel"));
@@ -133,25 +116,23 @@ public final class TwitchItemPane extends GridCell<ITwitchItem> {
         uptimeLabel.textProperty().bind(channel.getUptimeString());
         uptimeLabel.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
         final VBox textBox = new VBox(nameLabel, viewersLabel, uptimeLabel);
-        contentBorderPane.setCenter(channelImage);
-        contentBorderPane.setBottom(textBox);
+        this.setCenter(channelImage);
+        this.setBottom(textBox);
         final Tooltip titleTooltip = new Tooltip();
         titleTooltip.textProperty().bind(channel.getTitle());
-        final Node node = contentBorderPane;
+        final Node node = this;
         Tooltip.install(node, titleTooltip);
-        contentBorderPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+        this.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 BrowserCore.getInstance().startStream(channel.getName().get());
             } else if (event.getButton() == MouseButton.SECONDARY) {
-                final ContextMenu contextMenu = createContextMenu(channel);
-                this.contextMenuProperty().set(contextMenu);
+                this.showContextMenu(channel, event.getScreenX(), event.getScreenY());
             }
             event.consume();
         });
-        return contentBorderPane;
     }
 
-    private static ContextMenu createContextMenu(final TwitchChannel channel) {
+    private void showContextMenu(final TwitchChannel channel, final double xPos, final double yPos) {
         final ContextMenu contextMenu = new ContextMenu();
         final MenuItem startStream = new MenuItem("Start Stream");
         startStream.setOnAction(eventStartContext -> BrowserCore.getInstance().startStream(channel.getName().get()));
@@ -161,10 +142,10 @@ public final class TwitchItemPane extends GridCell<ITwitchItem> {
                 .setOnAction(eventAddContext -> LsGuiUtils.addChannelToService(channel.getName().get(), twitchService));
         contextMenu.getItems().add(startStream);
         contextMenu.getItems().add(addToList);
-        return contextMenu;
+        contextMenu.show(this.getScene().getWindow(), xPos, yPos);
     }
 
-    private static ContextMenu createContextMenu(final TwitchGame game) {
+    private void showContextMenu(final TwitchGame game, final double xPos, final double yPos) {
         final ContextMenu contextMenu = new ContextMenu();
         if (!Settings.getInstance().favouriteGamesProperty().contains(game.getName().get())) {
             final MenuItem addToFavourites = new MenuItem("Add to Favourites");
@@ -177,6 +158,6 @@ public final class TwitchItemPane extends GridCell<ITwitchItem> {
                     .setOnAction(eventStartContext -> Settings.getInstance().removeFavouriteGame(game.getName().get()));
             contextMenu.getItems().add(removeFromFavourites);
         }
-        return contextMenu;
+        contextMenu.show(this.getScene().getWindow(), xPos, yPos);
     }
 }
