@@ -23,12 +23,8 @@
  */
 package app.lsgui.utils;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -37,8 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonWriter;
 
 import app.lsgui.model.IChannel;
 import app.lsgui.model.IService;
@@ -131,7 +127,8 @@ public final class Settings {
         } catch (IOException e) {
             LOGGER.error("ERROR while creaing Settings file", e);
         }
-        this.createSettingsJson(settings);
+        final JsonElement data = this.createSettingsJson();
+        JsonUtils.writeJsonToFile(settings, data);
     }
 
     private void loadSettingsFromFile(final File file) {
@@ -185,64 +182,41 @@ public final class Settings {
         }
     }
 
-    private void createSettingsJson(final File file) {
-        try (final FileOutputStream outputStream = new FileOutputStream(file);) {
-            final BufferedWriter bufferedWriter = new BufferedWriter(
-                    new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
-            final JsonWriter jsonWriter = new JsonWriter(bufferedWriter);
-            jsonWriter.setIndent("  ");
-            jsonWriter.beginArray();
-            jsonWriter.beginObject();
-            jsonWriter.name(TWITCH_USER_STRING).value(this.twitchUserProperty().get());
-            jsonWriter.name(TWITCH_OAUTH_STRING).value(this.twitchOAuthProperty().get());
-            jsonWriter.name(TWITCH_SORT).value(this.sortTwitchProperty().get());
-            jsonWriter.name(QUALITY_STRING).value(this.qualityProperty().get());
-            jsonWriter.name(PATH).value(this.recordingPathProperty().get());
-            jsonWriter.name(CHANNELS_LOAD).value(this.maxChannelsProperty().get());
-            jsonWriter.name(GAMES_LOAD).value(this.maxGamesProperty().get());
-            jsonWriter.name(MINIMIZE_TO_TRAY_STRING).value(this.minimizeToTrayProperty().get());
-            jsonWriter.name(WINDOWSTYLE_STRING).value(this.windowStyleProperty().get());
-            jsonWriter.name(EXEPATH_STRING).value(this.livestreamerPathProperty().get());
-            this.writeFavouriteGames(jsonWriter);
-            jsonWriter.endObject();
-            this.writeServices(jsonWriter);
-            jsonWriter.endArray();
-            jsonWriter.close();
-            bufferedWriter.close();
-        } catch (IOException e) {
-            LOGGER.error("ERROR while writing to Settings file", e);
+    private JsonElement createSettingsJson() {
+        final JsonObject generalSettings = new JsonObject();
+        generalSettings.addProperty(TWITCH_USER_STRING, this.twitchUserProperty().get());
+        generalSettings.addProperty(TWITCH_OAUTH_STRING, this.twitchOAuthProperty().get());
+        generalSettings.addProperty(TWITCH_SORT, this.sortTwitchProperty().get());
+        generalSettings.addProperty(QUALITY_STRING, this.qualityProperty().get());
+        generalSettings.addProperty(PATH, this.recordingPathProperty().get());
+        generalSettings.addProperty(CHANNELS_LOAD, this.maxChannelsProperty().get());
+        generalSettings.addProperty(GAMES_LOAD, this.maxGamesProperty().get());
+        generalSettings.addProperty(MINIMIZE_TO_TRAY_STRING, this.minimizeToTrayProperty().get());
+        generalSettings.addProperty(WINDOWSTYLE_STRING, this.windowStyleProperty().get());
+        generalSettings.addProperty(EXEPATH_STRING, this.livestreamerPathProperty().get());
+        final JsonArray favouriteGamesArray = new JsonArray();
+        for (final String favourite : this.favouriteGames.get()) {
+            favouriteGamesArray.add(favourite);
         }
-    }
-
-    private void writeServices(final JsonWriter writer) throws IOException {
-        writer.beginArray();
-        for (final IService service : this.services) {
-            LOGGER.debug("Creating JSON for Service {}", service.getName().get());
-            writer.beginObject();
-            writer.name(SERVICE_NAME).value(service.getName().get());
-            writer.name(SERVICE_URL).value(service.getUrl().get());
-            writer.name("channels");
-            writer.beginArray();
+        generalSettings.add(FAVOURITE_GAMES, favouriteGamesArray);
+        final JsonArray servicesArray = new JsonArray();
+        for (final IService service : this.services.get()) {
+            final JsonObject serviceObject = new JsonObject();
+            serviceObject.addProperty(SERVICE_NAME, service.getName().get());
+            serviceObject.addProperty(SERVICE_URL, service.getUrl().get());
+            final JsonArray channelArray = new JsonArray();
             for (final IChannel channel : service.getChannelProperty().get()) {
                 if (channel.getName().get() != null) {
-                    writer.value(channel.getName().get());
+                    channelArray.add(channel.getName().get());
                 }
             }
-            writer.endArray();
-            writer.endObject();
+            serviceObject.add("channels", channelArray);
+            servicesArray.add(serviceObject);
         }
-        writer.endArray();
-    }
-
-    private void writeFavouriteGames(final JsonWriter writer) throws IOException {
-        LOGGER.debug("Writing Favourites to Settings file");
-        writer.name(FAVOURITE_GAMES);
-        writer.beginArray();
-        for (final String favourite : this.favouriteGames) {
-            LOGGER.trace("Writing Favourite '{}' to file", favourite);
-            writer.value(favourite);
-        }
-        writer.endArray();
+        final JsonArray settingsArray = new JsonArray();
+        settingsArray.add(generalSettings);
+        settingsArray.add(servicesArray);
+        return settingsArray;
     }
 
     public IService getTwitchService() {

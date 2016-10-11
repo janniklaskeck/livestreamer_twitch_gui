@@ -100,11 +100,9 @@ public final class ChatController {
 
     public void connect(final String channel) {
         final String twitchIrc = "irc.chat.twitch.tv";
-        if (!"".equals(Settings.getInstance().twitchUserProperty().get())
-                && !"".equals(Settings.getInstance().twitchOAuthProperty().get())) {
-            final String user = Settings.getInstance().twitchUserProperty().get();
-            final String oauth = Settings.getInstance().twitchOAuthProperty().get();
-
+        final String user = Settings.getInstance().twitchUserProperty().get();
+        final String oauth = Settings.getInstance().twitchOAuthProperty().get();
+        if (!"".equals(user) && !"".equals(oauth)) {
             this.client.setUserName(user);
             this.client.setChannel(channel);
             this.clientConnect(twitchIrc, oauth);

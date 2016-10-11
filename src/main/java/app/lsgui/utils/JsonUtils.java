@@ -26,14 +26,17 @@ package app.lsgui.utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -115,5 +118,15 @@ public final class JsonUtils {
             LOGGER.error("ERROR while reading Settings file", e);
         }
         return jsonArray;
+    }
+
+    public static void writeJsonToFile(final File file, final JsonElement element) {
+        try (final OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file),
+                StandardCharsets.UTF_8)) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(element, writer);
+        } catch (IOException e) {
+            LOGGER.error("Could not write settings to File", e);
+        }
     }
 }

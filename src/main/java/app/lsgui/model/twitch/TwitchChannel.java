@@ -119,10 +119,10 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
         this.viewers.setValue(data.getViewers().get());
         this.viewersString.setValue(Integer.toString(this.getViewers().get()));
         if (data.isOnline().get() && !this.isOnline.get()) {
-            this.isOnline.setValue(true);
+            this.isOnline.setValue(Boolean.TRUE);
             this.cameOnline = true;
         } else if (!data.isOnline().get()) {
-            this.isOnline.setValue(false);
+            this.isOnline.setValue(Boolean.FALSE);
         }
         this.isPlaylist.setValue(data.getIsPlaylist().get());
         this.previewImageLarge.setValue(data.getPreviewImageLarge().get());

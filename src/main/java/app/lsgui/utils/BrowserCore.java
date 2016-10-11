@@ -104,9 +104,8 @@ public final class BrowserCore {
 
     public void openGame(final String game) {
         LOGGER.debug("Open Data for Game '{}'", game);
-        final TwitchChannels channels = TwitchAPIClient.getInstance().getGameData(game);
         final BrowserTab gameTab;
-        if (gameTabAlreadyExists(game)) {
+        if (this.gameTabAlreadyExists(game)) {
             final Optional<BrowserTab> optionalTab = this.tabPane.getBrowserTabs().stream()
                     .filter(tab -> tab.getText().equalsIgnoreCase(game)).findFirst();
             if (optionalTab.isPresent()) {
@@ -118,6 +117,7 @@ public final class BrowserCore {
         } else {
             gameTab = this.addGameTab(game);
         }
+        final TwitchChannels channels = TwitchAPIClient.getInstance().getGameData(game);
         gameTab.itemsProperty().set(channels.getChannels());
         gameTab.activeItemsProperty().set(channels.getChannels());
         this.scrollToTop();

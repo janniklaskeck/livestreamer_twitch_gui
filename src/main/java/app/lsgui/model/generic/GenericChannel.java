@@ -77,7 +77,7 @@ public final class GenericChannel implements IChannel {
 
     public static Callback<IChannel, Observable[]> extractor() {
         return (IChannel sm) -> new Observable[] { ((GenericChannel) sm).getName(),
-                ((GenericChannel) sm).getDisplayName(), ((GenericChannel) sm).isOnline() };
+                ((GenericChannel) sm).getDisplayName(), ((GenericChannel) sm).isOnline(), };
     }
 
     @Override
