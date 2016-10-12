@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -168,9 +169,11 @@ public final class TwitchAPIClient {
     private static String getAPIResponse(final URI apiUrl) {
         LOGGER.trace("Send Request to API URL '{}'", apiUrl);
         final HttpGet request = new HttpGet(apiUrl);
-        request.setHeader("Client-ID", LSGUI_CLIENT_ID);
+        request.addHeader("Client-ID", LSGUI_CLIENT_ID);
+        request.addHeader("Content-Type", "charset=UTF-8");
         try (final CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {
-            return new BasicResponseHandler().handleResponse(response);
+            final String responseString = new BasicResponseHandler().handleResponse(response);
+            return new String(responseString.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         } catch (UnknownHostException e) {
             LOGGER.error("Twitch is not reachable. Check your Internet Connection", e);
         } catch (HttpResponseException e) {
