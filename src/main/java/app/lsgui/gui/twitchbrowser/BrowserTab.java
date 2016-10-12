@@ -32,12 +32,11 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
 
@@ -68,20 +67,18 @@ public final class BrowserTab extends Tab {
         scrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
-            
+
         final TilePane pane = new TilePane();
-        pane.setOnScroll(new EventHandler<ScrollEvent>() {
-            @Override
-            public void handle(final ScrollEvent scrollEvent) {
-                final double deltaY = scrollEvent.getDeltaY() * 2;
-                final double height = BrowserTab.this.getCustomContent().getBoundsInLocal().getHeight();
-                final double vValue = BrowserTab.this.getCustomContent().getVvalue();
-                BrowserTab.this.getCustomContent().setVvalue(vValue - deltaY/height);
-            }
+        pane.setOnScroll(scrollEvent -> {
+            final double deltaY = scrollEvent.getDeltaY() * 2;
+            final double height = BrowserTab.this.getCustomContent().getBoundsInLocal().getHeight();
+            final double vValue = BrowserTab.this.getCustomContent().getVvalue();
+            BrowserTab.this.getCustomContent().setVvalue(vValue - deltaY / height);
         });
         pane.setPrefColumns(PREFERED_COLUMNS);
         pane.setVgap(ITEM_GAP);
         pane.setHgap(ITEM_GAP);
+        pane.setPadding(new Insets(ITEM_GAP));
         this.activeItemsProperty().addListener((ListChangeListener.Change<? extends ITwitchItem> c) -> pane
                 .getChildren().setAll(convertToNodeList(this.activeItemsProperty().get())));
         scrollPane.setContent(pane);
