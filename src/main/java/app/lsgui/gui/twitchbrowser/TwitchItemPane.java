@@ -47,9 +47,8 @@ import javafx.scene.layout.VBox;
 
 public final class TwitchItemPane extends BorderPane {
 
-    public static final DoubleProperty WIDTH_PROPERTY = new SimpleDoubleProperty(150);
-    public static final DoubleProperty HEIGHT_PROPERTY = new SimpleDoubleProperty();
-
+    private static final DoubleProperty HEIGHT_PROPERTY = new SimpleDoubleProperty();
+    private static final DoubleProperty WIDTH_PROPERTY = new SimpleDoubleProperty(150);
     private static final int BOTTOM_OFFSET = 40;
     private static final double RATIO_GAME = 1.4D;
     private static final double RATIO_CHANNEL = 0.5625D;
