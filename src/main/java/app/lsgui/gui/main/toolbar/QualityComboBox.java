@@ -39,7 +39,7 @@ public final class QualityComboBox extends ComboBox<String> {
 
     public void initialize() {
         getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if (!OFFLINEQUALITY.equals(newValue)) {
+            if (newValue != null && !OFFLINEQUALITY.equals(newValue)) {
                 LOGGER.debug("Set selected Quality to {}", newValue);
                 Settings.getInstance().qualityProperty().set(newValue);
             }
