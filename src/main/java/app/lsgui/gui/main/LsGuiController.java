@@ -31,8 +31,10 @@ import app.lsgui.gui.main.list.ChannelList;
 import app.lsgui.gui.main.toolbar.QualityComboBox;
 import app.lsgui.gui.main.toolbar.ServiceComboBox;
 import app.lsgui.gui.main.toolbar.TopToolBar;
+import app.lsgui.model.IChannel;
 import app.lsgui.model.IService;
 import app.lsgui.utils.Settings;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
 
@@ -72,18 +74,7 @@ public final class LsGuiController {
         this.channelList.getListView().getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {
-                        final QualityComboBox qualityComboBox = this.topToolBar.getQualityComboBox();
-                        qualityComboBox.itemsProperty().bind(newValue.getAvailableQualities());
-                        if (qualityComboBox.getItems().size() > 1) {
-                            final String quality = Settings.getInstance().qualityProperty().get();
-                            if (qualityComboBox.getItems().contains(quality)) {
-                                qualityComboBox.getSelectionModel().select(quality);
-                            } else {
-                                qualityComboBox.getSelectionModel().select(Settings.DEFAULT_QUALITY);
-                            }
-                        } else {
-                            qualityComboBox.getSelectionModel().select(0);
-                        }
+                        this.bindAndSelect(newValue);
                     }
                 });
         final ServiceComboBox serviceComboBox = this.topToolBar.getServiceComboBox();
@@ -91,6 +82,22 @@ public final class LsGuiController {
         this.channelList.channelListProperty().bind(service.getChannelProperty());
         this.channelList.getListView().setUserData(service);
         this.contentBorderPane.setLeft(this.channelList);
+    }
+
+    private void bindAndSelect(final IChannel newValue) {
+        final QualityComboBox qualityComboBox = this.topToolBar.getQualityComboBox();
+        qualityComboBox.itemsProperty().bind(newValue.getAvailableQualities());
+        if (qualityComboBox.getItems().size() > 1) {
+            final String quality = Settings.getInstance().qualityProperty().get();
+            if (qualityComboBox.getItems().contains(quality)) {
+                Platform.runLater(
+                        () -> qualityComboBox.getSelectionModel().select(quality));
+            } else {
+                qualityComboBox.getSelectionModel().select(Settings.DEFAULT_QUALITY);
+            }
+        } else {
+            qualityComboBox.getSelectionModel().select(0);
+        }
     }
 
     private void setupChannelInfoPanel() {
