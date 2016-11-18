@@ -36,6 +36,8 @@ public interface IChannel {
 
     StringProperty getName();
 
+    StringProperty getDisplayName();
+
     BooleanProperty isOnline();
 
     BooleanProperty hasReminder();

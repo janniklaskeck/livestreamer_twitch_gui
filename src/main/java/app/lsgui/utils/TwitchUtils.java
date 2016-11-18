@@ -124,7 +124,7 @@ public final class TwitchUtils {
     }
 
     public static void showOnlineNotification(final TwitchChannel channel) {
-        final String nameString = channel.getName().get();
+        final String nameString = channel.getDisplayName().get();
         final String gameString = channel.getGame().get();
         final String titleString = channel.getTitle().get();
         if (nameString != null && gameString != null && titleString != null) {
@@ -135,7 +135,7 @@ public final class TwitchUtils {
     }
 
     public static void showReminderNotification(final TwitchChannel twitchChannel) {
-        final String nameString = twitchChannel.getName().get();
+        final String nameString = twitchChannel.getDisplayName().get();
         final String gameString = twitchChannel.getGame().get();
         final String titleString = twitchChannel.getTitle().get();
         if (nameString != null && gameString != null && titleString != null) {
@@ -179,7 +179,9 @@ public final class TwitchUtils {
     private static void setOnlineData(final TwitchChannel channel, final JsonObject channelObject) {
         final JsonObject channelJson = channelObject.get("channel").getAsJsonObject();
         final JsonObject previewJson = channelObject.get("preview").getAsJsonObject();
-        channel.getName().set(JsonUtils.getStringIfNotNull("display_name", channelJson));
+        channel.getId().set(JsonUtils.getIntegerIfNotNull("_id", channelJson));
+        channel.getName().set(JsonUtils.getStringIfNotNull("name", channelJson));
+        channel.displayNameProperty().set(JsonUtils.getStringIfNotNull("display_name", channelJson));
         channel.getLogoURL().set(JsonUtils.getStringIfNotNull("logo", channelJson));
         channel.isPartneredProperty().set(JsonUtils.getBooleanIfNotNull("partner", channelJson));
         channel.getPreviewUrlLarge().set(JsonUtils.getStringIfNotNull("large", previewJson));
@@ -207,8 +209,10 @@ public final class TwitchUtils {
         }
     }
 
-    private static void setOfflineData(final TwitchChannel channel, final String name) {
+    public static void setOfflineData(final TwitchChannel channel, final String name) {
+        channel.getId().setValue(0);
         channel.getName().set(name);
+        channel.displayNameProperty().set(name);
         channel.getLogoURL().set("");
         channel.isPartneredProperty().set(false);
         channel.getPreviewUrlLarge().set("");
@@ -236,15 +240,6 @@ public final class TwitchUtils {
         final long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime)
                 - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(uptime));
         return String.format("%02d:%02d:%02d Uptime", hours, minutes, seconds);
-    }
-
-    public static void removeTwitchChannelFromList(final ListProperty<TwitchChannel> activeList,
-            final TwitchChannel channel) {
-        synchronized (activeList) {
-            ObservableList<TwitchChannel> activeChannelServices = FXCollections.observableArrayList(activeList.get());
-            activeChannelServices.remove(channel);
-            activeList.set(activeChannelServices);
-        }
     }
 
     public static void addChannelToList(final ListProperty<TwitchChannel> activeList, final TwitchChannel channel) {

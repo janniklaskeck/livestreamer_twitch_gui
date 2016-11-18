@@ -119,7 +119,7 @@ public final class LivestreamerUtils {
     }
 
     private static String getTwitchOAuth() {
-        final String oauth = Settings.getInstance().getTwitchOAuth();
+        final String oauth = Settings.getInstance().twitchOAuthProperty().get();
         String parameter;
         if (oauth.startsWith("oauth")) {
             final String oauthKey = oauth.split(":")[1];
@@ -139,7 +139,7 @@ public final class LivestreamerUtils {
             try {
                 String path = "\"" + filePath.getAbsolutePath() + "\"";
                 path = path.replace('\\', '/');
-                Settings.getInstance().getRecordingPath().set(path);
+                Settings.getInstance().recordingPathProperty().set(path);
                 ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), "-o", path, url, quality));
                 pb.redirectOutput(Redirect.INHERIT);
                 pb.redirectError(Redirect.INHERIT);
@@ -154,14 +154,14 @@ public final class LivestreamerUtils {
     }
 
     private static String getLivestreamerExe() {
-        if ("".equals(Settings.getInstance().getLivestreamerExePath().get())) {
+        if ("".equals(Settings.getInstance().livestreamerPathProperty().get())) {
             if (!checkForLivestreamerOnPath()) {
                 Platform.runLater(LivestreamerUtils::showLivestreamerPathWarning);
                 return "";
             }
             return LIVESTREAMERCMD;
         } else {
-            return Settings.getInstance().getLivestreamerExePath().get();
+            return Settings.getInstance().livestreamerPathProperty().get();
         }
     }
 

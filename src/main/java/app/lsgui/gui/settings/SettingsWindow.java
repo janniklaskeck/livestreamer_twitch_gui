@@ -76,8 +76,8 @@ public final class SettingsWindow extends AnchorPane {
         settingsStage.setScene(scene);
         settingsStage.initModality(Modality.APPLICATION_MODAL);
         settingsStage.initOwner(parentWindow);
-        SettingsWindow.getSettingsStage().getScene().getStylesheets().add(SettingsWindow.class
-                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
+        SettingsWindow.getSettingsStage().getScene().getStylesheets()
+                .add(Settings.getInstance().getCurrentStyleSheet());
         settingsStage.setOnCloseRequest(event -> setSettingsStage(null));
     }
 

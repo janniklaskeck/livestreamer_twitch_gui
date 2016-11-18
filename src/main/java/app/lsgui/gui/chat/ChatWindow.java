@@ -75,8 +75,7 @@ public final class ChatWindow extends Stage {
         this.setTitle(this.channel + " - Livestreamer GUI Chat v" + LsGuiUtils.readVersionProperty());
         this.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         final Scene scene = new Scene(root);
-        scene.getStylesheets().add(ChatWindow.class
-                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
+        scene.getStylesheets().add(Settings.getInstance().getCurrentStyleSheet());
         this.setScene(scene);
         this.initModality(Modality.NONE);
         this.show();

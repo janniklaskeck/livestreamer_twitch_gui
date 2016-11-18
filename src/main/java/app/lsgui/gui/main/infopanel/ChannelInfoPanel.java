@@ -175,7 +175,7 @@ public class ChannelInfoPanel extends BorderPane {
     }
 
     private void bindToGenericChannel(final IChannel channel) {
-        this.channelDescription.textProperty().bind(channel.getName());
+        this.channelDescription.textProperty().bind(channel.getDisplayName());
         this.previewImageView.imageProperty().unbind();
         this.channelUptime.textProperty().unbind();
         this.channelUptime.setGraphic(null);

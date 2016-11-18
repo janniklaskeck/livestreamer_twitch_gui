@@ -64,9 +64,9 @@ public final class TwitchChannelUpdateService extends ScheduledService<TwitchCha
                     this.channel.updateData(updatedModel, true);
                 }
             }
-            TwitchUtils.removeTwitchChannelFromList(ACTIVE_LIST, this.channel);
+            ACTIVE_LIST.remove(this.channel);
         });
-        setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED {}", event.getEventType()));
+        setOnFailed(event -> LOGGER.warn("Channel Update Service FAILED. Event: {}", event.getEventType()));
     }
 
     @Override
@@ -74,8 +74,9 @@ public final class TwitchChannelUpdateService extends ScheduledService<TwitchCha
         return new Task<TwitchChannel>() {
             @Override
             protected TwitchChannel call() throws Exception {
-                TwitchUtils.addChannelToList(ACTIVE_LIST, channel);
-                return TwitchAPIClient.getInstance().getStreamData(channel.getName().get(), false);
+                TwitchUtils.addChannelToList(ACTIVE_LIST, TwitchChannelUpdateService.this.channel);
+                return TwitchAPIClient.getInstance()
+                        .getStreamData(TwitchChannelUpdateService.this.channel.getName().get(), false);
             }
         };
     }

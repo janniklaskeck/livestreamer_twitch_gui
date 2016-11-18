@@ -24,11 +24,13 @@
 package app.lsgui.utils;
 
 import java.util.Locale;
+import java.util.Optional;
 
-import org.controlsfx.control.GridView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.lsgui.gui.twitchbrowser.BrowserTab;
+import app.lsgui.gui.twitchbrowser.BrowserTabPane;
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.model.twitch.TwitchChannels;
@@ -36,10 +38,11 @@ import app.lsgui.model.twitch.TwitchGame;
 import app.lsgui.model.twitch.TwitchGames;
 import app.lsgui.remote.twitch.TwitchAPIClient;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 
 /**
@@ -52,12 +55,8 @@ public final class BrowserCore {
     private static final Logger LOGGER = LoggerFactory.getLogger(BrowserCore.class);
 
     private static BrowserCore instance;
-    private GridView<ITwitchItem> browserGridView;
-    private String currentGame = "";
-    private ObjectProperty<ObservableList<ITwitchItem>> items = new SimpleObjectProperty<>(
-            FXCollections.observableArrayList());
-    private ObjectProperty<ObservableList<ITwitchItem>> activeItems = new SimpleObjectProperty<>(
-            FXCollections.observableArrayList());
+    private ObjectProperty<String> qualityProperty = new SimpleObjectProperty<>();
+    private BrowserTabPane tabPane;
 
     private BrowserCore() {
     }
@@ -69,39 +68,76 @@ public final class BrowserCore {
         return instance;
     }
 
-    public void setGridView(final GridView<ITwitchItem> displayGridView) {
-        this.browserGridView = displayGridView;
-        this.browserGridView.itemsProperty().bind(this.activeItems);
+    public void setTabPane(final BrowserTabPane tabPane) {
+        this.tabPane = tabPane;
+    }
+
+    public void bindQualityProperty(final ReadOnlyObjectProperty<String> qualityProperty) {
+        this.qualityProperty.bind(qualityProperty);
+    }
+
+    public void refresh() {
+        LOGGER.debug("Refresh: redirect to home page");
+        if (this.tabPane.getSelectionModel().getSelectedIndex() == 0) {
+            this.goToHome();
+        } else {
+            final BrowserTab currentTab = (BrowserTab) this.tabPane.getSelectionModel().getSelectedItem();
+            this.openGame(currentTab.getText());
+        }
     }
 
     public void goToHome() {
         LOGGER.debug("Go to home");
         final TwitchGames games = TwitchAPIClient.getInstance().getGamesData();
-        this.items.set(games.getGames());
-        this.activeItems.set(games.getGames());
-        this.scrollToTop();
-    }
-
-    public void refresh() {
-        LOGGER.debug("Refresh: redirect to home page");
-        if ("".equals(this.currentGame)) {
-            this.goToHome();
+        final BrowserTab homeTab;
+        if (this.tabPane.getTabs().isEmpty()) {
+            homeTab = new BrowserTab("Home");
+            homeTab.setClosable(false);
+            this.tabPane.getTabs().add(homeTab);
         } else {
-            this.openGame(this.currentGame);
+            homeTab = this.tabPane.getBrowserTabs().get(0);
+            this.scrollToTop();
         }
+        homeTab.itemsProperty().set(games.getGames());
+        homeTab.activeItemsProperty().set(games.getGames());
     }
 
     public void openGame(final String game) {
         LOGGER.debug("Open Data for Game '{}'", game);
+        final BrowserTab gameTab;
+        if (this.gameTabAlreadyExists(game)) {
+            final Optional<BrowserTab> optionalTab = this.tabPane.getBrowserTabs().stream()
+                    .filter(tab -> tab.getText().equalsIgnoreCase(game)).findFirst();
+            if (optionalTab.isPresent()) {
+                gameTab = optionalTab.get();
+            } else {
+                throw new UnsupportedOperationException("Could not get already existing Game Tab");
+            }
+            this.tabPane.getSelectionModel().select(gameTab);
+        } else {
+            gameTab = this.addGameTab(game);
+        }
         final TwitchChannels channels = TwitchAPIClient.getInstance().getGameData(game);
-        this.items.set(channels.getChannels());
-        this.activeItems.set(channels.getChannels());
+        gameTab.itemsProperty().set(channels.getChannels());
+        gameTab.activeItemsProperty().set(channels.getChannels());
         this.scrollToTop();
-        this.currentGame = game;
+    }
+
+    private boolean gameTabAlreadyExists(final String game) {
+        boolean alreadyExists = false;
+        final ObservableList<BrowserTab> browserTabs = this.tabPane.getBrowserTabs();
+        for (final BrowserTab tab : browserTabs) {
+            if (tab.getText().equalsIgnoreCase(game)) {
+                alreadyExists = true;
+                break;
+            }
+        }
+        return alreadyExists;
     }
 
     public void filter(final String filter) {
-        final ObservableList<ITwitchItem> oldItems = this.items.get();
+        final BrowserTab currentTab = this.tabPane.getSelectedItem();
+        final ObservableList<ITwitchItem> oldItems = currentTab.itemsProperty().get();
         final FilteredList<ITwitchItem> filteredItems = new FilteredList<>(oldItems);
         filteredItems.setPredicate(item -> {
             if (item.isTwitchGame()) {
@@ -113,18 +149,26 @@ public final class BrowserCore {
             }
             return true;
         });
-        this.activeItems.set(filteredItems);
+        currentTab.activeItemsProperty().set(filteredItems);
     }
 
     private void scrollToTop() {
-        final ScrollBar vBar = (ScrollBar) this.browserGridView.lookup(".scroll-bar:vertical");
+        final Node tabContent = this.tabPane.getSelectedItem().getContent();
+        final ScrollBar vBar = (ScrollBar) tabContent.lookup(".scroll-bar:vertical");
         if (vBar != null) {
             vBar.setValue(0.0D);
             vBar.setVisible(true);
         }
     }
 
-    public ObjectProperty<ObservableList<ITwitchItem>> getItems() {
-        return this.activeItems;
+    private BrowserTab addGameTab(final String name) {
+        final BrowserTab gameTab = new BrowserTab(name);
+        this.tabPane.getTabs().add(gameTab);
+        return gameTab;
+    }
+
+    public void startStream(final String string) {
+        LivestreamerUtils.startLivestreamer("twitch.tv/" + string, this.qualityProperty.get());
+
     }
 }

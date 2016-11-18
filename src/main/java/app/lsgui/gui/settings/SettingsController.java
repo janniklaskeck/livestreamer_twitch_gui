@@ -90,19 +90,19 @@ public final class SettingsController {
         this.setupLoadChoiceBoxes();
         final Settings settings = Settings.getInstance();
 
-        this.sortCheckBox.setSelected(settings.getSortTwitch().get());
-        this.oauthTextField.setText(settings.getTwitchOAuth());
-        this.usernameTextField.setText(settings.getTwitchUser());
-        this.gamesToLoadChoiceBox.getSelectionModel().select(Integer.valueOf(settings.getMaxGamesLoad()));
-        this.channelsToLoadChoiceBox.getSelectionModel().select(Integer.valueOf(settings.getMaxChannelsLoad()));
+        this.sortCheckBox.setSelected(settings.sortTwitchProperty().get());
+        this.oauthTextField.setText(settings.twitchOAuthProperty().get());
+        this.usernameTextField.setText(settings.twitchUserProperty().get());
+        this.gamesToLoadChoiceBox.getSelectionModel().select(Integer.valueOf(settings.maxGamesProperty().get()));
+        this.channelsToLoadChoiceBox.getSelectionModel().select(Integer.valueOf(settings.maxChannelsProperty().get()));
 
-        this.sortCheckBox.setOnAction(event -> settings.getSortTwitch().setValue(this.sortCheckBox.isSelected()));
+        this.sortCheckBox.setOnAction(event -> settings.sortTwitchProperty().setValue(this.sortCheckBox.isSelected()));
         this.usernameTextField.textProperty()
-                .addListener((observable, oldValue, newValue) -> settings.setTwitchUser(newValue));
+                .addListener((observable, oldValue, newValue) -> settings.twitchUserProperty().setValue(newValue));
         this.oauthTextField.textProperty()
-                .addListener((observable, oldValue, newValue) -> settings.setTwitchOAuth(newValue));
+                .addListener((observable, oldValue, newValue) -> settings.twitchOAuthProperty().setValue(newValue));
         this.styleChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            settings.setWindowStyle(newValue);
+            settings.windowStyleProperty().setValue(newValue);
             final String style = SettingsController.class.getResource("/styles/" + newValue + ".css").toExternalForm();
 
             LsGuiUtils.clearStyleSheetsFromStage(LsGuiWindow.getRootStage());
@@ -113,10 +113,10 @@ public final class SettingsController {
         });
 
         this.gamesToLoadChoiceBox.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> settings.setMaxGamesLoad(newValue));
+                .addListener((observable, oldValue, newValue) -> settings.maxGamesProperty().setValue(newValue));
 
         this.channelsToLoadChoiceBox.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> settings.setMaxChannelsLoad(newValue));
+                .addListener((observable, oldValue, newValue) -> settings.maxChannelsProperty().setValue(newValue));
 
         this.exeBrowseButton.setOnAction(event -> {
             final FileChooser exeFileChooser = new FileChooser();
@@ -124,13 +124,13 @@ public final class SettingsController {
             exeFileChooser.getExtensionFilters().add(new ExtensionFilter("EXE", "*.exe"));
             final File exeFile = exeFileChooser.showOpenDialog(LsGuiWindow.getRootStage());
             if (exeFile != null) {
-                Settings.getInstance().getLivestreamerExePath().set(exeFile.getAbsolutePath());
+                Settings.getInstance().livestreamerPathProperty().set(exeFile.getAbsolutePath());
             }
         });
-        final String updateLinkString = settings.getUpdateLink().get();
+        final String updateLinkString = settings.updateLinkProperty().get();
         if (updateLinkString != null && !"".equals(updateLinkString)) {
             this.updateLink.setText("New Version available!");
-            this.updateLink.setOnAction(event -> LsGuiUtils.openURLInBrowser(settings.getUpdateLink().get()));
+            this.updateLink.setOnAction(event -> LsGuiUtils.openURLInBrowser(settings.updateLinkProperty().get()));
         } else {
             this.updateLink.setDisable(true);
         }
@@ -148,8 +148,8 @@ public final class SettingsController {
             this.channelsToLoadChoiceBox.getItems().add(i);
         }
         final Settings settings = Settings.getInstance();
-        final int maxGamesToLoad = settings.getMaxGamesLoad();
-        final int maxChannelsToLoad = settings.getMaxChannelsLoad();
+        final int maxGamesToLoad = settings.maxGamesProperty().get();
+        final int maxChannelsToLoad = settings.maxChannelsProperty().get();
         this.gamesToLoadChoiceBox.getSelectionModel().select(maxGamesToLoad);
         this.channelsToLoadChoiceBox.getSelectionModel().select(maxChannelsToLoad);
     }
@@ -157,7 +157,7 @@ public final class SettingsController {
     private void setupStyleChoiceBox() {
         this.styleChoiceBox.getItems().add("DarkStyle");
         this.styleChoiceBox.getItems().add("LightStyle");
-        this.styleChoiceBox.getSelectionModel().select(Settings.getInstance().getWindowStyle());
+        this.styleChoiceBox.getSelectionModel().select(Settings.getInstance().windowStyleProperty().get());
     }
 
     private static void cancelSettingsAction() {

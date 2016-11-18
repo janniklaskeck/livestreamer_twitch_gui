@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.BorderPane?>
 
@@ -7,4 +8,7 @@
    <top>
       <ToolBar fx:id="browserToolBar" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </top>
+   <center>
+      <TabPane fx:id="browserTabPane" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+   </center>
 </BorderPane>

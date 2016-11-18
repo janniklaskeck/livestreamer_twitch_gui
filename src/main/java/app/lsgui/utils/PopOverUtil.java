@@ -139,8 +139,7 @@ public final class PopOverUtil {
 
     private static PopOver createBasePopOver(final String title) {
         final PopOver popOver = new PopOver();
-        popOver.getRoot().getStylesheets().add(PopOverUtil.class
-                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
+        popOver.getRoot().getStylesheets().add(Settings.getInstance().getCurrentStyleSheet());
         popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
         popOver.setCornerRadius(CORDER_RADIUS);
         popOver.setTitle(title);

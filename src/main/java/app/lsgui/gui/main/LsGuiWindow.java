@@ -106,7 +106,7 @@ public class LsGuiWindow extends Application {
         primaryStage.setOnCloseRequest(event -> {
             Settings.getInstance().saveSettings();
             Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = ((TwitchService) Settings.getInstance()
-                    .getStreamServices().get(0)).getUpdateServices().entrySet().iterator();
+                    .servicesProperty().get(0)).getUpdateServices().entrySet().iterator();
             while (it.hasNext()) {
                 it.next();
                 it.remove();
@@ -117,15 +117,14 @@ public class LsGuiWindow extends Application {
         primaryStage.setOnHiding(event -> {
             Settings.getInstance().saveSettings();
             Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = ((TwitchService) Settings.getInstance()
-                    .getStreamServices().get(0)).getUpdateServices().entrySet().iterator();
+                    .servicesProperty().get(0)).getUpdateServices().entrySet().iterator();
             while (it.hasNext()) {
                 it.next();
                 it.remove();
             }
             Platform.exit();
         });
-        LsGuiWindow.getRootStage().getScene().getStylesheets().add(LsGuiWindow.class
-                .getResource("/styles/" + Settings.getInstance().getWindowStyle() + ".css").toExternalForm());
+        LsGuiWindow.getRootStage().getScene().getStylesheets().add(Settings.getInstance().getCurrentStyleSheet());
     }
 
     public static final synchronized Stage getRootStage() {

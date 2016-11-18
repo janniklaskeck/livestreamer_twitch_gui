@@ -53,10 +53,11 @@ import javafx.util.Callback;
  */
 public final class TwitchChannel implements IChannel, ITwitchItem {
 
-    private static final String CHANNEL_IS_OFFLINE = "Channel is offline";
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannel.class);
 
+    private IntegerProperty id = new SimpleIntegerProperty();
     private StringProperty name = new SimpleStringProperty();
+    private StringProperty displayName = new SimpleStringProperty();
     private StringProperty logoURL = new SimpleStringProperty();
     private StringProperty previewUrlLarge = new SimpleStringProperty();
     private StringProperty previewUrlMedium = new SimpleStringProperty();
@@ -101,22 +102,15 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
     }
 
     private void setOffline(final String name) {
-        this.name.set(name);
-        this.logoURL.set("");
-        this.previewUrlLarge.set("");
-        this.game.set("");
-        this.title.set(CHANNEL_IS_OFFLINE);
-        this.uptime.set(0);
-        this.viewers.set(0);
-        this.isOnline.set(false);
-        this.isPlaylist.set(false);
-        this.previewImageLarge.setValue(TwitchUtils.DEFAULT_LOGO);
-        this.availableQualities.clear();
+        LOGGER.debug("set {} offline", name);
+        TwitchUtils.setOfflineData(this, name);
     }
 
     private void setOnline(final TwitchChannel data) {
         LOGGER.trace("update {} with data {}", data.getName(), data.isOnline());
+        this.id.setValue(data.getId().get());
         this.name.setValue(data.getName().get());
+        this.displayName.setValue(data.displayNameProperty().get());
         this.logoURL.setValue(data.getLogoURL().get());
         this.previewUrlLarge.setValue(data.getPreviewUrlLarge().get());
         this.previewUrlMedium.setValue(data.getPreviewUrlMedium().get());
@@ -127,10 +121,10 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
         this.viewers.setValue(data.getViewers().get());
         this.viewersString.setValue(Integer.toString(this.getViewers().get()));
         if (data.isOnline().get() && !this.isOnline.get()) {
-            this.isOnline.set(true);
+            this.isOnline.setValue(Boolean.TRUE);
             this.cameOnline = true;
         } else if (!data.isOnline().get()) {
-            this.isOnline.set(false);
+            this.isOnline.setValue(Boolean.FALSE);
         }
         this.isPlaylist.setValue(data.getIsPlaylist().get());
         this.previewImageLarge.setValue(data.getPreviewImageLarge().get());
@@ -145,11 +139,16 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
     }
 
     public static Callback<IChannel, Observable[]> extractor() {
-        return (IChannel sm) -> new Observable[] { ((TwitchChannel) sm).getName(), ((TwitchChannel) sm).getGame(),
+        return (IChannel sm) -> new Observable[] { ((TwitchChannel) sm).getName(),
+                ((TwitchChannel) sm).displayNameProperty(), ((TwitchChannel) sm).getGame(),
                 ((TwitchChannel) sm).isOnline(), ((TwitchChannel) sm).getTitle(), ((TwitchChannel) sm).getLogoURL(),
                 ((TwitchChannel) sm).getPreviewImageLarge(), ((TwitchChannel) sm).getPreviewUrlLarge(),
                 ((TwitchChannel) sm).getPreviewUrlMedium(), ((TwitchChannel) sm).getUptime(),
                 ((TwitchChannel) sm).getViewers(), };
+    }
+
+    public StringProperty displayNameProperty() {
+        return this.displayName;
     }
 
     @Override
@@ -245,5 +244,14 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
     @Override
     public boolean isTwitchChannel() {
         return true;
+    }
+
+    @Override
+    public StringProperty getDisplayName() {
+        return this.displayName;
+    }
+
+    public IntegerProperty getId() {
+        return this.id;
     }
 }

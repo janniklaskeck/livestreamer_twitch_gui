@@ -21,29 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.gui.main;
+package app.lsgui.gui.twitchbrowser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import app.lsgui.utils.Settings;
-import javafx.scene.control.ComboBox;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TabPane;
 
-public final class QualityComboBox extends ComboBox<String> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(QualityComboBox.class);
-    private static final String OFFLINEQUALITY = "Channel is offline";
+public final class BrowserTabPane extends TabPane {
 
-    public QualityComboBox() {
-        // Empty Constructor
+    public BrowserTabPane() {
+        super();
     }
 
-    public void initialize() {
-        getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if (!OFFLINEQUALITY.equals(newValue)) {
-                LOGGER.debug("Set selected Quality to {}", newValue);
-                Settings.getInstance().getQuality().set(newValue);
-            }
-        });
+    public ObservableList<BrowserTab> getBrowserTabs() {
+        final List<BrowserTab> browserTabs = getTabs().stream().map(tab -> (BrowserTab) tab)
+                .collect(Collectors.toList());
+        return FXCollections.observableArrayList(browserTabs);
+    }
+
+    public BrowserTab getSelectedItem() {
+        return (BrowserTab) this.getSelectionModel().getSelectedItem();
     }
 
 }

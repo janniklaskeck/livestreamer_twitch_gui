@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package app.lsgui.gui.main;
+package app.lsgui.gui.main.toolbar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +41,10 @@ public final class ServiceComboBox extends ComboBox<IService> {
     }
 
     public void initialize(final ServiceOperator serviceOperator) {
-        if (Settings.getInstance().getStreamServices().isEmpty()) {
-            Settings.getInstance().getStreamServices().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
+        if (Settings.getInstance().servicesProperty().isEmpty()) {
+            Settings.getInstance().servicesProperty().add(new TwitchService("Twitch.tv", "http://twitch.tv/"));
         }
-        itemsProperty().bind(Settings.getInstance().getStreamServices());
+        itemsProperty().bind(Settings.getInstance().servicesProperty());
         setCellFactory(listView -> new ServiceCell());
         setConverter(new StringConverter<IService>() {
             @Override

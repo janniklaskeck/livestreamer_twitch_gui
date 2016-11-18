@@ -54,7 +54,7 @@ public final class TwitchBrowserUpdateService extends Service<TwitchChannel> {
                     this.channel.updateData(updatedChannel, false);
                 }
             }
-            TwitchUtils.removeTwitchChannelFromList(ACTIVE_LIST, this.channel);
+            ACTIVE_LIST.remove(this.channel);
         });
         setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED"));
     }
@@ -64,8 +64,9 @@ public final class TwitchBrowserUpdateService extends Service<TwitchChannel> {
         return new Task<TwitchChannel>() {
             @Override
             protected TwitchChannel call() throws Exception {
-                TwitchUtils.addChannelToList(ACTIVE_LIST, channel);
-                return TwitchAPIClient.getInstance().getStreamData(channel.getName().get(), true);
+                TwitchUtils.addChannelToList(ACTIVE_LIST, TwitchBrowserUpdateService.this.channel);
+                return TwitchAPIClient.getInstance()
+                        .getStreamData(TwitchBrowserUpdateService.this.channel.getName().get(), true);
             }
         };
     }

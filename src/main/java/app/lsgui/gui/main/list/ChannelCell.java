@@ -108,7 +108,7 @@ public class ChannelCell extends ListCell<IChannel> {
             setGraphic(createReminderCheckBox(channel));
             setContentDisplay(ContentDisplay.LEFT);
             setContextMenu(this.createContextMenu(channel));
-            textProperty().bind(channel.getName());
+            textProperty().bind(channel.getDisplayName());
             setOnMouseClicked(mouseEvent -> {
                 final int doubleClickAmount = 2;
                 if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == doubleClickAmount) {
@@ -136,7 +136,7 @@ public class ChannelCell extends ListCell<IChannel> {
     private ContextMenu createContextMenu(final IChannel channel) {
         final ContextMenu contextMenu = new ContextMenu();
         final MenuItem delete = new MenuItem();
-        delete.textProperty().set("Delete " + channel.getName().get());
+        delete.textProperty().set("Delete " + channel.getDisplayName().get());
         delete.setOnAction(event -> {
             final IService service = (IService) this.getListView().getUserData();
             LsGuiUtils.removeChannelFromService(channel, service);
@@ -182,7 +182,7 @@ public class ChannelCell extends ListCell<IChannel> {
     private void startLivestreamerStream(final IChannel channel) {
         final IService service = (IService) this.getListView().getUserData();
         final String url = LsGuiUtils.buildUrl(service.getUrl().get(), channel.getName().get());
-        final String quality = Settings.getInstance().getQuality().get();
+        final String quality = Settings.getInstance().qualityProperty().get();
         LivestreamerUtils.startLivestreamer(url, quality);
         LOGGER.info("Starting Stream for {}", channel.getName().get());
     }

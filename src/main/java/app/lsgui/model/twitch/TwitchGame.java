@@ -45,7 +45,7 @@ public final class TwitchGame implements ITwitchItem {
     private TwitchChannels channels;
 
     public TwitchGame(final String name, final int viewers, final int channelCount, final Image boxImage) {
-        this.name = new SimpleStringProperty(name);
+        this.name = new SimpleStringProperty(shortenString(name));
         this.viewers = new SimpleStringProperty(Integer.toString(viewers));
         this.boxImage = new SimpleObjectProperty<>(boxImage);
         this.channelCount = new SimpleStringProperty(Integer.toString(channelCount));
@@ -56,11 +56,20 @@ public final class TwitchGame implements ITwitchItem {
     }
 
     public void updateData(final TwitchGame updatedGame) {
-        this.name = new SimpleStringProperty(updatedGame.getName().get());
+        this.name = new SimpleStringProperty(shortenString(updatedGame.getName().get()));
         this.viewers = new SimpleStringProperty(updatedGame.getViewers().get());
         this.boxImage = new SimpleObjectProperty<>(updatedGame.getBoxImage().get());
         this.channelCount = new SimpleStringProperty(updatedGame.getChannelCount().get());
         this.loadChannelData();
+    }
+
+    public static String shortenString(final String input) {
+        String result = input;
+        final int maxLength = 20;
+        if (input.length() > maxLength) {
+            result = input.substring(0, maxLength - 1);
+        }
+        return result;
     }
 
     public TwitchChannels getChannels() {

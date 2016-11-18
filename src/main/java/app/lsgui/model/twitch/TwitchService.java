@@ -72,7 +72,7 @@ public final class TwitchService implements IService {
         this.url = new SimpleStringProperty(url);
         this.channelProperty = new SimpleObjectProperty<>(new SortedList<>(this.channelList));
         this.sortChannels = new SimpleBooleanProperty();
-        this.sortChannels.bind(Settings.getInstance().getSortTwitch());
+        this.sortChannels.bind(Settings.getInstance().sortTwitchProperty());
         this.sortChannels.addListener((observable, oldValue, newVale) -> this.changeComparator(newVale));
         this.channelProperty.get().addListener((ListChangeListener<IChannel>) change -> {
             change.next();
@@ -82,12 +82,18 @@ public final class TwitchService implements IService {
 
     @Override
     public void addChannel(final String name) {
-        LOGGER.debug("Add Channel {} to {} Service", name, this.getName().get());
-        final TwitchChannel channelToAdd = TwitchUtils.constructTwitchChannel(new JsonObject(), name, false);
-        final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
-        tcus.start();
-        UPDATESERVICES.put(channelToAdd, tcus);
-        this.channelList.add(channelToAdd);
+        final boolean existsAlready = this.channelList.stream()
+                .anyMatch(channel -> channel.getName().get().equalsIgnoreCase(name));
+        if (!existsAlready) {
+            LOGGER.debug("Add Channel {} to {} Service", name, this.getName().get());
+            final TwitchChannel channelToAdd = TwitchUtils.constructTwitchChannel(new JsonObject(), name, false);
+            final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
+            tcus.start();
+            UPDATESERVICES.put(channelToAdd, tcus);
+            this.channelList.add(channelToAdd);
+        } else {
+            LOGGER.debug("Skipping {}, exists already in list", name);
+        }
     }
 
     @Override

@@ -24,7 +24,6 @@
 package app.lsgui.gui.main.list;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,6 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
@@ -75,27 +73,16 @@ public final class ChannelList extends AnchorPane {
         this.channelListView.setCellFactory(listView -> new ChannelCell());
     }
 
-    public ListProperty<IChannel> getStreams() {
+    public ListProperty<IChannel> channelListProperty() {
         return this.channelListProperty;
-    }
-
-    public void setChannels(final List<IChannel> channels) {
-        this.channelListProperty.set(FXCollections.observableList(channels));
     }
 
     public ListView<IChannel> getListView() {
         return this.channelListView;
     }
 
-    public void setListView(final ListView<IChannel> channelList) {
-        this.channelListView = channelList;
-    }
-
-    public ObjectProperty<IChannel> getSelectedChannelProperty() {
+    public ObjectProperty<IChannel> selectedChannelProperty() {
         return this.selectedChannelProperty;
     }
 
-    public void setSelectedChannelProperty(final ObjectProperty<IChannel> channelProperty) {
-        this.selectedChannelProperty = channelProperty;
-    }
 }
