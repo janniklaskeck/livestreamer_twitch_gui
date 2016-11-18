@@ -66,7 +66,7 @@ public final class TwitchChannelUpdateService extends ScheduledService<TwitchCha
             }
             ACTIVE_LIST.remove(this.channel);
         });
-        setOnFailed(event -> LOGGER.warn("UPDATE SERVICE FAILED {}", event.getEventType()));
+        setOnFailed(event -> LOGGER.warn("Channel Update Service FAILED. Event: {}", event.getEventType()));
     }
 
     @Override

@@ -50,6 +50,7 @@ import com.google.gson.JsonSyntaxException;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.model.twitch.TwitchChannels;
 import app.lsgui.model.twitch.TwitchGames;
+import app.lsgui.utils.JsonUtils;
 import app.lsgui.utils.Settings;
 import app.lsgui.utils.TwitchUtils;
 
@@ -62,8 +63,11 @@ public final class TwitchAPIClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchAPIClient.class);
     private static final JsonParser JSONPARSER = new JsonParser();
+
+    private static final String TWITCH_API_VERSION_HEADER = "application/vnd.twitchtv.v5+json";
     private static final String TWITCH_BASE_URL = "https://api.twitch.tv/kraken/";
     private static final String LSGUI_CLIENT_ID = "rfpepzumaxd1iija3ip3fixao6z13pj";
+
     private static final int CONNECTION_COUNT = 100;
     private static final CloseableHttpClient HTTP_CLIENT;
 
@@ -92,7 +96,8 @@ public final class TwitchAPIClient {
         TwitchChannel channel = TwitchUtils.constructTwitchChannel(new JsonObject(), channelName, isBrowser);
         if (!"".equals(channelName)) {
             try {
-                final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channelName);
+                final String twitchUserId = getTwitchUserIdFromName(channelName);
+                final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + twitchUserId);
                 final JsonObject jsonData = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
                 channel = TwitchUtils.constructTwitchChannel(jsonData, channelName, isBrowser);
             } catch (JsonSyntaxException e) {
@@ -102,6 +107,24 @@ public final class TwitchAPIClient {
             LOGGER.error("Channelname is empty");
         }
         return channel;
+    }
+
+    private static String getTwitchUserIdFromName(final String channelName) {
+        LOGGER.debug("Request Twitch UserId for username {}", channelName);
+        String userId = "";
+        final URI uri = convertToURI(TWITCH_BASE_URL + "search/channels?query=" + channelName);
+        final JsonObject jsonData = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
+        final JsonArray channels = jsonData.get("channels").getAsJsonArray();
+        for (final JsonElement element : channels) {
+            final JsonObject jsonObject = element.getAsJsonObject();
+            final String userName = JsonUtils.getStringIfNotNull("name", jsonObject);
+            if (userName.equalsIgnoreCase(channelName)) {
+                userId = jsonObject.get("_id").getAsString();
+                break;
+            }
+        }
+        LOGGER.debug("Return Twitch User id {} for username {}", userId, channelName);
+        return userId;
     }
 
     public TwitchChannels getGameData(final String game) {
@@ -167,16 +190,17 @@ public final class TwitchAPIClient {
     }
 
     private static String getAPIResponse(final URI apiUrl) {
-        LOGGER.trace("Send Request to API URL '{}'", apiUrl);
+        LOGGER.debug("Send Request to API URL '{}'", apiUrl);
         final HttpGet request = new HttpGet(apiUrl);
         request.addHeader("Client-ID", LSGUI_CLIENT_ID);
-        request.addHeader("Content-Type", "charset=UTF-8");
+        request.addHeader("Accept", TWITCH_API_VERSION_HEADER);
         try (final CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {
             final String responseString = new BasicResponseHandler().handleResponse(response);
             return new String(responseString.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         } catch (UnknownHostException e) {
             LOGGER.error("Twitch is not reachable. Check your Internet Connection", e);
         } catch (HttpResponseException e) {
+            LOGGER.error("HTTP Code {}", e.getStatusCode());
             LOGGER.error("Http Error when fetching twitch api response.", e);
         } catch (IOException e) {
             LOGGER.error("Error when fetching twitch api response", e);

@@ -179,6 +179,7 @@ public final class TwitchUtils {
     private static void setOnlineData(final TwitchChannel channel, final JsonObject channelObject) {
         final JsonObject channelJson = channelObject.get("channel").getAsJsonObject();
         final JsonObject previewJson = channelObject.get("preview").getAsJsonObject();
+        channel.getId().set(JsonUtils.getIntegerIfNotNull("_id", channelJson));
         channel.getName().set(JsonUtils.getStringIfNotNull("name", channelJson));
         channel.displayNameProperty().set(JsonUtils.getStringIfNotNull("display_name", channelJson));
         channel.getLogoURL().set(JsonUtils.getStringIfNotNull("logo", channelJson));
@@ -209,6 +210,7 @@ public final class TwitchUtils {
     }
 
     public static void setOfflineData(final TwitchChannel channel, final String name) {
+        channel.getId().setValue(0);
         channel.getName().set(name);
         channel.displayNameProperty().set(name);
         channel.getLogoURL().set("");

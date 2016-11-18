@@ -55,6 +55,7 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitchChannel.class);
 
+    private IntegerProperty id = new SimpleIntegerProperty();
     private StringProperty name = new SimpleStringProperty();
     private StringProperty displayName = new SimpleStringProperty();
     private StringProperty logoURL = new SimpleStringProperty();
@@ -107,6 +108,7 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
 
     private void setOnline(final TwitchChannel data) {
         LOGGER.trace("update {} with data {}", data.getName(), data.isOnline());
+        this.id.setValue(data.getId().get());
         this.name.setValue(data.getName().get());
         this.displayName.setValue(data.displayNameProperty().get());
         this.logoURL.setValue(data.getLogoURL().get());
@@ -247,5 +249,9 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
     @Override
     public StringProperty getDisplayName() {
         return this.displayName;
+    }
+
+    public IntegerProperty getId() {
+        return this.id;
     }
 }
