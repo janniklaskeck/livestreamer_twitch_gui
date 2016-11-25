@@ -82,8 +82,8 @@ public final class Settings {
 
     private static Settings instance;
 
-    private ListProperty<IService> services = new SimpleListProperty<>();
-    private ListProperty<String> favouriteGames = new SimpleListProperty<>();
+    private ListProperty<IService> services = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private ListProperty<String> favouriteGames = new SimpleListProperty<>(FXCollections.observableArrayList());
     private BooleanProperty sortTwitch = new SimpleBooleanProperty();
     private BooleanProperty minimizeToTray = new SimpleBooleanProperty();
     private StringProperty windowStyle = new SimpleStringProperty("LightStyle");
