@@ -2,6 +2,8 @@
 GUI for the livestreamer application (http://livestreamer.tanuki.se/)<br>
 Its intended use is for twitch.tv but there is rudimentary support for other services.
 
+[![Build Status](https://travis-ci.org/westerwave/livestreamer_twitch_gui.svg?branch=develop)](https://travis-ci.org/westerwave/livestreamer_twitch_gui)
+
 #Features
  - List of channels for multiple Streaming Services
  - Choose from available qualities
