@@ -110,7 +110,7 @@ public final class TwitchAPIClient {
     }
 
     private static String getTwitchUserIdFromName(final String channelName) {
-        LOGGER.debug("Request Twitch UserId for username {}", channelName);
+        LOGGER.trace("Request Twitch UserId for username {}", channelName);
         String userId = "";
         final URI uri = convertToURI(TWITCH_BASE_URL + "search/channels?query=" + channelName);
         final JsonObject jsonData = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
@@ -123,7 +123,7 @@ public final class TwitchAPIClient {
                 break;
             }
         }
-        LOGGER.debug("Return Twitch User id {} for username {}", userId, channelName);
+        LOGGER.trace("Return Twitch User id {} for username {}", userId, channelName);
         return userId;
     }
 
@@ -190,7 +190,7 @@ public final class TwitchAPIClient {
     }
 
     private static String getAPIResponse(final URI apiUrl) {
-        LOGGER.debug("Send Request to API URL '{}'", apiUrl);
+        LOGGER.trace("Send Request to API URL '{}'", apiUrl);
         final HttpGet request = new HttpGet(apiUrl);
         request.addHeader("Client-ID", LSGUI_CLIENT_ID);
         request.addHeader("Accept", TWITCH_API_VERSION_HEADER);
