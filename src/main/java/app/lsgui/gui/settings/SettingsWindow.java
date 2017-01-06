@@ -70,7 +70,7 @@ public final class SettingsWindow extends AnchorPane {
 
     private void setupStage(final Parent root, final Stage settingsStage, final Window parentWindow) {
         settingsStage.setResizable(false);
-        settingsStage.setTitle("Livestreamer GUI Settings v3" + LsGuiUtils.readVersionProperty());
+        settingsStage.setTitle("Livestreamer GUI Settings v" + LsGuiUtils.readVersionProperty());
         settingsStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.jpg")));
         final Scene scene = new Scene(root);
         settingsStage.setScene(scene);
