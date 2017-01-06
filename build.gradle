@@ -66,6 +66,10 @@ jar {
     appendix = "nolib"
 }
 
+shadowJar {
+	classifier = null
+}
+
 distributions {
     main {
         contents {
@@ -96,7 +100,7 @@ launch4j {
     language = "ENGLISH_US"
     initialHeapSize = 64
     maxHeapSize = 512
-    opt = "-Dfile.encoding='UTF-8'"
+    opt = '-Dfile.encoding="UTF-8"'
 }
 
 license {
