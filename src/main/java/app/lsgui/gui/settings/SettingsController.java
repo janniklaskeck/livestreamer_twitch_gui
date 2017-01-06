@@ -23,7 +23,9 @@
  */
 package app.lsgui.gui.settings;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +74,9 @@ public final class SettingsController {
 
     @FXML
     private Hyperlink updateLink;
+
+    @FXML
+    private Button openSettingsFolder;
 
     @FXML
     private Button saveButton;
@@ -137,6 +142,14 @@ public final class SettingsController {
 
         this.saveButton.setOnAction(event -> saveSettingsAction());
         this.cancelButton.setOnAction(event -> cancelSettingsAction());
+
+        this.openSettingsFolder.setOnAction(event -> {
+            try {
+                Desktop.getDesktop().open(Settings.getInstance().getFilePath().toFile());
+            } catch (IOException e) {
+                LOGGER.error("Could not open settings folder", e);
+            }
+        });
     }
 
     private void setupLoadChoiceBoxes() {

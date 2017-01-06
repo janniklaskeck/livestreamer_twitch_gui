@@ -25,6 +25,8 @@ package app.lsgui.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -59,7 +61,8 @@ import javafx.collections.ObservableList;
 public final class Settings {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Settings.class);
-    private static final String FILEPATH = System.getProperty("user.home") + "/.lsgui/settings.json";
+    private static final Path SETTINGS_FOLDER_PATH = Paths.get(System.getProperty("user.home"), "/.lsgui");
+    private static final Path FILE_PATH = Paths.get(SETTINGS_FOLDER_PATH.toString(), "/settings.json");
     private static final long TIMEOUT = 5000L;
     private static final int DEFAULT_GAMES_TO_LOAD = 20;
     private static final int DEFAULT_CHANNELS_TO_LOAD = 20;
@@ -105,7 +108,7 @@ public final class Settings {
     public static synchronized Settings getInstance() {
         if (instance == null) {
             instance = new Settings();
-            final File settings = new File(FILEPATH);
+            final File settings = FILE_PATH.toFile();
             if (!instance.isLoading && settings.exists() && settings.isFile() && !LsGuiUtils.isFileEmpty(settings)) {
                 LOGGER.info("Loading Settings from File");
                 instance.loadSettingsFromFile(settings);
@@ -120,7 +123,7 @@ public final class Settings {
     public void saveSettings() {
         File settings = null;
         try {
-            settings = new File(FILEPATH);
+            settings = FILE_PATH.toFile();
             final boolean createdDirs = settings.getParentFile().mkdirs();
             final boolean result = settings.createNewFile();
             LOGGER.debug("Settings Dir created? {}. Settings file was created? {}", createdDirs, result);
@@ -304,6 +307,10 @@ public final class Settings {
 
     public ListProperty<String> favouriteGamesProperty() {
         return this.favouriteGames;
+    }
+
+    public Path getFilePath() {
+        return SETTINGS_FOLDER_PATH;
     }
 
 }
