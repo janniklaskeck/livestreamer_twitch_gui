@@ -32,7 +32,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +44,7 @@ import com.google.gson.JsonSyntaxException;
 import app.lsgui.model.twitch.TwitchChannel;
 import app.lsgui.model.twitch.TwitchChannels;
 import app.lsgui.model.twitch.TwitchGames;
+import app.lsgui.remote.HttpClientInterface;
 import app.lsgui.utils.JsonUtils;
 import app.lsgui.utils.Settings;
 import app.lsgui.utils.TwitchUtils;
@@ -187,10 +187,9 @@ public final class TwitchAPIClient {
 
     private static String getAPIResponse(final URI apiUrl) {
         LOGGER.trace("Send Request to API URL '{}'", apiUrl);
-        final SslContextFactory sslContextFactory = new SslContextFactory();
-        final HttpClient client = new HttpClient(sslContextFactory);
+        final HttpClient client = HttpClientInterface.getClient();
+        HttpClientInterface.startClient();
         try {
-            client.start();
             final Request newRequest = client.newRequest(apiUrl);
             newRequest.header("Client-ID", LSGUI_CLIENT_ID);
             newRequest.header("Accept", TWITCH_API_VERSION_HEADER);

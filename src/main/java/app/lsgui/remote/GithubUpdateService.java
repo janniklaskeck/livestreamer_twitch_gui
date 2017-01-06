@@ -33,7 +33,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,10 +61,9 @@ public final class GithubUpdateService {
     public static void checkForUpdate() {
         LOGGER.debug("Check for updates on URL '{}'", RELEASES_URL);
         String responseString = "";
-        final SslContextFactory sslContextFactory = new SslContextFactory();
-        final HttpClient client = new HttpClient(sslContextFactory);
+        final HttpClient client = HttpClientInterface.getClient();
+        HttpClientInterface.startClient();
         try {
-            client.start();
             final Request newRequest = client.newRequest(RELEASES_URL);
             newRequest.header("Accept", "application/vnd.github.v3+json");
             responseString = newRequest.send().getContentAsString();
