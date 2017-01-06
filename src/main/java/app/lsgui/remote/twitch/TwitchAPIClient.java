@@ -23,21 +23,16 @@
  */
 package app.lsgui.remote.twitch;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,17 +63,7 @@ public final class TwitchAPIClient {
     private static final String TWITCH_BASE_URL = "https://api.twitch.tv/kraken/";
     private static final String LSGUI_CLIENT_ID = "rfpepzumaxd1iija3ip3fixao6z13pj";
 
-    private static final int CONNECTION_COUNT = 100;
-    private static final CloseableHttpClient HTTP_CLIENT;
-
     private static TwitchAPIClient instance;
-
-    static {
-        final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-        cm.setMaxTotal(CONNECTION_COUNT);
-        cm.setDefaultMaxPerRoute(CONNECTION_COUNT);
-        HTTP_CLIENT = HttpClients.createMinimal(cm);
-    }
 
     private TwitchAPIClient() {
         LOGGER.debug("TwitchProcessor constructed");
@@ -133,7 +118,7 @@ public final class TwitchAPIClient {
                 break;
             }
         }
-        LOGGER.trace("Return Twitch User id {} for username {}", userId, channelName);
+        LOGGER.debug("Return Twitch User id {} for username {}", userId, channelName);
         return userId;
     }
 
@@ -160,7 +145,7 @@ public final class TwitchAPIClient {
     public Set<String> getListOfFollowedStreams(final String userName) {
         final Set<String> followedStreams = new TreeSet<>();
         if (!"".equals(userName) && this.channelExists(userName)) {
-            final URI uri = convertToURI("https://api.twitch.tv/kraken/users/" + userName + "/follows/channels");
+            final URI uri = convertToURI(TWITCH_BASE_URL + "users/" + userName + "/follows/channels");
             JsonObject jo = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
 
             final int total = jo.get("_total").getAsInt();
@@ -190,7 +175,8 @@ public final class TwitchAPIClient {
 
     public boolean channelExists(final String channel) {
         LOGGER.debug("Checking if {} is a twitch channel", channel);
-        final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channel);
+        final String channelId = getTwitchUserIdFromName(channel, false);
+        final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + channelId);
         if ("{}".equals(getAPIResponse(uri)) || "".equals(channel)) {
             LOGGER.debug("{} is no twitch channel", channel);
             return false;
@@ -201,21 +187,18 @@ public final class TwitchAPIClient {
 
     private static String getAPIResponse(final URI apiUrl) {
         LOGGER.trace("Send Request to API URL '{}'", apiUrl);
-        final HttpGet request = new HttpGet(apiUrl);
-        request.addHeader("Client-ID", LSGUI_CLIENT_ID);
-        request.addHeader("Accept", TWITCH_API_VERSION_HEADER);
-        try (final CloseableHttpResponse response = HTTP_CLIENT.execute(request)) {
-            final String responseString = new BasicResponseHandler().handleResponse(response);
-            return new String(responseString.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-        } catch (UnknownHostException e) {
-            LOGGER.error("Twitch is not reachable. Check your Internet Connection", e);
-        } catch (HttpResponseException e) {
-            LOGGER.error("HTTP Code {}", e.getStatusCode());
-            LOGGER.error("Http Error when fetching twitch api response.", e);
-        } catch (IOException e) {
-            LOGGER.error("Error when fetching twitch api response", e);
-        } finally {
-            request.reset();
+        final SslContextFactory sslContextFactory = new SslContextFactory();
+        final HttpClient client = new HttpClient(sslContextFactory);
+        try {
+            client.start();
+            final Request newRequest = client.newRequest(apiUrl);
+            newRequest.header("Client-ID", LSGUI_CLIENT_ID);
+            newRequest.header("Accept", TWITCH_API_VERSION_HEADER);
+            return newRequest.send().getContentAsString();
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            LOGGER.error("Error while sending GET Request", e);
+        } catch (Exception e) {
+            LOGGER.error("Could not start HTTP Client", e);
         }
         return "{}";
     }
