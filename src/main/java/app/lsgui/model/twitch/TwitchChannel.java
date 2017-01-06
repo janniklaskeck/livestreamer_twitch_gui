@@ -102,12 +102,12 @@ public final class TwitchChannel implements IChannel, ITwitchItem {
     }
 
     private void setOffline(final String name) {
-        LOGGER.debug("set {} offline", name);
+        LOGGER.trace("set {} offline", name);
         TwitchUtils.setOfflineData(this, name);
     }
 
     private void setOnline(final TwitchChannel data) {
-        LOGGER.trace("update {} with data {}", data.getName(), data.isOnline());
+        LOGGER.debug("Set {} to online {}", data.getName().get(), data.isOnline().get());
         this.id.setValue(data.getId().get());
         this.name.setValue(data.getName().get());
         this.displayName.setValue(data.displayNameProperty().get());
