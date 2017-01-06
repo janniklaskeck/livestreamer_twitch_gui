@@ -120,6 +120,9 @@ public final class TwitchAPIClient {
         if (channels.size() == 0 && !dontRepeat) {
             LOGGER.warn("Search result for channel '{}' was empty, retrying UserId search once!", channelName);
             return getTwitchUserIdFromName(channelName, true);
+        } else if (channels.size() == 0 && dontRepeat) {
+            LOGGER.warn("Search result for channel '{}' still empty after retry!", channelName);
+            return "";
         }
         String userId = "";
         for (final JsonElement element : channels) {
