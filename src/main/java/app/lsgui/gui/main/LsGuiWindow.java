@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import app.lsgui.model.IChannel;
 import app.lsgui.model.twitch.TwitchService;
 import app.lsgui.remote.GithubUpdateService;
+import app.lsgui.remote.HttpClientInterface;
 import app.lsgui.remote.twitch.TwitchChannelUpdateService;
 import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.Settings;
@@ -111,6 +112,7 @@ public class LsGuiWindow extends Application {
                 it.next();
                 it.remove();
             }
+            HttpClientInterface.stopClient();
             Platform.exit();
         });
 
@@ -122,6 +124,7 @@ public class LsGuiWindow extends Application {
                 it.next();
                 it.remove();
             }
+            HttpClientInterface.stopClient();
             Platform.exit();
         });
         LsGuiWindow.getRootStage().getScene().getStylesheets().add(Settings.getInstance().getCurrentStyleSheet());
