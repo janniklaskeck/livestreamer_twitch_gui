@@ -96,7 +96,10 @@ public final class TwitchAPIClient {
         TwitchChannel channel = TwitchUtils.constructTwitchChannel(new JsonObject(), channelName, isBrowser);
         if (!"".equals(channelName)) {
             try {
-                final String twitchUserId = getTwitchUserIdFromName(channelName);
+                final String twitchUserId = getTwitchUserIdFromName(channelName, false);
+                if (twitchUserId.isEmpty()) {
+                    return channel;
+                }
                 final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + twitchUserId);
                 final JsonObject jsonData = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
                 channel = TwitchUtils.constructTwitchChannel(jsonData, channelName, isBrowser);
@@ -109,12 +112,19 @@ public final class TwitchAPIClient {
         return channel;
     }
 
-    private static String getTwitchUserIdFromName(final String channelName) {
-        LOGGER.debug("Request Twitch UserId for username {}", channelName);
-        String userId = "";
+    private static String getTwitchUserIdFromName(final String channelName, final boolean dontRepeat) {
+        LOGGER.trace("Request Twitch UserId for username {}", channelName);
         final URI uri = convertToURI(TWITCH_BASE_URL + "search/channels?query=" + channelName);
         final JsonObject jsonData = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
         final JsonArray channels = jsonData.get("channels").getAsJsonArray();
+        if (channels.size() == 0 && !dontRepeat) {
+            LOGGER.warn("Search result for channel '{}' was empty, retrying UserId search once!", channelName);
+            return getTwitchUserIdFromName(channelName, true);
+        } else if (channels.size() == 0 && dontRepeat) {
+            LOGGER.warn("Search result for channel '{}' still empty after retry!", channelName);
+            return "";
+        }
+        String userId = "";
         for (final JsonElement element : channels) {
             final JsonObject jsonObject = element.getAsJsonObject();
             final String userName = JsonUtils.getStringIfNotNull("name", jsonObject);
@@ -123,7 +133,7 @@ public final class TwitchAPIClient {
                 break;
             }
         }
-        LOGGER.debug("Return Twitch User id {} for username {}", userId, channelName);
+        LOGGER.trace("Return Twitch User id {} for username {}", userId, channelName);
         return userId;
     }
 
@@ -190,7 +200,7 @@ public final class TwitchAPIClient {
     }
 
     private static String getAPIResponse(final URI apiUrl) {
-        LOGGER.debug("Send Request to API URL '{}'", apiUrl);
+        LOGGER.trace("Send Request to API URL '{}'", apiUrl);
         final HttpGet request = new HttpGet(apiUrl);
         request.addHeader("Client-ID", LSGUI_CLIENT_ID);
         request.addHeader("Accept", TWITCH_API_VERSION_HEADER);
