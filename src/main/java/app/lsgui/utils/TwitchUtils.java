@@ -23,6 +23,10 @@
  */
 package app.lsgui.utils;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -61,6 +65,7 @@ public final class TwitchUtils {
     public static final String NO_QUALITIES = "Error fetching Quality Options!";
     public static final Image DEFAULT_LOGO = new Image(
             TwitchUtils.class.getClassLoader().getResource("default_channel.png").toExternalForm());
+    private static final String TWITCH_CHAT_TEMPLATE = "https://www.twitch.tv/%s/chat";
 
     private TwitchUtils() {
     }
@@ -120,6 +125,23 @@ public final class TwitchUtils {
             final String channelName = channel.getName().get();
             final ChatWindow cw = new ChatWindow(channelName);
             cw.connect();
+        }
+    }
+
+    public static void openTwitchChatInBrowser(final IChannel channel) {
+        URI uri = null;
+        try {
+            uri = new URI(String.format(TWITCH_CHAT_TEMPLATE, channel.getName().get()));
+        } catch (URISyntaxException e) {
+            LOGGER.error("Could not convert url to uri", e);
+        }
+        final Desktop desktop = Desktop.getDesktop();
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+            } catch (IOException e) {
+                LOGGER.error("Could not open uri in browser", e);
+            }
         }
     }
 

@@ -68,6 +68,7 @@ public class ChannelInfoPanel extends BorderPane {
     private Label channelGame;
 
     private Button openChatButton;
+    private Button openChatInBrowserButton;
     private Button startStreamButton;
     private Button recordStreamButton;
     private Button openInBrowserButton;
@@ -147,13 +148,17 @@ public class ChannelInfoPanel extends BorderPane {
         this.openChatButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT);
         this.openChatButton.setOnAction(event -> this.openChat());
         this.openChatButton.setDisable(true);
-        this.openInBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.EDGE);
+        this.openChatInBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.COMMENT_ALT);
+        this.openChatInBrowserButton.setOnAction(event -> this.openChatInBrowser());
+        this.openChatInBrowserButton.setDisable(true);
+        this.openInBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.TWITCH);
         this.openInBrowserButton.setOnAction(event -> this.openBrowser());
         this.openInBrowserButton.setDisable(true);
 
         this.buttonBox.getItems().add(this.startStreamButton);
         this.buttonBox.getItems().add(this.recordStreamButton);
         this.buttonBox.getItems().add(this.openChatButton);
+        this.buttonBox.getItems().add(this.openChatInBrowserButton);
         this.buttonBox.getItems().add(this.openInBrowserButton);
     }
 
@@ -167,6 +172,7 @@ public class ChannelInfoPanel extends BorderPane {
         this.channelGame.textProperty().bind((selectedChannel).getGame());
         this.channelGame.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
         this.openChatButton.setDisable(false);
+        this.openChatInBrowserButton.setDisable(false);
         this.openInBrowserButton.setDisable(false);
         this.startStreamButton.disableProperty()
                 .bind(selectedChannel.isOnline().not().or(selectedChannel.getIsPlaylist()));
@@ -184,6 +190,7 @@ public class ChannelInfoPanel extends BorderPane {
         this.channelGame.textProperty().unbind();
         this.channelGame.setGraphic(null);
         this.openChatButton.setDisable(true);
+        this.openChatInBrowserButton.setDisable(true);
         this.startStreamButton.disableProperty().unbind();
         this.recordStreamButton.disableProperty().unbind();
         this.startStreamButton.setDisable(false);
@@ -206,6 +213,10 @@ public class ChannelInfoPanel extends BorderPane {
 
     private void openChat() {
         TwitchUtils.openTwitchChat(this.channelProperty.get());
+    }
+
+    private void openChatInBrowser() {
+        TwitchUtils.openTwitchChatInBrowser(this.channelProperty.get());
     }
 
     private void openBrowser() {
