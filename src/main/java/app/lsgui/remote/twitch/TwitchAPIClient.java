@@ -96,7 +96,10 @@ public final class TwitchAPIClient {
         TwitchChannel channel = TwitchUtils.constructTwitchChannel(new JsonObject(), channelName, isBrowser);
         if (!"".equals(channelName)) {
             try {
-                final String twitchUserId = getTwitchUserIdFromName(channelName);
+                final String twitchUserId = getTwitchUserIdFromName(channelName, false);
+                if (twitchUserId.isEmpty()) {
+                    return channel;
+                }
                 final URI uri = convertToURI(TWITCH_BASE_URL + "streams/" + twitchUserId);
                 final JsonObject jsonData = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
                 channel = TwitchUtils.constructTwitchChannel(jsonData, channelName, isBrowser);
@@ -109,12 +112,16 @@ public final class TwitchAPIClient {
         return channel;
     }
 
-    private static String getTwitchUserIdFromName(final String channelName) {
+    private static String getTwitchUserIdFromName(final String channelName, final boolean dontRepeat) {
         LOGGER.trace("Request Twitch UserId for username {}", channelName);
-        String userId = "";
         final URI uri = convertToURI(TWITCH_BASE_URL + "search/channels?query=" + channelName);
         final JsonObject jsonData = JSONPARSER.parse(getAPIResponse(uri)).getAsJsonObject();
         final JsonArray channels = jsonData.get("channels").getAsJsonArray();
+        if (channels.size() == 0 && !dontRepeat) {
+            LOGGER.warn("Search result for channel '{}' was empty, retrying UserId search once!", channelName);
+            return getTwitchUserIdFromName(channelName, true);
+        }
+        String userId = "";
         for (final JsonElement element : channels) {
             final JsonObject jsonObject = element.getAsJsonObject();
             final String userName = JsonUtils.getStringIfNotNull("name", jsonObject);
