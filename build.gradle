@@ -65,6 +65,10 @@ jar {
     appendix = "nolib"
 }
 
+shadowJar {
+	classifier = null
+}
+
 distributions {
     main {
         contents {
