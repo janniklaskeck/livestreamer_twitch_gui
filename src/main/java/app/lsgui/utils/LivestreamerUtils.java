@@ -111,10 +111,7 @@ public final class LivestreamerUtils {
         command.add(getLivestreamerExe());
         command.add(url);
         command.add(quality);
-        if (url.toLowerCase(Locale.ENGLISH).contains("twitch")) {
-            command.add("--twitch-oauth-token");
-            command.add(getTwitchOAuth());
-        }
+        LOGGER.debug("Created stream command {}", command.toString());
         return command;
     }
 

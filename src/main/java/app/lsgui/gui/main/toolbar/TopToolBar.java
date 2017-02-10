@@ -46,6 +46,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -53,136 +54,153 @@ import javafx.scene.layout.Region;
 
 public final class TopToolBar extends ToolBar {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TopToolBar.class);
-    private static final BooleanProperty hasPopOver = new SimpleBooleanProperty(false);
-    private static final double PREF_HEIGHT = 35.0D;
+	private static final Logger LOGGER = LoggerFactory.getLogger(TopToolBar.class);
+	private static final BooleanProperty hasPopOver = new SimpleBooleanProperty(false);
+	private static final double PREF_HEIGHT = 35.0D;
 
-    private final Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
-    private final Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS);
-    private final Button twitchBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
+	private final Button importButton = GlyphsDude.createIconButton(FontAwesomeIcon.USERS);
+	private final Button addButton = GlyphsDude.createIconButton(FontAwesomeIcon.PLUS);
+	private final Button twitchBrowserButton = GlyphsDude.createIconButton(FontAwesomeIcon.SEARCH);
+	private final Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS);
+	private final Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
 
-    private QualityComboBox qualityComboBox = new QualityComboBox();
-    private ServiceComboBox serviceComboBox = new ServiceComboBox();
-    private BorderPane contentBorderPane;
-    private ChannelList channelList;
-    private PopOver popOver;
+	private final QualityComboBox qualityComboBox = new QualityComboBox();
+	private final ServiceComboBox serviceComboBox = new ServiceComboBox();
+	private BorderPane contentBorderPane;
+	private ChannelList channelList;
+	private PopOver popOver;
 
-    public TopToolBar() {
-        setPrefHeight(PREF_HEIGHT);
-        setMinHeight(PREF_HEIGHT);
-        this.serviceComboBox.initialize(this::changeService);
-        this.qualityComboBox.initialize();
-        final Button removeButton = GlyphsDude.createIconButton(FontAwesomeIcon.MINUS);
+	public TopToolBar() {
+		setPrefHeight(PREF_HEIGHT);
+		setMinHeight(PREF_HEIGHT);
+		this.serviceComboBox.initialize(this::changeService);
+		this.qualityComboBox.initialize();
 
-        this.addButton.setOnAction(event -> this.addAction());
-        removeButton.setOnAction(event -> this.removeAction());
-        this.importButton.setOnAction(event -> this.importFollowedChannels());
-        this.twitchBrowserButton.setOnAction(event -> this.openTwitchBrowser());
+		this.addButton.setOnAction(event -> this.addAction());
+		removeButton.setOnAction(event -> this.removeAction());
+		this.importButton.setOnAction(event -> this.importFollowedChannels());
+		this.twitchBrowserButton.setOnAction(event -> this.openTwitchBrowser());
 
-        final ProgressIndicator updateProgressIndicator = new ProgressIndicator();
-        updateProgressIndicator.setVisible(false);
-        TwitchChannelUpdateService.getActiveChannelServicesProperty().addListener((obs, oldValue, newValue) -> {
-            if (!newValue.isEmpty()) {
-                updateProgressIndicator.setVisible(true);
-            } else {
-                updateProgressIndicator.setVisible(false);
-            }
-        });
+		final ProgressIndicator updateProgressIndicator = new ProgressIndicator();
+		updateProgressIndicator.setVisible(false);
+		TwitchChannelUpdateService.getActiveChannelServicesProperty().addListener((obs, oldValue, newValue) -> {
+			if (!newValue.isEmpty()) {
+				updateProgressIndicator.setVisible(true);
+			} else {
+				updateProgressIndicator.setVisible(false);
+			}
+		});
 
-        final Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        spacer.setMinWidth(Region.USE_PREF_SIZE);
+		final Region spacer = new Region();
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+		spacer.setMinWidth(Region.USE_PREF_SIZE);
 
-        final Button settingsButton = GlyphsDude.createIconButton(FontAwesomeIcon.COG);
-        settingsButton.setOnAction(event -> this.openSettings());
+		settingsButton.setOnAction(event -> this.openSettings());
 
-        this.addItemAtEnd(this.serviceComboBox);
-        this.addItemAtEnd(this.addButton);
-        this.addItemAtEnd(removeButton);
-        this.addItemAtEnd(this.importButton);
-        this.addItemAtEnd(this.twitchBrowserButton);
-        this.addItemAtEnd(new Separator());
-        this.addItemAtEnd(updateProgressIndicator);
-        this.addItemAtEnd(spacer);
-        this.addItemAtEnd(new Separator());
-        this.addItemAtEnd(this.qualityComboBox);
-        this.addItemAtEnd(settingsButton);
-    }
+		this.setButtonToolTips();
 
-    private void addItemAtEnd(final Node element) {
-        getItems().add(getItems().size(), element);
-    }
+		this.addItemAtEnd(this.serviceComboBox);
+		this.addItemAtEnd(this.addButton);
+		this.addItemAtEnd(removeButton);
+		this.addItemAtEnd(this.importButton);
+		this.addItemAtEnd(this.twitchBrowserButton);
+		this.addItemAtEnd(new Separator());
+		this.addItemAtEnd(updateProgressIndicator);
+		this.addItemAtEnd(spacer);
+		this.addItemAtEnd(new Separator());
+		this.addItemAtEnd(this.qualityComboBox);
+		this.addItemAtEnd(settingsButton);
+	}
 
-    public void initialize(final BorderPane contentBoderPane, final ChannelList channelList) {
-        this.contentBorderPane = contentBoderPane;
-        this.channelList = channelList;
-    }
+	private void setButtonToolTips() {
+		final Tooltip addTooltip = new Tooltip("Add channels to the current service or add a new service");
+		this.addButton.setTooltip(addTooltip);
+		final Tooltip removeTooltip = new Tooltip("Remove the currently selected channel");
+		this.removeButton.setTooltip(removeTooltip);
+		final Tooltip importTooltip = new Tooltip("Import the channels followed by a Twitch.tv User");
+		this.importButton.setTooltip(importTooltip);
+		final Tooltip browserTooltip = new Tooltip("Open Twitch.tv Browser");
+		this.twitchBrowserButton.setTooltip(browserTooltip);
+		final Tooltip settingsTooltip = new Tooltip("Open Settings");
+		this.settingsButton.setTooltip(settingsTooltip);
+		final Tooltip qualityTooltip = new Tooltip("Stream Quality Settings");
+		this.qualityComboBox.setTooltip(qualityTooltip);
+	}
 
-    private void openSettings() {
-        final SettingsWindow settingsWindow = new SettingsWindow(this.contentBorderPane.getScene().getWindow());
-        settingsWindow.showAndWait();
-    }
+	private void addItemAtEnd(final Node element) {
+		getItems().add(getItems().size(), element);
+	}
 
-    private void openTwitchBrowser() {
-        final BrowserWindow browserWindow = new BrowserWindow(this.twitchBrowserButton.getScene().getWindow());
-        browserWindow.showAndWait();
-    }
+	public void initialize(final BorderPane contentBoderPane, final ChannelList channelList) {
+		this.contentBorderPane = contentBoderPane;
+		this.channelList = channelList;
+	}
 
-    private void addAction() {
-        final IService service = this.serviceComboBox.getSelectionModel().getSelectedItem();
-        if (service != null) {
+	private void openSettings() {
+		final SettingsWindow settingsWindow = new SettingsWindow(this.contentBorderPane.getScene().getWindow());
+		settingsWindow.showAndWait();
+	}
 
-            final PopOver popOverNew = PopOverUtil.createAddDialog(this.addButton, service);
-            if (hasPopOver.get() && this.popOver != null) {
-                this.popOver.hide();
-            }
-            hasPopOver.bind(popOverNew.showingProperty());
-            this.popOver = popOverNew;
-        }
-    }
+	private void openTwitchBrowser() {
+		final BrowserWindow browserWindow = new BrowserWindow(this.twitchBrowserButton.getScene().getWindow());
+		browserWindow.showAndWait();
+	}
 
-    private void removeAction() {
-        final IChannel channel = this.channelList.getListView().getSelectionModel().getSelectedItem();
-        final IService service = this.serviceComboBox.getSelectionModel().getSelectedItem();
-        if (channel != null && service != null) {
-            LsGuiUtils.removeChannelFromService(channel, service);
-        } else if (channel == null && service != null && this.serviceComboBox.getItems().size() > 1) {
-            this.serviceComboBox.getSelectionModel().select(0);
-            LsGuiUtils.removeService(service);
-        }
-    }
+	private void addAction() {
+		final IService service = this.serviceComboBox.getSelectionModel().getSelectedItem();
+		if (service != null) {
 
-    private void importFollowedChannels() {
-        final TwitchService service = (TwitchService) this.serviceComboBox.getSelectionModel().getSelectedItem();
-        if (service != null) {
-            final PopOver popOverNew = PopOverUtil.createImportPopOver(this.importButton, service);
-            if (hasPopOver.get() && this.popOver != null) {
-                this.popOver.hide();
-            }
-            hasPopOver.bind(popOverNew.showingProperty());
-            this.popOver = popOverNew;
-        }
-    }
+			final PopOver popOverNew = PopOverUtil.createAddDialog(this.addButton, service);
+			if (hasPopOver.get() && this.popOver != null) {
+				this.popOver.hide();
+			}
+			hasPopOver.bind(popOverNew.showingProperty());
+			this.popOver = popOverNew;
+		}
+	}
 
-    private void changeService(final IService newService) {
-        LOGGER.debug("Change Service to {}", newService.getName().get());
-        this.channelList.channelListProperty().bind(newService.getChannelProperty());
-        this.channelList.getListView().setUserData(newService);
-        if (TwitchUtils.isTwitchService(newService)) {
-            this.importButton.setDisable(false);
-            this.twitchBrowserButton.setDisable(false);
-        } else {
-            this.importButton.setDisable(true);
-            this.twitchBrowserButton.setDisable(true);
-        }
-    }
+	private void removeAction() {
+		final IChannel channel = this.channelList.getListView().getSelectionModel().getSelectedItem();
+		final IService service = this.serviceComboBox.getSelectionModel().getSelectedItem();
+		if (channel != null && service != null) {
+			LsGuiUtils.removeChannelFromService(channel, service);
+		} else if (channel == null && service != null && this.serviceComboBox.getItems().size() > 1) {
+			this.serviceComboBox.getSelectionModel().select(0);
+			LsGuiUtils.removeService(service);
+		}
+	}
 
-    public QualityComboBox getQualityComboBox() {
-        return this.qualityComboBox;
-    }
+	private void importFollowedChannels() {
+		final TwitchService service = (TwitchService) this.serviceComboBox.getSelectionModel().getSelectedItem();
+		if (service != null) {
+			final PopOver popOverNew = PopOverUtil.createImportPopOver(this.importButton, service);
+			if (hasPopOver.get() && this.popOver != null) {
+				this.popOver.hide();
+			}
+			hasPopOver.bind(popOverNew.showingProperty());
+			this.popOver = popOverNew;
+		}
+	}
 
-    public ServiceComboBox getServiceComboBox() {
-        return this.serviceComboBox;
-    }
+	private void changeService(final IService newService) {
+		LOGGER.debug("Change Service to {}", newService.getName().get());
+		this.channelList.channelListProperty().bind(newService.getChannelProperty());
+		this.channelList.getListView().setUserData(newService);
+		if (TwitchUtils.isTwitchService(newService)) {
+			this.importButton.setDisable(false);
+			this.twitchBrowserButton.setDisable(false);
+		} else {
+			this.importButton.setDisable(true);
+			this.twitchBrowserButton.setDisable(true);
+		}
+	}
+
+	public QualityComboBox getQualityComboBox() {
+		return this.qualityComboBox;
+	}
+
+	public ServiceComboBox getServiceComboBox() {
+		return this.serviceComboBox;
+	}
 
 }
