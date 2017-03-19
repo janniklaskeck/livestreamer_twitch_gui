@@ -3,5 +3,3 @@ build/
 .metadata
 bin/
 .settings/
-/buildDist.sh
-/buildDist.bat
