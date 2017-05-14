@@ -110,7 +110,7 @@ public final class LivestreamerUtils {
         final List<String> command = new ArrayList<>();
         command.add(getLivestreamerExe());
         command.add(url);
-        command.add(quality);
+        command.add(quality + ",best,worst");
         LOGGER.debug("Created stream command {}", command.toString());
         return command;
     }
@@ -137,7 +137,8 @@ public final class LivestreamerUtils {
                 String path = "\"" + filePath.getAbsolutePath() + "\"";
                 path = path.replace('\\', '/');
                 Settings.getInstance().recordingPathProperty().set(path);
-                ProcessBuilder pb = new ProcessBuilder(Arrays.asList(getLivestreamerExe(), "-o", path, url, quality));
+                ProcessBuilder pb = new ProcessBuilder(
+                        Arrays.asList(getLivestreamerExe(), "-o", path, url, quality + ",best,worst"));
                 pb.redirectOutput(Redirect.INHERIT);
                 pb.redirectError(Redirect.INHERIT);
                 Process prc = pb.start();

@@ -74,7 +74,7 @@ public final class TwitchItemPane extends BorderPane {
         gameImage.setFitHeight(HEIGHT_GAME);
         final Label nameLabel = new Label();
         nameLabel.setTooltip(new Tooltip("Name of Category"));
-        nameLabel.textProperty().bind(game.getName());
+        nameLabel.textProperty().bind(game.getShortName());
         nameLabel.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
         final Label viewersLabel = new Label();
         viewersLabel.setTooltip(new Tooltip("Amount of Viewers"));
