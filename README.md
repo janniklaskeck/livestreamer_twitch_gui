@@ -1,5 +1,5 @@
 # Livestreamer GUI v3
-GUI for the livestreamer application (http://livestreamer.tanuki.se/)<br>
+GUI for the livestreamer (http://livestreamer.tanuki.se/) or Streamlink Application (https://github.com/streamlink/streamlink)<br>
 Its intended use is for twitch.tv but there is rudimentary support for other services.
 
 [![Build Status](https://travis-ci.org/westerwave/livestreamer_twitch_gui.svg?branch=develop)](https://travis-ci.org/westerwave/livestreamer_twitch_gui)
