@@ -38,6 +38,7 @@ import javafx.scene.image.Image;
 public final class TwitchGame implements ITwitchItem {
 
     private StringProperty name;
+    private StringProperty shortName;
     private StringProperty viewers;
     private StringProperty channelCount;
     private ObjectProperty<Image> boxImage;
@@ -45,7 +46,8 @@ public final class TwitchGame implements ITwitchItem {
     private TwitchChannels channels;
 
     public TwitchGame(final String name, final int viewers, final int channelCount, final Image boxImage) {
-        this.name = new SimpleStringProperty(shortenString(name));
+        this.name = new SimpleStringProperty(name);
+        this.shortName = new SimpleStringProperty(shortenString(name));
         this.viewers = new SimpleStringProperty(Integer.toString(viewers));
         this.boxImage = new SimpleObjectProperty<>(boxImage);
         this.channelCount = new SimpleStringProperty(Integer.toString(channelCount));
@@ -78,6 +80,10 @@ public final class TwitchGame implements ITwitchItem {
 
     public StringProperty getName() {
         return this.name;
+    }
+
+    public StringProperty getShortName() {
+        return this.shortName;
     }
 
     public StringProperty getViewers() {

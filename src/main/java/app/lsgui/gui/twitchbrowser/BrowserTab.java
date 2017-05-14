@@ -70,7 +70,7 @@ public final class BrowserTab extends Tab {
 
         final TilePane pane = new TilePane();
         pane.setOnScroll(scrollEvent -> {
-            final double deltaY = scrollEvent.getDeltaY() * 2;
+            final double deltaY = scrollEvent.getDeltaY() * 2.0D;
             final double height = BrowserTab.this.getCustomContent().getBoundsInLocal().getHeight();
             final double vValue = BrowserTab.this.getCustomContent().getVvalue();
             BrowserTab.this.getCustomContent().setVvalue(vValue - deltaY / height);
