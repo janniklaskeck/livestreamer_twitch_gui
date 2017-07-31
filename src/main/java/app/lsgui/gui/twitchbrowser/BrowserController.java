@@ -23,14 +23,14 @@
  */
 package app.lsgui.gui.twitchbrowser;
 
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.lsgui.remote.twitch.TwitchBrowserUpdateService;
 import app.lsgui.utils.BrowserCore;
 import app.lsgui.utils.Settings;
-import de.jensd.fx.glyphs.GlyphsDude;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ListProperty;
@@ -55,7 +55,8 @@ import javafx.scene.layout.VBox;
  * @author Niklas 25.06.2016
  *
  */
-public final class BrowserController {
+public final class BrowserController
+{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrowserController.class);
     private static final int PROGRESS_BAR_MIN_HEIGHT = 20;
@@ -71,12 +72,14 @@ public final class BrowserController {
     private final TextField searchTextField = new TextField();
     private final BrowserCore browserCore = BrowserCore.getInstance();
 
-    public BrowserController() {
+    public BrowserController()
+    {
         LOGGER.trace("BrowserController created.");
     }
 
     @FXML
-    public void initialize() {
+    public void initialize()
+    {
         this.setupToolBar();
         this.setupProgressBar();
         this.setupTabPane();
@@ -85,25 +88,31 @@ public final class BrowserController {
         Platform.runLater(this.browserCore::goToHome);
     }
 
-    private void setupTabPane() {
+    private void setupTabPane()
+    {
         this.browserRootBorderPane.setCenter(this.browserTabPane);
         this.browserTabPane.setTabClosingPolicy(TabClosingPolicy.ALL_TABS);
-        this.browserTabPane.getTabs().addListener((ListChangeListener<Tab>) change -> {
-            if (change.next() && change.wasAdded()) {
+        this.browserTabPane.getTabs().addListener((ListChangeListener<Tab>) change ->
+        {
+            if (change.next() && change.wasAdded())
+            {
                 LOGGER.debug("Tab was added");
                 this.browserTabPane.getSelectionModel().select(change.getAddedSubList().get(0));
             }
         });
-        this.browserTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        this.browserTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+        {
             final BrowserTab oldTab = (BrowserTab) oldValue;
-            if (oldTab != null) {
+            if (oldTab != null)
+            {
                 this.searchTextField.setText("");
                 oldTab.resetActiveItems();
             }
         });
     }
 
-    private void setupProgressBar() {
+    private void setupProgressBar()
+    {
         final VBox vbox = new VBox();
         final ProgressBar browserProgressBar = new ProgressBar();
         browserProgressBar.setVisible(false);
@@ -112,12 +121,16 @@ public final class BrowserController {
         vbox.getChildren().add(browserProgressBar);
         this.browserRootBorderPane.setBottom(vbox);
         final DoubleProperty progress = new SimpleDoubleProperty();
-        TwitchBrowserUpdateService.activeServicesProperty().addListener((observable, oldValue, newValue) -> {
+        TwitchBrowserUpdateService.activeServicesProperty().addListener((observable, oldValue, newValue) ->
+        {
             final int size = observable.getValue().size();
-            if (size == 0) {
+            if (size == 0)
+            {
                 progress.set(1.0D);
                 browserProgressBar.setVisible(false);
-            } else {
+            }
+            else
+            {
                 browserProgressBar.setVisible(true);
                 progress.set(1.0D / observable.getValue().size());
             }
@@ -125,14 +138,17 @@ public final class BrowserController {
         browserProgressBar.progressProperty().bind(progress);
     }
 
-    private void setupToolBar() {
-        final Button homeButton = GlyphsDude.createIconButton(FontAwesomeIcon.HOME);
+    private void setupToolBar()
+    {
+        final Button homeButton = new Button("", new Glyph("FontAwesome", FontAwesome.Glyph.HOME));
         homeButton.setOnAction(event -> this.browserCore.goToHome());
-        final Button refreshButton = GlyphsDude.createIconButton(FontAwesomeIcon.REFRESH);
+        final Button refreshButton = new Button("", new Glyph("FontAwesome", FontAwesome.Glyph.REFRESH));
         refreshButton.setOnAction(event -> this.browserCore.refresh());
 
-        this.searchTextField.textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!"".equals(newValue)) {
+        this.searchTextField.textProperty().addListener((obs, oldValue, newValue) ->
+        {
+            if (!"".equals(newValue))
+            {
                 this.browserCore.filter(newValue);
             }
         });
@@ -140,8 +156,10 @@ public final class BrowserController {
         final ComboBox<String> favouriteGameComboBox = new ComboBox<>();
         final ListProperty<String> favouriteGames = Settings.getInstance().favouriteGamesProperty();
         favouriteGameComboBox.itemsProperty().bind(favouriteGames);
-        favouriteGameComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
+        favouriteGameComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) ->
+        {
+            if (newValue != null)
+            {
                 this.browserCore.openGame(newValue);
                 Platform.runLater(() -> favouriteGameComboBox.setValue(null));
             }

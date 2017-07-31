@@ -23,6 +23,9 @@
  */
 package app.lsgui.gui.twitchbrowser;
 
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
+
 import app.lsgui.model.IService;
 import app.lsgui.model.twitch.ITwitchItem;
 import app.lsgui.model.twitch.TwitchChannel;
@@ -30,8 +33,6 @@ import app.lsgui.model.twitch.TwitchGame;
 import app.lsgui.utils.BrowserCore;
 import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.Settings;
-import de.jensd.fx.glyphs.GlyphsDude;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
@@ -45,7 +46,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-public final class TwitchItemPane extends BorderPane {
+public final class TwitchItemPane extends BorderPane
+{
 
     private static final DoubleProperty HEIGHT_PROPERTY = new SimpleDoubleProperty();
     private static final DoubleProperty WIDTH_PROPERTY = new SimpleDoubleProperty(150);
@@ -55,19 +57,24 @@ public final class TwitchItemPane extends BorderPane {
     private static final double HEIGHT_GAME = WIDTH_PROPERTY.get() * RATIO_GAME;
     private static final double HEIGHT_CHANNEL = WIDTH_PROPERTY.get() * RATIO_CHANNEL;
 
-    public TwitchItemPane(final ITwitchItem item) {
-        if (item instanceof TwitchGame) {
+    public TwitchItemPane(final ITwitchItem item)
+    {
+        if (item instanceof TwitchGame)
+        {
             final TwitchGame game = (TwitchGame) item;
             this.createGameBorderPane(game);
             HEIGHT_PROPERTY.set(HEIGHT_GAME + BOTTOM_OFFSET);
-        } else if (item instanceof TwitchChannel) {
+        }
+        else if (item instanceof TwitchChannel)
+        {
             final TwitchChannel channel = (TwitchChannel) item;
             this.createChannelBorderPane(channel);
             HEIGHT_PROPERTY.set(HEIGHT_CHANNEL + BOTTOM_OFFSET);
         }
     }
 
-    private void createGameBorderPane(final TwitchGame game) {
+    private void createGameBorderPane(final TwitchGame game)
+    {
         final ImageView gameImage = new ImageView();
         gameImage.imageProperty().bind(game.getBoxImage());
         gameImage.setFitWidth(WIDTH_PROPERTY.get());
@@ -75,29 +82,34 @@ public final class TwitchItemPane extends BorderPane {
         final Label nameLabel = new Label();
         nameLabel.setTooltip(new Tooltip("Name of Category"));
         nameLabel.textProperty().bind(game.getShortName());
-        nameLabel.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
+        nameLabel.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.GAMEPAD));
         final Label viewersLabel = new Label();
         viewersLabel.setTooltip(new Tooltip("Amount of Viewers"));
         viewersLabel.textProperty().bind(game.getViewers());
-        viewersLabel.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GROUP));
+        viewersLabel.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.GROUP));
         final Label channelLabel = new Label();
         channelLabel.setTooltip(new Tooltip("Amount of Channels"));
         channelLabel.textProperty().bind(game.getChannelCount());
-        channelLabel.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
+        channelLabel.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.USER));
         final VBox textBox = new VBox(nameLabel, viewersLabel, channelLabel);
         this.setCenter(gameImage);
         this.setBottom(textBox);
-        this.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            if (event.getButton() == MouseButton.PRIMARY) {
+        this.addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
+        {
+            if (event.getButton() == MouseButton.PRIMARY)
+            {
                 BrowserCore.getInstance().openGame(game.getName().get());
-            } else if (event.getButton() == MouseButton.SECONDARY) {
+            }
+            else if (event.getButton() == MouseButton.SECONDARY)
+            {
                 this.showContextMenu(game, event.getScreenX(), event.getScreenY());
             }
             event.consume();
         });
     }
 
-    private void createChannelBorderPane(final TwitchChannel channel) {
+    private void createChannelBorderPane(final TwitchChannel channel)
+    {
         final ImageView channelImage = new ImageView();
         channelImage.imageProperty().bind(channel.getPreviewImageMedium());
         channelImage.setFitWidth(WIDTH_PROPERTY.get());
@@ -105,15 +117,15 @@ public final class TwitchItemPane extends BorderPane {
         final Label nameLabel = new Label();
         nameLabel.setTooltip(new Tooltip("Name of the Channel"));
         nameLabel.textProperty().bind(channel.getDisplayName());
-        nameLabel.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.GAMEPAD));
+        nameLabel.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.GAMEPAD));
         final Label viewersLabel = new Label();
         viewersLabel.setTooltip(new Tooltip("Amount of Viewers"));
         viewersLabel.textProperty().bind(channel.getViewersString());
-        viewersLabel.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
+        viewersLabel.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.USER));
         final Label uptimeLabel = new Label();
         uptimeLabel.setTooltip(new Tooltip("Uptime of the Channel"));
         uptimeLabel.textProperty().bind(channel.getUptimeString());
-        uptimeLabel.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.CLOCK_ALT));
+        uptimeLabel.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.CLOCK_ALT));
         final VBox textBox = new VBox(nameLabel, viewersLabel, uptimeLabel);
         this.setCenter(channelImage);
         this.setBottom(textBox);
@@ -121,40 +133,46 @@ public final class TwitchItemPane extends BorderPane {
         titleTooltip.textProperty().bind(channel.getTitle());
         final Node node = this;
         Tooltip.install(node, titleTooltip);
-        this.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            if (event.getButton() == MouseButton.PRIMARY) {
+        this.addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
+        {
+            if (event.getButton() == MouseButton.PRIMARY)
+            {
                 BrowserCore.getInstance().startStream(channel.getName().get());
-            } else if (event.getButton() == MouseButton.SECONDARY) {
+            }
+            else if (event.getButton() == MouseButton.SECONDARY)
+            {
                 this.showContextMenu(channel, event.getScreenX(), event.getScreenY());
             }
             event.consume();
         });
     }
 
-    private void showContextMenu(final TwitchChannel channel, final double xPos, final double yPos) {
+    private void showContextMenu(final TwitchChannel channel, final double xPos, final double yPos)
+    {
         final ContextMenu contextMenu = new ContextMenu();
         final MenuItem startStream = new MenuItem("Start Stream");
         startStream.setOnAction(eventStartContext -> BrowserCore.getInstance().startStream(channel.getName().get()));
         final MenuItem addToList = new MenuItem("Add Stream To Favourites");
         final IService twitchService = Settings.getInstance().getTwitchService();
-        addToList
-                .setOnAction(eventAddContext -> LsGuiUtils.addChannelToService(channel.getName().get(), twitchService));
+        addToList.setOnAction(eventAddContext -> LsGuiUtils.addChannelToService(channel.getName().get(), twitchService));
         contextMenu.getItems().add(startStream);
         contextMenu.getItems().add(addToList);
         contextMenu.show(this.getScene().getWindow(), xPos, yPos);
     }
 
-    private void showContextMenu(final TwitchGame game, final double xPos, final double yPos) {
+    private void showContextMenu(final TwitchGame game, final double xPos, final double yPos)
+    {
         final ContextMenu contextMenu = new ContextMenu();
-        if (!Settings.getInstance().favouriteGamesProperty().contains(game.getName().get())) {
+        if (!Settings.getInstance().favouriteGamesProperty().contains(game.getName().get()))
+        {
             final MenuItem addToFavourites = new MenuItem("Add to Favourites");
-            addToFavourites
-                    .setOnAction(eventStartContext -> Settings.getInstance().addFavouriteGame(game.getName().get()));
+            addToFavourites.setOnAction(eventStartContext -> Settings.getInstance().addFavouriteGame(game.getName().get()));
             contextMenu.getItems().add(addToFavourites);
-        } else {
+        }
+        else
+        {
             final MenuItem removeFromFavourites = new MenuItem("Remove from Favourites");
-            removeFromFavourites
-                    .setOnAction(eventStartContext -> Settings.getInstance().removeFavouriteGame(game.getName().get()));
+            removeFromFavourites.setOnAction(eventStartContext -> Settings.getInstance().removeFavouriteGame(game.getName().get()));
             contextMenu.getItems().add(removeFromFavourites);
         }
         contextMenu.show(this.getScene().getWindow(), xPos, yPos);

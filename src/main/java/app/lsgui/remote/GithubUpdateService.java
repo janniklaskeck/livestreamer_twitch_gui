@@ -44,69 +44,86 @@ import com.google.gson.JsonParser;
 import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.Settings;
 
-public final class GithubUpdateService {
+public final class GithubUpdateService
+{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GithubUpdateService.class);
 
-    private static final String RELEASES_URL = "https://api.github.com/repos/westerwave/"
-            + "livestreamer_twitch_gui/releases/latest";
+    private static final String RELEASES_URL = "https://api.github.com/repos/westerwave/" + "livestreamer_twitch_gui/releases/latest";
     private static final ZoneOffset OFFSET = ZoneOffset.ofHours(0);
     private static final String PREFIX = "GMT";
     private static final ZoneId GMT = ZoneId.ofOffset(PREFIX, OFFSET);
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(GMT);
 
-    private GithubUpdateService() {
+    private GithubUpdateService()
+    {
     }
 
-    public static void checkForUpdate() {
+    public static void checkForUpdate()
+    {
         LOGGER.debug("Check for updates on URL '{}'", RELEASES_URL);
         String responseString = "";
         final HttpClient client = HttpClientInterface.getClient();
         HttpClientInterface.startClient();
-        try {
+        try
+        {
             final Request newRequest = client.newRequest(RELEASES_URL);
             newRequest.header("Accept", "application/vnd.github.v3+json");
             responseString = newRequest.send().getContentAsString();
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        }
+        catch (InterruptedException | ExecutionException | TimeoutException e)
+        {
             LOGGER.error("Error while sending GET Request", e);
-        } catch (Exception e) {
+        }
+        catch (final Exception e)
+        {
             LOGGER.error("Could not start HTTP Client", e);
         }
 
-        if (responseString != null && !"".equals(responseString)) {
+        if (responseString != null && !"".equals(responseString))
+        {
             processJsonResponse(responseString);
         }
     }
 
-    private static void processJsonResponse(final String responseString) {
+    private static void processJsonResponse(final String responseString)
+    {
         final JsonParser parser = new JsonParser();
         final JsonElement releaseElement = parser.parse(responseString);
-        if (releaseElement.isJsonObject()) {
+        if (releaseElement.isJsonObject())
+        {
             final JsonObject latestReleaseFull = releaseElement.getAsJsonObject();
-            final String tag = latestReleaseFull.get("tag_name").getAsString();
-            final String publishedAt = latestReleaseFull.get("published_at").getAsString();
-            final boolean isPreRelease = latestReleaseFull.get("prerelease").getAsBoolean();
-            final String htmlUrl = latestReleaseFull.get("html_url").getAsString();
-            if (!isPreRelease && isVersionNewer(tag)) {
-                final ZonedDateTime publishedDate = convertPublishedDate(publishedAt);
-                LsGuiUtils.showUpdateNotification(tag, publishedDate, event -> LsGuiUtils.openURLInBrowser(htmlUrl));
-                Settings.getInstance().updateLinkProperty().set(htmlUrl);
+            if (latestReleaseFull != null)
+            {
+                final String tag = latestReleaseFull.get("tag_name").getAsString();
+                final String publishedAt = latestReleaseFull.get("published_at").getAsString();
+                final boolean isPreRelease = latestReleaseFull.get("prerelease").getAsBoolean();
+                final String htmlUrl = latestReleaseFull.get("html_url").getAsString();
+                if (!isPreRelease && isVersionNewer(tag))
+                {
+                    final ZonedDateTime publishedDate = convertPublishedDate(publishedAt);
+                    LsGuiUtils.showUpdateNotification(tag, publishedDate, event -> LsGuiUtils.openURLInBrowser(htmlUrl));
+                    Settings.getInstance().updateLinkProperty().set(htmlUrl);
+                }
             }
         }
     }
 
-    private static boolean isVersionNewer(final String tag) {
-        String currentVersionTag = LsGuiUtils.readVersionProperty();
+    private static boolean isVersionNewer(final String tag)
+    {
+        final String currentVersionTag = LsGuiUtils.readVersionProperty();
         final Version currentVersion = Version.valueOf(currentVersionTag);
         final String realVersionTag = tag.substring(1);
         final Version newVersion = Version.valueOf(realVersionTag);
-        if (currentVersion.getPreReleaseVersion().toLowerCase(Locale.ENGLISH).contains("snapshot")) {
+        if (currentVersion.getPreReleaseVersion().toLowerCase(Locale.ENGLISH).contains("snapshot"))
+        {
             LOGGER.info("Running development version!");
         }
         return newVersion.greaterThan(currentVersion);
     }
 
-    private static ZonedDateTime convertPublishedDate(final String publishedAt) {
+    private static ZonedDateTime convertPublishedDate(final String publishedAt)
+    {
         return ZonedDateTime.parse(publishedAt, DTF);
     }
 }
