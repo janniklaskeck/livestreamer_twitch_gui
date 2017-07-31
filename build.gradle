@@ -3,9 +3,9 @@ plugins {
     id "distribution"
     id "eclipse"
     id "org.sonarqube" version "2.5"
-    id "edu.sc.seis.launch4j" version "1.6.2"
-    id "com.github.johnrengelman.shadow" version "1.2.3"
-    id "com.github.hierynomus.license" version "0.13.1"
+    id "edu.sc.seis.launch4j" version "2.4.0"
+    id "com.github.johnrengelman.shadow" version "2.0.0"
+    id "com.github.hierynomus.license" version "0.14.0"
 }
 
 group = "app.lsgui"
