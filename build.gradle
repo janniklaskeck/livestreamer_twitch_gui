@@ -3,7 +3,7 @@ plugins {
     id "distribution"
     id "eclipse"
     id "org.sonarqube" version "2.5"
-    id "edu.sc.seis.launch4j" version "2.4.0"
+    id "edu.sc.seis.launch4j" version "2.4.1"
     id "com.github.johnrengelman.shadow" version "2.0.0"
     id "com.github.hierynomus.license" version "0.14.0"
 }
@@ -101,7 +101,7 @@ launch4j {
     language = "ENGLISH_US"
     initialHeapSize = 64
     maxHeapSize = 512
-    opt = '-Dfile.encoding="UTF-8"'
+    jvmOptions = ["-Dfile.encoding='UTF-8'"]
 }
 
 license {
