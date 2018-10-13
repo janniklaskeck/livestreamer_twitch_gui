@@ -47,89 +47,89 @@ import javafx.scene.text.Font;
  */
 public final class ChatController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
-    private static final int FONT_SIZE = 20;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
+	private static final int FONT_SIZE = 20;
 
-    private IrcClient client;
-    private InlineCssTextArea chatTextArea;
+	private IrcClient client;
+	private InlineCssTextArea chatTextArea;
 
-    @FXML
-    private TextField inputTextField;
+	@FXML
+	private TextField inputTextField;
 
-    @FXML
-    private Button sendButton;
+	@FXML
+	private Button sendButton;
 
-    @FXML
-    private BorderPane chatBorderPane;
+	@FXML
+	private BorderPane chatBorderPane;
 
-    public ChatController() {
-        // Empty Constructor
-    }
+	public ChatController() {
+		// Empty Constructor
+	}
 
-    @FXML
-    public void initialize() {
-        LOGGER.info("SettingsController init");
-        this.chatTextArea = new InlineCssTextArea();
-        this.chatTextArea.setWrapText(true);
-        this.chatTextArea.setFont(new Font(FONT_SIZE));
-        this.chatTextArea.setEditable(false);
+	@FXML
+	public void initialize() {
+		LOGGER.info("SettingsController init");
+		this.chatTextArea = new InlineCssTextArea();
+		this.chatTextArea.setWrapText(true);
+		// this.chatTextArea.setFont(new Font(FONT_SIZE));
+		this.chatTextArea.setEditable(false);
 
-        this.chatBorderPane.setCenter(this.chatTextArea);
-        this.inputTextField.setOnKeyPressed(key -> {
-            if (key.getCode() == KeyCode.ENTER) {
-                this.sendMessage(this.inputTextField.getText());
-            }
-        });
+		this.chatBorderPane.setCenter(this.chatTextArea);
+		this.inputTextField.setOnKeyPressed(key -> {
+			if (key.getCode() == KeyCode.ENTER) {
+				this.sendMessage(this.inputTextField.getText());
+			}
+		});
 
-        this.sendButton.setOnAction(event -> this.sendMessage(this.inputTextField.getText()));
-        this.client = new IrcClient(this.chatTextArea);
-    }
+		this.sendButton.setOnAction(event -> this.sendMessage(this.inputTextField.getText()));
+		this.client = new IrcClient(this.chatTextArea);
+	}
 
-    private void sendMessage(final String message) {
-        if (!"".equals(message)) {
-            final String twitchUsername = Settings.getInstance().twitchUserProperty().get();
-            final int start = this.chatTextArea.getText().length();
-            final int end = start + twitchUsername.length() + 1;
-            this.client.sendMessage(this.client.getChannel(), message);
-            this.chatTextArea.appendText(twitchUsername + ": " + message + "\n");
-            setColoredNickName(this.chatTextArea, start, end);
-            setChatMessageStyle(this.chatTextArea, end, end + message.length() + 1);
-            this.inputTextField.clear();
-        }
-    }
+	private void sendMessage(final String message) {
+		if (!"".equals(message)) {
+			final String twitchUsername = Settings.getInstance().twitchUserProperty().get();
+			final int start = this.chatTextArea.getText().length();
+			final int end = start + twitchUsername.length() + 1;
+			this.client.sendMessage(this.client.getChannel(), message);
+			this.chatTextArea.appendText(twitchUsername + ": " + message + "\n");
+			setColoredNickName(this.chatTextArea, start, end);
+			setChatMessageStyle(this.chatTextArea, end, end + message.length() + 1);
+			this.inputTextField.clear();
+		}
+	}
 
-    public void connect(final String channel) {
-        final String twitchIrc = "irc.chat.twitch.tv";
-        final String user = Settings.getInstance().twitchUserProperty().get();
-        final String oauth = Settings.getInstance().twitchOAuthProperty().get();
-        if (!"".equals(user) && !"".equals(oauth)) {
-            this.client.setUserName(user);
-            this.client.setChannel(channel);
-            this.clientConnect(twitchIrc, oauth);
-            LOGGER.info("DATA Login");
-        }
-    }
+	public void connect(final String channel) {
+		final String twitchIrc = "irc.chat.twitch.tv";
+		final String user = Settings.getInstance().twitchUserProperty().get();
+		final String oauth = Settings.getInstance().twitchOAuthProperty().get();
+		if (!"".equals(user) && !"".equals(oauth)) {
+			this.client.setUserName(user);
+			this.client.setChannel(channel);
+			this.clientConnect(twitchIrc, oauth);
+			LOGGER.info("DATA Login");
+		}
+	}
 
-    public void clientConnect(final String twitchIrc, final String oauth) {
-        try {
-            final int port = 6667;
-            this.client.connect(twitchIrc, port, oauth);
-        } catch (IOException | IrcException e) {
-            LOGGER.error("Could not connect to Twitch IRC", e);
-        }
-    }
+	public void clientConnect(final String twitchIrc, final String oauth) {
+		try {
+			final int port = 6667;
+			this.client.connect(twitchIrc, port, oauth);
+		} catch (IOException | IrcException e) {
+			LOGGER.error("Could not connect to Twitch IRC", e);
+		}
+	}
 
-    public void disconnect() {
-        this.client.disconnect();
-        this.client.dispose();
-    }
+	public void disconnect() {
+		this.client.disconnect();
+		this.client.dispose();
+	}
 
-    public static void setColoredNickName(final InlineCssTextArea cta, final int start, final int end) {
-        cta.setStyle(start, end,
-                "-fx-fill: " + TwitchUtils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
-    }
+	public static void setColoredNickName(final InlineCssTextArea cta, final int start, final int end) {
+		cta.setStyle(start, end,
+				"-fx-fill: " + TwitchUtils.getColorFromString(cta.getText(start, end)) + "; -fx-font-size: 12pt");
+	}
 
-    public static void setChatMessageStyle(final InlineCssTextArea cta, final int start, final int end) {
-        cta.setStyle(start, end, "-fx-font-size: 12pt");
-    }
+	public static void setChatMessageStyle(final InlineCssTextArea cta, final int start, final int end) {
+		cta.setStyle(start, end, "-fx-font-size: 12pt");
+	}
 }
