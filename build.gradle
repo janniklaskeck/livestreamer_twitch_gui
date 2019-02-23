@@ -4,7 +4,7 @@ plugins {
     id "eclipse"
     id "org.sonarqube" version "2.6.2"
     id "edu.sc.seis.launch4j" version "2.4.4"
-    id "com.github.johnrengelman.shadow" version "4.0.1"
+    id "com.github.johnrengelman.shadow" version "4.0.4"
     id "com.github.hierynomus.license" version "0.14.0"
 }
 
@@ -60,7 +60,7 @@ sonarqube  {
 
 jar {
     manifest {
-        attributes "Implementation-Title": "LivestreamerGUI FatJar",
+        attributes "Implementation-Title": "LivestreamerGUI",
           "Implementation-Version": version,
           "Main-Class": "$mainClass"
     }
@@ -69,6 +69,7 @@ jar {
 
 shadowJar {
 	classifier = null
+    archiveName = "${project.name}-${version}.jar"
 }
 
 distributions {
@@ -91,17 +92,15 @@ eclipse {
 }
 
 launch4j {
-    outputDir = "$buildDir/distributions"
-    mainClassName = "$mainClass"
-    icon = "$buildDir/resources/main/icon.ico"
+    mainClassName = "${mainClass}"
+    icon = "${buildDir}/resources/main/icon.ico"
     copyConfigurable = project.tasks.shadowJar.outputs.files
     jar = "lib/${project.tasks.shadowJar.archiveName}"
+    outfile = "LivestreamerGUI.exe"
     supportUrl = "https://github.com/westerwave/livestreamer_twitch_gui"
     copyright = "MIT LICENSE"
-    language = "ENGLISH_US"
     initialHeapSize = 64
     maxHeapSize = 512
-    jvmOptions = ["-Dfile.encoding='UTF-8'"]
 }
 
 license {

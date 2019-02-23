@@ -1,1 +1,1 @@
-gradle clean distZip launch4j
+gradle clean distZip createExe
