@@ -280,14 +280,14 @@ public final class TwitchUtils {
         qualities.add("Low");
         qualities.add("Medium");
         qualities.add("High");
-        qualities.add("Source");
+        qualities.add("Best");
         return qualities;
     }
 
     public static List<String> getStreamQualities() {
         final List<String> qualities = new ArrayList<>();
         qualities.add("Audio");
-        qualities.add("Source");
+        qualities.add("Best");
         return qualities;
     }
 }
