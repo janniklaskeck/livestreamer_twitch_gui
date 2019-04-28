@@ -6,14 +6,15 @@ plugins {
     id "edu.sc.seis.launch4j" version "2.4.4"
     id "com.github.johnrengelman.shadow" version "4.0.4"
     id "com.github.hierynomus.license" version "0.14.0"
+    id "org.openjfx.javafxplugin" version "0.0.7"
 }
 
 group = "app.lsgui"
 loadVersion()
 
 description = "$project.name"
-sourceCompatibility = 8
-targetCompatibility = 8
+sourceCompatibility = 12
+targetCompatibility = 12
 
 repositories {
     mavenCentral()
@@ -25,13 +26,13 @@ ext {
 
     // Versionumbers
     pircbotVersion = "1.5.0"
-    richtextfxVersion = "0.8.2"
+    richtextfxVersion = "0.10.0"
     fontawesomefxVersion = "8.9"
-    controlsfxVersion = "8.40.14"
-    gsonVersion = "2.8.2"
-    httpclientVersion = "9.4.0.v20161208"
-    slf4jVersion = "1.8.0-beta2"
-    log4jVersion = "2.11.0"
+    controlsfxVersion = "11.0.0"
+    gsonVersion = "2.8.5"
+    httpclientVersion = "9.4.17.v20190418"
+    slf4jVersion = "1.8.0-beta4"
+    log4jVersion = "2.11.2"
     junitVersion = "4.12"
     semVerVersion = "0.9.0"
 }
@@ -43,13 +44,17 @@ dependencies {
     compile "org.controlsfx:controlsfx:$controlsfxVersion"
     compile "com.google.code.gson:gson:$gsonVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
-    compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
-    compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
-    compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
-    compile "org.apache.logging.log4j:log4j-jul:$log4jVersion"
+    //compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
+    //compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion"
+    //compile "org.apache.logging.log4j:log4j-jul:$log4jVersion"
     compile "com.github.zafarkhaja:java-semver:$semVerVersion"
     compile "org.eclipse.jetty:jetty-client:$httpclientVersion"
     testCompile "junit:junit:$junitVersion"
+}
+
+javafx {
+	modules = ["javafx.controls", "javafx.fxml"]
 }
 
 sonarqube  {

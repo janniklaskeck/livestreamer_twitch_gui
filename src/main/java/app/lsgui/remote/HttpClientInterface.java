@@ -9,7 +9,7 @@ public final class HttpClientInterface {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientInterface.class);
 
-    private static final SslContextFactory sslContextFactory = new SslContextFactory();
+    private static final SslContextFactory sslContextFactory = new SslContextFactory.Client();
     private static HttpClient client;
 
     private HttpClientInterface() {
