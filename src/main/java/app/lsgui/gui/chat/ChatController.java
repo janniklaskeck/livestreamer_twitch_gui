@@ -38,7 +38,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Font;
 
 /**
  *
@@ -48,7 +47,6 @@ import javafx.scene.text.Font;
 public final class ChatController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
-	private static final int FONT_SIZE = 20;
 
 	private IrcClient client;
 	private InlineCssTextArea chatTextArea;
