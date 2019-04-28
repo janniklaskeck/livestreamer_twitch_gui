@@ -13,7 +13,7 @@ group = "app.lsgui"
 loadVersion()
 
 description = "$project.name"
-sourceCompatibility = 12
+sourceCompatibility = 11
 targetCompatibility = 12
 
 repositories {
