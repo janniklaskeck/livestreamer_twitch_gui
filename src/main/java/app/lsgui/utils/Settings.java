@@ -181,6 +181,7 @@ public final class Settings {
                 final String channel = channels.get(e).getAsString();
                 service.addChannel(channel);
             }
+            service.FinishSetup();
             this.services.get().add(service);
         }
     }

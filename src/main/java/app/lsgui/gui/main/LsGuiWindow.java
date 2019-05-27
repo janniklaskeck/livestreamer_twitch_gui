@@ -24,17 +24,11 @@
 package app.lsgui.gui.main;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.lsgui.model.IChannel;
-import app.lsgui.model.twitch.TwitchService;
-import app.lsgui.remote.GithubUpdateService;
 import app.lsgui.remote.HttpClientInterface;
-import app.lsgui.remote.twitch.TwitchChannelUpdateService;
 import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.Settings;
 import javafx.application.Application;
@@ -76,7 +70,6 @@ public class LsGuiWindow extends Application {
     public final void start(Stage primaryStage) {
         final Parent root = this.loadFxml();
         this.setupStage(root, primaryStage);
-        GithubUpdateService.checkForUpdate();
     }
 
     private Parent loadFxml() {
@@ -106,24 +99,12 @@ public class LsGuiWindow extends Application {
 
         primaryStage.setOnCloseRequest(event -> {
             Settings.getInstance().saveSettings();
-            Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = ((TwitchService) Settings.getInstance()
-                    .servicesProperty().get(0)).getUpdateServices().entrySet().iterator();
-            while (it.hasNext()) {
-                it.next();
-                it.remove();
-            }
             HttpClientInterface.stopClient();
             Platform.exit();
         });
 
         primaryStage.setOnHiding(event -> {
             Settings.getInstance().saveSettings();
-            Iterator<Map.Entry<IChannel, TwitchChannelUpdateService>> it = ((TwitchService) Settings.getInstance()
-                    .servicesProperty().get(0)).getUpdateServices().entrySet().iterator();
-            while (it.hasNext()) {
-                it.next();
-                it.remove();
-            }
             HttpClientInterface.stopClient();
             Platform.exit();
         });

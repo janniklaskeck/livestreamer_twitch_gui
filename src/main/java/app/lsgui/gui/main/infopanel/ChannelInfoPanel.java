@@ -121,7 +121,7 @@ public class ChannelInfoPanel extends BorderPane
         this.recordStreamButton.setTooltip(recordTooltip);
         final Tooltip openBrowserTooltip = new Tooltip("Open stream in Browser");
         this.openInBrowserButton.setTooltip(openBrowserTooltip);
-    }
+	}
 
     private void setupChannelListener()
     {
@@ -173,7 +173,6 @@ public class ChannelInfoPanel extends BorderPane
         this.recordStreamButton.setOnAction(event -> this.recordStream());
         this.recordStreamButton.setDisable(true);
         this.openChatButton = new Button("", new Glyph("FontAwesome", FontAwesome.Glyph.COMMENT));
-        this.openChatButton.setOnAction(event -> this.openChat());
         this.openChatButton.setDisable(true);
         this.openChatInBrowserButton = new Button("", new Glyph("FontAwesome", FontAwesome.Glyph.COMMENT_ALT));
         this.openChatInBrowserButton.setOnAction(event -> this.openChatInBrowser());
@@ -241,11 +240,6 @@ public class ChannelInfoPanel extends BorderPane
         LsGuiUtils.recordStream((Stage) this.getScene().getWindow(), service, this.channelProperty.get());
     }
 
-    private void openChat()
-    {
-        TwitchUtils.openTwitchChat(this.channelProperty.get());
-    }
-
     private void openChatInBrowser()
     {
         TwitchUtils.openTwitchChatInBrowser(this.channelProperty.get());
@@ -278,6 +272,6 @@ public class ChannelInfoPanel extends BorderPane
     {
         final String serviceUrl = this.serviceComboBox.getSelectionModel().getSelectedItem().getUrl().get();
         final String channel = this.channelProperty.get().getName().get();
-        return LsGuiUtils.buildUrl(serviceUrl, channel);
-    }
+		return LsGuiUtils.buildUrl(serviceUrl, channel);
+	}
 }

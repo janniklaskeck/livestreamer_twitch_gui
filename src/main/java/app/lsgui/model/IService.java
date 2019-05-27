@@ -44,4 +44,5 @@ public interface IService {
 
     void removeChannel(final IChannel channel);
 
+    void FinishSetup();
 }

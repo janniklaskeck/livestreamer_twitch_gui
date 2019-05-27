@@ -155,13 +155,6 @@ public class ChannelCell extends ListCell<IChannel> {
         });
         recordStream.disableProperty().bind(channel.isOnline().not());
 
-        final MenuItem openChat = new MenuItem();
-        openChat.textProperty().set("Open Twitch.tv Chat");
-        openChat.setOnAction(event -> {
-            TwitchUtils.openTwitchChat(channel);
-            LOGGER.debug("Opening Twitch Chat for {}", channel.getName().get());
-        });
-        openChat.setDisable(!TwitchUtils.isTwitchChannel(channel));
         final MenuItem openBrowser = new MenuItem();
         openBrowser.textProperty().set("Open in Browser");
         openBrowser.setOnAction(event -> {
@@ -172,7 +165,6 @@ public class ChannelCell extends ListCell<IChannel> {
         contextMenu.getItems().add(startStream);
         contextMenu.getItems().add(recordStream);
         contextMenu.getItems().add(new SeparatorMenuItem());
-        contextMenu.getItems().add(openChat);
         contextMenu.getItems().add(openBrowser);
         contextMenu.getItems().add(new SeparatorMenuItem());
         contextMenu.getItems().add(delete);

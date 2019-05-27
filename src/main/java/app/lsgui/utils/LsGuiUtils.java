@@ -47,6 +47,7 @@ import app.lsgui.remote.twitch.TwitchAPIClient;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -142,12 +143,12 @@ public final class LsGuiUtils {
         final String title = "Update available!";
         final String updateMessage = "Version " + version + " is available! Released at " + date
                 + ". Click this or check Settings for a Link.";
-        Notifications.create().title(title).text(updateMessage).onAction(action)
+        Notifications.create().owner(Screen.getPrimary()).title(title).text(updateMessage).onAction(action)
                 .hideAfter(Duration.seconds(UPDATE_NOTIFICATION_DURATION)).darkStyle().showInformation();
     }
 
     public static void showWarningNotification(final String title, final String message) {
-        Notifications.create().title(title).darkStyle().text(message).showWarning();
+        Notifications.create().owner(Screen.getPrimary()).title(title).darkStyle().text(message).showWarning();
     }
 
     public static boolean isFileEmpty(final File file) {

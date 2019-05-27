@@ -84,4 +84,10 @@ public final class GenericService implements IService {
             this.channelList.remove(channel);
         }
     }
+
+	@Override
+	public void FinishSetup() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -31,11 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import app.lsgui.gui.main.list.ChannelList;
 import app.lsgui.gui.settings.SettingsWindow;
-import app.lsgui.gui.twitchbrowser.BrowserWindow;
 import app.lsgui.model.IChannel;
 import app.lsgui.model.IService;
 import app.lsgui.model.twitch.TwitchService;
-import app.lsgui.remote.twitch.TwitchChannelUpdateService;
 import app.lsgui.utils.LsGuiUtils;
 import app.lsgui.utils.PopOverUtil;
 import app.lsgui.utils.TwitchUtils;
@@ -81,21 +79,10 @@ public final class TopToolBar extends ToolBar
         this.addButton.setOnAction(event -> this.addAction());
         this.removeButton.setOnAction(event -> this.removeAction());
         this.importButton.setOnAction(event -> this.importFollowedChannels());
-        this.twitchBrowserButton.setOnAction(event -> this.openTwitchBrowser());
 
         final ProgressIndicator updateProgressIndicator = new ProgressIndicator();
         updateProgressIndicator.setVisible(false);
-        TwitchChannelUpdateService.getActiveChannelServicesProperty().addListener((obs, oldValue, newValue) ->
-        {
-            if (!newValue.isEmpty())
-            {
-                updateProgressIndicator.setVisible(true);
-            }
-            else
-            {
-                updateProgressIndicator.setVisible(false);
-            }
-        });
+
 
         final Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -149,12 +136,6 @@ public final class TopToolBar extends ToolBar
     {
         final SettingsWindow settingsWindow = new SettingsWindow(this.contentBorderPane.getScene().getWindow());
         settingsWindow.showAndWait();
-    }
-
-    private void openTwitchBrowser()
-    {
-        final BrowserWindow browserWindow = new BrowserWindow(this.twitchBrowserButton.getScene().getWindow());
-        browserWindow.showAndWait();
     }
 
     private void addAction()

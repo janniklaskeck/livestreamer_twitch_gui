@@ -29,12 +29,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonObject;
-
 import app.lsgui.model.IChannel;
 import app.lsgui.model.IService;
 import app.lsgui.remote.twitch.TwitchAPIClient;
-import app.lsgui.remote.twitch.TwitchChannelUpdateService;
+import app.lsgui.remote.twitch.TwitchServiceUpdateService;
 import app.lsgui.utils.Settings;
 import app.lsgui.utils.TwitchUtils;
 import javafx.beans.property.BooleanProperty;
@@ -46,7 +44,6 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.collections.transformation.SortedList;
 
 /**
@@ -55,100 +52,96 @@ import javafx.collections.transformation.SortedList;
  *
  */
 public final class TwitchService implements IService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TwitchService.class);
-    public static final String TWITCH_ID = "twitch.tv";
+	private static final Logger LOGGER = LoggerFactory.getLogger(TwitchService.class);
+	public static final String TWITCH_ID = "twitch.tv";
 
-    private StringProperty name;
-    private StringProperty url;
-    private ObjectProperty<SortedList<IChannel>> channelProperty;
-    private ObservableList<IChannel> channelList = FXCollections.observableArrayList(TwitchChannel.extractor());
-    private BooleanProperty sortChannels;
+	private StringProperty name;
+	private StringProperty url;
+	private ObjectProperty<SortedList<IChannel>> channelProperty;
+	private ObservableList<IChannel> channelList = FXCollections.observableArrayList(TwitchChannel.extractor());
+	private BooleanProperty sortChannels;
+	private TwitchServiceUpdateService updateService;
 
-    private static final ObservableMap<IChannel, TwitchChannelUpdateService> UPDATESERVICES = FXCollections
-            .observableHashMap();
+	public TwitchService(final String name, final String url) {
+		this.name = new SimpleStringProperty(name);
+		this.url = new SimpleStringProperty(url);
+		this.channelProperty = new SimpleObjectProperty<>(new SortedList<>(this.channelList));
+		this.sortChannels = new SimpleBooleanProperty();
+		this.sortChannels.bind(Settings.getInstance().sortTwitchProperty());
+		this.sortChannels.addListener((observable, oldValue, newVale) -> this.changeComparator(newVale));
+		this.channelProperty.get().addListener((ListChangeListener<IChannel>) change -> {
+			change.next();
+			this.changeComparator(this.sortChannels.get());
+		});
+	}
 
-    public TwitchService(final String name, final String url) {
-        this.name = new SimpleStringProperty(name);
-        this.url = new SimpleStringProperty(url);
-        this.channelProperty = new SimpleObjectProperty<>(new SortedList<>(this.channelList));
-        this.sortChannels = new SimpleBooleanProperty();
-        this.sortChannels.bind(Settings.getInstance().sortTwitchProperty());
-        this.sortChannels.addListener((observable, oldValue, newVale) -> this.changeComparator(newVale));
-        this.channelProperty.get().addListener((ListChangeListener<IChannel>) change -> {
-            change.next();
-            this.changeComparator(this.sortChannels.get());
-        });
-    }
+	@Override
+	public void addChannel(final String name) {
+		final boolean existsAlready = this.channelList.stream()
+				.anyMatch(channel -> channel.getName().get().equalsIgnoreCase(name));
+		if (!existsAlready) {
+			LOGGER.debug("Add Channel {} to {} Service", name, this.getName().get());
+			final TwitchChannel channelToAdd = TwitchUtils.constructTwitchChannel(name);
 
-    @Override
-    public void addChannel(final String name) {
-        final boolean existsAlready = this.channelList.stream()
-                .anyMatch(channel -> channel.getName().get().equalsIgnoreCase(name));
-        if (!existsAlready) {
-            LOGGER.debug("Add Channel {} to {} Service", name, this.getName().get());
-            final TwitchChannel channelToAdd = TwitchUtils.constructTwitchChannel(new JsonObject(), name, false);
-            final TwitchChannelUpdateService tcus = new TwitchChannelUpdateService(channelToAdd);
-            tcus.start();
-            UPDATESERVICES.put(channelToAdd, tcus);
-            this.channelList.add(channelToAdd);
-        } else {
-            LOGGER.debug("Skipping {}, exists already in list", name);
-        }
-    }
+			this.channelList.add(channelToAdd);
+		} else {
+			LOGGER.debug("Skipping {}, exists already in list", name);
+		}
+	}
 
-    @Override
-    public void removeChannel(final IChannel channel) {
-        if (channel instanceof TwitchChannel) {
-            LOGGER.debug("Remove Channel {} from Service {}", channel.getName(), this.getName().get());
-            final TwitchChannelUpdateService tcus = UPDATESERVICES.remove(channel);
-            tcus.cancel();
-            this.channelList.remove(channel);
-        }
-    }
+	@Override
+	public void removeChannel(final IChannel channel) {
+		if (channel instanceof TwitchChannel) {
+			LOGGER.debug("Remove Channel {} from Service {}", channel.getName(), this.getName().get());
+			this.channelList.remove(channel);
+		}
+	}
 
-    public void addFollowedChannels(final String username) {
-        LOGGER.debug("Import followed Streams for user {} into Service {}", username, this.getName().get());
-        final Set<String> set = TwitchAPIClient.getInstance().getListOfFollowedStreams(username);
-        for (final String s : set) {
-            this.addChannel(s);
-        }
-    }
+	public void addFollowedChannels(final String username) {
+		LOGGER.debug("Import followed Streams for user {} into Service {}", username, this.getName().get());
+		final Set<String> set = TwitchAPIClient.getInstance().getListOfFollowedStreams(username);
+		for (final String s : set) {
+			this.addChannel(s);
+		}
+	}
 
-    private void changeComparator(final boolean doSorting) {
-        final Comparator<IChannel> comparator;
-        if (!doSorting) {
-            comparator = (channel1, channel2) -> channel1.getName().get().compareToIgnoreCase(channel2.getName().get());
-        } else {
-            comparator = (channel1, channel2) -> {
-                if (channel1.isOnline().get() && !channel2.isOnline().get()) {
-                    return -1;
-                } else if (!channel1.isOnline().get() && channel2.isOnline().get()) {
-                    return 1;
-                } else {
-                    return channel1.getName().get().compareToIgnoreCase(channel2.getName().get());
-                }
-            };
-        }
-        this.getChannelProperty().get().setComparator(comparator);
-    }
+	private void changeComparator(final boolean doSorting) {
+		final Comparator<IChannel> comparator;
+		if (!doSorting) {
+			comparator = (channel1, channel2) -> channel1.getName().get().compareToIgnoreCase(channel2.getName().get());
+		} else {
+			comparator = (channel1, channel2) -> {
+				if (channel1.isOnline().get() && !channel2.isOnline().get()) {
+					return -1;
+				} else if (!channel1.isOnline().get() && channel2.isOnline().get()) {
+					return 1;
+				} else {
+					return channel1.getName().get().compareToIgnoreCase(channel2.getName().get());
+				}
+			};
+		}
+		this.getChannelProperty().get().setComparator(comparator);
+	}
 
-    @Override
-    public ObjectProperty<SortedList<IChannel>> getChannelProperty() {
-        return this.channelProperty;
-    }
+	@Override
+	public ObjectProperty<SortedList<IChannel>> getChannelProperty() {
+		return this.channelProperty;
+	}
 
-    @Override
-    public StringProperty getName() {
-        return this.name;
-    }
+	@Override
+	public StringProperty getName() {
+		return this.name;
+	}
 
-    @Override
-    public StringProperty getUrl() {
-        return this.url;
-    }
+	@Override
+	public StringProperty getUrl() {
+		return this.url;
+	}
 
-    public ObservableMap<IChannel, TwitchChannelUpdateService> getUpdateServices() {
-        return UPDATESERVICES;
-    }
+	@Override
+	public void FinishSetup() {
+		updateService = new TwitchServiceUpdateService(this);
+		updateService.start();
+	}
 
 }
